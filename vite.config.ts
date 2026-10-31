@@ -36,7 +36,7 @@ export default defineConfig({
         shortcuts: [
           { name: 'Dashboard', url: '/dashboard', description: 'Asosiy panel' },
           { name: 'Vocabulary', url: '/vocabulary', description: 'Lug\'at va flashcard' },
-          { name: 'Mock Exam', url: '/mock-exam', description: 'Sinov namunası' },
+          { name: 'Mock Exam', url: '/mock-exam', description: 'Sinov namunasi' },
         ],
       },
       workbox: {

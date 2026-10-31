@@ -18,6 +18,7 @@
     "test:watch": "vitest",
     "test:ui": "vitest run --coverage",
     "smoke": "node scripts/smoke.mjs",
+    "render:check": "node scripts/render-check.mjs",
     "icons:build": "node scripts/make-icons.mjs",
     "audio:build": "node scripts/build-audio.mjs"
   },

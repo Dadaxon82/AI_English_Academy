@@ -27,7 +27,7 @@ const allFour = (score: number, n = MIN_EVIDENCE_PER_SKILL): SkillEvidence[] => 
   ev('speaking', score, n),
 ]
 
-describe('Daraja ko‘tarish — faqat ko‘p ko‘nikmalı isbot bilan', () => {
+describe('Daraja ko‘tarish — faqat ko‘p ko‘nikma dalili bilan', () => {
   it('4 ta asosiy ko‘nikma yetarli → keyingi daraja tavsiya qilinadi', () => {
     const p = evaluateLevelPromotion('A1', allFour(PROMOTION_THRESHOLD))
     expect(p.recommendedLevel).toBe('A2')

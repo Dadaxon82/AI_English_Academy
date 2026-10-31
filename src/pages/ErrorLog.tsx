@@ -1,5 +1,5 @@
 /**
- * Xatolar kunnigi — xatolarni ko'rish, takrorlanadigan xatolarni topish,
+ * Xatolar kundaligi — xatolarni ko'rish, takrorlanadigan xatolarni topish,
  * filtrlash va eksport qilish.
  *
  * Talab: foydalanuvchi o'z xatolarini ko'radi va ular ustida ishlaydi.
@@ -56,7 +56,7 @@ export default function ErrorLog() {
   return (
     <div className="grid gap-4">
       <Card className="grid gap-3">
-        <h1 className="text-xl font-bold">Xatolar kunnigi</h1>
+        <h1 className="text-xl font-bold">Xatolar kundaligi</h1>
         <p className="muted text-sm">
           Barcha noto‘g‘ri javoblaringiz shu yerda. {totalErrors} ta xato qayd etilgan. Takrorlanadigan xatolar —
           eng avval ishlash kerak bo‘lgan joylar.

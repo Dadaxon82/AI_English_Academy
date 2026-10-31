@@ -1,7 +1,7 @@
 /**
  * Progress va statistika — ko'nikma isbotlari, grafiklar, tarix.
  *
- * Daraja ko'tarish XP/yillar bilan emas, ko'p ko'nikmalı ISBOT bilan
+ * Daraja ko'tarish XP/yillar bilan emas, ko'p KO'NIKMA DALILI bilan
  * o'lchanadi — shu sahifada isbotlar ochiq ko'rsatiladi.
  */
 
@@ -216,7 +216,7 @@ export default function Progress() {
                 <span className="muted">{new Date(data.diagnostic.at).toLocaleString('uz')}</span>
               </div>
               <p className="text-xs muted">
-                Diagnostika faqat boshlang‘ich yo‘nalish beradi; daraja keyin ko‘p ko‘nikmalı isbotlar bilan ko‘tariladi.
+                Diagnostika faqat boshlang‘ich yo‘nalish beradi; daraja keyin ko‘p ko‘nikma dalillari bilan ko‘tariladi.
               </p>
             </div>
           )}

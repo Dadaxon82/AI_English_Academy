@@ -5,8 +5,8 @@
 Loyiha talabnomasi (`AI English Academy_v2.docx`) to'liq bajarilgan:
 
 - ✅ To'liq **o'zbek tilli interfeys**
-- ✅ **A1, A2, B1, B2, C1** darajalar; daraja faqat **ko'p ko'nikmalı isbot** bilan ko'tariladi (XP yoki kunlar emas), ustidan doim **#mashq uchun yaratilgan namuna** deb yozilgan
-- ✅ **90 daqiqalik** asosiy kunlik rejа (Vocab 10 / Grammar 15 / Reading 15 / Listening 15 / Writing 20 / Speaking 15) — zaif ko'nikma va imtihon sanasiga qarab qayta taqsimlanadi
+- ✅ **A1, A2, B1, B2, C1** darajalar; daraja faqat **ko'p ko'nikma dalili** bilan ko'tariladi (XP yoki kunlar emas), mock imtihon esa doim **"mashq uchun yaratilgan namuna"** deb yozilgan
+- ✅ **90 daqiqalik** asosiy kunlik reja (Vocab 10 / Grammar 15 / Reading 15 / Listening 15 / Writing 20 / Speaking 15) — zaif ko'nikma va imtihon sanasiga qarab qayta taqsimlanadi
 - ✅ **14 sahifa**: Dashboard, Learning Path, Vocabulary, Grammar, Reading, Listening, Writing, Speaking, Mock Exam, Progress, Error Log, Settings, Login, 404
 - ✅ Premium **dark/light** mavzu, to'liq **responsiv**; har joyda **loading / empty / success / error** holatlari
 - ✅ **SRS lug'at** (SM-2): har so'z statistikasida tekshiruvlar ikki marta sanalmaydi
@@ -71,12 +71,17 @@ npm run icons:build   # PWA ikonalaria (0 bog'liqlik, sof Node)
 ## 5. To'liq tekshiruv
 
 ```bash
-npm run typecheck   # tsc — 0 xato
-npm run lint        # eslint — 0 xato
-npm test            # vitest — 39 test (SRS, taymer, tekshiruv, rejalashtirish, daraja)
-npm run build       # production build + Service Worker
-npm run smoke       # dist'ni serverda ochib tekshirish + 375/1280 skrinshot
+npm run typecheck     # tsc — 0 xato
+npm run lint          # eslint — 0 xato
+npm test              # vitest — 39 test (SRS, taymer, tekshiruv, rejalashtirish, daraja)
+npm run build         # production build + Service Worker
+npm run smoke         # dist'ni serverda ochib tekshirish + 375/1280 skrinshot
+npm run render:check  # 15 marshrutni CDP orqali ochib DOM tekshiruvi + konsol xatolari
 ```
+
+> `render:check` Chrome/Edge'ni remote debugging (CDP) orqali ochadi va har
+> marshrut uchun tugmalar/havolalar/matn hajmini va istisnolarni tekshiradi.
+> Brauzer bo'lmasa skript ogohlantirib exit 0 bilan chiqadi.
 
 ## 6. Arxitektura qisqacha
 
