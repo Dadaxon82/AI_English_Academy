@@ -480,7 +480,7 @@ export const listeningDay6: ListeningTask = {
   level: 'A1',
   audio: {
     id: 'a1-l-audio-06-file',
-    src: '/audio/a1/day-06-weekend-plans.mp3',
+    src: '/audio/a1-l-audio-06-file.wav',
     fileAvailable: true,
     source: 'original',
     attribution: 'AI English Academy (original, synthesized for practice)',
@@ -789,7 +789,7 @@ export const testDay6: SectionTest = {
 }
 
 export const day6: DailyPlanDay = {
-  id: 'a1-day-6',
+  id: 'a1-day-06',
   level: 'A1',
   dayNumber: 6,
   titleUz: 'Bo‘sh vaqt, havaslar va hafta oxiri rejalari',

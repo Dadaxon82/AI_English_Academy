@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react'
-import { BrowserRouter, HashRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom'
+import { useCallback, useEffect, useState } from 'react'
+import { BrowserRouter, HashRouter, Link, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
+import { AuthContext } from './lib/authContext'
 import Layout from './components/Layout'
 import { StoreProvider, useStore } from './lib/store'
 import { getSupabase, localGuestId, supabaseConfigured, type AuthState } from './lib/supabase'
 import { LoadingBlock, InfoBanner, Button } from './components/ui'
-import Login from './pages/Login'
+import Login, { signOutCurrent } from './pages/Login'
 import Onboarding from './pages/Onboarding'
 import Dashboard from './pages/Dashboard'
 import LearningPath from './pages/LearningPath'
@@ -79,13 +80,16 @@ function Shell({ auth, onAuth }: { auth: AuthState; onAuth: (s: AuthState) => vo
 
 function FirstRunHint() {
   const [hidden, setHidden] = useState(false)
+  const nav = useNavigate()
   if (hidden) return null
   return (
     <InfoBanner>
       <div className="flex items-center gap-3">
         <span>Boshlang‘ich sozlamalar to‘ldirilmagan.</span>
         <span className="flex-1" />
-        <Button size="sm" onClick={() => (window.location.href = '/onboarding')}>
+        {/* Router orqali: Pages'da `/onboarding` to'g'ridan-to'g'ri havolasi
+            bazani (`/AI_English_Academy/`) tashlab yuborib 404 beradi. */}
+        <Button size="sm" onClick={() => nav('/onboarding')}>
           Sozlamalarni to‘ldirish
         </Button>
         <Button size="sm" variant="ghost" onClick={() => setHidden(true)}>
@@ -101,9 +105,9 @@ function NotFound() {
     <div className="panel p-8 text-center grid gap-3">
       <h1 className="text-2xl font-bold">404</h1>
       <p className="muted">Bunday sahifa mavjud emas.</p>
-      <a href="/dashboard" className="inline-flex justify-center">
+      <Link to="/dashboard" className="inline-flex justify-center">
         <Button>Dashboardga qaytish</Button>
-      </a>
+      </Link>
     </div>
   )
 }
@@ -113,6 +117,7 @@ export default function App() {
 
   useEffect(() => {
     let alive = true
+    const cleanup: Array<() => void> = []
     const boot = async () => {
       if (!supabaseConfigured) {
         if (alive) setAuth({ kind: 'local-only', userId: localGuestId() })
@@ -131,7 +136,7 @@ export default function App() {
         // Mahalliy ishlatuvchi bo'lsa uni saqlab qolamiz, aks holda login
         setAuth({ kind: 'signed-out' })
       }
-      sb.auth.onAuthStateChange((_e, session) => {
+      const { data: sub } = sb.auth.onAuthStateChange((_e, session) => {
         if (!alive) return
         setAuth(
           session?.user
@@ -139,14 +144,34 @@ export default function App() {
             : { kind: 'signed-out' },
         )
       })
+      cleanup.push(() => sub.subscription.unsubscribe())
     }
     void boot()
     return () => {
       alive = false
+      for (const fn of cleanup) fn()
     }
   }, [])
 
   const userId = auth.kind === 'signed-in' || auth.kind === 'local-only' ? auth.userId : 'anonymous'
+
+  // Chiqish:
+  //  - Supabase hisobi → sessiya + shaxsiy kesh + SW keshlari tozalanadi.
+  //  - Mehmon (mahalliy) hisob → faqat login ekraniga qaytamiz; ma'lumot
+  //    o'chirilmaydi (foydalanuvchi xohlasa Sozlamalardan o'chiradi).
+  const signOut = useCallback(() => {
+    void (async () => {
+      if (auth.kind === 'signed-in') {
+        await signOutCurrent(userId)
+        setAuth({ kind: 'signed-out' })
+      } else {
+        // Mehmon hisob: sessiya yo'q — local-only holatda qolamiz, shunda
+        // Login sahifasi "Davom etish (mavjud mahalliy hisob)" tugmasini
+        // ko'rsatadi va ma'lumot yo'qolmaydi.
+        setAuth({ kind: 'local-only', userId: localGuestId() })
+      }
+    })()
+  }, [auth.kind, userId])
 
   // BrowserRouter uchun base (masalan custom domain ostidagi `/aea/`).
   // HashRouter o'zi ham `/AI_English_Academy/#/dashboard` dan ishlaydi.
@@ -155,9 +180,11 @@ export default function App() {
 
   return (
     <Router {...routerProps}>
-      <StoreProvider userId={userId}>
-        <Shell auth={auth} onAuth={setAuth} />
-      </StoreProvider>
+      <AuthContext.Provider value={{ signOut }}>
+        <StoreProvider userId={userId}>
+          <Shell auth={auth} onAuth={setAuth} />
+        </StoreProvider>
+      </AuthContext.Provider>
     </Router>
   )
 }

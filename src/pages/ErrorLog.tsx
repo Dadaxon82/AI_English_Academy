@@ -6,7 +6,7 @@
  */
 
 import { useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Button, Card, Chip, EmptyState, Field, InfoBanner, inputCls } from '../components/ui'
 import { useStore } from '../lib/store'
 import { findExercise } from '../content'
@@ -21,6 +21,7 @@ const SKILL_ORDER: Skill[] = ['vocabulary', 'grammar', 'reading', 'listening', '
 
 export default function ErrorLog() {
   const { data } = useStore()
+  const nav = useNavigate()
   const [skill, setSkill] = useState<Skill | 'all'>('all')
   const [range, setRange] = useState<Range>('all')
   const [source, setSource] = useState<AttemptSource | 'all'>('all')
@@ -133,7 +134,7 @@ export default function ErrorLog() {
             title="Bu filtr bo‘yicha xato topilmadi"
             body="Filtrni o'zgartiring yoki mashq qiling — xatolar avtomatik qayd etiladi."
             action={
-              <Button variant="secondary" size="sm" onClick={() => (window.location.href = '/dashboard')}>
+              <Button variant="secondary" size="sm" onClick={() => nav('/dashboard')}>
                 Mashqqa o‘tish
               </Button>
             }
@@ -196,7 +197,9 @@ function ExportButtons({ rows }: { rows: AttemptRecord[] }) {
     a.href = url
     a.download = filename
     a.click()
-    URL.revokeObjectURL(url)
+    // Revoke biroz kechiktiriladi — darhol chaqirilsa ba'zi brauzerlarda
+    // yuklab olish boshlanmasiz bekor bo'ladi.
+    setTimeout(() => URL.revokeObjectURL(url), 4000)
   }
 
   if (rows.length === 0) {

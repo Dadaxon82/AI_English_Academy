@@ -375,7 +375,7 @@ export default function Dashboard() {
         </div>
         <div className="flex flex-wrap gap-2">
           {data.diagnostic && (
-            <Link to="/progress" className={linkSecondary}>
+            <Link to="/progress?retake=1" className={linkSecondary}>
               Diagnostikani qayta topshirish
             </Link>
           )}

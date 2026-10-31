@@ -5,9 +5,9 @@
  * AI "ulangan" deb ko'rsatilmaydi va mavjud bo'lmagan natija yasalmaydi.
  */
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { Button, Card, Chip, EmptyState, InfoBanner, SuccessBanner } from '../components/ui'
+import { Button, Card, Chip, EmptyState, InfoBanner, LoadingBlock, SuccessBanner } from '../components/ui'
 import { useStore } from '../lib/store'
 import { getBundle } from '../content'
 import { criterionLabelUz } from '../lib/analyze'
@@ -16,7 +16,7 @@ import type { CoreCriterionKey, WritingSubmission } from '../lib/types'
 import type { WritingTask } from '../content/types'
 
 export default function Writing() {
-  const { data, actions, netOnline, timerElapsed } = useStore()
+  const { data, actions, netOnline, timerElapsed, ready } = useStore()
   const [params, setParams] = useSearchParams()
   const bundle = getBundle(data.settings.currentLevel)
   const tasks = useMemo(
@@ -43,39 +43,60 @@ export default function Writing() {
     setSubmitted(data.writing.filter((w) => w.taskId === (params.get('task') ?? tasks[0]?.id)))
   }, [data.writing, params, tasks])
 
-  // Taymer: tanlangan topshiriq uchun store taymeri ishga tushadi.
-  // Store ichida saqlanadi — sahifa yangilansa ham vaqt yo'qolmaydi.
+  // Taymer: faqat foydalanuvchi haqiqatan YOZISHNI BOSHLAGANDA ishga tushadi.
+  // Oldin sahifa ochilishi bilan avtomatik yurardi — sahifada hech narsa
+  // qilmasangiz ham daqiqa yig'ilardi. Store ichida saqlanadi — sahifa
+  // yangilansa ham vaqt yo'qolmaydi; sahifadan chiqsa pauza bo'ladi.
   const startT = actions.startTimer
   const pauseT = actions.pauseTimer
   const taskIdForTimer = task?.id ?? ''
+  const typing = (drafts[taskIdForTimer] ?? '').trim().length > 0
   useEffect(() => {
-    if (!taskIdForTimer) return
+    if (!taskIdForTimer || !typing) return
     startT(taskIdForTimer, 'writing')
     return () => pauseT()
-  }, [taskIdForTimer, startT, pauseT])
+  }, [taskIdForTimer, typing, startT, pauseT])
 
   const seconds = data.timer.sessionId === taskIdForTimer ? timerElapsed : 0
 
   const draft = drafts[selectedId] ?? ''
   const words = draft.trim() ? draft.trim().split(/\s+/).filter((w) => /[a-z0-9]/i.test(w)).length : 0
 
+  // BUG: localStorage'ga yopiq (closure) `drafts` yozilardi — birinchi
+  // yozuvdan keyin boshqa topshiriq qoralamalari xotiradan o'chib qolardi.
+  // Endi saqlash state o'zgarishi ortidan effect orqali (har doim to'liq).
   const setDraft = (v: string) => {
     setDrafts((d) => ({ ...d, [selectedId]: v }))
+  }
+  const firstDraftRun = useRef(true)
+  useEffect(() => {
+    if (firstDraftRun.current) {
+      firstDraftRun.current = false
+      return
+    }
     try {
-      localStorage.setItem(`aea-drafts:${data.userId}`, JSON.stringify({ ...drafts, [selectedId]: v }))
+      localStorage.setItem(`aea-drafts:${data.userId}`, JSON.stringify(drafts))
       setSaveNote('Qoralama saqlandi')
     } catch {
       setSaveNote(null)
     }
-  }
+  }, [drafts, data.userId])
+
+  // BUG: ma'lumotlar yuklanmasa sahifa "topshiriq topilmadi" deb yalgan
+  // bo'sh holat ko'rsatardi. Avval yuklanish holati ko'rsatiladi.
+  if (!ready) return <LoadingBlock label="Yozish ma'lumotlari yuklanmoqda…" />
 
   if (tasks.length === 0) {
     return <EmptyState title="Yozish topshiriqlari topilmadi" body="Ushbu daraja uchun yozish kontenti hali yuklanmagan." />
   }
 
   const prior = data.writing.filter((w) => w.taskId === selectedId)
-
-  const compareTarget = compareWith ? data.writing.find((w) => w.id === compareWith) : prior[0]
+  // `prior` XRONOLOGIK tartibda (eski → yangi). Solishtiruv uchun "eng yangi"
+  // = oxirgi element; "oldingi javob" = undan bitta oldingi.
+  const newest = prior[prior.length - 1] ?? null
+  const compareTarget = compareWith
+    ? data.writing.find((w) => w.id === compareWith)
+    : (prior[prior.length - 2] ?? prior[0] ?? null)
 
   return (
     <div className="grid gap-4">
@@ -89,6 +110,8 @@ export default function Writing() {
           {tasks.map((t) => (
             <button
               key={t.id}
+              type="button"
+              aria-pressed={selectedId === t.id}
               onClick={() => setParams({ task: t.id })}
               className={`chip cursor-pointer ${selectedId === t.id ? '!border-[var(--accent)] !text-[var(--accent)] font-bold' : ''}`}
             >
@@ -169,8 +192,12 @@ export default function Writing() {
                 <Chip>{sub.wordCount} so‘z</Chip>
                 <span className="muted">{new Date(sub.createdAt).toLocaleString('uz')}</span>
                 {i === 0 && submitted.length > 1 && (
-                  <Button size="sm" variant="ghost" onClick={() => setCompareWith(compareWith ? null : submitted[1]!.id)}>
-                    {compareWith ? 'Solishtirishni yopish' : "Eski javob bilan solishtirish"}
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => setCompareWith(compareWith ? null : submitted[submitted.length - 2]!.id)}
+                  >
+                    {compareWith ? 'Solishtirishni yopish' : "Oldingi javob bilan solishtirish"}
                   </Button>
                 )}
               </div>
@@ -240,13 +267,16 @@ export default function Writing() {
             </div>
             <div className="rounded-xl border p-3">
               <h3 className="text-sm font-semibold mb-2">Yangi javob</h3>
-              <p className="text-sm whitespace-pre-wrap">{submitted[0]?.text}</p>
-              <p className="text-[11px] muted mt-1">{submitted[0]?.wordCount} so‘z</p>
+              {/* BUG: bu yerda `submitted[0]` ishlatilardi — massiv kronologik
+                  tartibda saqlangani uchun [0] ENG KOGIRGI javob edi. Endi
+                  solishtiruv paneli haqiqatan oxirgi (eng yangi) javobni ko'rsatadi. */}
+              <p className="text-sm whitespace-pre-wrap">{newest?.text}</p>
+              <p className="text-[11px] muted mt-1">{newest?.wordCount} so‘z</p>
             </div>
-            {compareTarget.analysis && submitted[0]?.analysis && (
+            {compareTarget.analysis && newest?.analysis && (
               <SuccessBanner>
-                O‘rtacha ball: {avg(compareTarget.analysis)}/5 → <b>{avg(submitted[0].analysis)}/5</b>
-                {avg(submitted[0].analysis) > avg(compareTarget.analysis) ? ' — o‘sish bor 👏' : ''}
+                O‘rtacha ball: {avg(compareTarget.analysis)}/5 → <b>{avg(newest.analysis)}/5</b>
+                {avg(newest.analysis) > avg(compareTarget.analysis) ? ' — o‘sish bor 👏' : ''}
               </SuccessBanner>
             )}
           </div>
@@ -260,7 +290,7 @@ function aiEnabled(flag: boolean, online: boolean) {
   return flag && online
 }
 
-/** `avg` — 5 mezon o'rtachasi (0..1 o'lchamida ko'rsatiladi). */
+/** `avg` — 5 mezon o'rtachasi (0..5 o'lchamida ko'rsatiladi). */
 const avg = (a: { criteriaScores: Record<CoreCriterionKey, number> }) =>
   (Object.values(a.criteriaScores).reduce((x, y) => x + y, 0) / 5).toFixed(1)
 

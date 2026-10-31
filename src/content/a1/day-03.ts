@@ -478,7 +478,7 @@ export const listeningDay3: ListeningTask = {
   level: 'A1',
   audio: {
     id: 'a1-l3-audio-file-01',
-    src: '/audio/a1/day-03-a-day-in-my-life.mp3',
+    src: '/audio/a1-l3-audio-file-01.wav',
     fileAvailable: true,
     source: 'original',
     attribution: 'AI English Academy (original, synthesized for practice)',

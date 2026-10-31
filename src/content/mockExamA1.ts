@@ -12,7 +12,7 @@ import type { MockExamSpec, AudioAsset } from './types'
 
 const examAudio: AudioAsset = {
   id: 'a1-mock-audio-01',
-  src: '/audio/a1/mock-listening-01.wav',
+  src: '/audio/a1-mock-audio-01.wav',
   fileAvailable: true,
   source: 'original',
   attribution: 'AI English Academy (original, synthesized for practice)',
@@ -150,7 +150,8 @@ export const mockExamA1: MockExamSpec = {
           kind: 'gap-fill',
           instructionUz: 'Eshitgan so‘zingizni yozing.',
           text: 'They want to meet at ___ o’clock.',
-          answers: ['nine', '9'],
+          answers: ['nine'],
+          acceptAlternatives: [['nine', '9']],
           level: 'A1',
           skill: 'listening',
           difficulty: 2,

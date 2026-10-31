@@ -475,7 +475,7 @@ export const listeningDay4: ListeningTask = {
   level: 'A1',
   audio: {
     id: 'a1-l-audio-04-file',
-    src: '/audio/a1/day-04-tour-of-my-home.mp3',
+    src: '/audio/a1-l-audio-04-file.wav',
     fileAvailable: true,
     source: 'original',
     attribution: 'AI English Academy (original, synthesized for practice)',
@@ -749,7 +749,7 @@ export const testDay4: SectionTest = {
       explanationUz: 'To‘g‘ri gap: Is there a bathroom in your flat?',
       difficulty: 3,
       tags: ['there is', 'questions'],
-      bank: ['there', 'Is', 'flat', 'a', 'your', 'in'],
+      bank: ['there', 'Is', 'bathroom', 'flat', 'a', 'your', 'in'],
       answer: ['Is', 'there', 'a', 'bathroom', 'in', 'your', 'flat'],
       noteUz: 'Eslatma: so‘zlar orasiga "?" qo‘yish shart emas.',
     },
@@ -774,7 +774,7 @@ export const testDay4: SectionTest = {
 }
 
 export const day4: DailyPlanDay = {
-  id: 'a1-day-4',
+  id: 'a1-day-04',
   level: 'A1',
   dayNumber: 4,
   titleUz: 'Uy va xonalar: narsa qayerda?',

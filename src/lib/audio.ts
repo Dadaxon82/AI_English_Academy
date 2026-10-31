@@ -37,10 +37,7 @@ export async function loadAudioManifest(): Promise<Record<string, AudioManifestI
   loading = (async () => {
     try {
       const res = await fetch(assetUrl('/audio/manifest.json'), { cache: 'no-cache' })
-      if (!res.ok) {
-        cached = null
-        return null
-      }
+      if (!res.ok) return null
       const json = (await res.json()) as { items?: AudioManifestItem[] }
       const map: Record<string, AudioManifestItem> = {}
       for (const it of json.items ?? []) {
@@ -50,19 +47,35 @@ export async function loadAudioManifest(): Promise<Record<string, AudioManifestI
       cached = map
       return map
     } catch {
-      cached = null
       return null
     }
   })()
-  return loading
+  const out = await loading
+  // MUBOHIM xato: oldin muvaffaqiyatsizlik ham doimiy "kesh" bo'lib qolardi —
+  // bir marta (masalan tarmaq uzilgan paytda) barbod bo'lgan manifest biror
+  // marta ham qayta o'qilmay, butun seansi audio'siz qoldirardi (refresh'gacha).
+  if (out === null) loading = null
+  return loading ?? out
 }
 
-/** Manifestni tekshirish uchun kutish kerak — shu funksiyaga manifestOk beriladi. */
+/**
+ * Audio haqiqatan mavjudmi (soxta pleyer ko'rsatmaslik uchun asosiy darvoza).
+ *
+ * Eski versiyada `manifestOk === true` bo'lsa elementning o'zi tekshirilmasdi
+ * — manifestda umuman yo'q (yoki available:false) item uchun ham `true`
+ * qaytardi va "Audio fayl topilmadi" haqido yozuv ko'rinmasdi.
+ *
+ * @param manifestOk null — manifest hali yuklanmoqda (optimistik true)
+ *                   false — manifest o'qib bo'lmadi (har qanday audio yo'q)
+ *                   true  — manifest yuklandi, element xaritasiga qaraymiz
+ */
 export function hasAudio(manifestOk: boolean | null, audio: { id: string; fileAvailable: boolean }): boolean {
   if (!audio.fileAvailable) return false
   if (manifestOk === null) return true // hali tekshirilmagan — optimistic
   if (manifestOk === false) return false
-  return true
+  const item = cached?.[audio.id]
+  if (!item) return false // manifestda yo'q
+  return item.available === true
 }
 
 export function audioItem(id: string): AudioManifestItem | null {

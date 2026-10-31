@@ -478,7 +478,7 @@ export const listeningDay7: ListeningTask = {
   level: 'A1',
   audio: {
     id: 'a1-l-audio-07-file',
-    src: '/audio/a1/day-07-asking-the-way-in-tashkent.mp3',
+    src: '/audio/a1-l-audio-07-file.wav',
     fileAvailable: true,
     source: 'original',
     attribution: 'AI English Academy (original, synthesized for practice)',
@@ -789,7 +789,7 @@ export const testDay7: SectionTest = {
 }
 
 export const day7: DailyPlanDay = {
-  id: 'a1-day-7',
+  id: 'a1-day-07',
   level: 'A1',
   dayNumber: 7,
   titleUz: 'Sayohat, yo‘l so‘rash va hafta yakuniy takrori',

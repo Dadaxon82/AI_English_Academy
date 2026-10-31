@@ -10,7 +10,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { Button, Card, Chip, EmptyState, InfoBanner, SuccessBanner } from '../components/ui'
+import { Button, Card, Chip, EmptyState, InfoBanner, LoadingBlock, SuccessBanner } from '../components/ui'
 import { useStore } from '../lib/store'
 import { getBundle } from '../content'
 import { formatDuration } from '../lib/timer'
@@ -37,7 +37,7 @@ function getRecognizer(): RecognizerCtor | null {
 }
 
 export default function Speaking() {
-  const { data, actions } = useStore()
+  const { data, actions, ready } = useStore()
   const [params, setParams] = useSearchParams()
   const bundle = getBundle(data.settings.currentLevel)
   const tasks: SpeakingTask[] = [
@@ -148,6 +148,8 @@ export default function Speaking() {
     setRecState('ready')
   }
 
+  if (!ready) return <LoadingBlock label="Gapirish ma'lumotlari yuklanmoqda…" />
+
   if (tasks.length === 0) {
     return <EmptyState title="Gapirish topshiriqlari topilmadi" body="Ushbu daraja uchun kontent hali yuklanmagan." />
   }
@@ -160,12 +162,15 @@ export default function Speaking() {
       <Card className="grid gap-3">
         <h1 className="text-xl font-bold">G‘apirish</h1>
         <p className="muted text-sm">
-          Kunlik mavzu va savollar. Ovoz yozuvi faqat shu qurilmada saqlanadi — roziligingizsiz serverga yuborilmaydi.
+          Kunlik mavzu va savollar. Ovoz yozuvi faqat shu brauzer seansida turadi (sahifa yopilsa o‘chadi) —
+          roziligingizsiz serverga hech qachon yuborilmaydi.
         </p>
         <div className="flex flex-wrap gap-1.5">
           {tasks.map((t) => (
             <button
               key={t.id}
+              type="button"
+              aria-pressed={selectedId === t.id}
               onClick={() => {
                 setParams({ task: t.id })
                 setAudioUrl(null)
@@ -256,9 +261,13 @@ export default function Speaking() {
                   Qayta yozish
                 </Button>
               )}
+              {/* BUG: transkript bo'lmasa tugma o'chib qolardi — brauzeri
+                  transkripsiyani qo'llab-quvvatlamasa (Firefox) yozib
+                  olingan audio butunlay yo'qolardi. Endi yozuv bo'lsa ham
+                  saqlanadi. */}
               <Button
                 variant="secondary"
-                disabled={!transcript && !textAnswer}
+                disabled={!transcript && !textAnswer && recState !== 'ready'}
                 onClick={() => {
                   actions.addSpeaking({
                     taskId: task.id,

@@ -9,7 +9,8 @@
  */
 
 import { useEffect, useRef, useState } from 'react'
-import { Button, Card, Chip, EmptyState, InfoBanner, Modal, ProgressRing, Spinner } from '../components/ui'
+import { Link } from 'react-router-dom'
+import { Button, Card, Chip, EmptyState, InfoBanner, LoadingBlock, Modal, ProgressRing, Spinner } from '../components/ui'
 import ExerciseRunner from '../components/ExerciseRunner'
 import { useStore } from '../lib/store'
 import { getBundle } from '../content'
@@ -26,8 +27,32 @@ interface SectionProgress {
   secondsUsed: number
 }
 
+/** Jarayon holati — refresh'da yo'l qo'ymaslik uchun shu kalitga saqlanadi. */
+const SESSION_KEY = 'aea-mock-session'
+
+interface SavedSession {
+  examId: string
+  sectionIdx: number
+  progress: SectionProgress[]
+  savedAt: number
+}
+
+function loadSavedSession(examId: string): SavedSession | null {
+  try {
+    const raw = localStorage.getItem(SESSION_KEY)
+    if (!raw) return null
+    const s = JSON.parse(raw) as SavedSession
+    // Boshqa imtihon yoki 6 soatdan eski sessiya tiklanmaydi.
+    if (s.examId !== examId || Date.now() - s.savedAt > 6 * 3600_000) return null
+    if (!Array.isArray(s.progress) || s.progress.length === 0) return null
+    return s
+  } catch {
+    return null
+  }
+}
+
 export default function MockExam() {
-  const { data, actions, netOnline } = useStore()
+  const { data, actions, netOnline, ready } = useStore()
   const exam = getBundle(data.settings.currentLevel).mockExam
 
   const [running, setRunning] = useState(false)
@@ -36,10 +61,24 @@ export default function MockExam() {
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [finished, setFinished] = useState<string | null>(null)
   const [manifestOk, setManifestOk] = useState<boolean | null>(null)
+  const [saved, setSaved] = useState<SavedSession | null>(null)
 
   useEffect(() => {
     void loadAudioManifest().then((m) => setManifestOk(m !== null))
   }, [])
+
+  // Saqlangan jarayon borimi? (sahifani yangilasak imtihon yo'qolmasin)
+  useEffect(() => {
+    if (exam) setSaved(loadSavedSession(exam.id))
+  }, [exam])
+  useEffect(() => {
+    if (!running || progress.length === 0 || !exam) return
+    try {
+      localStorage.setItem(SESSION_KEY, JSON.stringify({ examId: exam.id, sectionIdx, progress, savedAt: Date.now() }))
+    } catch {
+      /* kvota — jimgina o'tamiz */
+    }
+  }, [running, progress, sectionIdx, exam])
 
   const sections = exam?.sections ?? []
   const section = sections[sectionIdx]
@@ -64,16 +103,57 @@ export default function MockExam() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [running, sectionIdx, progress])
 
+  // Ma'lumot yuklanayotganda "topilmadi" ko'rsatmaslik kerak — aks holda
+  // sahifa ochilganda bir lahza soxta bo'sholat ko'rinadi.
+  if (!ready) return <LoadingBlock label="Mock Exam ma'lumotlari yuklanmoqda…" />
   if (!exam) {
     return <EmptyState title="Mock Exam topilmadi" body="Ushbu daraja uchun namunaviy imtihon hali mavjud emas." />
   }
 
   const start = () => {
     const now = Date.now()
+    try {
+      localStorage.removeItem(SESSION_KEY)
+    } catch {
+      /* e'tibor bermang */
+    }
     setProgress(sections.map((s) => ({ sectionId: s.id, idx: 0, results: {}, startedAt: now, finishedAt: null, secondsUsed: 0 })))
     setSectionIdx(0)
     setRunning(true)
     setFinished(null)
+    setSaved(null)
+  }
+
+  // Yarim qolgan imtihonni sahifa yangilangandan keyin davom ettirish.
+  const resume = () => {
+    const s = saved
+    if (!s) return
+    // Bo'limlar soni o'zgarsa (kontent yangilansa) tiklash xavfli — boshlaymiz.
+    if (s.progress.length !== sections.length) {
+      try {
+        localStorage.removeItem(SESSION_KEY)
+      } catch {
+        /* e'tibor bermang */
+      }
+      setSaved(null)
+      return
+    }
+    setProgress(s.progress)
+    setSectionIdx(Math.max(0, Math.min(sections.length - 1, s.sectionIdx)))
+    setRunning(true)
+    setFinished(null)
+  }
+
+  // Bo'limga o'tish (chip orqali). Har bo'lim vaqti SHU BO'LIM OCHILGAN
+  // paytdan yuradi — `start()` barcha bo'limlarga bitta startedAt beradi,
+  // aks holda keyin ochilgan bo'limlarning taymeri allaqachon tugagan
+  // bo'lib, 1 soniyada avtomatik yopilardi (finishSection ham shu qoidada).
+  const gotoSection = (i: number) => {
+    const s = sections[i]
+    if (!s) return
+    const now = Date.now()
+    setProgress((ps) => ps.map((p) => (p.sectionId === s.id && !p.finishedAt ? { ...p, startedAt: now } : p)))
+    setSectionIdx(i)
   }
 
   const recordResult = (sectionId: string, exId: string, correct: boolean, given: string) => {
@@ -95,7 +175,15 @@ export default function MockExam() {
     const now = Date.now()
     setProgress((ps) => ps.map((p) => (p.sectionId === section.id ? { ...p, finishedAt: now, secondsUsed: Math.round((now - p.startedAt) / 1000) } : p)))
     const nextIdx = sections.findIndex((s, i) => i > sectionIdx && !progress.some((p) => p.sectionId === s.id && p.finishedAt))
-    if (nextIdx > -1) setSectionIdx(nextIdx)
+    // KEYINGI BO'LIM taymeri shu paytdan yuradi: start() barcha bo'limlarga
+    // bitta `startedAt` beradi, aks holda 2–4-bo'limlar ochilganda taymer
+    // allaqachon tugagan bo'lardi va 1 soniyada avtomatik yopilardi.
+    if (nextIdx > -1) {
+      const nextStart = Date.now()
+      const nextId = sections[nextIdx]!.id
+      setProgress((ps) => ps.map((p) => (p.sectionId === nextId && !p.finishedAt ? { ...p, startedAt: nextStart } : p)))
+      setSectionIdx(nextIdx)
+    }
   }
 
   const allDone = () => sections.every((s) => progress.some((p) => p.sectionId === s.id && p.finishedAt))
@@ -104,8 +192,12 @@ export default function MockExam() {
     const secs = sections.map((s) => {
       const p = progress.find((x) => x.sectionId === s.id)!
       const total = examExercises(s).length
-      const entries = Object.values(p.results)
-      const answered = Object.keys(p.results).length
+      // `note:` bilan boshlanadigan yozuvlar — erkin matnli javob (G‘apirish
+      // bo‘limidagi qoralama). Ular SAVOL EMAS: hisobga, ballga va xatolar
+      // ro'yxatiga kirmaydi. (Eski bug: "1/0 javob" va soxta ijobiy natija.)
+      const graded = Object.entries(p.results).filter(([k]) => !k.startsWith('note:'))
+      const entries = graded.map(([, r]) => r)
+      const answered = graded.length
       const correct = entries.filter((r) => r.correct).length
       const score = total === 0 ? null : Math.round((correct / Math.max(1, total)) * 100)
       return {
@@ -132,8 +224,15 @@ export default function MockExam() {
 
   const submit = () => {
     const completed = buildAttempt()
-    const saved = actions.addMockAttempt(completed)
-    setFinished(saved.id)
+    const attempt = actions.addMockAttempt(completed)
+    // Saqlangan jarayon end kerak emas — natija store'da.
+    try {
+      localStorage.removeItem(SESSION_KEY)
+    } catch {
+      /* e'tibor bermang */
+    }
+    setSaved(null)
+    setFinished(attempt.id)
     setRunning(false)
     setConfirmOpen(false)
   }
@@ -176,6 +275,32 @@ export default function MockExam() {
           </div>
 
           {!netOnline && <InfoBanner tone="warn">Internet yo‘q. Imtihon mahalliy ishlaydi, natija keyin sinxronlanadi.</InfoBanner>}
+
+          {saved && (
+            <InfoBanner tone="warn">
+              Yarim qolgan urinish topildi ({new Date(saved.savedAt).toLocaleString('uz')}). Sahifa yangilanganda javoblar
+              yo‘qolmasligi uchun saqlangan edi.
+              <span className="flex flex-wrap gap-2 mt-2">
+                <Button size="sm" onClick={resume}>
+                  Davom ettirish
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => {
+                    try {
+                      localStorage.removeItem(SESSION_KEY)
+                    } catch {
+                      /* e'tibor bermang */
+                    }
+                    setSaved(null)
+                  }}
+                >
+                  Tashlab, yangi boshlash
+                </Button>
+              </span>
+            </InfoBanner>
+          )}
 
           <div className="flex flex-wrap gap-2">
             <Button size="lg" onClick={start}>
@@ -230,7 +355,9 @@ export default function MockExam() {
             return (
               <button
                 key={s.id}
-                onClick={() => setSectionIdx(i)}
+                type="button"
+                aria-current={i === sectionIdx ? 'step' : undefined}
+                onClick={() => gotoSection(i)}
                 className={`chip cursor-pointer ${i === sectionIdx ? '!border-[var(--accent)] !text-[var(--accent)]' : ''} ${p?.finishedAt ? '!text-[var(--ok)]' : ''}`}
                 title={`${s.titleUz} — ${p?.finishedAt ? 'yakunlandi' : 'davom etmoqda'}`}
               >
@@ -267,10 +394,10 @@ export default function MockExam() {
             <p className="text-sm muted">{section.speakingTask.hintUz}</p>
             <InfoBanner tone="warn">
               G‘apirish bo‘limida audio yozish va baholash{' '}
-              <a href="/speaking" className="underline font-semibold">Speaking</a> bo‘limida mavjud. Bu yerda javob
+              <Link to="/speaking" className="underline font-semibold">Speaking</Link> bo‘limida mavjud. Bu yerda javob
               matnini qoldirishingiz mumkin — baho rasmiy imtihon natijasi emas.
             </InfoBanner>
-            <Writing2Note textAnswer={prog.results['speaking-text']?.given ?? ''} onSave={(v) => recordResult(section.id, 'speaking-text', true, v)} onFinish={finishSection} />
+            <Writing2Note textAnswer={prog.results['note:speaking-text']?.given ?? ''} onSave={(v) => recordResult(section.id, 'note:speaking-text', false, v)} onFinish={finishSection} />
           </Card>
         </div>
       ) : (
@@ -284,7 +411,7 @@ export default function MockExam() {
             {sections.map((s) => {
               const p = progress.find((x) => x.sectionId === s.id)!
               const total = examExercises(s).length
-              const answered = Object.keys(p.results).length
+              const answered = Object.keys(p.results).filter((k) => !k.startsWith('note:')).length
               return (
                 <li key={s.id} className="flex justify-between border-b pb-1.5">
                   <span>{s.titleUz}</span>
@@ -327,6 +454,7 @@ function AudioPanel({ audio, manifestOk }: { audio: NonNullable<MockExamSectionS
   // moslashtirilgan holda keladi.
   const item = audioItem(audio.id)
   const src = item?.available ? item.src : null
+  const [loadError, setLoadError] = useState(false)
   return (
     <Card className="grid gap-2">
       <div className="flex flex-wrap gap-2">
@@ -338,12 +466,19 @@ function AudioPanel({ audio, manifestOk }: { audio: NonNullable<MockExamSectionS
         <div className="flex items-center gap-2 text-sm muted">
           <Spinner size={16} /> Audio fayl tekshirilmoqda…
         </div>
-      ) : src ? (
-        <audio src={src} controls className="w-full" />
+      ) : src && !loadError ? (
+        <audio
+          key={src}
+          src={src}
+          controls
+          className="w-full"
+          onError={() => setLoadError(true)}
+        />
       ) : (
         <InfoBanner tone="warn">
-          Audio fayl topilmadi (<code>/audio/{audio.id}.wav</code>). Ilova soxta pleyer ko‘rsatmaydi — savollar matn
-          asosida. Audio yaratish uchun: <code>npm run audio:build</code>.
+          {loadError
+            ? 'Audio fayl yuklanmadi (yo‘q yoki buzilgan). Ilova soxta pleyer ko‘rsatmaydi — savollar matn asosida.'
+            : <>Audio fayl topilmadi (<code>/audio/{audio.id}.wav</code>). Ilova soxta pleyer ko‘rsatmaydi — savollar matn asosida. Audio yaratish uchun: <code>npm run audio:build</code>.</>}
         </InfoBanner>
       )}
     </Card>
@@ -403,7 +538,9 @@ function Results({ exam, attempt, onRetry }: { exam: NonNullable<ReturnType<type
 
   const mistakes = attempt.sections.flatMap((s) =>
     Object.entries(s.exerciseResults)
-      .filter(([, r]) => !r.correct)
+      // `note:` yozuvlari — erkin matnli javob, xato emas; bo‘sh javoblar
+      // ham ro'yxatga olinmaydi (ular imtihonda ishtirok etmagan).
+      .filter(([k, r]) => !k.startsWith('note:') && !r.correct && r.given.trim() !== '')
       .map(([exId, r]) => ({ section: s.skill, exId, given: r.given })),
   )
 
@@ -461,7 +598,8 @@ function Results({ exam, attempt, onRetry }: { exam: NonNullable<ReturnType<type
         ) : (
           mistakes.slice(0, 20).map((m, i) => {
             const ex = findEx(m.exId)
-            const res = ex ? checkAnswer(ex, guessAnswer(ex, m.given)) : null
+            const g = ex ? guessAnswer(ex, m.given) : null
+            const res = ex && g !== null ? checkAnswer(ex, g) : null
             return (
               <div key={i} className="text-sm border-l-4 !border-l-[var(--bad)] pl-3 py-1">
                 <div className="flex gap-2 items-center">
@@ -482,9 +620,9 @@ function Results({ exam, attempt, onRetry }: { exam: NonNullable<ReturnType<type
 
       <div className="flex gap-2">
         <Button onClick={onRetry}>Qayta topshirish</Button>
-        <a href="/errors" className="inline-flex">
+        <Link to="/errors" className="inline-flex">
           <Button variant="secondary">Xatolar daftari</Button>
-        </a>
+        </Link>
       </div>
     </div>
   )
@@ -492,13 +630,20 @@ function Results({ exam, attempt, onRetry }: { exam: NonNullable<ReturnType<type
 
 import { findExercise } from '../content'
 function findEx(id: string) {
-  if (typeof findExercise !== 'function') return undefined
   return findExercise(id)
 }
-function guessAnswer(ex: NonNullable<ReturnType<typeof findExercise>>, given: string) {
-  if (ex.kind === 'multiple-choice') return ex.options.indexOf(given)
+/**
+ * Saqlangan javob matnini qayta tekshirish uchun boshlang'ich shakliga
+ * qaytarish. `null` — qayta hisoblab bo'lmaydi (juftlik turi), sahifa
+ * saqlangan matnni o'zini ko'rsatadi.
+ */
+function guessAnswer(ex: NonNullable<ReturnType<typeof findExercise>>, given: string): unknown {
+  if (ex.kind === 'multiple-choice') {
+    const i = ex.options.indexOf(given)
+    return i > -1 ? i : null
+  }
   if (ex.kind === 'true-false-notgiven') return given.toLowerCase()
   if (ex.kind === 'gap-fill' || ex.kind === 'translation') return given.split(' / ')
   if (ex.kind === 'word-order') return given.split(' ')
-  return given
+  return null
 }

@@ -127,9 +127,16 @@ export default function Vocabulary() {
       .sort((a, b) => a.word.localeCompare(b.word))
   }, [pool, query, topic, levelF, dueOnly, data.srs])
 
+  // Eski bug: bu yerda SRS holati BO'LMAGAN so'zlar ham `initialSrsState()`
+  // orqali "due" deb sanalar edi (dueAt = now), tugma masalan "100" ko'rsatardi,
+  // lekin filtr ro'yxati ularni chiqarmasdi → bosilganda bo'sh sahifa.
+  // Endi hisob filtr bilan BIR XIL: faqat boshlangan va muddati yetgan so'zlar.
   const poolDue = useMemo(() => {
     const now = Date.now()
-    return pool.filter((v) => isDue(srsOf(data.srs, v.id) ?? initialSrsState(now), now)).length
+    return pool.filter((v) => {
+      const st = srsOf(data.srs, v.id)
+      return st ? isDue(st, now) : false
+    }).length
   }, [pool, data.srs])
 
   const resetFilters = () => {
@@ -416,14 +423,21 @@ function Flashcards({
 
   // Sessiya navbati — SNAPSHOT. Baholash SRS holatini o'zgartirsa ham joriy
   // sessiya tartibi adashmaydi; filtrlar o'zgarsa yangi sessiya boshlanadi.
+  //
+  // ESKI BUG: bog'liqlik `[deck]` edi — `deck` (`filtered`) esa `data.srs`ga
+  // bog'liq, ya'ni HAR BIR baholashda yangi massiv identifikatori kelar edi va
+  // sessiya boshiga qaytardi ("1/37" hech qachon tugamardi). Endi faqat
+  // so'zlar TUPLAMI o'zgarsa (filtr o'zgarsa) sessiya yangilanadi.
   const deckRef = useRef<VocabularyItem[]>(deck)
   const srsRef = useRef<Record<string, SrsState>>(srs)
+  const deckKey = deck.map((d) => d.id).join(',')
   useEffect(() => {
     deckRef.current = deck
     setQueue(orderForReview(deck, srsRef.current))
     setIdx(0)
     setFlipped(false)
-  }, [deck])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [deckKey])
   useEffect(() => {
     srsRef.current = srs
   }, [srs])
@@ -621,7 +635,10 @@ function TestMode({
   const [chosen, setChosen] = useState<number | null>(null)
   const [result, setResult] = useState<CheckResult | null>(null)
   const [score, setScore] = useState<{ correct: number; total: number }>({ correct: 0, total: 0 })
-  const startedAt = useMemo(() => Date.now(), [quiz])
+  // ESKI BUG: `startedAt` butun viktorinaga nisbatan edi — 10-savolda
+  // oxirgi savolga ~10 daqiqa "sarflangan" deb yozilardi va Dashboard
+  // "Bajarildi" belgisini asossiz yoqardi. Endi har savol uchun alohida.
+  const [qStart, setQStart] = useState(() => Date.now())
 
   const start = () => {
     setQuiz(buildQuiz(pool, srs, 10))
@@ -629,6 +646,7 @@ function TestMode({
     setChosen(null)
     setResult(null)
     setScore({ correct: 0, total: 0 })
+    setQStart(Date.now())
   }
 
   if (!quiz) {
@@ -682,13 +700,14 @@ function TestMode({
     setChosen(i)
     setResult(r)
     setScore((s) => ({ correct: s.correct + (r.correct ? 1 : 0), total: s.total + 1 }))
-    onRecord(q.exercise, r, Math.max(1, Math.round((Date.now() - startedAt) / 1000)))
+    onRecord(q.exercise, r, Math.max(1, Math.round((Date.now() - qStart) / 1000)))
   }
 
   const next = () => {
     setIdx((n) => n + 1)
     setChosen(null)
     setResult(null)
+    setQStart(Date.now())
   }
 
   return (

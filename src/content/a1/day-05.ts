@@ -476,7 +476,7 @@ export const listeningDay5: ListeningTask = {
   level: 'A1',
   audio: {
     id: 'a1-l-audio-05-file',
-    src: '/audio/a1/day-05-breakfast-in-the-kitchen.mp3',
+    src: '/audio/a1-l-audio-05-file.wav',
     fileAvailable: true,
     source: 'original',
     attribution: 'AI English Academy (original, synthesized for practice)',
@@ -780,7 +780,7 @@ export const testDay5: SectionTest = {
 }
 
 export const day5: DailyPlanDay = {
-  id: 'a1-day-5',
+  id: 'a1-day-05',
   level: 'A1',
   dayNumber: 5,
   titleUz: 'Ovqat va ichimliklar: birozmi, yoki yo‘qmi?',

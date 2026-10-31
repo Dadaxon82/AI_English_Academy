@@ -25,7 +25,24 @@ export function toQueueItems(data: AppData): Omit<QueueItem, 'id' | 'tries'>[] {
   const uid = data.userId
   const items: Omit<QueueItem, 'id' | 'tries'>[] = []
 
-  items.push({ table: 'user_settings', op: 'upsert', at: Date.now(), payload: { user_id: uid, ...data.settings } })
+  // Diqqat: PostgREST ustun nomlarini SNACE_case kutadi. `...data.settings`
+  // (camelCase) yuborilsa so'rov "column not found" bilan qaytadi va navbat
+  // hech qachon tozalanmaydi — shuning uchun maydonlar bittalab aylantiriladi.
+  items.push({
+    table: 'user_settings',
+    op: 'upsert',
+    at: Date.now(),
+    payload: {
+      user_id: uid,
+      daily_minutes: data.settings.dailyMinutes,
+      current_level: data.settings.currentLevel,
+      target_level: data.settings.targetLevel,
+      exam_date: data.settings.examDate,
+      allocation: data.settings.allocation,
+      theme: data.settings.theme,
+      ai_enabled: data.settings.aiEnabled,
+    },
+  })
 
   if (data.diagnostic) {
     items.push({
@@ -33,6 +50,10 @@ export function toQueueItems(data: AppData): Omit<QueueItem, 'id' | 'tries'>[] {
       op: 'upsert',
       at: Date.now(),
       payload: {
+        // PK default UUID bo'lgani uchun payload'da id bo'lmasa upsert har
+        // safar yangi qator qo'shardi. Foydalanuvchiga bitta faol reja —
+        // id'ni foydalanuvchi id'si bilan bir xil qilamiz (deterministik).
+        id: uid,
         user_id: uid,
         current_level: data.settings.currentLevel,
         target_level: data.settings.targetLevel,
@@ -55,6 +76,7 @@ export function toQueueItems(data: AppData): Omit<QueueItem, 'id' | 'tries'>[] {
         level: a.level,
         correct: a.correct,
         partial_score: a.partial,
+        difficulty: a.difficulty,
         seconds_spent: a.secondsSpent,
         source: a.source,
         answer_text: a.answerGiven.slice(0, 2000),

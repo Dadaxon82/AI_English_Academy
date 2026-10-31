@@ -6,7 +6,8 @@
  */
 
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { useAuthActions } from '../lib/authContext'
 import { Button, Card, Chip, Field, InfoBanner, Modal, StatTile, SuccessBanner, inputCls } from '../components/ui'
 import { useStore } from '../lib/store'
 import { skillLabelUz, daysUntil } from '../lib/planning'
@@ -19,6 +20,8 @@ const SKILLS: Skill[] = ['vocabulary', 'grammar', 'reading', 'listening', 'writi
 
 export default function Settings() {
   const { data, actions, allocation, evidence, netOnline, promotion } = useStore()
+  const authActions = useAuthActions()
+  const nav = useNavigate()
   const s = data.settings
 
   const [queueLen, setQueueLen] = useState<number | null>(null)
@@ -148,7 +151,7 @@ export default function Settings() {
         <div className="flex flex-wrap items-center gap-2">
           <h2 className="font-bold">Sun’iy intellekt</h2>
           <Chip tone={aiRuntimeEnabled(s.aiEnabled, netOnline) ? 'ok' : 'warn'}>
-            {aiRuntimeEnabled(s.aiEnabled, netOnline) ? 'AI xizmati ulangan' : 'AI o‘chiq / mavjud emas'}
+            {aiRuntimeEnabled(s.aiEnabled, netOnline) ? 'AI xizmati ulangan' : 'AI serveri sozlanmagan — qoidaviy tahlil'}
           </Chip>
         </div>
         <label className="flex items-center gap-2 text-sm">
@@ -156,8 +159,10 @@ export default function Settings() {
           AI tahlilidan foydalanish (mavjud bo‘lsa)
         </label>
         <InfoBanner tone="muted">
-          AIulanganda yozish va gapirish tahlili <b>qoidaviy dvigatel</b> bilan bajariladi va natijada «Qoidaviy tahlil» deb
-          belgilanadi. Hech qachon mavjud bo‘lmagan AI natijasi ko‘rsatilmaydi. AI kalitlari faqat serverda saqlanadi.
+          AI serveri ulanmaganda yozish va gapirish tahlili <b>qoidaviy dvigatel</b> bilan bajariladi va natijada «Qoidaviy
+          tahlil» deb belgilanadi. Hech qachon mavjud bo‘lmagan AI natijasi ko‘rsatilmaydi. AI kalitlari faqat serverda
+          saqlanadi; server chaosida <code>VITE_AI_ENABLED=true</code> bayrog‘i va serverless funksiya qo‘shilsagina bu
+          belgi «ulangan» ga o‘zgaradi.
         </InfoBanner>
       </Card>
 
@@ -195,7 +200,7 @@ export default function Settings() {
               setQueueLen(q.length)
             }}
           >
-            Hoir sinxronizatsiya qilish
+            Hoziroq sinxronizatsiya qilish
           </Button>
           <Link to="/progress">
             <Button variant="ghost" size="sm">
@@ -212,22 +217,36 @@ export default function Settings() {
         )}
       </Card>
 
-      {/* ---akkount--- */}
+      {/* --- akkaunt --- */}
       <Card className="grid gap-3">
         <h2 className="font-bold">Akkaunt</h2>
         <div className="grid sm:grid-cols-2 gap-3">
-          <Field label="Ism">
-            <input
-              value={data.userId.startsWith('local-') ? '' : ''}
-              onChange={() => undefined}
-              placeholder={data.userId.startsWith('local-') ? 'Mehmon hisobi ismi yo‘q' : 'Ismingiz'}
-              className={inputCls}
-              disabled
-            />
-          </Field>
+          <div className="grid gap-1.5">
+            <span className="text-sm font-semibold">Hisob turi</span>
+            <div className="flex flex-wrap gap-2">
+              <Chip tone={data.userId.startsWith('local-') ? 'warn' : 'ok'}>
+                {data.userId.startsWith('local-') ? 'Mehmon (faqat shu qurilma)' : 'Supabase hisobi'}
+              </Chip>
+              <Chip>Sinxron navbati: {queueLen === null ? '…' : queueLen}</Chip>
+            </div>
+            <p className="text-xs muted">
+              {data.userId.startsWith('local-')
+                ? 'Ma’lumotlar faqat shu qurilmada. Hisob yaratilsa — barcha qurilmalardan kirish mumkin bo‘ladi.'
+                : 'Ma’lumotlaringiz serverda RLS bilan himoyalangan.'}
+            </p>
+          </div>
           <div className="grid gap-2 content-end">
+            <Button
+              variant="secondary"
+              onClick={() => {
+                authActions?.signOut()
+                void nav('/login')
+              }}
+            >
+              {data.userId.startsWith('local-') ? 'Chiqish (ma’lumot saqlanadi)' : 'Hisobdan chiqish'}
+            </Button>
             <Link to="/dashboard">
-              <Button variant="secondary" size="sm">
+              <Button variant="ghost" size="sm">
                 Dashboardga qaytish
               </Button>
             </Link>
@@ -268,6 +287,15 @@ export default function Settings() {
                   void purgeUserData(data.userId)
                   actions.resetAll()
                   localStorage.removeItem(`aea-drafts:${data.userId}`)
+                  // Service Worker keshlaridagi Supabase javoblari ham tozalanadi
+                  // (logout'dagi kabi) — aks holda o'chirilgan ma'lumot cache'da qolardi.
+                  try {
+                    if (typeof caches !== 'undefined') {
+                      void caches.keys().then((names) => Promise.all(names.filter((n) => n.startsWith('aea-')).map((n) => caches.delete(n))))
+                    }
+                  } catch {
+                    /* kesh o'chirilmasa ham xavfsizlik RLS'da */
+                  }
                   setResetDone(true)
                 } catch (e) {
                   setSyncMsg({ ok: false, text: safeErrorMessage(e) })
@@ -285,5 +313,9 @@ export default function Settings() {
 }
 
 function aiRuntimeEnabled(flag: boolean, online: boolean) {
-  return flag && online && supabaseConfigured
+  // Halollik: AI haqiqatan ulangan Hisoblanadi FQAT deploy paytida
+  // VITE_AI_ENABLED=true qo'yilgan bo'lsa (serverless funksiya mavjud
+  // belgisi). Aks holda «ulangan» deyish yolg'on bo'lardi.
+  const aiDeployed = (import.meta as ImportMeta).env?.VITE_AI_ENABLED === 'true'
+  return flag && online && aiDeployed
 }

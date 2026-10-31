@@ -187,7 +187,10 @@ export function emptyData(userId: string): AppData {
     xp: 0,
     streak: { count: 0, lastDate: null },
     badges: [],
-    path: { completedDays: [], passedTests: {}, currentDayId: 'a1-day-1' },
+    // Muhim: ID kontentdagi haqiqiy kun ID'si bilan bir xil bo'lishi shart
+    // (`a1-day-01`). Eski qiymat 'a1-day-1' edi — hech qaysi kunga mos
+    // kelmasligi sababli O'quv yo'li va Dashboard joriy kunni topaymasdi.
+    path: { completedDays: [], passedTests: {}, currentDayId: 'a1-day-01' },
     diagnostic: null,
     timer: { elapsedSec: 0, startedAt: null, sessionId: null, skill: null, updatedAt: Date.now() },
     updatedAt: Date.now(),

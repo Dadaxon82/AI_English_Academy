@@ -52,3 +52,44 @@ describe('Taymer — sahifa yangilansa ham yo‘qolmaydi', () => {
     expect(p.doneMin).toBe(45)
   })
 })
+
+describe('Taymer — uyqu/oraliq vaqt va soat siljishi chegaralari', () => {
+  const T0 = 1_700_000_000_000
+
+  it('uzluk 3 soatdan oshsa kundalik hisob shu chegarada to‘xtaydi', () => {
+    const t = startTimer(idleTimer, 's', 'writing', T0)
+    const after25h = currentElapsed(t, T0 + 25 * 3_600_000)
+    expect(after25h).toBe(3 * 3600)
+  })
+
+  it('tizim soati orqaga siljisa manfiy sekund bo‘lmaydi', () => {
+    const t = startTimer(idleTimer, 's', 'reading', T0)
+    expect(currentElapsed(t, T0 - 10_000)).toBe(0)
+    expect(currentElapsed(pauseTimer(t, T0 - 10_000), T0)).toBe(0)
+  })
+
+  it('stopTimer sessiyani tozalaydi — „pauzada“ belgisi yolg‘on bo‘lmasin', () => {
+    let t = startTimer(idleTimer, 's', 'writing', T0)
+    t = stopTimer(t, 's', 'writing', T0 + 90_000)
+    expect(t.sessionId).toBeNull()
+    expect(t.startedAt).toBeNull()
+    expect(t.elapsedSec).toBe(90)
+  })
+
+  it('bir xil sessiyada ko‘nikma o‘zgarsa hisob yig‘iladi va skill yangilanadi', () => {
+    let t = startTimer(idleTimer, 'day-1', 'vocabulary', T0)
+    t = startTimer(t, 'day-1', 'grammar', T0 + 60_000)
+    expect(t.skill).toBe('grammar')
+    expect(t.startedAt).toBe(T0 + 60_000)
+    expect(currentElapsed(t, T0 + 60_000)).toBe(60)
+  })
+
+  it('xuddi shu sessiya + skill: „Davom etish“ holat tiqilinch qayta start beradi', () => {
+    let t = startTimer(idleTimer, 's', 'reading', T0)
+    t = pauseTimer(t, T0 + 30_000)
+    const again = startTimer(t, 's', 'reading', T0 + 40_000)
+    expect(again.startedAt).toBe(T0 + 40_000) // davom etadi
+    expect(again.elapsedSec).toBe(30) // hisob saqlanadi
+    expect(currentElapsed(again, T0 + 50_000)).toBe(40)
+  })
+})

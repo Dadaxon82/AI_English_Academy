@@ -15,6 +15,7 @@ import { analyzeSpeaking, analyzeWriting, countWords } from './analyze'
 import { computeAllocation, type Allocation } from './planning'
 import { loadData, saveData } from './storage'
 import { queueAllData, syncNow } from './sync'
+import { supabaseConfigured } from './supabase'
 import type {
   AppData,
   AttemptRecord,
@@ -43,7 +44,26 @@ type Action =
   | { type: 'level-set'; level: CefrLevel }
   | { type: 'reset' }
 
-function reducer(state: AppData, action: Action): AppData {
+/** Kundalik faollikka daqiqa/sekund qo'shish (taymer hisobi uchun umumiy). */
+function addActivitySeconds(state: AppData, seconds: number, skill: Skill): AppData {
+  if (seconds <= 0) return state
+  const key = todayKey()
+  const cur = state.activity[key] ?? { date: key, seconds: 0, attempts: 0, correct: 0, newWords: 0, reviewedWords: 0, skills: {} }
+  return {
+    ...state,
+    activity: {
+      ...state.activity,
+      [key]: {
+        ...cur,
+        seconds: cur.seconds + seconds,
+        skills: { ...cur.skills, [skill]: (cur.skills[skill] ?? 0) + seconds },
+      },
+    },
+  }
+}
+
+/** Reducer — testlar uchun ham ochiq (vaqt hisobi regressiyaga qarshi). */
+export function reducer(state: AppData, action: Action): AppData {
   switch (action.type) {
     case 'hydrate':
       return action.data
@@ -53,6 +73,12 @@ function reducer(state: AppData, action: Action): AppData {
       const r = action.record
       const key = todayKey()
       const cur = state.activity[key] ?? { date: key, seconds: 0, attempts: 0, correct: 0, newWords: 0, reviewedWords: 0, skills: {} }
+      // Ikki marta sanash qoidasi: taymer yurayotgan bo'lsa vaqt devor-soat
+      // bo'yicha ALLOQACHON hisoblanadi — lekin FaqAT shu taymer sessiyasining
+      // ko'nikmasi uchun. Boshqa ko'nikma bo'yicha attempt (masalan Yozish
+      // taymeri yurarida 300 sekundlik Grammatika mashqi) o'z sekundlarini
+      // olib keladi va ULAR YO'QOLMASLIGI kerak (eski bug: grammar=0).
+      const timerCoversThisSkill = state.timer.startedAt !== null && state.timer.skill === r.skill
       return {
         ...state,
         attempts: [...state.attempts, r].slice(-3000),
@@ -63,7 +89,20 @@ function reducer(state: AppData, action: Action): AppData {
             ...cur,
             attempts: cur.attempts + 1,
             correct: cur.correct + (r.correct ? 1 : 0),
-            skills: { ...cur.skills, [r.skill]: (cur.skills[r.skill] ?? 0) + r.secondsSpent },
+            // MUHIM: mashqda sarflangan vaqt kundalik hisobga qo'shiladi —
+            // oldin Dashboard/Progress grafigi bo'sh qolardi ("Bajarildi"
+            // yashil, "0/90 daq" — ziddiyat). LEKIN taymer yurayotgan bo'lsa
+            // (Reading/LearningPath) vaqt ALLOQACHON devor-soat bo'yicha
+            // hisoblanadi — ikki marta sanamaslik uchu shu yerda qo'shmaymiz.
+            // `skills` taqsimoti ham shu qoidaga BO'YSINADI — aks holda
+            // ko'nikma yig'indisi umumiy sekunddan oshib ketardi.
+            seconds: timerCoversThisSkill ? cur.seconds : cur.seconds + Math.max(0, r.secondsSpent),
+            skills: {
+              ...cur.skills,
+              [r.skill]: timerCoversThisSkill
+                ? cur.skills[r.skill] ?? 0
+                : (cur.skills[r.skill] ?? 0) + Math.max(0, r.secondsSpent),
+            },
           },
         },
       }
@@ -89,28 +128,47 @@ function reducer(state: AppData, action: Action): AppData {
         },
       }
     }
-    case 'timer-start':
-      return { ...state, timer: startTimer(state.timer, action.sessionId, action.skill) }
+    case 'timer-start': {
+      // MUHIM: boshqa mashg'ulotga o'tishda oldingi sessiyaning yig'ilgan
+      // vaqti AVVAL kundalik hisobga yoziladi. Oldin `startTimer` bu sekundlarni
+      // jimgina tashlab yuborardi — foydalanuvchi "yo'qolgan daqiqalar"ni
+      // ko'rardi (O'qishda 25 daq → Yozishga o'tsa hisob 0).
+      //
+      // Xuddi shu SESSIYA + xuddi shu ko'nikma qayta boshlansa (sahifaga
+      // qaytish, "Davom etish") yig'ilgan sekundlar hali hisobga YOZILMAGAN
+      // bo'ladi — ularni qayta yozib, keyin yana sanash IKKI marta hisob
+      // bergani (ESKI BUG).
+      //
+      // SESSIYA bir xil, lekin KO'NIKMA boshqa bo'lsa (LearningPath: `a1-day-01`
+      // sessiyasi bilan Lug'at → Grammatika) — hisoblangan sekundlar AVVAL
+      // eski ko'nikmaga yoziladi, keyin tozalanadi. Aks holda butun sessiya
+      // vaqti oxirgi ko'nikmaga yozilib, grafigi buzilardi.
+      const sameSession =
+        state.timer.sessionId !== null &&
+        state.timer.sessionId === action.sessionId &&
+        state.timer.skill === action.skill
+      if (sameSession) {
+        return { ...state, timer: startTimer(state.timer, action.sessionId, action.skill) }
+      }
+      const prevElapsed = currentElapsed(state.timer)
+      const committed =
+        prevElapsed > 0 && state.timer.skill !== null
+          ? addActivitySeconds(state, prevElapsed, state.timer.skill as Skill)
+          : state
+      return {
+        ...committed,
+        timer: startTimer({ ...committed.timer, elapsedSec: 0 }, action.sessionId, action.skill),
+      }
+    }
     case 'timer-pause':
       return { ...state, timer: pauseTimer(state.timer) }
     case 'timer-stop': {
       const elapsed = currentElapsed(state.timer)
-      const stopped = stopTimer(state.timer, state.timer.sessionId ?? '', state.timer.skill ?? 'reading')
-      const key = todayKey()
-      const cur = state.activity[key] ?? { date: key, seconds: 0, attempts: 0, correct: 0, newWords: 0, reviewedWords: 0, skills: {} }
       const skill = (state.timer.skill ?? 'reading') as Skill
-      return {
-        ...state,
-        timer: stopped,
-        activity: {
-          ...state.activity,
-          [key]: {
-            ...cur,
-            seconds: cur.seconds + elapsed,
-            skills: { ...cur.skills, [skill ?? 'reading']: (cur.skills[skill ?? 'reading'] ?? 0) + elapsed },
-          },
-        },
-      }
+      const stopped = stopTimer(state.timer, state.timer.sessionId ?? '', skill)
+      // Hisobga yozilgan sekundlar darhol NOLLANADI — aks holda sessiyani
+      // qayta ishga tushirganda xuddi shu vaqt ikkinchi marta yozilardi.
+      return { ...addActivitySeconds({ ...state, timer: { ...stopped, elapsedSec: 0 } }, elapsed, skill) }
     }
     case 'writing-add':
       return { ...state, writing: [...state.writing, action.sub].slice(-300) }
@@ -211,6 +269,8 @@ export interface StoreValue {
   promotion: ReturnType<typeof evaluateLevelPromotion>
   streak: number
   learnedCount: number
+  /** Asosiy lug'at bo'yicha "o'rganilgan/jami"; matn (glossariy) so'zlari alohida belgilanadi. */
+  vocabSummary: string
   dueCount: number
   timerElapsed: number
   timerLabel: string
@@ -382,7 +442,8 @@ export function StoreProvider({ userId, children }: { userId: string; children: 
 
   const sync = useCallback(async () => {
     if (!netOnline) return { ok: false, reasonUz: 'Internet yo‘q — navbat saqlandi.', done: 0 }
-    await queueAllData(data)
+    // Supabase sozlanmagan bo'lsa navbatga yozish behuda — yuboradigan joy yo'q.
+    if (supabaseConfigured) await queueAllData(data)
     const res = await syncNow(userId)
     return { ok: res.ok, reasonUz: res.reasonUz, done: res.done }
   }, [data, userId, netOnline])
@@ -398,11 +459,32 @@ export function StoreProvider({ userId, children }: { userId: string; children: 
     return streakFor(days, todayKey())
   }, [data.activity])
 
-  const learnedCount = useMemo(() => Object.values(data.srs).filter((s) => s.learnedAt !== null).length, [data.srs])
+  // ESKI BUG: Reading'dagi glossariy so'zlari lug'at ro'yxatida bo'lmasa
+  // ular uchun SUN'IY SRS idsi (`<passage>-gloss:<word>`) yasalar edi.
+  // `learnedCount` ularni ham sanardi, `totalVocabCount()` esa sanamasdi —
+  // natijada "45/37 so'z" kabi zid ko'rsatkich chiqardi.
+  // Endi ikki hisob alohida: asosiy lug'at bo'yicha (+ qo'shimcha matn so'zlari).
+  const { learnedCount, learnedExtraCount } = useMemo(() => {
+    const real = new Set(allVocab(LOADED_LEVELS).map((v) => v.id))
+    let inVocab = 0
+    let extra = 0
+    for (const [id, s] of Object.entries(data.srs)) {
+      if (s.learnedAt === null) continue
+      if (real.has(id)) inVocab++
+      else extra++
+    }
+    return { learnedCount: inVocab, learnedExtraCount: extra }
+  }, [data.srs])
   const dueCount = useMemo(() => {
     const now = Date.now()
-    return Object.values(data.srs).filter((s) => s.dueAt <= now).length
+    // Takror navbatida ham asosiy lug'at so'zlari sanaladi — Vocabulary
+    // sahifasidagi "takror" ro'yxati shu havuzni ko'rsatadi, glossariy
+    // so'zlari boshqa sahifada (Reading) takrorlanadi.
+    const real = new Set(allVocab(LOADED_LEVELS).map((v) => v.id))
+    return Object.entries(data.srs).filter(([id, s]) => s.dueAt <= now && real.has(id)).length
   }, [data.srs])
+  const totalVocab = useMemo(() => totalVocabCount(), [])
+  const vocabSummary = `${learnedCount}/${totalVocab}${learnedExtraCount > 0 ? ` +${learnedExtraCount} matn so‘zi` : ''}`
 
   const timerView = useMemo(() => {
     const e = currentElapsed(data.timer)
@@ -420,6 +502,7 @@ export function StoreProvider({ userId, children }: { userId: string; children: 
     promotion,
     streak,
     learnedCount,
+    vocabSummary,
     dueCount,
     timerElapsed: timerView.elapsed,
     timerLabel: timerView.label,

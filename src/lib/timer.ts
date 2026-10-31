@@ -26,10 +26,36 @@ export const idleTimer: TimerState = {
   updatedAt: Date.now(),
 }
 
+/**
+ * Uyqu / sahifa yopiq bo'lgan oraliq cheklanadi.
+ *
+ * `currentElapsed` devor-soat orqali hisoblaydi. Qurilma 25 soat uxlaysa yoki
+ *Brauzer seansida taymer yopib qo'yilsa, bu butun oraliq "bajarilgan vaqt"
+ * deb yozilardi — kundalik 90 daqiqalik reja bir zumda 100%+ chiqardi.
+ * Shuning uchun uzluksiz yurish [MAX_CONTINUOUS_SEC] bilan chegaralanadi:
+ * haqiqatan davom etgan mashg'ulot bu chegaradan oshmaydi.
+ */
+export const MAX_CONTINUOUS_SEC = 3 * 3600 // 3 soat — real seans uchun chegara
+
 export function startTimer(prev: TimerState, sessionId: string, skill: string, now = Date.now()): TimerState {
   // Bir vaqtda faqat bitta mashg'ulot taymeri yuradi.
-  if (prev.startedAt !== null && prev.sessionId === sessionId) return prev
-  const base = prev.startedAt !== null ? stopTimer(prev, sessionId, skill, now) : prev
+  // Xuddi shu sessiya + xuddi shu ko'nikma: hech narsa qilmaymiz (pauzadan
+  // "Davom etish" hisob ustiga qo'shiladi).
+  if (prev.startedAt !== null && prev.sessionId === sessionId && prev.skill === skill) return prev
+  // Sessiya bir xil, lekin KO'NIKMA o'zgarsa (LearningPath: `day-01` sessiyasi
+  // bilan vocab → grammar) — oldingi ko'nikmaning hisoblanmagan sekundlarini
+  // yig'ib, yangi ko'nikmaga o'tamiz. Aks holda butun sessiya vaqti noto'g'ri
+  // ko'nikmaga yozilardi.
+  const sameSessionOtherSkill = prev.startedAt !== null && prev.sessionId === sessionId && prev.skill !== skill
+  let base: TimerState
+  if (sameSessionOtherSkill) {
+    const runningFor = Math.floor(clampDelta(now - (prev.startedAt as number)) / 1000)
+    base = { ...prev, elapsedSec: prev.elapsedSec + runningFor, startedAt: null, updatedAt: now }
+  } else if (prev.startedAt !== null) {
+    base = stopTimer(prev, sessionId, skill, now)
+  } else {
+    base = prev
+  }
   return {
     elapsedSec: base.sessionId === sessionId || base.sessionId === null ? base.elapsedSec : 0,
     startedAt: now,
@@ -43,7 +69,7 @@ export function pauseTimer(prev: TimerState, now = Date.now()): TimerState {
   if (prev.startedAt === null) return prev
   return {
     ...prev,
-    elapsedSec: prev.elapsedSec + Math.floor((now - prev.startedAt) / 1000),
+    elapsedSec: prev.elapsedSec + Math.floor(clampDelta(now - prev.startedAt) / 1000),
     startedAt: null,
     updatedAt: now,
   }
@@ -58,15 +84,28 @@ export function stopTimer(
   const paused = pauseTimer(prev, now)
   // Boshqa mashg'ulotga o'tilsa hisob tozalanadi — aralashmasligi uchun.
   if (prev.sessionId !== null && prev.sessionId !== sessionId) {
-    return { ...idleTimer, skill, sessionId, updatedAt: now }
+    return { ...idleTimer, skill, sessionId: null, updatedAt: now }
   }
-  return { ...paused, skill, sessionId, updatedAt: now }
+  // Sessiya tugadi: `sessionId` ham `null` qilinadi — aks holda Dashboard
+  // `paused = startedAt === null && sessionId !== null` sharti bilan "Taymer
+  // pauzada — 00:00" soxta kartasini chizadi va "Davom etish" o'lik taymerni
+  // tiriklashtiradi.
+  return { ...paused, sessionId: null, updatedAt: now }
+}
+
+/**
+ * Devor-soat farqi — soat siljishi / tizim saati o'zgarsa manfiy bo'lmasligi
+ * va uxlash oralig'i cheklanishi uchun.
+ */
+function clampDelta(deltaMs: number): number {
+  if (!Number.isFinite(deltaMs) || deltaMs <= 0) return 0
+  return Math.min(deltaMs, MAX_CONTINUOUS_SEC * 1000)
 }
 
 /** Joriy hisoblangan sekundlar (rendersiz, toza funksiya). */
 export function currentElapsed(state: TimerState, now = Date.now()): number {
   if (state.startedAt === null) return state.elapsedSec
-  return state.elapsedSec + Math.floor((now - state.startedAt) / 1000)
+  return state.elapsedSec + Math.floor(clampDelta(now - state.startedAt) / 1000)
 }
 
 export function formatDuration(totalSec: number): string {

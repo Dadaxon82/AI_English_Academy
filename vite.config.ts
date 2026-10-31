@@ -56,8 +56,8 @@ export default defineConfig({
         navigateFallbackDenylist: [/^\/api\//],
         runtimeCaching: [
           {
-            // Statik resurslar: kesh, cheklangan offline rejim
-            urlPattern: ({ request }) => request.destination === 'image',
+            // Statik resurslar: kesh, cheklangan offline rejim (faqat o'z sayti)
+            urlPattern: ({ request, sameOrigin }) => sameOrigin && request.destination === 'image',
             handler: 'CacheFirst',
             options: {
               cacheName: 'aea-images',
@@ -66,9 +66,11 @@ export default defineConfig({
           },
           {
             // Ruxsat etilgan audio materiallar offline uchun saqlanadi
-            // (base `/AI_English_Academy/` bo'lgani uchun endsWith emas, includes)
-            urlPattern: ({ request, url }) =>
-              request.destination === 'audio' || url.pathname.includes('/audio/'),
+            // (base `/AI_English_Academy/` bo'lgani uchun endsWith emas, includes).
+            // Faqat o'z saytimiz: uchinchi tomon audio/rasm keshiga tushib,
+            // foydalanuvchi ma'lumoti boshqa sayt so'rovlariga aralashmasin.
+            urlPattern: ({ request, url, sameOrigin }) =>
+              sameOrigin && (request.destination === 'audio' || url.pathname.includes('/audio/')),
             handler: 'CacheFirst',
             options: {
               cacheName: 'aea-audio',

@@ -5,9 +5,9 @@
  * mashqni natijaga moslashtirish. Barcha tugmalar HAQIQIY ishlaydi.
  */
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import type { Exercise } from '../content/types'
-import { checkAnswer, nextExerciseIndex, type CheckResult } from '../lib/check'
+import { checkAnswer, type CheckResult } from '../lib/check'
 import { Button, Chip, InfoBanner, inputCls } from './ui'
 
 export interface ExerciseRunProps {
@@ -51,6 +51,22 @@ export default function ExerciseRunner({ exercise, checked, index, total, onNext
     setState('answered')
     checked(r, Math.round((Date.now() - startedAt) / 1000))
   }
+
+  // Klaviatura: Enter — tekshirish / davom etish. Paydo bo'lgan matn
+  // maydonida Enter hech narsa qilmasdi — endi shu hodisa o'zi ishlaydi.
+  const doEnter = state === 'idle' && canCheck ? doCheck : state === 'answered' ? onNext : null
+  useEffect(() => {
+    if (!doEnter) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Enter' || e.shiftKey || e.ctrlKey || e.metaKey || e.altKey) return
+      // Tugma focus bo'lsa brauzer o'zi bosadi — ikki marta bosilmasin.
+      if (document.activeElement?.tagName === 'BUTTON') return
+      e.preventDefault()
+      doEnter()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [doEnter])
 
   return (
     <div className="grid gap-4">
@@ -116,12 +132,9 @@ export default function ExerciseRunner({ exercise, checked, index, total, onNext
           </Button>
         )}
       </div>
-      {state === 'idle' && (
-        <p className="text-[11px] muted">
-          Klaviatura: <b>Enter</b> — tekshirish / davom etish. Ba'zi brauzerlarda matn maydonida Enter yubormaydi — tugmani
-          bosing.
-        </p>
-      )}
+      <p className="text-[11px] muted">
+        Klaviatura: <b>Enter</b> — {state === 'idle' ? 'tekshirish' : 'davom etish'}.
+      </p>
     </div>
   )
 }
@@ -227,12 +240,22 @@ function AnswerInput({
           </p>
           {exercise.wordBank && (
             <div className="flex flex-wrap gap-1.5">
-              {exercise.wordBank.map((w) => (
+              {exercise.wordBank.map((w, bi) => (
                 <button
-                  key={w}
+                  key={`${w}-${bi}`}
                   type="button"
                   disabled={locked}
-                  onClick={() => onChange([w, ...arr.slice(1)])}
+                  // ESKI BUG: tugma har doim 1-bo'shliqqa yozardi
+                  // ([w, ...arr.slice(1)]) — 4 bo'shliqli mashqni tugmalar
+                  // bilan yechib bo'lmas edi. Endi ENG BIRINCHI BO'SH
+                  // bo'shliqqa yozadi (mantiqiy ketma-ketlik).
+                  onClick={() => {
+                    const next = [...arr]
+                    const slot = next.findIndex((x) => String(x).trim() === '')
+                    if (slot > -1) next[slot] = w
+                    else next.push(w)
+                    onChange(next)
+                  }}
                   className="chip hover:bg-[var(--panel)] cursor-pointer"
                 >
                   {w}
@@ -393,20 +416,6 @@ function shuffle<T>(arr: T[], seed: string): T[] {
   return out
 }
 
-/** Natijaga moslashtirilgan ketma-ketlik uchun rekvizit. */
-export function useAdaptiveSequence(total: number) {
-  const [order] = useState<number[]>(() => Array.from({ length: total }, (_, i) => i))
-  const [pos, setPos] = useState(0)
-  const results: CheckResult[] = []
-  const advance = (r: CheckResult) => {
-    results.push(r)
-    return pos
-  }
-  const next = (lastResult: CheckResult | null) => {
-    const idx = nextExerciseIndex(pos, results, total)
-    setPos(idx)
-    void lastResult
-    return idx
-  }
-  return { order, pos, advance, next }
-}
+/* Eski `useAdaptiveSequence` rekviziti o'chirildi: hech bir sahisha
+   ishlatmasdi (Grammar o'zi nextExerciseIndex chaqiradi) va natija
+   ro'yxatini har renderda qayta yasardi — chalkashlik manbai. */

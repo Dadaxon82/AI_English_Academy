@@ -26,7 +26,11 @@ export const MIN_EVIDENCE_PER_SKILL = 4
 export const SKILLS_REQUIRED_TO_PROMOTE = 4
 /** Har bir ko'nikma uchun o'tish bosiqlari (0..100). */
 export const PROMOTION_THRESHOLD = 72
-/** Kamida bitta Mock Exam natijasi bo'lishi shart. */
+/**
+ * Mock Exam natijasi boshqa dalillarga qaraganda kuchliroq hisoblanadi
+ * (og'irlik 1 + 0.35). Mock Exam shart EMAS — talabnamada daraja faqat
+ * ko'p ko'nikma dalili bilan tavsiya qilinadi, deyilgan.
+ */
 export const MOCK_EXAM_WEIGHT = 0.35
 
 export function weightedScore(samples: readonly { score: number; at: number; kind: string }[], now: number): number {

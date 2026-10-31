@@ -203,7 +203,7 @@ export interface ReadingPassage {
   id: string
   title: string
   level: CefrLevel
-  /** Taxminiy o'qish vaqtı (daqiqa) */
+  /** Taxminiy o'qish vaqti (daqiqa) */
   estMinutes: number
   /** Original — biz yozgan matn; rasmiy imtihon savoli deb atalmaydi */
   provenance: 'original' | 'adapted'

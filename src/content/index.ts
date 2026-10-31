@@ -54,14 +54,64 @@ export const a1: LevelBundle = {
   mockExam: mockExamA1,
 }
 
-/** Hozircha faqat A1 yuklangan. Qolgan darajalar bo'sh to'plam qaytaradi. */
-export function getBundle(level: CefrLevel): LevelBundle {
-  switch (level) {
-    case 'A1':
-      return a1
-    default:
-      return { level, days: [], vocab: [], grammar: [], reading: [], listening: [], writing: [], speaking: [], tests: [] }
+/**
+ * Kundalik bo'lim minutlarini kunlik rejaga (90′) moslashtirish.
+ *
+ * MUAMMO: a1 day fayllaridagi `sections[].minutes` yig'indisi 110–115′ —
+ * talabnomadagi 90′ (Vocab 10 / Grammar 15 / Reading 15 / Listening 15 /
+ * Writing 20 / Speaking 15) bilan mos kelmas edi. Natijada O'quv yo'li
+ * "kun 110 daqiqa" deb ko'rsatadi, Dashboard esa 90′ hisoblab beradi —
+ * ikki sahifa bir-biriga zid.
+ *
+ * YECHIM: bitta joyda (shu registarda) nisbatan taqsimlab chiqamiz. Kasr
+ * qoldig'i eng katta bo'lgan bo'limlarga beriladi, shuning uchun yig'indi
+ * ANIQ `total` ga teng bo'ladi va tartib (vocab<grammar<…) buzilmaydi.
+ * Kontent fayllari o'zgarishsiz qoladi — ular "xom material".
+ */
+export function normalizeDayMinutes(
+  day: DailyPlanDay,
+  total = DAILY_PLAN_TOTAL,
+): DailyPlanDay {
+  const raw = day.sections.reduce((a, s) => a + s.minutes, 0)
+  if (raw === total || raw <= 0 || day.sections.length === 0) return day
+  const weights = day.sections.map((s) => s.minutes / raw)
+  const exact = weights.map((w) => total * w)
+  const scaled = exact.map((x) => Math.floor(x))
+  // Kasr qoldig'ini eng katta bo'lganlardan birlab beramiz — yig'indi aniq
+  // `total` chiqadi va nisbat (katta bo'lim kichigidan kam emas) saqlanadi.
+  const order = scaled
+    .map((v, i) => ({ i, frac: exact[i] - v }))
+    .sort((a, b) => b.frac - a.frac)
+  let assigned = scaled.reduce((a, b) => a + b, 0)
+  for (const o of order) {
+    if (assigned >= total) break
+    scaled[o.i] += 1
+    assigned += 1
   }
+  return { ...day, sections: day.sections.map((s, i) => ({ ...s, minutes: scaled[i] })) }
+}
+
+/** Talabnomadagi asosiy kunlik reja (daqiqa). */
+export const DAILY_PLAN_TOTAL = 90
+
+/**
+ * Hozircha faqat A1 yuklangan. Qolgan darajalar bo'sh to'plam qaytaradi.
+ *
+ * Natija KESHLANADI: to'plam immutabl, `normalizeDayMinutes` esa har chaqiruvda
+ * qayta massiv yasardi (sahifa renderlari soniga ko'payib ketardi) va har safar
+ * yangi obyekt qaytargani uchun sahifalardagi useMemo'lar ishlamasdi.
+ */
+const bundleCache = new Map<CefrLevel, LevelBundle>()
+
+export function getBundle(level: CefrLevel): LevelBundle {
+  const hit = bundleCache.get(level)
+  if (hit) return hit
+  const made: LevelBundle =
+    level === 'A1'
+      ? { ...a1, days: a1.days.map((d) => normalizeDayMinutes(d)) }
+      : { level, days: [], vocab: [], grammar: [], reading: [], listening: [], writing: [], speaking: [], tests: [] }
+  bundleCache.set(level, made)
+  return made
 }
 
 export const LOADED_LEVELS: CefrLevel[] = ['A1']

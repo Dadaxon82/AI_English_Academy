@@ -69,7 +69,13 @@ async function loadManifest(): Promise<ManifestState> {
       }
     })()
   }
-  return manifestPromise
+  const p = manifestPromise
+  // MUVOFAQIYATSIZLIK doimiy kesh bo'lib qolmasin: bir marta (masalan tarmoq
+  // uzilgan payt) xato bo'lsa, keyingi ochilishda qayta uriniladi.
+  void p.then((st) => {
+    if (!st.ok && manifestPromise === p) manifestPromise = null
+  })
+  return p
 }
 
 /* ------------------------- audio mavjudligi tekshiruvi ------------------------- */

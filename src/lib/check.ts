@@ -25,10 +25,25 @@ export function normalize(value: string): string {
     .toLocaleLowerCase('en')
     .normalize('NFD')
     .replace(/[̀-ͯ]/g, '')
-    .replace(/[’‘`]/g, "'")
+    // O'zbek lotin yozuvida ikki xil apostrof ishlatiladi: ʻ (U+02BB, rasmiy)
+    // va o‘ (U+2018/2019 klaviatura variantlari). Ikkalasi ham bitta belgiga
+    // keltiriladi — aks holda o'quvchining normal klaviatura holatidagi javobi
+    // ("oʻn ikki") noto'g'ri deb baholanardi.
+    .replace(/[’‘`ʼʻʹ´]/g, "'")
     .replace(/[^a-z0-9' -]/g, ' ')
     .replace(/\s+/g, ' ')
     .trim()
+}
+
+/**
+ * Bo'shliq/apostrofgabardosh taqqoslash (caseSensitive=false rejallar uchun).
+ * Talab: "to'g'ri javob nuqta, vergul, qo'shimcha bo'shliq yoki apostrof
+ * tufayli noto'g'ri deb belgilanmasin". Shuning uchun qo'shimcha ravishda
+ * apostrofsiz ko'rinishi ham qabul qilinadi ("doesnt" ≈ "doesn't").
+ */
+export function looseEquals(a: string, b: string): boolean {
+  if (norm(a) === norm(b)) return true
+  return norm(a).replace(/'/g, '') === norm(b).replace(/'/g, '')
 }
 
 const norm = normalize
@@ -57,9 +72,13 @@ function toList(answer: unknown): string[] {
 }
 
 function checkChoice(exercise: Extract<Exercise, { kind: 'multiple-choice' }>, answer: unknown): CheckResult {
-  const idx = typeof answer === 'number' ? answer : Number(answer)
-  const chosen = exercise.options[idx] ?? ''
-  const correct = idx === exercise.answerIndex
+  // Javob BERILMAGAN bo'lsa (bo'sh setr / null) `Number('') === 0` 0-variantni
+  // "tanlangan" deb yuborardi — Xatolar daftarida javobsiz savol "to'g'ri"
+  // bo'lib ko'rinardi. Endi bunday holat aniq noto'g'ri hisoblanadi.
+  const answered = typeof answer === 'number' ? Number.isFinite(answer) : answer !== null && answer !== undefined && String(answer).trim() !== ''
+  const idx = answered ? (typeof answer === 'number' ? answer : Number(answer)) : -1
+  const chosen = idx >= 0 ? exercise.options[idx] ?? '' : ''
+  const correct = answered && idx === exercise.answerIndex
   return {
     correct,
     given: chosen,
@@ -119,7 +138,7 @@ function checkGapFill(exercise: Extract<Exercise, { kind: 'gap-fill' }>, answer:
   exercise.answers.forEach((expected, i) => {
     const user = given[i] ?? ''
     const acceptable = [expected, ...(alternatives[i] ?? [])]
-    const hit = acceptable.some((a) => (exercise.caseSensitive ? a === user : norm(a) === norm(user)))
+    const hit = acceptable.some((a) => (exercise.caseSensitive ? a === user : looseEquals(a, user)))
     if (hit) ok += 1
     else detail.push(`${i + 1}-bo‘shliq: sizda “${user || 'bo‘sh'}”, to‘g‘ri: “${expected}”`)
   })
@@ -136,7 +155,10 @@ function checkGapFill(exercise: Extract<Exercise, { kind: 'gap-fill' }>, answer:
 }
 
 function checkWordOrder(exercise: Extract<Exercise, { kind: 'word-order' }>, answer: unknown): CheckResult {
-  const given = toList(answer)
+  // `answer` bazan BITTA setr bo'lib keladi (ErrorLog qayta baholash,
+  // MockExam tiklash) — tokenlarga ajratamiz, aks holda "qaysi o'rinda xato"
+  // tushuntirishi Butun gapni 1-tekt deb ko'rsatardi.
+  const given = toList(answer).flatMap((a) => a.split(/\s+/)).filter((t) => t.length > 0)
   const correctSeq = given.join(' ')
   const expectedSeq = exercise.answer.join(' ')
   const correct = norm(correctSeq) === norm(expectedSeq)
@@ -157,7 +179,7 @@ function checkWordOrder(exercise: Extract<Exercise, { kind: 'word-order' }>, ans
 
 function checkTranslation(exercise: Extract<Exercise, { kind: 'translation' }>, answer: unknown): CheckResult {
   const given = toList(answer)[0] ?? ''
-  const correct = exercise.accepted.some((a) => norm(a) === norm(given))
+  const correct = exercise.accepted.some((a) => looseEquals(a, given))
   return {
     correct,
     given,

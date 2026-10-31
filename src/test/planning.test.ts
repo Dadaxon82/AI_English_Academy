@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest'
 import { buildDayTasks, computeAllocation, daysUntil, nextDayId, skillLabelUz } from '../lib/planning'
+import { DEFAULT_ALLOCATION } from '../lib/types'
 import { DEFAULT_SETTINGS } from '../lib/types'
 import type { SkillEvidence } from '../lib/skillScoring'
+import type { Skill } from '../content/types'
 
 /** Chorshanba — oyning kuniga bog‘liq siljish ta'sir qilmasligi uchun. */
 const WED = new Date(2026, 10, 4) // 2026-11-04, chorshanba
@@ -112,5 +114,21 @@ describe('Kun vazifalari va o‘quv yo‘li', () => {
   it('skillLabelUz o‘zbekcha nom beradi', () => {
     expect(skillLabelUz('vocabulary')).toBe('Lug‘at')
     expect(skillLabelUz('speaking')).toBe('G‘apirish')
+  })
+})
+
+describe('computeAllocation — interfeys xabari haqiqiy o‘zgarishni aks ettiradi', () => {
+  it('donor yetarli bo‘lmasa (+5/-5 bo‘lmasa) „kuchaytirildi“ xabari chiqmaydi', () => {
+    // Minimal 30 daq → har ko‘nikma 5 daqiqa, donor 5→0 ga tusholmaydi.
+    const a = computeAllocation({ ...DEFAULT_SETTINGS, dailyMinutes: 30, examDate: null }, [ev('listening', 40), ev('speaking', 40)], WED)
+    const changed = Object.entries(a.minutes).some(([s, m]) => m > DEFAULT_ALLOCATION[s as Skill])
+    const claims = a.reasonUz.some((r) => r.includes('kuchaytirildi'))
+    expect(claims).toBe(changed)
+  })
+
+  it('90 daqiqalik rejada zaif ko‘nikma haqiqatan oshadi va xabar chiqadi', () => {
+    const a = computeAllocation({ ...DEFAULT_SETTINGS, dailyMinutes: 90, examDate: null }, [ev('listening', 40)], WED)
+    expect(a.minutes.listening).toBeGreaterThan(15)
+    expect(a.reasonUz.some((r) => r.includes('listening'))).toBe(true)
   })
 })

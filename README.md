@@ -18,7 +18,7 @@ Loyiha talabnomasi (`AI English Academy_v2.docx`) to'liq bajarilgan:
 - ✅ AI "ulangan" deb ko'rsatilmaydi — AI bo'lmasa **qoidaviy dvigatel** (`engine: 'rule-based'`) ishlatiladi
 - ✅ **7+ kun A1 kontenti** alohida (`src/content/day-01…07.ts`)
 - ✅ **13 ta jadval** (`supabase/migrations/0001_init.sql`), ID'lar, `created_at`, FK va indexlar bilan
-- ✅ Testlar: `tsc` tip tekshiruvi, ESLint, `vitest` (39 test), production build, smoke-test
+- ✅ Testlar: `tsc` tip tekshiruvi, ESLint, `vitest` (75 test), production build, smoke + render tekshiruvi
 - ✅ JSON/CSV **eksport** va **ma'lumotlarni o'chirish**
 - ✅ **HECH QANDAY TUGMA DEKORATSIYA EMAS** — har bir tugma haqiqiy harakat bajaradi
 
@@ -60,9 +60,17 @@ cp .env.example .env
      Yangi loyihlarda `sb_publishable_…` ko'rinishidagi "Publishable key" ham
      beriladi — xuddi shu ma'noda, ikkalasi ham ishlataveradi.
    - `service_role` kalitini **bu yerga kiritmang** — u faqat serverda.
-3. **Ma'lumotlar bazasini tayyorlang:** paneldagi **SQL Editor** ga
-   `supabase/migrations/0001_init.sql` mazmunini qo'yib **Run** qiling
-   (13 jadval + RLS + triggerlar yaratiladi).
+3. **Ma'lumotlar bazasini tayyorlang:** paneldagi **SQL Editor** ga ketma-ket
+   ikki skriptni qo'yib **Run** qiling:
+   1. `supabase/migrations/0001_init.sql` — 13 jadval + RLS + triggerlar;
+   2. `supabase/migrations/0002_fix_content_fk.sql` — bo'sh kontent jadvallariga
+      qo'yilgan FK'larni olib tashlaydi (ular sinxronlashni butunlay to'sib
+      qo'yardi) va kontent jadvallariga service_role yozish policylarini qo'shadi.
+   Skript oxirida tekshiruv `SELECT` bor: `fk_qoldi = 0` va `policies_soni = 21`
+   chiqishi kerak. **0002 qo'llanilmasa Supabase'ga hech qanday yozuv kirmaydi**
+   (FK'lar bo'sh kontent jadvallariga bog'langan). Ushbu loyihaning bazasida
+   (`igrzbfnsunedgyivmqlz`) 0001 qo'llanilgan — 0002 ham albatta qo'llanilishi
+   kerak.
 4. **Lokal ishga tushirish:** `cp .env.example .env` ichiga ikki qiymatni yozing.
 5. **GitHub Pages uchun:** GitHub'da repo → **Settings → Secrets and variables →
    Actions → Repository variables** ga `VITE_SUPABASE_URL` va `VITE_SUPABASE_ANON_KEY`
@@ -90,7 +98,7 @@ npm run icons:build   # PWA ikonalaria (0 bog'liqlik, sof Node)
 ```bash
 npm run typecheck     # tsc — 0 xato
 npm run lint          # eslint — 0 xato
-npm test              # vitest — 39 test (SRS, taymer, tekshiruv, rejalashtirish, daraja)
+npm test              # vitest — 75 test (SRS, taymer/vaqt hisobi, tekshiruv, kontent auditi, audio yaxlitligi, rejalashtirish, daraja, sync)
 npm run build         # production build + Service Worker
 npm run smoke         # dist'ni serverda ochib tekshirish + 375/1280 skrinshot
 npm run render:check  # 15 marshrutni CDP orqali ochib DOM tekshiruvi + konsol xatolari
@@ -110,10 +118,20 @@ src/
   pages/           # 14 sahifa
   components/      # UI, ExerciseRunner (6 tur mashq), Shell navigatsiya
 supabase/
-  migrations/0001_init.sql   # 13 jadval + RLS
+  migrations/0001_init.sql           # 13 jadval + RLS + triggerlar
+  migrations/0002_fix_content_fk.sql # FK'larni olish + kontent yozish policylari
 scripts/
-  build-audio.mjs  make-icons.mjs  smoke.mjs
+  build-audio.mjs  make-icons.mjs  smoke.mjs  render-check.mjs
 ```
+
+**Vaqt hisobi (yagona manba):** kundalik sekundlar `activity[kun].seconds`da saqlanadi.
+Taymer yurgan bo'lsa vaqt devor-soat bo'yicha (`timer-start`/`timer-stop`) yuritiladi va
+shu holatda `attempt` sekundlari qo'shilmaydi — ikki marta sanash yo'q. Hisobga yozilgan
+sekundlar darhol nollanadi, shuning uchun sessiyani qayta ochish ham takrorlamaydi.
+
+**AI holati:** interfeysda AI faqat HAQIQIY ulanganda "AI" deb ko'rsatiladi. Serverless
+funksiya joylashtirilmagan hozirgi holatda barcha tahlil `engine: 'rule-based'` bilan
+bajariladi.
 
 **Daraja siyosati:** 4 ta ko'nikmada kamida 4 tadan isbot, og'irlikli ball ≥ 72 (mock imtihon og'irligi 0.35, eski natijalar 30 kunlik "half-life" bilan kamayadi) → tizim keyingi darajani **tavsiya** qiladi; qaror foydalanuvchida.
 

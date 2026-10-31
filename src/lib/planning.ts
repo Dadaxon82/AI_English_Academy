@@ -38,9 +38,6 @@ export function computeAllocation(
     .map((e) => e.skill as Skill)
 
   const reasons2: string[] = []
-  if (weak.length) {
-    reasons2.push(`Zaif ko‘nikmalar kuchaytirildi: ${weak.join(', ')}.`)
-  }
 
   // 2) Hafta kuniga qarab yengil siljish (dam olish kuni Speaking/Vocab kamroq)
   const dow = today.getDay()
@@ -95,6 +92,19 @@ export function computeAllocation(
   }
 
   const minutes = base
+
+  // ESKI BUG: "Zaif ko'nikmalar kuchaytirildi" xabari transfer siklidan OLDIN
+  // qo'yilardi — keyingi bosqichlarda (masalan 30 daqiqalik rejada hamma 5
+  // daqiqaga tushadi) kuchaytirish yo'qolsa ham interfeys "kuchaytirildi" deb
+  // yozardi. Endi xabar YAKUNIY taqsimotga qarab: zaif ko'nikma boshqalaridan
+  // haqiqatan ko'p vaqt olgandagina aytiladi.
+  if (weak.length) {
+    const others = SKILL_ORDER.filter((s) => !weak.includes(s)).map((s) => minutes[s])
+    const baseline = others.length ? Math.max(...others) : 0
+    const boosted = weak.filter((w) => minutes[w] > baseline)
+    if (boosted.length) reasons2.push(`Zaif ko‘nikmalar kuchaytirildi: ${boosted.join(', ')}.`)
+  }
+
   return {
     minutes,
     total: SKILL_ORDER.reduce((a, s) => a + minutes[s], 0),

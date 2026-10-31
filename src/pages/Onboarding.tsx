@@ -25,10 +25,16 @@ export default function Onboarding() {
   const [minutes, setMinutes] = useState(data.settings.dailyMinutes)
   const [examDate, setExamDate] = useState(data.settings.examDate ?? '')
 
+  // ESKI BUG: bu yerda to'g'ridan-to'g'ri setStep(2) qilardi — "Kundalik reja"
+  // bosqichi (Schedule) HECH QACHON ochilmaydi, daqiqa/imtihon sanasi
+  // sozlanmay qolardi. Endi 1 → 2 ketma-ketligi ishlaydi.
   const saveBasics = () => {
+    actions.setSettings({ currentLevel: level, targetLevel: target })
+    setStep(1)
+  }
+
+  const saveSchedule = () => {
     actions.setSettings({
-      currentLevel: level,
-      targetLevel: target,
       dailyMinutes: Math.max(15, Math.min(240, minutes)),
       examDate: examDate || null,
     })
@@ -51,7 +57,7 @@ export default function Onboarding() {
         </header>
 
         {step === 0 && <Basics level={level} setLevel={setLevel} target={target} setTarget={setTarget} onNext={saveBasics} />}
-        {step === 1 && <Schedule minutes={minutes} setMinutes={setMinutes} examDate={examDate} setExamDate={setExamDate} onNext={() => setStep(2)} onBack={() => setStep(0)} />}
+        {step === 1 && <Schedule minutes={minutes} setMinutes={setMinutes} examDate={examDate} setExamDate={setExamDate} onNext={saveSchedule} onBack={() => setStep(0)} />}
         {step === 2 && <DiagnosticStep onSkip={() => setStep(3)} onDone={(res) => { actions.setDiagnostic(res.level, res.labelUz, res.confidence); setStep(3) }} />}
         {step === 3 && (
           <Card className="text-center grid gap-3">
@@ -104,6 +110,7 @@ function Basics({
             <button
               key={l}
               type="button"
+              aria-pressed={level === l}
               onClick={() => setLevel(l)}
               disabled={!loaded.has(l)}
               title={loaded.has(l) ? undefined : `${l} kontenti hali yuklanmagan — A1 dan boshlang`}
@@ -120,6 +127,7 @@ function Basics({
             <button
               key={l}
               type="button"
+              aria-pressed={target === l}
               onClick={() => setTarget(l)}
               className={`px-4 py-2 rounded-xl border font-bold ${target === l ? 'border-[var(--accent)] bg-navy-50 dark:bg-navy-900/40' : 'hover:bg-[var(--panel-2)]'}`}
             >
@@ -192,7 +200,7 @@ function Schedule({
   )
 }
 
-function DiagnosticStep({ onDone, onSkip }: { onDone: (r: ReturnType<typeof diagnose>) => void; onSkip: () => void }) {
+export function DiagnosticStep({ onDone, onSkip }: { onDone: (r: ReturnType<typeof diagnose>) => void; onSkip: () => void }) {
   const [idx, setIdx] = useState(0)
   const [results, setResults] = useState<Record<string, boolean>>({})
   const [done, setDone] = useState(false)

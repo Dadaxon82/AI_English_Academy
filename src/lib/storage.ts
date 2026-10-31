@@ -117,16 +117,32 @@ export async function loadQueue(userId: string): Promise<QueueItem[]> {
   return (await idbGet<QueueItem[]>(QUEUE_KEY(userId))) ?? []
 }
 
+/**
+ * Navbat elementini takrorlanmasdan birlashtirish uchun barqaror identifikator.
+ * `payload.id` bo'lmagan jadvallar (user_settings / user_vocabulary /
+ * daily_activity) uchun tabiiy kalit ishlatiladi — aks holda "Sinxronizatsiya"
+ * tugmasi har bosilganda butun navbat shishib borardi.
+ */
+export function dedupeKey(table: string, payload: unknown): string | null {
+  const p = payload as Record<string, unknown> | undefined
+  if (!p) return null
+  if (typeof p.id === 'string') return `id:${p.id}`
+  if (table === 'user_settings') return 'uk:user'
+  if (table === 'user_vocabulary' && typeof p.vocabulary_id === 'string') return `uk:v:${p.vocabulary_id}`
+  if (table === 'daily_activity' && typeof p.day === 'string') return `uk:d:${p.day}`
+  return null
+}
+
 export async function enqueue(userId: string, item: Omit<QueueItem, 'tries'>): Promise<QueueItem[]> {
   const q = await loadQueue(userId)
   // To'qnashuvlarni hisobga olish: bitta user, bitta ilova — keyingi yozuv
-  // oldingisini bosadi (last-write-wins), shuning uchun table+op+payload.id
+  // oldingisini bosadi (last-write-wins), shuning uchun table+op+dedupeKey
   // bo'yicha deduplikat qilinadi.
-  const payloadId = (item.payload as { id?: string } | undefined)?.id
-  const idx = q.findIndex(
-    (x) => x.table === item.table && x.op === item.op && payloadId && (x.payload as { id?: string })?.id === payloadId,
-  )
-  if (idx >= 0) q.splice(idx, 1)
+  const key = dedupeKey(item.table, item.payload)
+  if (key) {
+    const idx = q.findIndex((x) => x.table === item.table && x.op === item.op && dedupeKey(x.table, x.payload) === key)
+    if (idx >= 0) q.splice(idx, 1)
+  }
   q.push({ ...item, tries: 0 })
   await idbSet(QUEUE_KEY(userId), q)
   return q

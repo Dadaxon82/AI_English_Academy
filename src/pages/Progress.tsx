@@ -6,18 +6,32 @@
  */
 
 import { useMemo, useState } from 'react'
-import { BarChart, Button, Card, Chip, EmptyState, InfoBanner, ProgressRing, StatTile } from '../components/ui'
-import { useStore, lastNDays, totalVocabCount } from '../lib/store'
+import { useSearchParams } from 'react-router-dom'
+import { BarChart, Button, Card, Chip, EmptyState, InfoBanner, LoadingBlock, ProgressRing, StatTile } from '../components/ui'
+import { useStore, lastNDays } from '../lib/store'
 import { levelLabel, PROMOTION_THRESHOLD, MIN_EVIDENCE_PER_SKILL } from '../lib/skillScoring'
 import { skillLabelUz, daysUntil } from '../lib/planning'
 import { formatDuration } from '../lib/timer'
 import { LOADED_LEVELS, getBundle } from '../content'
 import { CEFR_LEVELS } from '../content/types'
+import { DiagnosticStep } from './Onboarding'
 import type { SkillEvidence } from '../lib/skillScoring'
 
 export default function Progress() {
-  const { data, evidence, promotion, streak, learnedCount, dueCount, allocation } = useStore()
+  const { data, evidence, promotion, streak, vocabSummary, dueCount, allocation, ready, actions } = useStore()
   const [range, setRange] = useState<7 | 14 | 30>(7)
+  // BUG: Dashboard'dagi "Diagnostikani qayta topshirish" havolasi /progress'ga
+  // olib, u yerda bunday imkon yo'q edi. Endi shu sahifada topshirish mumkin
+  // (?retake=1 bilan ochilganda darhol boshlanadi).
+  const [params, setParams] = useSearchParams()
+  const [retake, setRetake] = useState(params.get('retake') === '1')
+  const openRetake = (v: boolean) => {
+    setRetake(v)
+    const nextParams = new URLSearchParams(params)
+    if (v) nextParams.set('retake', '1')
+    else nextParams.delete('retake')
+    setParams(nextParams, { replace: true })
+  }
 
   const days = useMemo(() => lastNDays(data, range), [data, range])
   const totals = useMemo(() => {
@@ -30,9 +44,11 @@ export default function Progress() {
   const ll = levelLabel(data.settings.currentLevel)
   const target = levelLabel(data.settings.targetLevel)
   const examLeft = daysUntil(data.settings.examDate)
-  const vocabTotal = totalVocabCount()
   const pathDone = data.path.completedDays.length
   const pathTotal = getBundle(data.settings.currentLevel).days.length
+
+  // BUG: ma'lumotlar yuklanmasa ham sahifa hisoblab, 0/bo'sh holat ko'rsatardi.
+  if (!ready) return <LoadingBlock label="Progress ma'lumotlari yuklanmoqda…" />
 
   return (
     <div className="grid gap-4">
@@ -69,7 +85,7 @@ export default function Progress() {
         <StatTile label="Kunlik ketma-ketlik" value={`${streak} kun`} tone={streak > 0 ? 'ok' : 'default'} hint="Ketma-ket faol kunlar" />
         <StatTile label={`${range} kun ichida`} value={formatDuration(totals.seconds)} hint="Faoliyat vaqti" />
         <StatTile label="Aniqlik" value={`${totals.acc}%`} tone={totals.acc >= 70 ? 'ok' : totals.acc >= 50 ? 'warn' : 'bad'} hint={`${totals.correct}/${totals.attempts} to‘g‘ri`} />
-        <StatTile label="So‘zlar" value={`${learnedCount}/${vocabTotal}`} hint={`${dueCount} ta takror navbatda`} />
+        <StatTile label="So‘zlar" value={vocabSummary} hint={`${dueCount} ta takror navbatda`} />
       </div>
 
       {/* --- Ko'nikma isbotlari (daraja ko'tarish shartlari) --- */}
@@ -101,6 +117,8 @@ export default function Progress() {
           {([7, 14, 30] as const).map((r) => (
             <button
               key={r}
+              type="button"
+              aria-pressed={range === r}
               onClick={() => setRange(r)}
               className={`chip cursor-pointer ${range === r ? '!border-[var(--accent)] !text-[var(--accent)] font-bold' : ''}`}
             >
@@ -205,9 +223,27 @@ export default function Progress() {
           </div>
         </Card>
         <Card className="grid gap-3">
-          <h2 className="font-bold">Diagnostika</h2>
-          {data.diagnostic === null ? (
-            <EmptyState title="Diagnostika topshirilmagan" body="Onboarding’da yoki Sozlamalardan diagnostikani topshirishingiz mumkin." />
+          <div className="flex flex-wrap items-center gap-2">
+            <h2 className="font-bold">Diagnostika</h2>
+            <span className="flex-1" />
+            {retake ? (
+              <Button size="sm" variant="ghost" onClick={() => openRetake(false)}>Bekor qilish</Button>
+            ) : (
+              <Button size="sm" variant="secondary" onClick={() => openRetake(true)}>
+                {data.diagnostic === null ? 'Diagnostikani topshirish' : 'Diagnostikani qayta topshirish'}
+              </Button>
+            )}
+          </div>
+          {retake ? (
+            <DiagnosticStep
+              onSkip={() => openRetake(false)}
+              onDone={(res) => {
+                actions.setDiagnostic(res.level, res.labelUz, res.confidence)
+                openRetake(false)
+              }}
+            />
+          ) : data.diagnostic === null ? (
+            <EmptyState title="Diagnostika topshirilmagan" body="Yuqoridagi tugma bilan istalgan vaqtda topshirishingiz mumkin." />
           ) : (
             <div className="grid gap-2 text-sm">
               <div className="flex flex-wrap items-center gap-2">
@@ -227,8 +263,8 @@ export default function Progress() {
         <h2 className="font-bold">Xulosa statistikasi</h2>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           <StatTile label="Jami urinishlar" value={data.attempts.length} />
-          <StatTile label="Yozish ishları" value={data.writing.length} />
-          <StatTile label="Gapirish seansları" value={data.speaking.length} />
+          <StatTile label="Yozish ishlari" value={data.writing.length} />
+          <StatTile label="Gapirish seanslari" value={data.speaking.length} />
           <StatTile label="Mock urinishlar" value={data.mockAttempts.length} />
         </div>
         <ExportProgress />
@@ -265,24 +301,36 @@ function PromoteBanner() {
   const { promotion, actions } = useStore()
   const [done, setDone] = useState(false)
   if (done) return <InfoBanner>Daraja yangilandi — yechib bo‘lingan mashqlar tarixi saqlanadi.</InfoBanner>
+  const lvl = promotion.recommendedLevel
+  if (!lvl) return null
+  // ESKI BUG: tugma kontenti YUKLANMAGAN darajaga o'tkazardi — 6 ta sahifa
+  // bo'sh qolardi (Reading/Listening/Writing/Speaking/Progress/Lug'at).
+  // Endi bosish faqat kontenti bor daraja uchun; aks holda tavsiya qayd
+  // etiladi, lekin o'tkazmaymiz (halol xabar).
+  const contentReady = LOADED_LEVELS.includes(lvl)
   return (
     <div className="rounded-xl border border-emerald-300/60 bg-emerald-50 dark:bg-emerald-900/25 p-3.5 flex flex-wrap items-center gap-3">
       <span className="text-sm">
-        Tizim tavsiyasi: <b>{promotion.recommendedLevel}</b> darajasiga o‘tish.
+        Tizim tavsiyasi: <b>{lvl}</b> darajasiga o‘tish.
       </span>
       <span className="flex-1" />
       <Button
         size="sm"
         variant="success"
+        disabled={!contentReady}
         onClick={() => {
-          if (!promotion.recommendedLevel) return
-          actions.setLevel(promotion.recommendedLevel)
+          if (!contentReady) return
+          actions.setLevel(lvl)
           setDone(true)
         }}
       >
-        {promotion.recommendedLevel}ga o‘tish
+        {lvl}ga o‘tish
       </Button>
-      <span className="text-[11px] muted w-full">Kontent {LOADED_LEVELS.join('/')} darajalari uchun tayyor; boshqa daraja kontenti keyin qo‘shiladi.</span>
+      <span className="text-[11px] muted w-full">
+        {contentReady
+          ? `Kontent ${LOADED_LEVELS.join('/')} darajalari uchun tayyor.`
+          : `Tavsiya qayd etildi, lekin ${lvl} kontenti hali tayyor emas — o‘tish tugmasi kontent yuklangandan keyin ishlaydi.`}
+      </span>
     </div>
   )
 }
@@ -311,7 +359,9 @@ function ExportProgress() {
           a.href = url
           a.download = 'progress.json'
           a.click()
-          URL.revokeObjectURL(url)
+          // REVOKE BIROZ KECHIKTIRILADI: darhol chaqirilsa ba'zi brauzerlerde
+          // yuklab olish boshlanmasiz bekor bo'ladi.
+          setTimeout(() => URL.revokeObjectURL(url), 4000)
           setNote('progress.json yuklab olindi.')
         }}
       >

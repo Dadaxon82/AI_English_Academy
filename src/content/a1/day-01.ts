@@ -470,7 +470,7 @@ export const listeningDay1: ListeningTask = {
   level: 'A1',
   audio: {
     id: 'a1-l1-audio-file-01',
-    src: '/audio/a1/day-01-first-day-in-class.mp3',
+    src: '/audio/a1-l1-audio-file-01.wav',
     fileAvailable: true,
     source: 'original',
     attribution: 'AI English Academy (original, synthesized for practice)',

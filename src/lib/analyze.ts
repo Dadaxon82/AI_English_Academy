@@ -61,15 +61,14 @@ export function analyzeWriting(text: string, task: WritingTask): WritingAnalysis
     { re: /\brecieve\b/gi, kind: 'spelling', fix: () => 'receive', why: 'Imlo xatosi.' },
     { re: /\b(alot)\b/gi, kind: 'spacing', fix: () => 'a lot', why: 'Ikki so‘z bilan yoziladi.' },
     {
-      re: /\b(i|we|they|he|she|it)\s+(go|do|have|like|want|need)\b(?!s|n't)/gi,
+      // FaqAT uchinchi shaxs birlikdagi xato tutadi: "he go" → "he goes".
+      // Birinchi/ikkinchi shaxs ("I go", "we like") AVTODAN TO'G'RI — ularni
+      // xato deb sanash toza A1 matnini sun'iy pasaytirardi (ESKI BUG).
+      re: /\b(he|she|it)\s+(go|do|have|like|want|need)\b(?!e?s\b|n't)/gi,
       kind: 'agreement',
       fix: (m) => {
-        const subj = m[1]
-        const verb = m[2]
-        const third = /^(he|she|it)$/i.test(subj)
-        if (!third) return m[0]
         const map: Record<string, string> = { go: 'goes', do: 'does', have: 'has', like: 'likes', want: 'wants', need: 'needs' }
-        return `${subj} ${map[verb] ?? verb}`
+        return `${m[1]} ${map[m[2]] ?? m[2]}`
       },
       why: 'Uchinchi shaxs birlikda fe‘lga -s/-es qo‘shiladi.',
     },
@@ -166,7 +165,7 @@ function buildSuggestions(scores: Record<CoreCriterionKey, number>, task: Writin
   if (scores.task_achievement < 3) out.push(`Topshiriqdagi har bir bandni alohida gap bilan javoblang (hajm: ${task.minWords}–${task.maxWords} so‘z).`)
   if (scores.coherence < 3) out.push('Fikrlarni first / next / then / finally bilan tartiblang.')
   if (scores.lexical_resource < 3) out.push('Bir so‘zni takrorlamang — sinonim izlang (vocabulary bo‘limidan foydalaning).')
-  if (scores.grammatical_range < 3) out.push(`${task.genre === 'email' ? 'Hozirgi va o‘tmish zamonlarini birga' : 'Ikki xil zamonnı'} ishlatishga harakat qiling.`)
+  if (scores.grammatical_range < 3) out.push(`${task.genre === 'email' ? 'Hozirgi va o‘tmish zamonlarini birga' : 'Ikki xil zamonni'} ishlatishga harakat qiling.`)
   if (scores.accuracy < 3) out.push('Yozganingizdan so‘ng har bir fe‘lga e’tibor bering: kim ishlayapti — -s kerakmi?')
   out.push('Qayta yozib, eski va yangi versiyani solishtiring — o‘sish shu taqqoslashda ko‘rinadi.')
   return out.slice(0, 5)
@@ -176,10 +175,14 @@ function containsLoose(text: string, pattern: string): boolean {
   const t = text.toLowerCase()
   const p = pattern.toLowerCase()
   if (t.includes(p)) return true
-  // so'zlarni tartibdagi oraliq bilan ham qidirish (a ... b)
-  const parts = p.split(/\s+/)
+  // So'zlarni tartibdagi oraliq bilan ham qidirish (a ... b).
+  // ESKI BUG: qator boshiga `^` va oxiriga `$` qo'yilgani uchun naqsh faqat
+  // matnning BOSHIDA va OXIRIDA to'g'ri kelganda ishlardi — "my family went
+  // out last weekend blah" topilmas, `task_achievement` asossiz jarimaga
+  // borardi. Endi anchor yo'q.
+  const parts = p.split(/\s+/).filter(Boolean)
   if (parts.length <= 1) return false
-  const re = new RegExp(`^${parts.map((w) => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('[\\s\\S]{0,40}?')}$`.replace(/^\^/, ''), 'i')
+  const re = new RegExp(parts.map((w) => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('[\\s\\S]{0,40}?'), 'i')
   return re.test(t)
 }
 
@@ -219,7 +222,9 @@ export function analyzeSpeaking(transcript: string, durationSec: number, task: {
   const grammar = clamp(1 + structures, 0, 5)
 
   // Ravonlik: so'z tezligi A1 uchun 60-140 wpm normal oralig'i.
-  const fluency = wpm === 0 ? 0 : wpm < 50 ? 2 : wpm > 190 ? 3 : 5
+  // ESKI BUG: 50-59 wpm (izohda "Gapirish sekin" deyilgan) baribir 5 ball
+  // olardi — baho bilan izoh bir-biriga zid edi.
+  const fluency = wpm === 0 ? 0 : wpm < 60 ? 2 : wpm > 190 ? 3 : 5
 
   const notesUz: string[] = []
   if (durationSec < task.minSeconds) notesUz.push(`Javob qisqa: ${durationSec}s. Kamida ${task.minSeconds} sekund gapirishga harakat qiling.`)
