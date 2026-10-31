@@ -1,0 +1,77 @@
+{
+  "generatedAt": "2026-10-31T11:35:31.574Z",
+  "items": [
+    {
+      "id": "a1-l1-audio-file-01",
+      "src": "/audio/a1-l1-audio-file-01.wav",
+      "title": "First Day in the Classroom",
+      "durationSec": 71.13124716553288,
+      "license": "CC0 — created for this project",
+      "attribution": "AI English Academy (original, synthesized for practice)",
+      "available": true
+    },
+    {
+      "id": "a1-l2-audio-file-01",
+      "src": "/audio/a1-l2-audio-file-01.wav",
+      "title": "A Photo of My Family",
+      "durationSec": 64.46721088435375,
+      "license": "CC0 — created for this project",
+      "attribution": "AI English Academy (original, synthesized for practice)",
+      "available": true
+    },
+    {
+      "id": "a1-l3-audio-file-01",
+      "src": "/audio/a1-l3-audio-file-01.wav",
+      "title": "A Day in My Life",
+      "durationSec": 63.42140589569161,
+      "license": "CC0 — created for this project",
+      "attribution": "AI English Academy (original, synthesized for practice)",
+      "available": true
+    },
+    {
+      "id": "a1-l-audio-04-file",
+      "src": "/audio/a1-l-audio-04-file.wav",
+      "title": "A Tour of Aziza’s Home",
+      "durationSec": 94.17959183673469,
+      "license": "CC0 — created for this project",
+      "attribution": "AI English Academy (original, synthesized for practice)",
+      "available": true
+    },
+    {
+      "id": "a1-l-audio-05-file",
+      "src": "/audio/a1-l-audio-05-file.wav",
+      "title": "Breakfast in the Kitchen",
+      "durationSec": 104.88825396825396,
+      "license": "CC0 — created for this project",
+      "attribution": "AI English Academy (original, synthesized for practice)",
+      "available": true
+    },
+    {
+      "id": "a1-l-audio-06-file",
+      "src": "/audio/a1-l-audio-06-file.wav",
+      "title": "Weekend Plans",
+      "durationSec": 100.19891156462585,
+      "license": "CC0 — created for this project",
+      "attribution": "AI English Academy (original, synthesized for practice)",
+      "available": true
+    },
+    {
+      "id": "a1-l-audio-07-file",
+      "src": "/audio/a1-l-audio-07-file.wav",
+      "title": "Asking the Way in Tashkent",
+      "durationSec": 93.47954648526077,
+      "license": "CC0 — created for this project",
+      "attribution": "AI English Academy (original, synthesized for practice)",
+      "available": true
+    },
+    {
+      "id": "a1-mock-audio-01",
+      "src": "/audio/a1-mock-audio-01.wav",
+      "title": "A phone call about a picnic",
+      "durationSec": 74.23727891156463,
+      "license": "CC0 — created for this project",
+      "attribution": "AI English Academy (original, synthesized for practice)",
+      "available": true
+    }
+  ]
+}
