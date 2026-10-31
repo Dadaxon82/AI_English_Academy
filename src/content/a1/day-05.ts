@@ -170,7 +170,9 @@ export const vocabDay5: VocabularyItem[] = [
     pos: 'adjective',
     topic: 'food and drinks',
     level: 'A1',
-    relations: { antonym: ['hungry'] },
+    // ESKI XATO: 'hungry' antonym emas (chanqoqlik va ochlik — har xil holat).
+    // To'g'ri juft: thirsty ↔ full (to'q / ichgan).
+    relations: { antonym: ['full'] },
   },
 ]
 
@@ -314,7 +316,7 @@ export const grammarDay5: GrammarTopic = {
       instructionUz: 'Bo‘sh joyga “a“, “an“, “some“ yoki “any“ qo‘ying.',
       level: 'A1',
       skill: 'grammar',
-      explanationUz: 'banana — undan oldin a; so‘roqda any; inkorda any; tasdiqgapda some.',
+      explanationUz: 'banana undosh ovoz bilan boshlanadi — undan oldin a; so‘roqda any; inkorda any; tasdiqgapda some.',
       difficulty: 3,
       tags: ['some', 'any', 'a / an'],
       text: 'I ate ___ banana. Are there ___ tomatoes in the salad? There isn’t ___ cheese at home. We need ___ rice for lunch.',
@@ -566,7 +568,7 @@ export const listeningDay5: ListeningTask = {
       instructionUz: 'Audioyani tinglab fikrga baho bering.',
       level: 'A1',
       skill: 'listening',
-      explanationUz: 'Audio pishloq sotib olishlari kerakligini aytadi, lekin uni kim va qachon sotib olishi aytilmagan.',
+      explanationUz: 'Audio pishloq sotib olishlari MUMKINLIGINI aytadi (“We can buy some after school“) — aniq reja va kim sotishi aytilmagan, shuning uchun Not Given.',
       difficulty: 3,
       tags: ['notgiven'],
       passageId: 'a1-l-audio-05',
@@ -739,7 +741,7 @@ export const testDay5: SectionTest = {
       instructionUz: 'Test: 5-kun tinglash matniga asoslanib baho bering.',
       level: 'A1',
       skill: 'listening',
-      explanationUz: 'Malika chanqagan emas, u och (hungry) ekanini aytadi; ammo chanqaganligi aytilmagan.',
+      explanationUz: 'Malika och (hungry) ekanini aytadi; chanqaganligi esa NECHA to‘g‘ri necha noto‘g‘ri ekanini audio aytmaydi — Not Given.',
       difficulty: 2,
       tags: ['listening recall'],
       passageId: 'a1-l-audio-05',

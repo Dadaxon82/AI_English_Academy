@@ -10,7 +10,7 @@ import type {
 } from '../types'
 
 /* ------------------------------------------------------------------ *
- * A1 — 6-KUN: Bo‘sh vaqt, havaslar, can / can’t, “going to“ bilan reja
+ * A1 — 6-KUN: Bo‘sh vaqt, qiziqishlar, can / can’t, “going to“ bilan reja
  * ------------------------------------------------------------------ */
 
 export const vocabDay6: VocabularyItem[] = [
@@ -174,7 +174,7 @@ export const vocabDay6: VocabularyItem[] = [
 
 export const grammarDay6: GrammarTopic = {
   id: 'a1-g6-can-ability-going-to',
-  titleUz: 'Can / can’t (ila jila olish) va “going to“ bilan reja',
+  titleUz: 'Can / can’t (qila olish, qo‘l kelish) va “going to“ bilan reja',
   titleEn: 'Can / can’t for ability and “going to“ for plans',
   level: 'A1',
   explanationUz: [
@@ -302,7 +302,7 @@ export const grammarDay6: GrammarTopic = {
       instructionUz: 'O‘zbekcha gapni inglizchaga tarjima qiling.',
       level: 'A1',
       skill: 'grammar',
-      explanationUz: '“qila olaman“ = I can + fe’l; “kepka“ — qo‘shimcha ma’nodir.',
+      explanationUz: '“qila olaman“ = I can + fe’l; “yaxshi“ (well) — qo‘shimcha ma’noni yetkazadi.',
       difficulty: 3,
       tags: ['can'],
       source: 'Men yaxshi suza olaman.',
@@ -336,7 +336,7 @@ export const grammarDay6: GrammarTopic = {
     {
       wrong: 'I going to watch a film.',
       right: 'I am going to watch a film.',
-      whyUz: '“going to“ dan oldin albatta am / is /are kerak.',
+      whyUz: '“going to“ dan oldin albatta am / is / are kerak.',
     },
     {
       wrong: "I can't to swim.",
@@ -546,7 +546,7 @@ export const listeningDay6: ListeningTask = {
       instructionUz: 'Audioyani tinglab fikrga baho bering.',
       level: 'A1',
       skill: 'listening',
-      explanationUz: 'Futbol ertalab soat to‘qqizdan o‘ngacha davom etadi.',
+      explanationUz: 'Futbol ertalab soat to‘qqizdan o‘n birigacha (nine to eleven) davom etadi.',
       difficulty: 2,
       tags: ['listening detail'],
       passageId: 'a1-l-audio-06',
@@ -630,7 +630,7 @@ export const speakingDay6: SpeakingTask[] = [
   {
     id: 'a1-s6-my-hobbies',
     level: 'A1',
-    topicUz: 'Mening havaslarim va nimalar qila olaman',
+    topicUz: 'Mening qiziqishlarim va nimalar qila olaman',
     questionEn: 'What can you do well in your free time? What can’t you do?',
     hintUz: '“I can ...“ va “I can’t ...“ shakllaridan foydalanib kamida 4 gap ayting.',
     minSeconds: 30,
@@ -748,7 +748,7 @@ export const testDay6: SectionTest = {
       instructionUz: 'Test: 6-kun tinglash matniga asoslanib baho bering.',
       level: 'A1',
       skill: 'listening',
-      explanationUz: 'Farrukh filmni akasi/opa-singli (cousin) bilan ko‘rmoqchi.',
+      explanationUz: 'Farrukh filmni amakivachchasi (cousin — amaki yoki toqaning farzandi) bilan ko‘rmoqchi.',
       difficulty: 2,
       tags: ['listening recall'],
       passageId: 'a1-l-audio-06',
@@ -792,7 +792,7 @@ export const day6: DailyPlanDay = {
   id: 'a1-day-06',
   level: 'A1',
   dayNumber: 6,
-  titleUz: 'Bo‘sh vaqt, havaslar va hafta oxiri rejalari',
+  titleUz: 'Bo‘sh vaqt, qiziqishlar va hafta oxiri rejalari',
   goalUz:
     'Ishlatiladi: bo‘sh vaqt va havas so‘zlari, “can / can’t“ bilan qobiliyat, “am / is / are going to“ bilan yakshanba rejalari.',
   sections: [
@@ -800,7 +800,7 @@ export const day6: DailyPlanDay = {
       skill: 'vocabulary',
       minutes: 10,
       itemIds: vocabDay6.map((v) => v.id),
-      titleUz: 'Yangi so‘zlar: bo‘sh vaqt va havaslar',
+      titleUz: 'Yangi so‘zlar: bo‘sh vaqt va qiziqishlar',
     },
     {
       skill: 'grammar',
@@ -815,7 +815,7 @@ export const day6: DailyPlanDay = {
       skill: 'speaking',
       minutes: 15,
       itemIds: speakingDay6.map((s) => s.id),
-      titleUz: 'Gapirish: havaslar, qobiliyat va rejalari',
+      titleUz: 'Gapirish: qiziqishlar, qobiliyat va rejalari',
     },
   ],
   sectionTest: testDay6,

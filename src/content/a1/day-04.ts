@@ -441,7 +441,7 @@ export const readingDay4: ReadingPassage = {
       instructionUz: 'Matnni eslab, bo‘sh joylarni so‘zlar bilan to‘ldiring.',
       level: 'A1',
       skill: 'reading',
-      explanationUz: 'Matnda “five rooms“ deyilgan — are; sumka stul ostida — under; rasm devor ustida — on; “computers“ ko‘plik — There are.',
+      explanationUz: 'Matnda “five rooms“ deyilgan — are; sumka stul ostida — under; rasm devor ustida — on; “computers“ ko‘plik — bo‘sh joyga are (so‘z “There“ allaqachon yozilgan).',
       difficulty: 2,
       tags: ['there is', 'prepositions'],
       text: 'There are five rooms in my flat. My school bag is ___ the chair. A picture is ___ the wall. There ___ no computers in our rooms, but there ___ a soft sofa in the living room.',

@@ -641,8 +641,10 @@ export const writingDay2: WritingTask = {
     { pattern: 'has got', whyUz: 'Egalik va tavsifda has / have got shakli ishlatilishi talab qilinadi.' },
     { pattern: 'my mother', whyUz: 'Tavsif obyekti aniq bo‘lishi uchun yaqin qarindosh tanlanadi.' },
   ],
+  // Model javob o'quv matni (a1-r2-text-01) bilan MOS bo'lishi kerak:
+  // oilada besh kishi — ona, ota, ukam, buvim va men; ko'k velosiped — otada.
   modelAnswerEn:
-    'Hi Aziza! My family has four people: my mother, my father, my brother and me. My mother’s name is Malika. She is thirty-two and she is tall. She has got long black hair. She has got a blue bike. I love my family! See you at school, Dilnoza.',
+    'Hi Aziza! My family has five people: my mother, my father, my little brother, my grandmother and me. My mother’s name is Malika. She is thirty-two and she is tall. She has got long black hair. My father has got a blue bike. I love my family! See you at school, Dilnoza.',
 }
 
 export const speakingDay2: SpeakingTask[] = [

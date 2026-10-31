@@ -191,6 +191,28 @@ describe('Kontent auditi — mashqlar yaxlitligi', () => {
     expectClean(bad, 'word-order banki')
   })
 
+  it('gap-fill (a / an): artikel keyin keladigan so‘z ovozi bilan mos', () => {
+    // "a banana" / "an apple" — og'zaki til qoidasi. Eski xato: a1-ex-g5-06 da
+    // "I ate ___ banana" uchun kalit `a` edi (to'g'risi `an`).
+    const VOWEL = /^[aeiou]/
+    const bad: string[] = []
+    for (const { ex, owner } of ITEMS) {
+      if (ex.kind !== 'gap-fill') continue
+      const parts = ex.text.split(GAP_RE)
+      ex.answers.forEach((a, i) => {
+        const article = norm(a)
+        if (article !== 'a' && article !== 'an') return
+        // Bo'shliqdan keyin keladagi birinchi so'zni olamiz.
+        const next = (parts[i + 1] ?? '').trim().split(/[^A-Za-z]/)[0] ?? ''
+        if (!next) return
+        const soundsVowel = VOWEL.test(next) || /^(hour|honest|honor|umbrella|egg|apple|orange|eleven|eight)/i.test(next)
+        if (soundsVowel && article === 'a') bad.push(`${owner}/${ex.id}: “a ${next}“ — “an“ kerak`)
+        if (!soundsVowel && article === 'an') bad.push(`${owner}/${ex.id}: “an ${next}“ — “a“ kerak`)
+      })
+    }
+    expectClean(bad, 'a/an artikellari')
+  })
+
   it('translation: kamida bitta qabul qilinadigan javob', () => {
     const bad: string[] = []
     for (const { ex } of ITEMS) {
