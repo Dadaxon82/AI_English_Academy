@@ -28,9 +28,14 @@ jobs:
       - run: npm test
       # Bazani repo nomiga mos qo'yamiz: https://<user>.github.io/AI_English_Academy/
       # Custom domain ishlatsangiz: VITE_BASE=/ bilan qayta ishlating.
+      # Supabase kalitlari (ixtiyoriy): GitHub > Settings > Secrets and
+      # variables > Actions ga VITE_SUPABASE_URL va VITE_SUPABASE_ANON_KEY
+      # ni qo'ying. Bo'sh qolsa sayt mehmon (mahalliy) rejimda ishlayveradi.
       - run: npm run build
         env:
           VITE_BASE: /AI_English_Academy/
+          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL || secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ vars.VITE_SUPABASE_ANON_KEY || secrets.VITE_SUPABASE_ANON_KEY }}
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist

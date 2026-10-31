@@ -45,18 +45,35 @@ Supabase sozlanmagan bo'lsa ham ilova **to'liq ishlaydi** — "mahalliy mehmon" 
 cp .env.example .env
 ```
 
+## 3. Supabase (ixtiyoriy) — kalitlar qayerdan olinadi
+
+> **Eslatma:** kalitlar SHART EMAS. Ular bo'lmasa ilova **mehmon (mahalliy)**
+> rejimida to'liq ishlaydi — ma'lumotlar brauzerda (IndexedDB) saqlanadi,
+> faqat hisob yaratib boshqa qurilmaga o'tkazib bo'lmaydi.
+
+1. **Loyiha yarating:** [supabase.com](https://supabase.com) → *New project*
+   (bepul "Free" tier yetadi). Namuna: nomi `english-academy`, region `Singapore`/eu-central.
+2. **Kalitlarni oling:** loyiha paneli → **Project Settings → API** (yoki
+   "Connect / API keys" bo'limi). U yerda:
+   - **Project URL** → `VITE_SUPABASE_URL` (ko'rinishi: `https://abcd1234.supabase.co`)
+   - **Project API keys → `anon` / `public`** (boshlanishi `eyJ…`) → `VITE_SUPABASE_ANON_KEY`.
+     Yangi loyihlarda `sb_publishable_…` ko'rinishidagi "Publishable key" ham
+     beriladi — xuddi shu ma'noda, ikkalasi ham ishlataveradi.
+   - `service_role` kalitini **bu yerga kiritmang** — u faqat serverda.
+3. **Ma'lumotlar bazasini tayyorlang:** paneldagi **SQL Editor** ga
+   `supabase/migrations/0001_init.sql` mazmunini qo'yib **Run** qiling
+   (13 jadval + RLS + triggerlar yaratiladi).
+4. **Lokal ishga tushirish:** `cp .env.example .env` ichiga ikki qiymatni yozing.
+5. **GitHub Pages uchun:** GitHub'da repo → **Settings → Secrets and variables →
+   Actions → Repository variables** ga `VITE_SUPABASE_URL` va `VITE_SUPABASE_ANON_KEY`
+   ni qo'ying — keyingi deploy'lar ulangan holicha quriladi (workflow bu
+   qiymatlarni o'qiydi). Barqaror qurilish uchun push qayta ishga tushirilsin.
+
 | O'zgaruvchi | Qayerda | Izoh |
 |---|---|---|
-| `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` | frontend | Public anons kaliti. Bo'sh → offlayn/mahalliy rejim |
+| `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` |frontend (build paytida qadoqlanadi) | Anon/publishable — omboraxona (public) hisoblanadi va RLS bilan himolanadi. Bo'sh → mahalliy rejim |
 | `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` | **faqat server** | Service role kaliti hech qachon brauzerga chiqmaydi |
 | `AI_PROVIDER`, `AI_MODEL`, `AI_API_KEY`, `AI_DAILY_LIMIT`… | **faqat server** | Bo'sh bo'lsa tahlil qoidaviy dvigatel bilan bajariladi |
-
-## 3. Supabase (ixtiyoriy)
-
-1. [supabase.com](https://supabase.com) da loyiha yarating.
-2. SQL muharririda **`supabase/migrations/0001_init.sql`** ni bajaring — 13 ta jadval, RLS siyosatlari (`auth.uid() = user_id`), trigger va indexlar yaratiladi.
-3. `.env` ga `VITE_SUPABASE_URL` + `VITE_SUPABASE_ANON_KEY` ni yozing.
-4. AI so'rovlari uchun edge-function/server kalitlari faqat serverda qoladi.
 
 ## 4. Audio va ikonalar
 
