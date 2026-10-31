@@ -39,9 +39,27 @@ function fail(msg) {
   process.exitCode = 1
 }
 
-async function fileServer() {
+/**
+ * dist qanday `base` bilan qurilganini index.html'dan aniqlaymiz
+ * (`/AI_English_Academy/assets/...`). Shu prefiks bilan so'raymiz —
+ * base `/` bo'lsa bo'sh satr qaytadi.
+ */
+async function detectBase() {
+  try {
+    const html = await readFile(join(ROOT, 'index.html'), 'utf8')
+    const m = html.match(/(?:src|href)="(\/[^"]*?)\/assets\/[^"]+\.(?:js|css)"/)
+    return m?.[1] ?? ''
+  } catch {
+    return ''
+  }
+}
+
+async function fileServer(base = '') {
   const server = createServer(async (req, res) => {
-    const path = (req.url ?? '/').split('?')[0]
+    let path = (req.url ?? '/').split('?')[0]
+    // dist `base` bilan qurilgan bo'lishi mumkin (masalan '/AI_English_Academy')
+    // — lokallab testda shu prefiksni qaytarib tashlaymiz.
+    if (base && path.startsWith(base)) path = path.slice(base.length) || '/'
     let file = join(ROOT, path)
     try {
       let s = await stat(file)
@@ -149,11 +167,12 @@ async function main() {
     return
   }
 
-  const server = await fileServer()
+  const BASE = await detectBase() // masalan '/AI_English_Academy' yoki ''
+  const server = await fileServer(BASE)
   let problems = 0
 
   // 1. Asosiy sahifa va kerakli elementlar
-  const index = await get('/')
+  const index = await get(BASE ? `${BASE}/` : '/')
   if (index.status !== 200) {
     fail('index.html 200 qaytarmadi')
     problems++
@@ -165,11 +184,16 @@ async function main() {
     }
   }
 
-  // 2. Assetlarni kesh orqali tekshirish
-  const assetHref = index.body.match(/(?:src|href)="(\/assets\/[^"]+\.(?:js|css))"/g) ?? []
-  if (assetHref.length === 0) fail('index.html da asset havolalari yo‘q')
+  // 2. Assetlarni kesh orqali tekshirish (base prefiksi bo'lishi mumkin:
+  //    /AI_English_Academy/assets/...)
+  const assetHref = index.body.match(/(?:src|href)="((?:\/[^"]*|\.\/)assets\/[^"]+\.(?:js|css))"/g) ?? []
+  if (assetHref.length === 0) {
+    fail('index.html da asset havolalari yo‘q')
+    problems++
+  }
   for (const m of assetHref) {
-    const href = m.slice(m.indexOf('"') + 1, m.lastIndexOf('"'))
+    let href = m.slice(m.indexOf('"') + 1, m.lastIndexOf('"'))
+    if (href.startsWith('./')) href = BASE + href.slice(1)
     const r = await get(href)
     if (r.status !== 200) {
       fail(`asset ${href} — ${r.status}`)
@@ -215,11 +239,11 @@ async function main() {
     }
   }
 
-  // 6. SPA marshrutlari (fallback ishlashi kerak)
+  // 6. Statik resurslar va (BrowserRouter build bo'lsa) SPA marshrutlari
   for (const route of ['/dashboard', '/mock-exam', '/settings']) {
-    const r = await get(route)
+    const r = await get(`${BASE}${route}`)
     if (r.status !== 200 || !r.body.includes('id="root"')) {
-      fail(`marshrut ${route} fallback ishlamadi`)
+      fail(`marshrut ${BASE}${route} fallback ishlamadi`)
       problems++
     }
   }
@@ -234,7 +258,7 @@ async function main() {
     ]
     for (const s of shots) {
       try {
-        await shoot(browser, `http://localhost:${PORT}/`, s.out, s.w, s.h)
+        await shoot(browser, `http://localhost:${PORT}${BASE}${BASE ? '/' : ''}`, s.out, s.w, s.h)
         if (existsSync(s.out)) console.log(`✓ skrinshot: ${s.out}`)
         else fail(`skrinshot yaratilmadi: ${s.out}`)
       } catch (e) {

@@ -20,19 +20,33 @@ export interface AudioManifestItem {
 let cached: Record<string, AudioManifestItem> | null = null
 let loading: Promise<Record<string, AudioManifestItem> | null> | null = null
 
+/**
+ * Vite `base` (GitHub project page uchun `/AI_English_Academy/`) bilan
+ * boshlanadigan yo'lni bog'lash. Manifestdagi `/audio/...` kabi mutlaq
+ * yo'llarini sahifaga moslash uchun ishlatiladi.
+ */
+export function assetUrl(p: string): string {
+  const base = import.meta.env.BASE_URL || '/'
+  const clean = p.replace(/^\/+/, '')
+  return base.replace(/\/+$/, '/') + clean
+}
+
 export async function loadAudioManifest(): Promise<Record<string, AudioManifestItem> | null> {
   if (cached) return cached
   if (loading) return loading
   loading = (async () => {
     try {
-      const res = await fetch('/audio/manifest.json', { cache: 'no-cache' })
+      const res = await fetch(assetUrl('/audio/manifest.json'), { cache: 'no-cache' })
       if (!res.ok) {
         cached = null
         return null
       }
       const json = (await res.json()) as { items?: AudioManifestItem[] }
       const map: Record<string, AudioManifestItem> = {}
-      for (const it of json.items ?? []) map[it.id] = it
+      for (const it of json.items ?? []) {
+        // src'ni base bilan moslashtiramiz (manifest `/audio/...` deb yozilgan)
+        map[it.id] = { ...it, src: assetUrl(it.src) }
+      }
       cached = map
       return map
     } catch {

@@ -3,7 +3,14 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
+// GitHub project page `/AI_English_Academy/` ostida turadi. Barcha resurs
+// yo'llari shu bazaga nisbatan chiqarilishi kerak — aks holda brauzer
+// /assets/... ni rootдан izlaydi va 404 oladi. Custom domain / root deploy
+// uchun: VITE_BASE=/ npm run build
+export const APP_BASE = process.env.VITE_BASE ?? '/AI_English_Academy/'
+
 export default defineConfig({
+  base: APP_BASE,
   plugins: [
     react(),
     tailwindcss(),
@@ -18,8 +25,9 @@ export default defineConfig({
         dir: 'ltr',
         display: 'standalone',
         orientation: 'portrait-primary',
-        start_url: '/',
-        scope: '/',
+        // Project page: start_url/scope bazaga nisbatan ('./' → /AI_English_Academy/)
+        start_url: './',
+        scope: './',
         background_color: '#0b1b34',
         theme_color: '#0b1b34',
         categories: ['education'],
@@ -34,9 +42,9 @@ export default defineConfig({
           },
         ],
         shortcuts: [
-          { name: 'Dashboard', url: '/dashboard', description: 'Asosiy panel' },
-          { name: 'Vocabulary', url: '/vocabulary', description: 'Lug\'at va flashcard' },
-          { name: 'Mock Exam', url: '/mock-exam', description: 'Sinov namunasi' },
+          { name: 'Dashboard', url: 'dashboard', description: 'Asosiy panel' },
+          { name: 'Vocabulary', url: 'vocabulary', description: "Lug'at va flashcard" },
+          { name: 'Mock Exam', url: 'mock-exam', description: 'Sinov namunasi' },
         ],
       },
       workbox: {
@@ -44,7 +52,7 @@ export default defineConfig({
         // Uning o'rniga pastdagi runtimeCaching `/audio/` qoidasi birinchi
         // tinglashdan keyin faylni keshlaydi → keyingi safar offline ishlaydi.
         globPatterns: ['**/*.{js,css,html,ico,png,svg,webmanifest,json}'],
-        navigateFallback: '/index.html',
+        navigateFallback: `${APP_BASE}index.html`,
         navigateFallbackDenylist: [/^\/api\//],
         runtimeCaching: [
           {
@@ -58,8 +66,9 @@ export default defineConfig({
           },
           {
             // Ruxsat etilgan audio materiallar offline uchun saqlanadi
+            // (base `/AI_English_Academy/` bo'lgani uchun endsWith emas, includes)
             urlPattern: ({ request, url }) =>
-              request.destination === 'audio' || url.pathname.startsWith('/audio/'),
+              request.destination === 'audio' || url.pathname.includes('/audio/'),
             handler: 'CacheFirst',
             options: {
               cacheName: 'aea-audio',

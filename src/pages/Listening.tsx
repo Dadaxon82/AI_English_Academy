@@ -17,6 +17,7 @@ import ExerciseRunner from '../components/ExerciseRunner'
 import { Button, Card, Chip, EmptyState, ErrorState, InfoBanner, Kbd, LoadingBlock, SpeakButton, StatTile } from '../components/ui'
 import { getBundle } from '../content'
 import type { AudioAsset, ListeningTask } from '../content/types'
+import { assetUrl } from '../lib/audio'
 import type { CheckResult } from '../lib/check'
 import { useStore } from '../lib/store'
 
@@ -51,13 +52,13 @@ async function loadManifest(): Promise<ManifestState> {
   if (!manifestPromise) {
     manifestPromise = (async () => {
       try {
-        const res = await fetch('/audio/manifest.json')
+        const res = await fetch(assetUrl('/audio/manifest.json'))
         if (!res.ok) {
           const st: ManifestState = { ok: false, data: null, error: `manifest.json javob bermedi (${res.status}).` }
           return st
         }
         const json = (await res.json()) as Partial<Manifest>
-        const items = Array.isArray(json.items) ? json.items : []
+        const items = Array.isArray(json.items) ? json.items.map((it) => ({ ...it, src: assetUrl(it.src) })) : []
         const st: ManifestState = { ok: true, data: { generatedAt: json.generatedAt ?? '', items }, error: null }
         manifestCache = st
         return st

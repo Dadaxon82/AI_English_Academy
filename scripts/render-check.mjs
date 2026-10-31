@@ -66,9 +66,22 @@ function findBrowser() {
   return null
 }
 
-async function serve() {
+async function detectBase() {
+  try {
+    const html = await readFile(path.join(ROOT, 'index.html'), 'utf8')
+    const m = html.match(/(?:src|href)="(\/[^"]*?)\/assets\/[^"]+\.(?:js|css)"/)
+    return m?.[1] ?? ''
+  } catch {
+    return ''
+  }
+}
+
+async function serve(base = '') {
   const server = createServer(async (req, res) => {
-    const p = (req.url ?? '/').split('?')[0]
+    let p = (req.url ?? '/').split('?')[0]
+    // Base `/AI_English_Academy/` bilan build qilingan dist'ni lokallab
+    // tekshirish uchun prefiksni qaytaramiz.
+    if (base && p.startsWith(base)) p = p.slice(base.length) || '/'
     let file = path.join(ROOT, p)
     try {
       const s = await stat(file)
@@ -192,7 +205,8 @@ async function main() {
     return
   }
 
-  const server = await serve()
+  const BASE = await detectBase() // masalan '/AI_English_Academy' yoki ''
+  const server = await serve(BASE)
   const udd = fs.mkdtempSync(path.join(os.tmpdir(), 'aea-render-'))
   const proc = spawn(
     browser,
@@ -213,9 +227,11 @@ async function main() {
   let bad = 0
   try {
     if (!(await waitForCdp())) throw new Error('CDP porti ochilmadi')
-    console.log(`Brauzer: ${path.basename(browser)} · CDP :${CDP_PORT} · dist:${PORT}\n`)
+    console.log(`Brauzer: ${path.basename(browser)} · CDP :${CDP_PORT} · dist:${PORT} · base:${BASE || '/'}\n`)
     for (const route of ROUTES) {
-      const { snap, consoleIssues } = await checkRoute(`http://127.0.0.1:${PORT}${route === '/' ? '' : route}`)
+      const { snap, consoleIssues } = await checkRoute(
+        `http://127.0.0.1:${PORT}${BASE}${route === '/' ? '/' : route}`,
+      )
       const crashed = consoleIssues.some((e) => e.startsWith('EXCEPTION'))
       // 404 / bo'sh holatli sahifalar ham render bo'ladi — matni qisqa,
       // shuning uchun chegarani past tutamiz (montaj + kamida 1 tugma).

@@ -19,8 +19,19 @@ import ErrorLog from './pages/ErrorLog'
 import Progress from './pages/Progress'
 import Settings from './pages/Settings'
 
-/** Router: statik fayl sifatida ham ishlasin (file:// yoki subpath). */
-const Router = window.location.protocol === 'file:' ? HashRouter : BrowserRouter
+/**
+ * Router tanlovi:
+ *  - file:// (statik Ochish) → HashRouter
+ *  - GitHub Pages (`*.github.io/<repo>/`) → HashRouter, chunkuki server
+ *    `/AI_English_Academy/dashboard` kabi manzilga to'g'ridan-to'g'ri
+ *    o'tishda 404 qaytaradi (SPA fallback yo'q).
+ *  - o'zimizing host / Vite dev → BrowserRouter (toza URL)
+ */
+const useHashRoutes =
+  window.location.protocol === 'file:' ||
+  window.location.hostname.endsWith('.github.io') ||
+  Boolean((import.meta as ImportMeta).env?.VITE_HASH_ROUTES)
+const Router = useHashRoutes ? HashRouter : BrowserRouter
 
 function Shell({ auth, onAuth }: { auth: AuthState; onAuth: (s: AuthState) => void }) {
   const { ready, data } = useStore()
@@ -137,8 +148,13 @@ export default function App() {
 
   const userId = auth.kind === 'signed-in' || auth.kind === 'local-only' ? auth.userId : 'anonymous'
 
+  // BrowserRouter uchun base (masalan custom domain ostidagi `/aea/`).
+  // HashRouter o'zi ham `/AI_English_Academy/#/dashboard` dan ishlaydi.
+  const base = (import.meta.env.BASE_URL || '/').replace(/\/+$/, '')
+  const routerProps = !useHashRoutes && base && base !== '/' ? { basename: base } : {}
+
   return (
-    <Router>
+    <Router {...routerProps}>
       <StoreProvider userId={userId}>
         <Shell auth={auth} onAuth={setAuth} />
       </StoreProvider>

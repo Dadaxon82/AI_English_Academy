@@ -9,12 +9,12 @@
  */
 
 import { useEffect, useRef, useState } from 'react'
-import { Button, Card, Chip, EmptyState, InfoBanner, Modal, ProgressRing } from '../components/ui'
+import { Button, Card, Chip, EmptyState, InfoBanner, Modal, ProgressRing, Spinner } from '../components/ui'
 import ExerciseRunner from '../components/ExerciseRunner'
 import { useStore } from '../lib/store'
 import { getBundle } from '../content'
 import { checkAnswer } from '../lib/check'
-import { loadAudioManifest, hasAudio } from '../lib/audio'
+import { audioItem, loadAudioManifest, hasAudio } from '../lib/audio'
 import type { MockExamSectionSpec } from '../content/types'
 
 interface SectionProgress {
@@ -322,6 +322,11 @@ function kindSummary(s: MockExamSectionSpec): string {
 
 // ---------------------- Audio paneli ----------------------
 function AudioPanel({ audio, manifestOk }: { audio: NonNullable<MockExamSectionSpec['audio']>; manifestOk: boolean | null }) {
+  // Fayl manzili MANIFESTDAN olinadi (id bo'yicha) — kontentdagi eski
+  // taxminiy nom emas. Manifest bazaga (GitHub Pages /AI_English_Academy/)
+  // moslashtirilgan holda keladi.
+  const item = audioItem(audio.id)
+  const src = item?.available ? item.src : null
   return (
     <Card className="grid gap-2">
       <div className="flex flex-wrap gap-2">
@@ -329,13 +334,17 @@ function AudioPanel({ audio, manifestOk }: { audio: NonNullable<MockExamSectionS
         <Chip>{audio.license}</Chip>
         <Chip>{audio.attribution}</Chip>
       </div>
-      {manifestOk === false ? (
+      {manifestOk === null ? (
+        <div className="flex items-center gap-2 text-sm muted">
+          <Spinner size={16} /> Audio fayl tekshirilmoqda…
+        </div>
+      ) : src ? (
+        <audio src={src} controls className="w-full" />
+      ) : (
         <InfoBanner tone="warn">
           Audio fayl topilmadi (<code>/audio/{audio.id}.wav</code>). Ilova soxta pleyer ko‘rsatmaydi — savollar matn
           asosida. Audio yaratish uchun: <code>npm run audio:build</code>.
         </InfoBanner>
-      ) : (
-        <audio src={audio.src} controls className="w-full" />
       )}
     </Card>
   )
