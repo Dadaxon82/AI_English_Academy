@@ -133,3 +133,43 @@ describe('Vaqt hisobi — sessiya/ko‘nikma atributsiyasi va chegaralar', () =>
     expect(todaysSeconds(s)).toBe(0)
   })
 })
+
+describe('Mock imtihon vaqti kundalik hisobga yoziladi', () => {
+  it('bo‘limlarda sarflangan vaqt ko‘nikmalar bo‘yicha qo‘shiladi', () => {
+    const now = Date.now()
+    let s = baseState('u1')
+    s = reducer(s, {
+      type: 'mock-time',
+      entries: [
+        { skill: 'reading', startedAt: now - 20 * 60_000, finishedAt: now },
+        { skill: 'listening', startedAt: now - 15 * 60_000, finishedAt: now - 5 * 60_000 },
+      ],
+    })
+    expect(todaysSkillSeconds(s, 'reading')).toBe(1200)
+    expect(todaysSkillSeconds(s, 'listening')).toBe(600)
+    expect(todaysSeconds(s)).toBe(1800)
+  })
+
+  it('soat orqaga siljisa manfiy vaqt qo‘shilmaydi; 3 soatdan ko‘pi qisqartiriladi', () => {
+    const now = Date.now()
+    const s = reducer(baseState('u1'), {
+      type: 'mock-time',
+      entries: [
+        { skill: 'writing', startedAt: now, finishedAt: now - 60_000 }, // manfiy → 0
+        { skill: 'speaking', startedAt: now - 25 * 3600_000, finishedAt: now }, // 25 soat → 3 soat
+      ],
+    })
+    expect(todaysSkillSeconds(s, 'writing')).toBe(0)
+    expect(todaysSkillSeconds(s, 'speaking')).toBe(3 * 3600)
+    expect(todaysSeconds(s)).toBe(3 * 3600)
+  })
+
+  it('vaqt yozilsa ham attempt SANALMAYDI — dalil skillEvidence‘da ikki marta sanalmasin', () => {
+    const s = reducer(baseState('u1'), {
+      type: 'mock-time',
+      entries: [{ skill: 'reading', startedAt: Date.now() - 10_000, finishedAt: Date.now() }],
+    })
+    expect(s.attempts.length).toBe(0)
+    expect(s.activity[todayKey()]?.attempts ?? 0).toBe(0)
+  })
+})

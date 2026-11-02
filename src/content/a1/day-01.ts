@@ -767,25 +767,29 @@ export const day1: DailyPlanDay = {
   dayNumber: 1,
   titleUz: 'Salomlashish va sinf tanishuvi',
   goalUz: 'Ishlatiladi: tanishish uchun iboralar, to be fe’li (am / is / are), sinf buyumlari va 1–20 sonlari bilan gapirish hamda yozish.',
+  // Bo'lim minutlari talabnomadagi kunlik reja bilan BIR XIL:
+  // Vocab 10 / Grammar 15 / Reading 15 / Listening 15 / Writing 20 / Speaking 15 = 90′.
+  // (Eski holatda yig'indi 120′ edi — `normalizeDayMinutes` ularni 90′ ga
+  // majburan bo'lib, bo'limlar nisbati buzilardi.)
   sections: [
     {
       skill: 'vocabulary',
-      minutes: 15,
+      minutes: 10,
       itemIds: vocabDay1.map((v) => v.id),
       titleUz: 'Yangi so‘zlar: salomlashish, sinf buyumlari',
     },
     {
       skill: 'grammar',
-      minutes: 25,
+      minutes: 15,
       itemIds: [grammarDay1.id],
       titleUz: 'Grammatika: to be fe’li',
     },
-    { skill: 'reading', minutes: 20, itemIds: [readingDay1.id], titleUz: 'O‘qish: “Salom! Mening ismim Samir”' },
-    { skill: 'listening', minutes: 20, itemIds: [listeningDay1.id], titleUz: 'Tinglash: sinfda birinchi tanishuv' },
+    { skill: 'reading', minutes: 15, itemIds: [readingDay1.id], titleUz: 'O‘qish: “Salom! Mening ismim Samir”' },
+    { skill: 'listening', minutes: 15, itemIds: [listeningDay1.id], titleUz: 'Tinglash: sinfda birinchi tanishuv' },
     { skill: 'writing', minutes: 20, itemIds: [writingDay1.id], titleUz: 'Yozish: tanishtiruv xati' },
     {
       skill: 'speaking',
-      minutes: 20,
+      minutes: 15,
       itemIds: speakingDay1.map((s) => s.id),
       titleUz: 'Gapirish: tanishuv, sinf buyumlari, sonlar',
     },

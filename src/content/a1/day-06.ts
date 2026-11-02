@@ -779,10 +779,13 @@ export const testDay6: SectionTest = {
       tags: ['going to'],
       source: 'Men ertaga kinoteatrga bormoqchiman.',
       sourceLang: 'uz',
+      // “bormoqchiman“ — niyat/reja. `be going to` asosiy shakl, lekin
+      // “want to go“ ham Mazmunan to‘g‘ri — u ham qabul qilinadi.
       accepted: [
         'I am going to the cinema tomorrow',
         'I’m going to the cinema tomorrow',
-        'I am going to the cinema tomorrow.',
+        'I want to go to the cinema tomorrow',
+        'I’d like to go to the cinema tomorrow',
       ],
     },
   ],

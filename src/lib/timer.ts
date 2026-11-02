@@ -97,7 +97,7 @@ export function stopTimer(
  * Devor-soat farqi — soat siljishi / tizim saati o'zgarsa manfiy bo'lmasligi
  * va uxlash oralig'i cheklanishi uchun.
  */
-function clampDelta(deltaMs: number): number {
+export function clampDelta(deltaMs: number): number {
   if (!Number.isFinite(deltaMs) || deltaMs <= 0) return 0
   return Math.min(deltaMs, MAX_CONTINUOUS_SEC * 1000)
 }

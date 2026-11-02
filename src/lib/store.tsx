@@ -9,7 +9,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useReducer,
 import type { CefrLevel, CoreSkill, Exercise, Skill } from '../content/types'
 import { allVocab, findExercise, getBundle, LOADED_LEVELS } from '../content/index'
 import { initialSrsState, review, type SrsGrade } from './srs'
-import { currentElapsed, pauseTimer, startTimer, stopTimer, formatDuration, planProgress } from './timer'
+import { clampDelta, currentElapsed, pauseTimer, startTimer, stopTimer, formatDuration, planProgress } from './timer'
 import { xpForAttempt, streakFor, evaluateLevelPromotion, weightedScore, confidenceFor, type SkillEvidence } from './skillScoring'
 import { analyzeSpeaking, analyzeWriting, countWords } from './analyze'
 import { computeAllocation, type Allocation } from './planning'
@@ -39,6 +39,7 @@ type Action =
   | { type: 'writing-add'; sub: WritingSubmission }
   | { type: 'speaking-add'; session: SpeakingSession }
   | { type: 'mock-add'; attempt: MockExamAttempt }
+  | { type: 'mock-time'; entries: { skill: CoreSkill; startedAt: number; finishedAt: number }[] }
   | { type: 'day-complete'; dayId: string; testScore?: number; testId?: string }
   | { type: 'diagnostic'; at: number; level: CefrLevel | null; labelUz: string; confidence: number }
   | { type: 'level-set'; level: CefrLevel }
@@ -176,6 +177,21 @@ export function reducer(state: AppData, action: Action): AppData {
       return { ...state, speaking: [...state.speaking, action.session].slice(-300) }
     case 'mock-add':
       return { ...state, mockAttempts: [...state.mockAttempts, action.attempt].slice(-60) }
+    case 'mock-time': {
+      // Mock imtihonda sarflangan vaqt kundalik hisobga yoziladi.
+      // ESKI BUG: MockExam bo'limlari real taymer yurar, lekin hech qachon
+      // `activity`ga yozilmasdi — Dashboard'da "0/90 daq" ko'rsatilardi.
+      // Ball/zanjar dalili `skillEvidence()`da mockAttempts orqali ALLOQACHON
+      // hisoblanadi, shuning uchun bu yerda attempt QO'SHILMAYDI (ikki marta
+      // sanash bo'lardi).
+      let next = state
+      for (const e of action.entries) {
+        // `clampDelta` — uyqu/soat ortidagi taqsimot (25 soat → 3 soat) va
+        // soat orqaga ketganda 0; oddiy ayirma emas.
+        next = addActivitySeconds(next, Math.round(clampDelta(e.finishedAt - e.startedAt) / 1000), e.skill)
+      }
+      return next
+    }
     case 'day-complete': {
       const completedDays = state.path.completedDays.includes(action.dayId)
         ? state.path.completedDays
@@ -285,6 +301,8 @@ export interface StoreValue {
     addWriting(taskId: string, text: string, secondsSpent: number, supersedesId: string | null): WritingSubmission
     addSpeaking(input: { taskId: string; transcript: string | null; engine: SpeakingSession['transcriptionEngine']; durationSec: number; audioStored: boolean; textAnswer: string | null }): SpeakingSession
     addMockAttempt(attempt: Omit<MockExamAttempt, 'id' | 'completedAt'>): MockExamAttempt
+    /** Mock imtihonda bo'lim bo'yicha sarflangan vaqt kundalik hisobga yoziladi. */
+    recordMockTime(entries: { skill: CoreSkill; startedAt: number; finishedAt: number }[]): void
     completeDay(dayId: string, testId?: string, testScore?: number): void
     setDiagnostic(level: CefrLevel | null, labelUz: string, confidence: number): void
     setLevel(level: CefrLevel): void
@@ -429,6 +447,10 @@ export function StoreProvider({ userId, children }: { userId: string; children: 
     return attempt
   }, [])
 
+  const recordMockTime = useCallback<StoreValue['actions']['recordMockTime']>((entries) => {
+    dispatch({ type: 'mock-time', entries })
+  }, [])
+
   const completeDay = useCallback((dayId: string, testId?: string, testScore?: number) => {
     dispatch({ type: 'day-complete', dayId, testId, testScore })
   }, [])
@@ -517,6 +539,7 @@ export function StoreProvider({ userId, children }: { userId: string; children: 
       addWriting,
       addSpeaking,
       addMockAttempt,
+      recordMockTime,
       completeDay,
       setDiagnostic,
       setLevel,

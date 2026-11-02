@@ -625,7 +625,7 @@ export const writingDay7: WritingTask = {
     { pattern: 'straight ahead', whyUz: 'Yo‘l ko‘rsatish uchun “Go straight ahead“ iborasi talab qilinadi.' },
   ],
   modelAnswerEn:
-    'Hi Nilufar! Last weekend was great. On Saturday my family and I were at the railway station in Tashkent. We were on a train to Samarkand for three hours, and the station was big and clean. On Sunday we wanted to see the museum. A man helped us: “Go straight ahead and turn left at the crossing. The museum is next to the blue gate.” The museum was old and very interesting. Next month I am going to visit Samarkand again. Write to me soon! Your friend, Sardor.',
+    'Hi Nilufar! Last weekend was great. On Saturday my family and I were at the railway station in Tashkent. We went to Samarkand by train, and the station was big and clean. On Sunday we wanted to see the museum. It was not far from the station. A man helped us: “Go straight ahead and turn left at the crossing. The museum is next to the blue gate.” The museum was old and very interesting. Next month I am going to visit Samarkand again. Write to me soon! Your friend, Sardor.',
 }
 
 export const speakingDay7: SpeakingTask[] = [
@@ -645,7 +645,7 @@ export const speakingDay7: SpeakingTask[] = [
     level: 'A1',
     topicUz: 'Yo‘l so‘rash va ko‘rsatish',
     questionEn: 'Imagine a tourist asks you: “How do I get to the park?” Tell them the way.',
-    hintUz: '“Go straight ahead“, “turn left / right“, “it is next to ...“ iboralarini ishlatib davom etib ayting.',
+    hintUz: '“Go straight ahead“, “turn left / right“, “it is next to ...“ iboralarini ishlatib 4–5 gap ayting.',
     minSeconds: 30,
     targetSeconds: 60,
     textAlternative: 'Mehmonga yo‘lni ko‘rsatuvchi 5 ta qisqa buyruq gap yozing.',
@@ -718,7 +718,7 @@ export const testDay7: SectionTest = {
       instructionUz: 'Test: joy va “there is/are“ (4-kun).',
       level: 'A1',
       skill: 'grammar',
-      explanationUz: '“two buses“ ko‘plik — There are; bekating joyini yonida deydi.',
+      explanationUz: '“two buses“ ko‘plik — There are; bekat esa binoning YONIDA — next to.',
       difficulty: 2,
       tags: ['there are', 'prepositions'],
       question: '___ two buses at the stop, and the stop is ___ our building.',

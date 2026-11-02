@@ -225,6 +225,11 @@ export default function MockExam() {
   const submit = () => {
     const completed = buildAttempt()
     const attempt = actions.addMockAttempt(completed)
+    // Bo'limlarda sarflangan vaqt KUNDALIK HISOBGA yoziladi — aks holda Mock
+    // imtihon 90 daqiqa o'tirib, Dashboard'da "0/90 daq" bo'lib qolardi.
+    // (Dalil/ball skillEvidence()da mockAttempts orqali alloqachon hisoblanadi;
+    // shuning uchun bu yerda attempt SANALMAYDI — ikki marta sanash bo'lardi.)
+    actions.recordMockTime(completed.sections.map((s) => ({ skill: s.skill, startedAt: s.startedAt, finishedAt: s.finishedAt })))
     // Saqlangan jarayon end kerak emas — natija store'da.
     try {
       localStorage.removeItem(SESSION_KEY)

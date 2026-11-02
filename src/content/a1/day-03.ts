@@ -618,7 +618,7 @@ export const writingDay3: WritingTask = {
   instructionUz: 'Bir kuningiz haqida paragraf yozing: nechida uyanishingiz, o‘rnidan turishingiz va maktabga borishingizni ayting. Kunduzdan keyin nima qilishingiz va nechida uxlashga yotishingizni yozing. Present Simple ishlatib, vaqtni at bilan ko‘rsating.',
   minWords: 40,
   maxWords: 100,
-  minutes: 25,
+  minutes: 20,
   criteria: ['task_achievement', 'coherence', 'lexical_resource', 'grammatical_range', 'accuracy'],
   checklistUz: [
     'Kamida uchta vaqt ko‘rsatilgan (uyonish, maktab, uxlash).',
@@ -803,25 +803,26 @@ export const day3: DailyPlanDay = {
   dayNumber: 3,
   titleUz: 'Kunlik tartib va soat',
   goalUz: 'Present Simple yordamida o‘z kunduzini so‘zlab berish: uyanishdan uxlaguncha, hafta kunlari va soatni aytish.',
+  // Kunlik reja talabnomaga mos: 10/15/15/15/20/15 = 90′.
   sections: [
     {
       skill: 'vocabulary',
-      minutes: 15,
+      minutes: 10,
       itemIds: vocabDay3.map((v) => v.id),
       titleUz: 'Yangi so‘zlar: kunlik tartib va vaqt',
     },
     {
       skill: 'grammar',
-      minutes: 25,
+      minutes: 15,
       itemIds: [grammarDay3.id],
       titleUz: 'Grammatika: Present Simple va vaqt prepozitsiyalari',
     },
-    { skill: 'reading', minutes: 20, itemIds: [readingDay3.id], titleUz: 'O‘qish: “Mening kunim, soatma-soat”' },
-    { skill: 'listening', minutes: 20, itemIds: [listeningDay3.id], titleUz: 'Tinglash: Bekzodning bir kuni' },
-    { skill: 'writing', minutes: 25, itemIds: [writingDay3.id], titleUz: 'Yozish: mening kunim paragrafi' },
+    { skill: 'reading', minutes: 15, itemIds: [readingDay3.id], titleUz: 'O‘qish: “Mening kunim, soatma-soat”' },
+    { skill: 'listening', minutes: 15, itemIds: [listeningDay3.id], titleUz: 'Tinglash: Bekzodning bir kuni' },
+    { skill: 'writing', minutes: 20, itemIds: [writingDay3.id], titleUz: 'Yozish: mening kunim paragrafi' },
     {
       skill: 'speaking',
-      minutes: 20,
+      minutes: 15,
       itemIds: speakingDay3.map((s) => s.id),
       titleUz: 'Gapirish: ertalab, soat, sevimli kun',
     },
