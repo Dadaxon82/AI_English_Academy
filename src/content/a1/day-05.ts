@@ -512,12 +512,16 @@ export const listeningDay5: ListeningTask = {
       instructionUz: 'Audioyani tinglab savolga javob bering.',
       level: 'A1',
       skill: 'listening',
-      explanationUz: 'Onasi stol ustida non borligini va ikkita tuxum borligini aytadi.',
+      explanationUz:
+        'Ona: “there is some bread on the table. There are two eggs too.“ — javob non va tuxum. Pishloq umuman yo‘q, asal stol ustidagi yashil piyolada, guruch qutida, banan esa eshik yonidagi sumkada.',
       difficulty: 1,
       tags: ['listening detail'],
       passageId: 'a1-l-audio-05',
       question: 'What food is already on the table?',
-      options: ['Bread and eggs', 'Cheese and honey', 'Rice and tomatoes', 'Bananas and cheese'],
+      // ESKI CHALGʻITUV: “Cheese and honey“ — asal ham stol ustida (piyolada)
+      // deyilgan, yaʼni variant qisman toʻgʻri boʻlib qolardi. Endi variantda
+      // audioda TIMSALMAYDIGAN ovqat turadi (pishloq yoʻq, sut tilga olinmagan).
+      options: ['Bread and eggs', 'Cheese and milk', 'Rice and tomatoes', 'Bananas and cheese'],
       answerIndex: 0,
     },
     {
