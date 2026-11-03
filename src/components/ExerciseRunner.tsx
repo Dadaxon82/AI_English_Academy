@@ -9,6 +9,7 @@ import { useEffect, useMemo, useState } from 'react'
 import type { Exercise } from '../content/types'
 import { checkAnswer, type CheckResult } from '../lib/check'
 import { Button, Chip, InfoBanner, inputCls } from './ui'
+import { MascotExerciseFeedback } from './Mascot'
 
 export interface ExerciseRunProps {
   exercise: Exercise
@@ -97,25 +98,11 @@ export default function ExerciseRunner({ exercise, checked, index, total, onNext
       <AnswerInput exercise={exercise} answer={answer} onChange={setAnswer} locked={state === 'answered'} rights={rights} />
 
       {state === 'answered' && result && (
-        <div
-          className={`rounded-xl border px-4 py-3 text-sm animate-[var(--animate-pop)] ${
-            result.correct
-              ? 'border-emerald-400/60 bg-emerald-50 dark:bg-emerald-900/20'
-              : 'border-rose-400/60 bg-rose-50 dark:bg-rose-900/15'
-          }`}
-          role="status"
-          aria-live="polite"
-        >
-          <strong className={result.correct ? 'text-[var(--ok)]' : 'text-[var(--bad)]'}>
-            {result.correct ? 'To‘g‘ri!' : result.partial > 0 ? 'Qisman to‘g‘ri' : 'Noto‘g‘ri'}
-          </strong>
-          {!result.correct && (
-            <p className="mt-1">
-              To‘g‘ri javob: <b>{result.expected}</b>
-            </p>
-          )}
-          <p className="mt-1 muted">{result.whyUz}</p>
-        </div>
+        <MascotExerciseFeedback
+          correct={result.correct}
+          expected={result.expected}
+          whyUz={result.whyUz}
+        />
       )}
 
       <div className="flex flex-wrap items-center gap-2">

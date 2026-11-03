@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Button, Card, Field, InfoBanner, inputCls } from '../components/ui'
+import { MascotAvatar } from '../components/Mascot'
 import { getSupabase, localGuestId, safeErrorMessage, supabaseConfigured, type AuthState } from '../lib/supabase'
 import { purgeUserData } from '../lib/storage'
 
@@ -68,8 +69,8 @@ export default function Login({ onAuth, authState }: { onAuth: (s: AuthState) =>
     <div className="min-h-dvh grid place-items-center p-4">
       <div className="w-full grid gap-4 max-w-[520px] mx-auto">
         <header className="text-center grid gap-2">
-          <div className="mx-auto grid place-items-center w-12 h-12 rounded-2xl bg-navy-700 dark:bg-navy-500 text-white dark:text-navy-950 font-black text-lg">
-            AE
+          <div className="flex justify-center mb-1">
+            <MascotAvatar size="xl" alt="AI English Academy qahramoni" className="shadow-lg" />
           </div>
           <h1 className="text-2xl font-bold">
             AI English <span className="text-navy-700 dark:text-navy-300">Academy</span>

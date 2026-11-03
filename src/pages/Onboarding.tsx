@@ -8,6 +8,7 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Button, Card, Chip, Field, InfoBanner, inputCls } from '../components/ui'
+import { MascotAvatar } from '../components/Mascot'
 import ExerciseRunner from '../components/ExerciseRunner'
 import { diagnosticTest, diagnose } from '../content/diagnostic'
 import { useStore } from '../lib/store'
@@ -46,6 +47,9 @@ export default function Onboarding() {
     <div className="min-h-dvh grid place-items-center p-4">
       <div className="w-full max-w-2xl grid gap-4">
         <header className="text-center grid gap-1.5">
+          <div className="flex justify-center mb-1">
+            <MascotAvatar size="lg" mood="greeting" alt="AI English Academy qahramoni" className="shadow-md" />
+          </div>
           <h1 className="text-2xl font-bold">Xush kelibsiz!</h1>
           <p className="muted text-sm">3 ta savol — so‘ng boshlaymiz. Bularning barchasini keyin sozlamalardan o‘zgartirasiz.</p>
           <ol className="flex justify-center gap-2 mt-2">

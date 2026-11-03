@@ -10,6 +10,7 @@
 import { useMemo } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { BarChart, Button, Card, Chip, EmptyState, InfoBanner, LoadingBlock, StatTile } from '../components/ui'
+import { MascotFigure } from '../components/Mascot'
 import { findExercise, getBundle } from '../content'
 import type { Skill } from '../content/types'
 import { buildDayTasks, nextDayId, skillLabelUz } from '../lib/planning'
@@ -97,17 +98,39 @@ export default function Dashboard() {
 
   return (
     <div className="grid gap-4 sm:gap-5">
-      {/* ---------- Sarlavha: daraja va maqsad ---------- */}
-      <Card as="section" className="grid gap-2.5">
-        <div className="flex flex-wrap items-center gap-2">
-          <h1 className="text-2xl font-bold">Dashboard</h1>
-          <Chip tone="brand">Hozirgi: {curLevel} — {levelLabel(curLevel).titleUz}</Chip>
-          <Chip>Maqsad: {tgtLevel} — {levelLabel(tgtLevel).titleUz}</Chip>
+      {/* ---------- Sarlavha va Qahramon kutib olishi ---------- */}
+      <Card as="section" className="relative overflow-hidden p-4 sm:p-6 bg-gradient-to-br from-indigo-50/70 via-[var(--panel)] to-sky-50/50 dark:from-slate-900/60 dark:via-[var(--panel)] dark:to-indigo-950/30">
+        <div className="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-4">
+          <div className="grid gap-2.5 flex-1 text-center sm:text-left">
+            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">Assalomu alaykum! 👋</h1>
+              <Chip tone="brand">Hozirgi: {curLevel} — {levelLabel(curLevel).titleUz}</Chip>
+              <Chip>Maqsad: {tgtLevel} — {levelLabel(tgtLevel).titleUz}</Chip>
+            </div>
+            <p className="text-sm leading-relaxed text-slate-700 dark:text-slate-300 max-w-xl">
+              Xush kelibsiz! Bugungi <b>{allocation.total} daqiqalik</b> shaxsiy o‘quv rejangiz tayyor.
+              {remainingTask ? (
+                <span> Keling, keyingi bosqich — <b>«{remainingTask.titleUz}»</b> mashg‘ulotini boshlaymiz!</span>
+              ) : (
+                <span> Bugungi barcha vazifalarni a’lo darajada yakunladingiz, ofarin! 🎉</span>
+              )}
+            </p>
+            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 pt-1 text-xs muted">
+              <span>O‘quv yo‘li: <b>{data.path.completedDays.length}/{bundle.days.length || '—'}</b> kun yakunlangan</span>
+              <span>·</span>
+              <span>Streak: <b>{streak} kun</b></span>
+              {dueCount > 0 && (
+                <>
+                  <span>·</span>
+                  <span className="text-amber-600 dark:text-amber-400 font-semibold">{dueCount} ta so‘z takrorlash navbatida</span>
+                </>
+              )}
+            </div>
+          </div>
+          <div className="shrink-0 flex items-center justify-center">
+            <MascotFigure maxHeight="max-h-36 sm:max-h-44" alt="AI English Academy qahramoni" />
+          </div>
         </div>
-        <p className="muted text-sm">
-          Kunlik reja: <b>{allocation.total} daqiqa</b> · O‘quv yo‘li bosqichi:{' '}
-          <b>{data.path.completedDays.length}/{bundle.days.length || '—'}</b> kun yakunlangan.
-        </p>
       </Card>
 
       {/* ---------- Jonli taymer ---------- */}
