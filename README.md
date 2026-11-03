@@ -13,12 +13,13 @@ Loyiha talabnomasi (`AI English Academy_v2.docx`) to'liq bajarilgan:
 - ✅ Tinglash uchun **HAQIQIY audio** (`npm run audio:build` — Windows SAPI). Manifestda fayli bo'lmagan audio uchun pleyer umuman ko'rsatilmaydi — soxta tugma yo'q
 - ✅ Speaking audio **rozilik siz serverga yuborilmaydi** (`audio_stored: false`)
 - ✅ **Jonli taymer** — sahifa yangilansa ham vaqt yo'qolmaydi (IndexedDB'da saqlanadi)
-- ✅ **Offline / PWA**: sync navbati, Service Worker, logout'da kesh tozalanadi
+- ✅ **Offline / PWA**: sync navbati, Service Worker; logout'da avval sinxronlanadi (yuborilmagan narsa qolsa tasdiq so'raladi), so'ng kesh tozalanadi
+- ✅ **Server bilan ikki tomonlama**: hisobga kirganda progress serverdan tiklanadi va qurilmadagisi bilan birlashtiriladi
 - ✅ **Supabase RLS**: har foydalanuvchi faqat o'z qatorlarini ko'radi; service role va `AI_*` kalitlari faqat serverda
 - ✅ AI "ulangan" deb ko'rsatilmaydi — AI bo'lmasa **qoidaviy dvigatel** (`engine: 'rule-based'`) ishlatiladi
 - ✅ **7+ kun A1 kontenti** alohida (`src/content/day-01…07.ts`)
 - ✅ **13 ta jadval** (`supabase/migrations/0001_init.sql`), ID'lar, `created_at`, FK va indexlar bilan
-- ✅ Testlar: `tsc` tip tekshiruvi, ESLint, `vitest` (75 test), production build, smoke + render tekshiruvi
+- ✅ Testlar: `tsc` tip tekshiruvi, ESLint, `vitest` (138 test), production build, smoke + render tekshiruvi
 - ✅ JSON/CSV **eksport** va **ma'lumotlarni o'chirish**
 - ✅ **HECH QANDAY TUGMA DEKORATSIYA EMAS** — har bir tugma haqiqiy harakat bajaradi
 
@@ -98,7 +99,7 @@ npm run icons:build   # PWA ikonalaria (0 bog'liqlik, sof Node)
 ```bash
 npm run typecheck     # tsc — 0 xato
 npm run lint          # eslint — 0 xato
-npm test              # vitest — 106 test (SRS, taymer/vaqt hisobi, tekshiruv, kontent auditi, audio yaxlitligi, rejalashtirish, daraja, sync)
+npm test              # vitest — 138 test (SRS, taymer/vaqt hisobi, tekshiruv, kontent auditi, audio yaxlitligi, rejalashtirish, daraja, sync, server birlashmasi, sahifalar)
 npm run build         # production build + Service Worker
 npm run smoke         # dist'ni serverda ochib tekshirish + 375/1280 skrinshot
 npm run render:check  # 15 marshrutni CDP orqali ochib DOM tekshiruvi + konsol xatolari
@@ -136,13 +137,19 @@ Eski keshdagi `<matn>|gl-<so'z>` kalitlari `storage.migrate()`da avtomatik aylan
 Mock imtihonda sarflangan vaqt ham kundalik hisobga yoziladi (`mock-time`), lekin ball
 dalili `mockAttempts`da qayta sanalmaydi.
 
-**AI holati:** interfeysda AI faqat HAQIQIY ulanganda "AI" deb ko'rsatiladi. Serverless
+**Sinxronlash:** "Hoziroq sinxronizatsiya qilish" avval serverdagi ma'lumotni o'qib qurilmadagisi bilan
+birlashtiradi (`lib/merge.ts`: urinishlar/ishlar `id` bo'yicha, SRS — ko'proq takrorlangani, kunlik faollik —
+maksimum), so'ng BUTUN navbatni jadval bo'yicha bulk so'rovlar bilan yuboradi. Serverga aynan shu ko'rinishda
+yozilgan yozuvlar (`aea:synced:<uid>` izi) qayta yuborilmaydi. O'quv yo'li, XP va diagnostika
+`learning_plans.plan` ustunida saqlanadi. Hisobga kirganda progress serverdan tiklanadi.
+
+**AI holati:** interfeysda AI faqat HAQIQIY ulanganda "AI" deb ko'rsatiladi (`lib/ai.ts`). Serverless
 funksiya joylashtirilmagan hozirgi holatda barcha tahlil `engine: 'rule-based'` bilan
 bajariladi.
 
 **Daraja siyosati:** 4 ta ko'nikmada kamida 4 tadan isbot, og'irlikli ball ≥ 72 (mock imtihon og'irligi 0.35, eski natijalar 30 kunlik "half-life" bilan kamayadi) → tizim keyingi darajani **tavsiya** qiladi; qaror foydalanuvchida.
 
-**Maxfiylik:** speaking yozuvlari faqat brauzerda; serverga faqat matn transkripsiyasi va `audio_stored:false` yuboriladi; "Ma'lumotlarimni o'chirish" barcha jadvallar + lokal keshni tozalaydi.
+**Maxfiylik:** speaking yozuvlari faqat brauzerda; serverga faqat matn transkripsiyasi va `audio_stored:false` yuboriladi; "Barcha ma'lumotni o'chirish" hozircha faqat shu qurilmadagi kesh, navbat va offline fayllarni tozalaydi — serverdagi yozuvlar o'chirilmaydi.
 
 ## 7. Litsenziya va kontent
 

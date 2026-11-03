@@ -36,6 +36,20 @@ export const DEFAULT_SETTINGS: UserSettings = {
   aiEnabled: true,
 }
 
+/**
+ * Kunlik reja chegarasi — DB'dagi `daily_minutes between 30 and 240` CHECK
+ * bilan bir xil. 6 ko'nikma × minimal 5 daqiqa = 30, undan pastga tushmaydi.
+ * ESKI BUG: onboarding 15–25 daqiqaga ruxsat berardi — bunday sozlama
+ * serverga hech qachon yozilmas, navbatda abadiy "xato" bo'lib qolardi.
+ */
+export const MIN_DAILY_MINUTES = 30
+export const MAX_DAILY_MINUTES = 240
+
+export function clampDailyMinutes(m: number): number {
+  if (!Number.isFinite(m)) return DEFAULT_SETTINGS.dailyMinutes
+  return Math.max(MIN_DAILY_MINUTES, Math.min(MAX_DAILY_MINUTES, Math.round(m)))
+}
+
 export type AttemptSource = 'practice' | 'section_test' | 'mock_exam' | 'diagnostic'
 
 export interface AttemptRecord {
@@ -98,6 +112,12 @@ export interface SpeakingSession {
 
 export interface SpeakingAnalysis {
   engine: 'rule-based' | 'ai'
+  /**
+   * 'text' — matnli muqobil javob (mikrofon/transkripsiya ishlamaganda):
+   * ravonlik o'lchanmaydi (`fluency`/`wpm` = 0) va bahoga kirmaydi.
+   * Yo'q bo'lsa — ovozli javob (eski yozuvlar ham shunday).
+   */
+  mode?: 'audio' | 'text'
   fluency: number // 0..5, pauza/tezlik asosida
   lexis: number
   grammar: number
@@ -120,6 +140,8 @@ export interface MockExamAttempt {
     score: number | null
     startedAt: number
     finishedAt: number
+    /** Bo'lim haqiqatan ochiq turgan sekundlar (eski yozuvlarda yo'q) */
+    secondsUsed?: number
     exerciseResults: Record<string, { correct: boolean; given: string }>
   }[]
   totalScore: number | null
@@ -172,6 +194,9 @@ export interface AppData {
 }
 
 export const APP_DATA_VERSION = 1
+
+/** Qurilmada saqlanadigan tarix chegaralari (reducer va server birlashmasi uchun bitta manba). */
+export const HISTORY_LIMITS = { attempts: 3000, writing: 300, speaking: 300, mockAttempts: 60 } as const
 
 export function emptyData(userId: string): AppData {
   return {

@@ -181,7 +181,7 @@ export default function App() {
   return (
     <Router {...routerProps}>
       <AuthContext.Provider value={{ signOut }}>
-        <StoreProvider userId={userId}>
+        <StoreProvider userId={userId} remoteSync={auth.kind === 'signed-in'}>
           <Shell auth={auth} onAuth={setAuth} />
         </StoreProvider>
       </AuthContext.Provider>

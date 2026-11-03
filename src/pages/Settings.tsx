@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuthActions } from '../lib/authContext'
 import { Button, Card, Chip, Field, InfoBanner, Modal, StatTile, SuccessBanner, inputCls } from '../components/ui'
+import { aiRuntimeEnabled } from '../lib/ai'
 import { useStore } from '../lib/store'
 import { skillLabelUz, daysUntil } from '../lib/planning'
 import { loadCacheMeta, loadQueue, purgeUserData, storageBackend } from '../lib/storage'
@@ -42,6 +43,32 @@ export default function Settings() {
   const [syncing, setSyncing] = useState(false)
   const [confirmReset, setConfirmReset] = useState(false)
   const [resetDone, setResetDone] = useState(false)
+  const [signingOut, setSigningOut] = useState(false)
+  const [unsynced, setUnsynced] = useState<{ pending: number; reasonUz: string | null } | null>(null)
+  const isGuest = data.userId.startsWith('local-')
+
+  const doSignOut = () => {
+    setUnsynced(null)
+    authActions?.signOut()
+    void nav('/login')
+  }
+
+  // ESKI BUG: chiqishda lokal ma'lumot va navbat darhol o'chirilardi —
+  // serverga yetmagan progress jimgina yo'qolardi. Endi avval sinxronlanadi,
+  // yuborilmagan narsa qolsa foydalanuvchidan tasdiq so'raladi.
+  const requestSignOut = async () => {
+    if (isGuest || !supabaseConfigured) {
+      doSignOut()
+      return
+    }
+    setSigningOut(true)
+    const res = await actions.sync()
+    const q = await loadQueue(data.userId)
+    setSigningOut(false)
+    setQueueLen(q.length)
+    if (res.ok && q.length === 0) doSignOut()
+    else setUnsynced({ pending: q.length, reasonUz: res.reasonUz })
+  }
 
   useEffect(() => {
     let alive = true
@@ -187,7 +214,7 @@ export default function Settings() {
           <Chip tone="brand">Saqlash: {storageBackend()}</Chip>
         </div>
         <div className="grid grid-cols-2 gap-3">
-          <StatTile label="Navbatdagi yozuvlar" value={queueLen === null ? '…' : queueLen} hint="Internet chiqqanda yuboriladi" tone={queueLen && queueLen > 0 ? 'warn' : 'ok'} />
+          <StatTile label="Navbatdagi yozuvlar" value={queueLen === null ? '…' : queueLen} hint="Sinxronizatsiya yoki hisobdan chiqishda yuboriladi" tone={queueLen && queueLen > 0 ? 'warn' : 'ok'} />
           <StatTile
             label="Offline kesh"
             value={cache ? `${cache.vocabIds.length} so‘z · ${cache.dayIds.length} kun` : '—'}
@@ -205,7 +232,9 @@ export default function Settings() {
               setSyncMsg({
                 ok: res.ok,
                 text: res.ok
-                  ? `${res.done} ta yozuv yuborildi.`
+                  ? `${res.done > 0 ? `${res.done} ta yozuv yuborildi.` : 'Yuboriladigan yangi o‘zgarish yo‘q.'}${
+                      res.pulled ? ' Serverdagi ma’lumotlar qurilmadagisi bilan birlashtirildi.' : ''
+                    }`
                   : (res.reasonUz ?? 'Yuborib bo‘lmadi — navbat saqlandi.'),
               })
               const q = await loadQueue(data.userId)
@@ -248,14 +277,8 @@ export default function Settings() {
             </p>
           </div>
           <div className="grid gap-2 content-end">
-            <Button
-              variant="secondary"
-              onClick={() => {
-                authActions?.signOut()
-                void nav('/login')
-              }}
-            >
-              {data.userId.startsWith('local-') ? 'Chiqish (ma’lumot saqlanadi)' : 'Hisobdan chiqish'}
+            <Button variant="secondary" busy={signingOut} onClick={() => void requestSignOut()}>
+              {isGuest ? 'Chiqish (ma’lumot saqlanadi)' : signingOut ? 'Sinxronlanmoqda…' : 'Hisobdan chiqish'}
             </Button>
             <Link to="/dashboard">
               <Button variant="ghost" size="sm">
@@ -280,6 +303,29 @@ export default function Settings() {
         </div>
         {resetDone && <SuccessBanner>Ma’lumotlar o‘chirildi — ilova boshlang‘ich holatga qaytdi.</SuccessBanner>}
       </Card>
+
+      <Modal open={unsynced !== null} title="Serverga yetmagan ma’lumot bor" onClose={() => setUnsynced(null)}>
+        <div className="grid gap-3">
+          <p className="text-sm">
+            {unsynced && unsynced.pending > 0
+              ? `${unsynced.pending} ta yozuv serverga yuborilmadi.`
+              : 'Sinxronizatsiya to‘liq bajarilmadi.'}{' '}
+            {unsynced?.reasonUz}
+          </p>
+          <InfoBanner tone="warn">
+            Hisobdan chiqsangiz, bu qurilmadagi ma’lumotlar o‘chiriladi — serverga yetmagan qismini tiklab bo‘lmaydi.
+            Internetni tekshirib, qayta urinib ko‘ring.
+          </InfoBanner>
+          <div className="flex gap-2 justify-end">
+            <Button variant="ghost" onClick={() => setUnsynced(null)}>
+              Qolish
+            </Button>
+            <Button variant="danger" onClick={doSignOut}>
+              Baribir chiqish
+            </Button>
+          </div>
+        </div>
+      </Modal>
 
       <Modal open={confirmReset} title="Ma’lumotlarni o‘chirasizmi?" onClose={() => setConfirmReset(false)}>
         <div className="grid gap-3">
@@ -322,12 +368,4 @@ export default function Settings() {
       </Modal>
     </div>
   )
-}
-
-function aiRuntimeEnabled(flag: boolean, online: boolean) {
-  // Halollik: AI haqiqatan ulangan Hisoblanadi FQAT deploy paytida
-  // VITE_AI_ENABLED=true qo'yilgan bo'lsa (serverless funksiya mavjud
-  // belgisi). Aks holda «ulangan» deyish yolg'on bo'lardi.
-  const aiDeployed = (import.meta as ImportMeta).env?.VITE_AI_ENABLED === 'true'
-  return flag && online && aiDeployed
 }

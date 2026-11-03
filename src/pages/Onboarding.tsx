@@ -13,6 +13,7 @@ import { diagnosticTest, diagnose } from '../content/diagnostic'
 import { useStore } from '../lib/store'
 import { CEFR_LEVELS, type CefrLevel } from '../content/types'
 import { LOADED_LEVELS } from '../content'
+import { MIN_DAILY_MINUTES, clampDailyMinutes } from '../lib/types'
 
 export default function Onboarding() {
   const { data, actions } = useStore()
@@ -35,7 +36,7 @@ export default function Onboarding() {
 
   const saveSchedule = () => {
     actions.setSettings({
-      dailyMinutes: Math.max(15, Math.min(240, minutes)),
+      dailyMinutes: clampDailyMinutes(minutes),
       examDate: examDate || null,
     })
     setStep(2)
@@ -177,7 +178,8 @@ function Schedule({
     <Card className="grid gap-4">
       <Field label="Kunlik o‘qish vaqti (daqiqa)" hint={`Boshlang‘ich: 90 daqiqa. ${minutes} daqiqaga taqsimlanadi.`}>
         <div className="flex items-center gap-3">
-          <input type="range" min={15} max={180} step={5} value={minutes} onChange={(e) => setMinutes(Number(e.target.value))} className="flex-1 accent-[var(--accent)]" />
+          {/* Minimal 30 — reja (6 × 5 daq) va DB CHECK bilan bir xil; 15–25 serverga yozilmasdi. */}
+          <input type="range" min={MIN_DAILY_MINUTES} max={180} step={5} value={minutes} onChange={(e) => setMinutes(Number(e.target.value))} className="flex-1 accent-[var(--accent)]" />
           <span className="font-bold tabular-nums w-16 text-right">{minutes}′</span>
         </div>
       </Field>

@@ -10,6 +10,7 @@ import { useSearchParams } from 'react-router-dom'
 import { Button, Card, Chip, EmptyState, InfoBanner, LoadingBlock, SuccessBanner } from '../components/ui'
 import { useStore } from '../lib/store'
 import { getBundle } from '../content'
+import { aiRuntimeEnabled } from '../lib/ai'
 import { criterionLabelUz } from '../lib/analyze'
 import { formatDuration } from '../lib/timer'
 import type { CoreCriterionKey, WritingSubmission } from '../lib/types'
@@ -104,7 +105,7 @@ export default function Writing() {
         <h1 className="text-xl font-bold">Yozish</h1>
         <p className="muted text-sm">
           Javobingiz shu brauzerda saqlanadi (qoralama) va sinxronlashda Supabase’ga yuboriladi. Tahlil{' '}
-          <b>{aiEnabled(data.settings.aiEnabled, netOnline) ? 'qoidaviy + AI' : 'qoidaviy'} dvigatel</b> bilan bajariladi.
+          <b>{aiRuntimeEnabled(data.settings.aiEnabled, netOnline) ? 'qoidaviy + AI' : 'qoidaviy'} dvigatel</b> bilan bajariladi.
         </p>
         <div className="flex flex-wrap gap-1.5">
           {tasks.map((t) => (
@@ -284,10 +285,6 @@ export default function Writing() {
       </Card>
     </div>
   )
-}
-
-function aiEnabled(flag: boolean, online: boolean) {
-  return flag && online
 }
 
 /** `avg` — 5 mezon o'rtachasi (0..5 o'lchamida ko'rsatiladi). */

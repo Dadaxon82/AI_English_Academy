@@ -9,12 +9,13 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useReducer,
 import type { CefrLevel, CoreSkill, Exercise, Skill } from '../content/types'
 import { allGlossaryVocab, allVocab, findExercise, getBundle, LOADED_LEVELS } from '../content/index'
 import { initialSrsState, review, type SrsGrade } from './srs'
-import { clampDelta, currentElapsed, pauseTimer, startTimer, stopTimer, formatDuration, planProgress } from './timer'
+import { MAX_CONTINUOUS_SEC, currentElapsed, pauseTimer, startTimer, stopTimer, formatDuration, planProgress } from './timer'
 import { xpForAttempt, streakFor, evaluateLevelPromotion, weightedScore, confidenceFor, type SkillEvidence } from './skillScoring'
-import { analyzeSpeaking, analyzeWriting, countWords } from './analyze'
+import { analyzeSpeaking, analyzeSpeakingText, analyzeWriting, countWords, speakingScore } from './analyze'
 import { computeAllocation, type Allocation } from './planning'
 import { loadData, saveData } from './storage'
-import { queueAllData, syncNow } from './sync'
+import { pullRemote, queueAllData, syncNow, type PullResult } from './sync'
+import { isPristine, mergeRemote, type RemoteSnapshot } from './merge'
 import { supabaseConfigured } from './supabase'
 import type {
   AppData,
@@ -25,7 +26,7 @@ import type {
   UserSettings,
   WritingSubmission,
 } from './types'
-import { emptyData, todayKey } from './types'
+import { HISTORY_LIMITS, emptyData, todayKey } from './types'
 
 // ---------- Actions ----------
 type Action =
@@ -39,7 +40,8 @@ type Action =
   | { type: 'writing-add'; sub: WritingSubmission }
   | { type: 'speaking-add'; session: SpeakingSession }
   | { type: 'mock-add'; attempt: MockExamAttempt }
-  | { type: 'mock-time'; entries: { skill: CoreSkill; startedAt: number; finishedAt: number }[] }
+  | { type: 'mock-time'; entries: { skill: CoreSkill; seconds: number }[] }
+  | { type: 'merge-remote'; userId: string; remote: RemoteSnapshot }
   | { type: 'day-complete'; dayId: string; testScore?: number; testId?: string }
   | { type: 'diagnostic'; at: number; level: CefrLevel | null; labelUz: string; confidence: number }
   | { type: 'level-set'; level: CefrLevel }
@@ -82,7 +84,7 @@ export function reducer(state: AppData, action: Action): AppData {
       const timerCoversThisSkill = state.timer.startedAt !== null && state.timer.skill === r.skill
       return {
         ...state,
-        attempts: [...state.attempts, r].slice(-3000),
+        attempts: [...state.attempts, r].slice(-HISTORY_LIMITS.attempts),
         xp: state.xp + xpForAttempt(r.correct, r.difficulty, true),
         activity: {
           ...state.activity,
@@ -158,7 +160,12 @@ export function reducer(state: AppData, action: Action): AppData {
           : state
       return {
         ...committed,
-        timer: startTimer({ ...committed.timer, elapsedSec: 0 }, action.sessionId, action.skill),
+        // Yig'ilgan VA hozir yurayotgan vaqt yuqorida eski ko'nikmaga yozildi —
+        // yangi taymer noldan boshlanadi. ESKI BUG: `startedAt` saqlanib
+        // qolgani uchun `startTimer` (bir sessiya, boshqa ko'nikma) yurgan
+        // vaqtni yana `elapsedSec`ga qo'shardi va u ikkinchi marta hisobga
+        // yozilardi (2-kun: 10 daq lug'at + 5 daq test → 25 daq).
+        timer: startTimer({ ...committed.timer, elapsedSec: 0, startedAt: null }, action.sessionId, action.skill),
       }
     }
     case 'timer-pause':
@@ -172,11 +179,11 @@ export function reducer(state: AppData, action: Action): AppData {
       return { ...addActivitySeconds({ ...state, timer: { ...stopped, elapsedSec: 0 } }, elapsed, skill) }
     }
     case 'writing-add':
-      return { ...state, writing: [...state.writing, action.sub].slice(-300) }
+      return { ...state, writing: [...state.writing, action.sub].slice(-HISTORY_LIMITS.writing) }
     case 'speaking-add':
-      return { ...state, speaking: [...state.speaking, action.session].slice(-300) }
+      return { ...state, speaking: [...state.speaking, action.session].slice(-HISTORY_LIMITS.speaking) }
     case 'mock-add':
-      return { ...state, mockAttempts: [...state.mockAttempts, action.attempt].slice(-60) }
+      return { ...state, mockAttempts: [...state.mockAttempts, action.attempt].slice(-HISTORY_LIMITS.mockAttempts) }
     case 'mock-time': {
       // Mock imtihonda sarflangan vaqt kundalik hisobga yoziladi.
       // ESKI BUG: MockExam bo'limlari real taymer yurar, lekin hech qachon
@@ -184,14 +191,20 @@ export function reducer(state: AppData, action: Action): AppData {
       // Ball/zanjar dalili `skillEvidence()`da mockAttempts orqali ALLOQACHON
       // hisoblanadi, shuning uchun bu yerda attempt QO'SHILMAYDI (ikki marta
       // sanash bo'lardi).
+      //
+      // Sekundlar — bo'lim haqiqatan OCHIQ turgan vaqt (MockExam hisoblaydi),
+      // "boshlanish → yakunlash" ayirmasi emas: ochilmagan bo'limlar ham butun
+      // imtihon vaqtini olib, hisob bir necha barobar oshib ketardi.
       let next = state
       for (const e of action.entries) {
-        // `clampDelta` — uyqu/soat ortidagi taqsimot (25 soat → 3 soat) va
-        // soat orqaga ketganda 0; oddiy ayirma emas.
-        next = addActivitySeconds(next, Math.round(clampDelta(e.finishedAt - e.startedAt) / 1000), e.skill)
+        const sec = Number.isFinite(e.seconds) ? Math.min(MAX_CONTINUOUS_SEC, Math.max(0, Math.round(e.seconds))) : 0
+        next = addActivitySeconds(next, sec, e.skill)
       }
       return next
     }
+    case 'merge-remote':
+      // Boshqa foydalanuvchiga tegishli (kechikkan) javob bu holatga aralashmaydi.
+      return action.userId === state.userId ? mergeRemote(state, action.remote) : state
     case 'day-complete': {
       const completedDays = state.path.completedDays.includes(action.dayId)
         ? state.path.completedDays
@@ -236,8 +249,7 @@ export function skillEvidence(data: AppData): SkillEvidence[] {
     }
     for (const s of data.speaking) {
       if (!s.analysis) continue
-      const avg = (s.analysis.fluency + s.analysis.grammar + s.analysis.lexis) / 3
-      samples.push({ score: Math.round((avg / 5) * 100), at: s.createdAt, kind: 'speaking_task' })
+      samples.push({ score: speakingScore(s.analysis), at: s.createdAt, kind: 'speaking_task' })
     }
     const kinds = new Set(samples.map((s) => s.kind))
     return {
@@ -301,39 +313,81 @@ export interface StoreValue {
     addWriting(taskId: string, text: string, secondsSpent: number, supersedesId: string | null): WritingSubmission
     addSpeaking(input: { taskId: string; transcript: string | null; engine: SpeakingSession['transcriptionEngine']; durationSec: number; audioStored: boolean; textAnswer: string | null }): SpeakingSession
     addMockAttempt(attempt: Omit<MockExamAttempt, 'id' | 'completedAt'>): MockExamAttempt
-    /** Mock imtihonda bo'lim bo'yicha sarflangan vaqt kundalik hisobga yoziladi. */
-    recordMockTime(entries: { skill: CoreSkill; startedAt: number; finishedAt: number }[]): void
+    /** Mock imtihonda bo'lim ochiq turgan sekundlar kundalik hisobga yoziladi. */
+    recordMockTime(entries: { skill: CoreSkill; seconds: number }[]): void
     completeDay(dayId: string, testId?: string, testScore?: number): void
     setDiagnostic(level: CefrLevel | null, labelUz: string, confidence: number): void
     setLevel(level: CefrLevel): void
     resetAll(): void
-    sync(): Promise<{ ok: boolean; reasonUz: string | null; done: number }>
+    /** Server bilan sinxronlash: avval serverdagisi birlashtiriladi, so'ng butun navbat yuboriladi. */
+    sync(): Promise<SyncOutcome>
   }
 }
 
+export interface SyncOutcome {
+  ok: boolean
+  reasonUz: string | null
+  done: number
+  /** Serverdagi ma'lumot qurilmadagisi bilan birlashtirildimi */
+  pulled: boolean
+}
+
+/** Yangi qurilmada serverni kutish chegarasi — tarmoq sekin bo'lsa ilova osilib qolmasin. */
+const FIRST_PULL_WAIT_MS = 8000
+
 const StoreContext = createContext<StoreValue | null>(null)
 
-export function StoreProvider({ userId, children }: { userId: string; children: ReactNode }) {
+export function StoreProvider({
+  userId,
+  remoteSync = false,
+  children,
+}: {
+  userId: string
+  /** Supabase'ga kirgan foydalanuvchi: serverdagi progress o'qiladi va birlashtiriladi */
+  remoteSync?: boolean
+  children: ReactNode
+}) {
   const [data, dispatch] = useReducer(reducer, emptyData(userId))
   const [ready, setReady] = useState(false)
   const [netOnline, setNetOnline] = useState(typeof navigator !== 'undefined' ? navigator.onLine : true)
   const [tick, setTick] = useState(0)
   const loadedFor = useRef<string | null>(null)
 
-  // yuklash: userId o'zgarsa — yangi foydalanuvchining keshi (aralashmaydi)
+  // yuklash: userId o'zgarsa — yangi foydalanuvchining keshi (aralashmaydi).
+  // Hisobga kirgan foydalanuvchi uchun serverdagi progress ham o'qiladi —
+  // ESKI BUG: server faqat yozilardi, logout esa lokal keshni tozalardi,
+  // shuning uchun qayta kirganda yoki boshqa qurilmada hammasi noldan edi.
   useEffect(() => {
     let alive = true
     setReady(false)
-    void loadData(userId).then((d) => {
+    const applyLate = (pull: Promise<PullResult>) =>
+      void pull.then((res) => {
+        if (alive && res.snapshot) dispatch({ type: 'merge-remote', userId, remote: res.snapshot })
+      })
+    void (async () => {
+      const d = await loadData(userId)
       if (!alive) return
       loadedFor.current = userId
+      if (remoteSync && isPristine(d)) {
+        // Qurilmada hali hech narsa yo'q (yangi qurilma / chiqishdan keyin):
+        // bo'sh holatni ko'rsatib onboarding'ga undamaslik uchun avval serverni
+        // qisqa muddat kutamiz.
+        const pull = pullRemote(userId)
+        const res = await Promise.race([pull, new Promise<null>((r) => window.setTimeout(() => r(null), FIRST_PULL_WAIT_MS))])
+        if (!alive) return
+        dispatch({ type: 'hydrate', data: res?.snapshot ? mergeRemote(d, res.snapshot) : d })
+        setReady(true)
+        if (res === null) applyLate(pull)
+        return
+      }
       dispatch({ type: 'hydrate', data: d })
       setReady(true)
-    })
+      if (remoteSync) applyLate(pullRemote(userId))
+    })()
     return () => {
       alive = false
     }
-  }, [userId])
+  }, [userId, remoteSync])
 
   // Har soniyada taymer ko'rsatkichi uchun qayta render
   useEffect(() => {
@@ -423,7 +477,15 @@ export function StoreProvider({ userId, children }: { userId: string; children: 
       const task =
         bundle.speaking.find((s) => s.id === taskId) ??
         bundle.mockExam?.sections.flatMap((s) => (s.speakingTask?.id === taskId ? [s.speakingTask] : []))[0]
-      const analysis = transcript && task ? analyzeSpeaking(transcript, durationSec, task) : null
+      // Transkript bo'lmasa matnli javob tahlil qilinadi (ravonliksiz) — aks
+      // holda Firefox / mikrofonsiz foydalanuvchida gapirish dalili bo'lmasdi.
+      const analysis = !task
+        ? null
+        : transcript
+          ? analyzeSpeaking(transcript, durationSec, task)
+          : textAnswer && textAnswer.trim()
+            ? analyzeSpeakingText(textAnswer, task)
+            : null
       const session: SpeakingSession = {
         id: `sp-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
         taskId,
@@ -462,13 +524,43 @@ export function StoreProvider({ userId, children }: { userId: string; children: 
   const setLevel = useCallback((level: CefrLevel) => dispatch({ type: 'level-set', level }), [])
   const resetAll = useCallback(() => dispatch({ type: 'reset' }), [])
 
-  const sync = useCallback(async () => {
-    if (!netOnline) return { ok: false, reasonUz: 'Internet yo‘q — navbat saqlandi.', done: 0 }
-    // Supabase sozlanmagan bo'lsa navbatga yozish behuda — yuboradigan joy yo'q.
-    if (supabaseConfigured) await queueAllData(data)
-    const res = await syncNow(userId)
-    return { ok: res.ok, reasonUz: res.reasonUz, done: res.done }
-  }, [data, userId, netOnline])
+  // Bir vaqtda bitta sinxron (tugma ikki marta bosilsa yoki logout paytida).
+  const syncInFlight = useRef<Promise<SyncOutcome> | null>(null)
+  const sync = useCallback(async (): Promise<SyncOutcome> => {
+    if (syncInFlight.current) return syncInFlight.current
+    const run = async (): Promise<SyncOutcome> => {
+      if (!netOnline) return { ok: false, reasonUz: 'Internet yo‘q — navbat saqlandi.', done: 0, pulled: false }
+      // Supabase sozlanmagan bo'lsa navbatga yozish behuda — yuboradigan joy yo'q.
+      if (!supabaseConfigured) {
+        const res = await syncNow(userId)
+        return { ok: res.ok, reasonUz: res.reasonUz, done: res.done, pulled: false }
+      }
+      // Avval serverdagini olib birlashtiramiz: aks holda yangi qurilmadagi bo'sh
+      // holat (masalan standart sozlamalar) serverdagi ma'lumotni bosib ketardi.
+      let base = data
+      let pulled = false
+      if (remoteSync) {
+        const pr = await pullRemote(userId)
+        if (pr.snapshot) {
+          base = mergeRemote(data, pr.snapshot)
+          dispatch({ type: 'merge-remote', userId, remote: pr.snapshot })
+          pulled = true
+        } else if (isPristine(data)) {
+          return { ok: false, reasonUz: pr.reasonUz ?? 'Serverdagi ma’lumotni o‘qib bo‘lmadi.', done: 0, pulled: false }
+        }
+      }
+      await queueAllData(base)
+      const res = await syncNow(userId)
+      return { ok: res.ok, reasonUz: res.reasonUz, done: res.done, pulled }
+    }
+    const p = run()
+    syncInFlight.current = p
+    try {
+      return await p
+    } finally {
+      syncInFlight.current = null
+    }
+  }, [data, userId, netOnline, remoteSync])
 
   // --- Derived ---
   const evidence = useMemo(() => skillEvidence(data), [data])

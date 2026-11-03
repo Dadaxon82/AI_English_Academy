@@ -10,11 +10,13 @@
 
 import { del, get, keys, set } from 'idb-keyval'
 import type { AppData } from './types'
-import { APP_DATA_VERSION, emptyData } from './types'
+import { APP_DATA_VERSION, clampDailyMinutes, emptyData } from './types'
 
 const DATA_KEY = (uid: string) => `aea:data:${uid}`
 const QUEUE_KEY = (uid: string) => `aea:queue:${uid}`
 const CACHE_KEY = (uid: string) => `aea:cache:${uid}`
+/** Serverga yozilgan yozuvlar izi (jadval|kalit → payload xeshi). */
+const SYNCED_KEY = (uid: string) => `aea:synced:${uid}`
 
 const hasIdb = typeof indexedDB !== 'undefined'
 
@@ -109,6 +111,9 @@ export function migrate(raw: AppData): AppData {
     path: { ...base.path, ...(raw.path ?? {}) },
     timer: { ...base.timer, ...(raw.timer ?? {}) },
   }
+  // Eski onboarding 15–25 daqiqaga ruxsat berardi — DB CHECK (30..240) bunday
+  // sozlamani rad etib, sinxron navbatini abadiy to'xtatib qo'yardi.
+  next.settings.dailyMinutes = clampDailyMinutes(next.settings.dailyMinutes)
   // Eski kalit: `<matn>|gl-<so'z>` — bir so'z ikki matnda uchrasa ikkita
   // alohida SRS yozuvi paydo bo'lardi va Lug'at ro'yxatidagi bitta kalit bilan
   // adashib, so'z "deyarli ko'rinmas" holatga tushardi. Endi kalit `gl-<so'z>`.
@@ -166,8 +171,53 @@ export async function enqueue(userId: string, item: Omit<QueueItem, 'tries'>): P
   return q
 }
 
+/**
+ * Ko'p yozuvni BITTA o'qish/yozish bilan navbatga qo'shish (`enqueue` bilan
+ * bir xil qoida: kalit takrorlansa eskisi olib tashlanib, yangisi oxirga).
+ * `enqueue` har yozuvda butun navbatni o'qib-yozardi — ~900 ta yozuvda
+ * ~1800 ta IndexedDB amali va O(n²) qidiruv.
+ */
+export async function enqueueMany(userId: string, items: Omit<QueueItem, 'tries'>[]): Promise<QueueItem[]> {
+  const q = await loadQueue(userId)
+  if (items.length === 0) return q
+  const keyOf = (x: { table: string; op: string; payload: unknown }) => {
+    const k = dedupeKey(x.table, x.payload)
+    return k === null ? null : `${x.table}|${x.op}|${k}`
+  }
+  const fresh: QueueItem[] = []
+  const pos = new Map<string, number>()
+  for (const it of items) {
+    const k = keyOf(it)
+    const entry = { ...it, tries: 0 }
+    const at = k === null ? undefined : pos.get(k)
+    if (at !== undefined) {
+      fresh[at] = entry
+    } else {
+      if (k !== null) pos.set(k, fresh.length)
+      fresh.push(entry)
+    }
+  }
+  const kept = q.filter((x) => {
+    const k = keyOf(x)
+    return k === null || !pos.has(k)
+  })
+  const next = [...kept, ...fresh]
+  await idbSet(QUEUE_KEY(userId), next)
+  return next
+}
+
 export async function updateQueue(userId: string, q: QueueItem[]): Promise<void> {
   await idbSet(QUEUE_KEY(userId), q)
+}
+
+/** --- Serverga yozilganlar izi (o'zgarmagan yozuv qayta yuborilmasin) --- */
+
+export async function loadSynced(userId: string): Promise<Record<string, string>> {
+  return (await idbGet<Record<string, string>>(SYNCED_KEY(userId))) ?? {}
+}
+
+export async function saveSynced(userId: string, map: Record<string, string>): Promise<void> {
+  await idbSet(SYNCED_KEY(userId), map)
 }
 
 /** --- Offline dars/lug'at kachi --- */
@@ -210,4 +260,4 @@ export async function purgeUserData(userId: string): Promise<void> {
   }
 }
 
-export { DATA_KEY, QUEUE_KEY, CACHE_KEY }
+export { DATA_KEY, QUEUE_KEY, CACHE_KEY, SYNCED_KEY }

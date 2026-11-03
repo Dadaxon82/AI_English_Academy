@@ -9,7 +9,9 @@
  *     buzilardi va task_achievement asossiz jarimaga borardi).
  */
 import { describe, expect, it } from 'vitest'
-import { analyzeSpeaking, analyzeWriting } from '../lib/analyze'
+import { analyzeSpeaking, analyzeSpeakingText, analyzeWriting, speakingScore } from '../lib/analyze'
+import { skillEvidence } from '../lib/store'
+import { emptyData } from '../lib/types'
 import { a1 } from '../content'
 import type { WritingTask } from '../content/types'
 
@@ -88,5 +90,46 @@ describe('analyzeSpeaking — baho va izoh bir-biriga zid bo‘lmasin', () => {
     expect(a.wpm).toBeGreaterThan(90)
     expect(a.wpm).toBeLessThanOrEqual(190)
     expect(a.fluency).toBe(5)
+  })
+})
+
+describe('analyzeSpeakingText — matnli muqobil javob ham baholanadi', () => {
+  const task = { minSeconds: 30, targetSeconds: 60 }
+  const text =
+    'I am twelve years old. I usually go to school by bus because it is far. I can read and write English. ' +
+    'Yesterday I went to the park with my friends and we played football.'
+
+  it('ravonlik o‘lchanmaydi va bahoga kirmaydi; lug‘at va grammatika baholanadi', () => {
+    const a = analyzeSpeakingText(text, task)
+    expect(a.mode).toBe('text')
+    expect(a.fluency).toBe(0)
+    expect(a.wpm).toBe(0)
+    expect(a.grammar).toBe(5)
+    expect(a.lexis).toBeGreaterThan(0)
+    expect(speakingScore(a)).toBe(Math.round(((a.grammar + a.lexis) / 2 / 5) * 100))
+  })
+
+  it('qisqa matn uchun hajm past va izoh beriladi', () => {
+    const a = analyzeSpeakingText('I like cats.', task)
+    expect(a.length).toBe(0)
+    expect(a.notesUz.some((n) => n.includes('qisqa'))).toBe(true)
+  })
+
+  it('matnli javob gapirish dalili sifatida hisobga olinadi (eski: hech qachon)', () => {
+    const a = analyzeSpeakingText(text, task)
+    const data = {
+      ...emptyData('u1'),
+      speaking: [
+        { id: 'sp-1', taskId: 't', audioBlobStored: false, durationSec: 0, transcript: null, transcriptionEngine: 'none' as const, analysis: a, textAnswer: text, createdAt: Date.now() },
+      ],
+    }
+    const sp = skillEvidence(data).find((e) => e.skill === 'speaking')!
+    expect(sp.evidenceCount).toBe(1)
+    expect(sp.score).toBe(speakingScore(a))
+  })
+
+  it('ovozli javob bahosi avvalgidek: ravonlik, grammatika, lug‘at o‘rtachasi', () => {
+    const a = analyzeSpeaking('I go to school every day. I can read. I like it because it is fun.', 20, task)
+    expect(speakingScore(a)).toBe(Math.round(((a.fluency + a.grammar + a.lexis) / 3 / 5) * 100))
   })
 })

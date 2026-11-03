@@ -11,6 +11,7 @@ import { BarChart, Button, Card, Chip, EmptyState, InfoBanner, LoadingBlock, Pro
 import { useStore, lastNDays } from '../lib/store'
 import { levelLabel, PROMOTION_THRESHOLD, MIN_EVIDENCE_PER_SKILL } from '../lib/skillScoring'
 import { skillLabelUz, daysUntil } from '../lib/planning'
+import { speakingScore } from '../lib/analyze'
 import { formatDuration } from '../lib/timer'
 import { LOADED_LEVELS, getBundle } from '../content'
 import { CEFR_LEVELS } from '../content/types'
@@ -185,9 +186,7 @@ export default function Progress() {
                 ...data.speaking.map((s) => ({
                   at: s.createdAt,
                   kind: 'Gapirish',
-                  score: s.analysis
-                    ? Math.round((((s.analysis.fluency + s.analysis.grammar + s.analysis.lexis) / 3 / 5) as number) * 100)
-                    : null,
+                  score: s.analysis ? speakingScore(s.analysis) : null,
                   label: `${s.durationSec}s`,
                 })),
               ]

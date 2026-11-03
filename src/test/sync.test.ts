@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest'
-import { dedupeKey, enqueue, loadQueue, updateQueue } from '../lib/storage'
+import { dedupeKey, enqueue, enqueueMany, loadQueue, migrate, updateQueue } from '../lib/storage'
 import { toQueueItems } from '../lib/sync'
 import { emptyData, todayKey } from '../lib/types'
 
@@ -75,6 +75,31 @@ describe('Sinxronlash payload — PostgREST ustun nomlari (snake_case)', () => {
       expect(p.user_id, `${it.table} user_id’i yo‘q`).toBe(UID)
     }
   })
+
+  it('o‘quv yo‘li va XP diagnostikasiz ham `plan` ustunida yuboriladi', () => {
+    const d = {
+      ...emptyData(UID),
+      xp: 42,
+      path: { completedDays: ['a1-day-01'], passedTests: { 'a1-test-day-01': 80 }, currentDayId: 'a1-day-02' },
+    }
+    const p = toQueueItems(d).find((i) => i.table === 'learning_plans')?.payload as Record<string, unknown>
+    expect(p).toBeTruthy()
+    expect(p.diagnostic_level).toBeNull()
+    expect(p.plan).toEqual({ path: d.path, xp: 42, diagnostic: null })
+  })
+})
+
+describe('Kunlik daqiqa chegarasi (DB CHECK: 30..240)', () => {
+  it('eski keshdagi 15 daqiqa migratsiyada 30 ga keltiriladi', () => {
+    const raw = { ...emptyData(UID), settings: { ...emptyData(UID).settings, dailyMinutes: 15 } }
+    expect(migrate(raw).settings.dailyMinutes).toBe(30)
+  })
+
+  it('serverga 30 dan kam qiymat yuborilmaydi (aks holda yozuv abadiy rad etilardi)', () => {
+    const d = { ...emptyData(UID), settings: { ...emptyData(UID).settings, dailyMinutes: 20 } }
+    const p = toQueueItems(d).find((i) => i.table === 'user_settings')!.payload as Record<string, unknown>
+    expect(p.daily_minutes).toBe(30)
+  })
 })
 
 describe('Navbat deduplikati (sinxron tugmasi navbatni shishirmasin)', () => {
@@ -107,6 +132,20 @@ describe('Navbat deduplikati (sinxron tugmasi navbatni shishirmasin)', () => {
     expect(dedupeKey('user_vocabulary', { vocabulary_id: 'a' })).not.toBe(dedupeKey('user_vocabulary', { vocabulary_id: 'b' }))
     expect(dedupeKey('daily_activity', { day: '2026-01-01' })).not.toBe(dedupeKey('daily_activity', { day: '2026-01-02' }))
     expect(dedupeKey('user_settings', {})).toBe('uk:user')
+  })
+
+  it('enqueueMany: bitta yozishda qo‘shadi, kalit takrorlansa oxirgisi qoladi', async () => {
+    await enqueue(UID, { id: 'old', table: 'exercise_attempts', op: 'upsert', at: 0, payload: { id: 'att-2', v: 0 } })
+    await enqueueMany(UID, [
+      { id: 'a', table: 'exercise_attempts', op: 'upsert', at: 1, payload: { id: 'att-1', v: 1 } },
+      { id: 'b', table: 'exercise_attempts', op: 'upsert', at: 2, payload: { id: 'att-2', v: 2 } },
+      { id: 'c', table: 'exercise_attempts', op: 'upsert', at: 3, payload: { id: 'att-1', v: 3 } },
+    ])
+    const q = await loadQueue(UID)
+    expect(q.map((x) => x.payload)).toEqual([
+      { id: 'att-1', v: 3 },
+      { id: 'att-2', v: 2 },
+    ])
   })
 
   it('butun AppData 5 marta navbatga qo‘yilsa ham navbat o‘smaydi', async () => {

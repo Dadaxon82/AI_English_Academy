@@ -54,7 +54,7 @@ export default function Speaking() {
   const [textAnswer, setTextAnswer] = useState('')
   const [engineUsed, setEngineUsed] = useState<'browser-speech' | 'none'>('none')
   const [recError, setRecError] = useState<string | null>(null)
-  const [saved, setSaved] = useState(false)
+  const [saved, setSaved] = useState<'analyzed' | 'saved' | null>(null)
 
   const recorderRef = useRef<MediaRecorder | null>(null)
   const chunksRef = useRef<Blob[]>([])
@@ -73,7 +73,7 @@ export default function Speaking() {
 
   // Foydalanuvchi roziligi faqat yozishni bosganda so'raladi.
   const startRecording = async () => {
-    setSaved(false)
+    setSaved(null)
     setTranscript('')
     setRecError(null)
 
@@ -269,7 +269,7 @@ export default function Speaking() {
                 variant="secondary"
                 disabled={!transcript && !textAnswer && recState !== 'ready'}
                 onClick={() => {
-                  actions.addSpeaking({
+                  const session = actions.addSpeaking({
                     taskId: task.id,
                     transcript: transcript || null,
                     engine: engineUsed === 'browser-speech' ? 'browser-speech' : 'none',
@@ -277,14 +277,20 @@ export default function Speaking() {
                     audioStored: Boolean(audioUrl),
                     textAnswer: textAnswer || null,
                   })
-                  setSaved(true)
+                  setSaved(session.analysis ? 'analyzed' : 'saved')
                 }}
               >
                 Saqlash va tahlil
               </Button>
             </div>
 
-            {saved && <SuccessBanner>Yozuv saqlandi va tahlil qilindi (pastda).</SuccessBanner>}
+            {saved === 'analyzed' && <SuccessBanner>Javob saqlandi va tahlil qilindi (pastda).</SuccessBanner>}
+            {saved === 'saved' && (
+              <InfoBanner tone="warn">
+                Yozuv saqlandi, lekin tahlil qilinmadi: transkript yo‘q. Tahlil uchun javobingizni matnli maydonga ham
+                yozing.
+              </InfoBanner>
+            )}
           </div>
 
           <LastAttempts history={history} />
@@ -314,15 +320,16 @@ function LastAttempts({ history }: { history: ReturnType<typeof useStore>['data'
             <div className="grid sm:grid-cols-4 gap-2 text-center">
               {(
                 [
-                  ['Ravonlik', s.analysis.fluency],
+                  // Matnli javobda ravonlik o'lchanmaydi — "0/5" deb ko'rsatish yolg'on bo'lardi.
+                  ['Ravonlik', s.analysis.mode === 'text' ? null : s.analysis.fluency],
                   ['Lug‘at', s.analysis.lexis],
                   ['Grammatika', s.analysis.grammar],
-                  ['Davomiylik', s.analysis.length],
+                  [s.analysis.mode === 'text' ? 'Hajm' : 'Davomiylik', s.analysis.length],
                 ] as const
               ).map(([label, v]) => (
                 <div key={label} className="rounded-lg bg-[var(--panel-2)] p-2">
                   <div className="text-[10px] muted">{label}</div>
-                  <div className="font-bold tabular-nums">{v}/5</div>
+                  <div className="font-bold tabular-nums">{v === null ? '—' : `${v}/5`}</div>
                 </div>
               ))}
             </div>

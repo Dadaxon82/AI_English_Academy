@@ -209,17 +209,9 @@ export function analyzeSpeaking(transcript: string, durationSec: number, task: {
     5,
   )
 
-  const unique = new Set(transcript.toLowerCase().match(/[a-z']+/g) ?? [])
-  const lexis = clamp(unique.size <= 5 ? 1 : Math.round((unique.size / Math.max(1, words)) * 8), 0, 5)
-
-  const structures = [
-    /\b(i|we)\s+(am|'m)\s+/i.test(transcript),
-    /\b(go|goes|went|going)\b/i.test(transcript),
-    /\b(can|cannot|can't)\b/i.test(transcript),
-    /\b(because|so|but|and then)\b/i.test(transcript),
-    /\b(yesterday|last week|tomorrow|usually|every day)\b/i.test(transcript),
-  ].filter(Boolean).length
-  const grammar = clamp(1 + structures, 0, 5)
+  const unique = uniqueWords(transcript)
+  const lexis = speakingLexis(unique, words)
+  const grammar = speakingGrammar(transcript)
 
   // Ravonlik: so'z tezligi A1 uchun 60-140 wpm normal oralig'i.
   // ESKI BUG: 50-59 wpm (izohda "Gapirish sekin" deyilgan) baribir 5 ball
@@ -245,4 +237,69 @@ export function analyzeSpeaking(transcript: string, durationSec: number, task: {
     disclaimerUz:
       'Bu baho mashq maqsadida berildi — rasmiy imtihon natijasi emas. Transkript avtomatik va aniq bo‘lmasligi mumkin.',
   }
+}
+
+/**
+ * Matnli muqobil javob tahlili — mikrofon yoki transkripsiya ishlamaganda.
+ *
+ * ESKI BUG: tahlil faqat transkript bo'lsa ishlardi — Firefox'da yoki
+ * mikrofonsiz foydalanuvchi gapirish bo'yicha dalil to'play olmas, shuning
+ * uchun keyingi daraja unga hech qachon tavsiya qilinmasdi.
+ *
+ * Ravonlik (tezlik, pauzalar) matndan O'LCHAB BO'LMAYDI: `mode: 'text'`,
+ * `fluency`/`wpm` = 0 va u bahoga kirmaydi (`speakingScore`). Hajm og'zaki
+ * me'yorga aylantiriladi: A1 uchun pastki chegara 60 wpm — topshiriqdagi har
+ * sekundga ~1 so'z.
+ */
+export function analyzeSpeakingText(text: string, task: { minSeconds: number; targetSeconds: number }): SpeakingAnalysis {
+  const words = countWords(text)
+  const sents = sentences(text)
+  const unique = uniqueWords(text)
+  const minWords = Math.round(task.minSeconds)
+  const targetWords = Math.round(task.targetSeconds)
+  const length = clamp(words < minWords ? (words >= minWords * 0.6 ? 1 : 0) : words >= targetWords ? 5 : 3, 0, 5)
+
+  const notesUz = ['Matnli javob: ravonlik va talaffuz baholanmadi — imkon bo‘lsa javobni ovoz bilan ham yozib ko‘ring.']
+  if (words < minWords) notesUz.push(`Javob qisqa: ${words} so‘z. Kamida ${minWords} so‘z yozishga harakat qiling.`)
+  if (unique.size <= 8 && words > 0) notesUz.push('So‘zlar kam — kunlik lug‘atdan 3–4 ta yangi so‘zni shu javobga qo‘shib ko‘ring.')
+  if (sents.length < 3) notesUz.push('Fikrlarni alohida gaplarga bo‘ling: kim, nima, qachon, nega.')
+
+  return {
+    engine: 'rule-based',
+    mode: 'text',
+    fluency: 0,
+    lexis: speakingLexis(unique, words),
+    grammar: speakingGrammar(text),
+    length,
+    wordCount: words,
+    wpm: 0,
+    notesUz,
+    disclaimerUz: 'Bu baho mashq maqsadida berildi — rasmiy imtihon natijasi emas. Matnli javobda ravonlik o‘lchanmaydi.',
+  }
+}
+
+/** Gapirish bahosi 0..100. Matnli javobda ravonlik o'lchanmagani uchun hisobga olinmaydi. */
+export function speakingScore(a: SpeakingAnalysis): number {
+  const avg = a.mode === 'text' ? (a.grammar + a.lexis) / 2 : (a.fluency + a.grammar + a.lexis) / 3
+  return Math.round((avg / 5) * 100)
+}
+
+function uniqueWords(text: string): Set<string> {
+  return new Set(text.toLowerCase().match(/[a-z']+/g) ?? [])
+}
+
+function speakingLexis(unique: Set<string>, words: number): number {
+  return clamp(unique.size <= 5 ? 1 : Math.round((unique.size / Math.max(1, words)) * 8), 0, 5)
+}
+
+/** Tuzilmalar xilma-xilligi (0..5) — ovozli va matnli javob uchun bir xil qoida. */
+function speakingGrammar(text: string): number {
+  const structures = [
+    /\b(i|we)\s+(am|'m)\s+/i.test(text),
+    /\b(go|goes|went|going)\b/i.test(text),
+    /\b(can|cannot|can't)\b/i.test(text),
+    /\b(because|so|but|and then)\b/i.test(text),
+    /\b(yesterday|last week|tomorrow|usually|every day)\b/i.test(text),
+  ].filter(Boolean).length
+  return clamp(1 + structures, 0, 5)
 }
