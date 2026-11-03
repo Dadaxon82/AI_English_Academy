@@ -18,6 +18,18 @@ import type { OfflineCache } from '../lib/storage'
 
 const SKILLS: Skill[] = ['vocabulary', 'grammar', 'reading', 'listening', 'writing', 'speaking']
 
+/**
+ * Imtihon sanasi haqida izoh — `computeAllocation` qoidasi bilan BIR XIL
+ * (30 kunlik oyna), shuning uchun foydalanuvchi ko'rgan son bilan taqsimot
+ * bir-biriga zid kelmaydi.
+ */
+function examHint(examLeft: number | null): string {
+  if (examLeft === null) return 'Imtihon sanasi kiritilsa (30 kun ichida) reja avtomatik moslashadi.'
+  if (examLeft < 0) return 'Sana o‘tib ketgan — reja o‘zgarmaydi.'
+  if (examLeft > 30) return `${examLeft} kun qoldi — 30 kundan boshlab O‘qish va Yozish kuchaytiriladi.`
+  return `${examLeft} kun qoldi — O‘qish va Yozish kuchaytirildi.`
+}
+
 export default function Settings() {
   const { data, actions, allocation, evidence, netOnline, promotion } = useStore()
   const authActions = useAuthActions()
@@ -69,7 +81,7 @@ export default function Settings() {
               className="w-full accent-[var(--accent)]"
             />
           </Field>
-          <Field label="Imtihon sanasi" hint={examLeft !== null ? `${examLeft} kun qoldi — tizim zaif ko‘nikmalarga ko‘proq vaqt beradi.` : 'Imtihon sanasi kiritilsa reja avtomatik moslashadi.'}>
+          <Field label="Imtihon sanasi" hint={examHint(examLeft)}>
             <input
               type="date"
               value={s.examDate ?? ''}

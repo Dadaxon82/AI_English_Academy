@@ -50,8 +50,12 @@ export function computeAllocation(
 
   // 3) Imtihon yaqinlashsa — Mock Examga yaqin ko'nikmalar ustunligi
   if (settings.examDate) {
-    const daysToExam = Math.ceil((new Date(settings.examDate + 'T00:00:00').getTime() - today.getTime()) / 86_400_000)
-    if (daysToExam >= 0 && daysToExam <= 30) {
+    // `daysUntil` ishlatiladi (yarim tun oralig'i hisobga olinadi). Eski holatda
+    // `today` soat bilan hisoblani, Settings'dagi "N kun qoldi" esa yarim tun
+    // notidan hisoblanardi — ikki sahifa turli son ko'rsatardi va 30-kun
+    // chegarasida bir sahifada kuchaytirish yo'qolardi.
+    const daysToExam = daysUntil(settings.examDate, today)
+    if (daysToExam !== null && daysToExam >= 0 && daysToExam <= 30) {
       base.writing = Math.min(30, base.writing + 5)
       base.reading = Math.min(25, base.reading + 5)
       base.vocabulary = Math.max(5, base.vocabulary - 5)

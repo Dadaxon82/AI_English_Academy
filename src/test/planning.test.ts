@@ -70,6 +70,24 @@ describe('Kunlik reja (90 daqiqa) va moslashuv', () => {
     expect(a.reasonUz.some((r) => r.includes('Imtihonga'))).toBe(true)
   })
 
+  it('imtihon sanasi: 30 kunlik oyna chegarasi aniq va kun hisobi pagesanasi bilan bir xil', () => {
+    // Kun hisobi endi `daysUntil` orqali (yarim tun oralig'i) — sahifalarda
+    // ko'rsatiladigan "N kun qoldi" soni taqsimot sababi bilan kelishmay
+    // qolishi mumkin emas edi.
+    const late = new Date(2026, 10, 4, 23, 30)
+    const exam = '2026-12-05' // 31 kun — oyna chegarasi
+    const left = daysUntil(exam, late)
+    expect(left).toBe(31)
+    const a = computeAllocation({ ...DEFAULT_SETTINGS, examDate: exam }, [], late)
+    // 31 kun → oyna tashqarisida: kuchaytirish YO‘Q, lekin sabab ham yo‘q
+    expect(a.reasonUz.some((r) => r.includes('Imtihonga'))).toBe(false)
+    // 30 kun ichida kirsa — ikkala hisob ham rozi
+    const near = '2026-12-04'
+    expect(daysUntil(near, late)).toBe(30)
+    const b = computeAllocation({ ...DEFAULT_SETTINGS, examDate: near }, [], late)
+    expect(b.reasonUz.some((r) => r.includes('Imtihonga'))).toBe(true)
+  })
+
   it('kunlik minutlar manfiy yoki juda katta bo‘lsa chegaralanadi', () => {
     expect(computeAllocation({ ...DEFAULT_SETTINGS, dailyMinutes: -10, examDate: null }, [], WED).total).toBe(30)
     expect(computeAllocation({ ...DEFAULT_SETTINGS, dailyMinutes: 1000, examDate: null }, [], WED).total).toBe(240)
