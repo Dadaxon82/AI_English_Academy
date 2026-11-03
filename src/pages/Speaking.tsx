@@ -117,7 +117,7 @@ export default function Speaking() {
           if (final) setTranscript((t) => (t + ' ' + final).trim())
         }
         r.onerror = (e) => {
-          if (e.error === 'not-allowed') setRecError('Mikrofon ruxsati berthlmadi — matnli usulni ishlating.')
+          if (e.error === 'not-allowed') setRecError('Mikrofon ruxsati berilmadi — matnli usulni ishlating.')
           else if (e.error === 'no-speech') setRecError('Ovoz eshitilmadi. Mikrofonni tekshiring.')
         }
         r.onend = () => {
@@ -135,7 +135,7 @@ export default function Speaking() {
       }
     } catch {
       setRecState('denied')
-      setRecError('Mikrofonga ruxsat berthlmadi. Brauzer sozlamalaridan ruxsat bering yoki matnli usuldan foydalaning.')
+      setRecError('Mikrofonga ruxsat berilmadi. Brauzer sozlamalaridan ruxsat bering yoki matnli usuldan foydalaning.')
     }
   }
 
@@ -160,7 +160,7 @@ export default function Speaking() {
   return (
     <div className="grid gap-4">
       <Card className="grid gap-3">
-        <h1 className="text-xl font-bold">G‘apirish</h1>
+        <h1 className="text-xl font-bold">Gapirish</h1>
         <p className="muted text-sm">
           Kunlik mavzu va savollar. Ovoz yozuvi faqat shu brauzer seansida turadi (sahifa yopilsa o‘chadi) —
           roziligingizsiz serverga hech qachon yuborilmaydi.
@@ -312,7 +312,9 @@ function LastAttempts({ history }: { history: ReturnType<typeof useStore>['data'
           <div className="flex flex-wrap gap-2 text-xs">
             <Chip>{s.durationSec}s</Chip>
             <Chip>{s.transcriptionEngine === 'browser-speech' ? 'Brauzer transkripsiyasi' : 'Transkripsiya yo‘q'}</Chip>
-            <Chip tone={s.audioBlobStored ? 'ok' : 'default'}>{s.audioBlobStored ? 'Ovoz qurilmada' : 'Ovoz saqlanmagan'}</Chip>
+            {/* Ovoz hech qayerda saqlanmaydi (faqat yozilgan sahifada eshitiladi) —
+                eski "Ovoz qurilmada" yozuvi sahifa yangilangach noto'g'ri edi. */}
+            <Chip>{s.audioBlobStored ? 'Ovoz yozilgan (saqlanmaydi)' : 'Ovozsiz javob'}</Chip>
           </div>
           {s.transcript && <p className="text-sm italic">“{s.transcript}”</p>}
           {s.textAnswer && <p className="text-sm whitespace-pre-wrap">{s.textAnswer}</p>}

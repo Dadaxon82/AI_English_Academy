@@ -189,6 +189,12 @@ export interface AppData {
   }
   /** Diagnostika natijasi (agar topshirilgan bo'lsa) */
   diagnostic: { at: number; level: CefrLevel | null; labelUz: string; confidence: number } | null
+  /**
+   * Onboarding yakunlangan payt (diagnostika o'tkazib yuborilgan bo'lsa ham).
+   * ESKI BUG: "sozlamalar to'ldirilmagan" banneri faqat diagnostikaga qarardi —
+   * uni o'tkazib yuborgan foydalanuvchi bannerni har safar ko'rardi.
+   */
+  onboardedAt: number | null
   timer: TimerState
   updatedAt: number
 }
@@ -217,6 +223,7 @@ export function emptyData(userId: string): AppData {
     // kelmasligi sababli O'quv yo'li va Dashboard joriy kunni topaymasdi.
     path: { completedDays: [], passedTests: {}, currentDayId: 'a1-day-01' },
     diagnostic: null,
+    onboardedAt: null,
     timer: { elapsedSec: 0, startedAt: null, sessionId: null, skill: null, updatedAt: Date.now() },
     updatedAt: Date.now(),
   }

@@ -14,7 +14,9 @@ import { useStore } from '../lib/store'
 import { skillLabelUz, daysUntil } from '../lib/planning'
 import { loadCacheMeta, loadQueue, purgeUserData, storageBackend } from '../lib/storage'
 import { supabaseConfigured, safeErrorMessage } from '../lib/supabase'
-import type { Skill } from '../content/types'
+import { deleteRemoteData } from '../lib/sync'
+import { LOADED_LEVELS } from '../content'
+import { CEFR_LEVELS, type Skill } from '../content/types'
 import type { OfflineCache } from '../lib/storage'
 
 const SKILLS: Skill[] = ['vocabulary', 'grammar', 'reading', 'listening', 'writing', 'speaking']
@@ -45,7 +47,44 @@ export default function Settings() {
   const [resetDone, setResetDone] = useState(false)
   const [signingOut, setSigningOut] = useState(false)
   const [unsynced, setUnsynced] = useState<{ pending: number; reasonUz: string | null } | null>(null)
+  const [deleting, setDeleting] = useState(false)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
   const isGuest = data.userId.startsWith('local-')
+  const hasServerCopy = !isGuest && supabaseConfigured
+
+  const deleteAll = async () => {
+    setDeleting(true)
+    setDeleteError(null)
+    // Hisobga kirgan foydalanuvchida AVVAL serverdagi yozuvlar o'chiriladi:
+    // aks holda keyingi kirishda progress serverdan qayta tiklanardi. Server
+    // o'chirmasa, qurilmadagisi ham tegilmaydi — qayta urinish mumkin bo'lsin.
+    if (hasServerCopy) {
+      const res = await deleteRemoteData(data.userId)
+      if (!res.ok) {
+        setDeleting(false)
+        setDeleteError(res.reasonUz)
+        return
+      }
+    }
+    try {
+      await purgeUserData(data.userId)
+      actions.resetAll()
+      localStorage.removeItem(`aea-drafts:${data.userId}`)
+      // Service Worker keshlaridagi Supabase javoblari ham tozalanadi
+      // (logout'dagi kabi) — aks holda o'chirilgan ma'lumot cache'da qolardi.
+      if (typeof caches !== 'undefined') {
+        void caches
+          .keys()
+          .then((names) => Promise.all(names.filter((n) => n.startsWith('aea-')).map((n) => caches.delete(n))))
+          .catch(() => undefined)
+      }
+      setResetDone(true)
+    } catch (e) {
+      setSyncMsg({ ok: false, text: safeErrorMessage(e) })
+    }
+    setDeleting(false)
+    setConfirmReset(false)
+  }
 
   const doSignOut = () => {
     setUnsynced(null)
@@ -116,11 +155,17 @@ export default function Settings() {
               className={inputCls}
             />
           </Field>
-          <Field label="Hozirgi daraja" hint="Daraja faqat isbotlar asosida tavsiya qilinadi; bu yerda qo‘lda ham belgilash mumkin.">
+          <Field
+            label="Hozirgi daraja"
+            hint={`Daraja faqat isbotlar asosida tavsiya qilinadi; bu yerda qo‘lda ham belgilash mumkin. Kontent hozircha: ${LOADED_LEVELS.join(', ')}.`}
+          >
+            {/* ESKI KAMCHILIK: kontenti yo'q darajani tanlab bo'lardi — barcha
+                o'quv sahifalari bo'sh qolardi. Endi bunday daraja tanlanmaydi
+                (onboarding'dagi qoida bilan bir xil). */}
             <select value={s.currentLevel} onChange={(e) => actions.setLevel(e.target.value as typeof s.currentLevel)} className={inputCls}>
-              {(['A1', 'A2', 'B1', 'B2', 'C1'] as const).map((l) => (
-                <option key={l} value={l}>
-                  {l}
+              {CEFR_LEVELS.map((l) => (
+                <option key={l} value={l} disabled={!LOADED_LEVELS.includes(l)}>
+                  {LOADED_LEVELS.includes(l) ? l : `${l} — kontent tayyor emas`}
                 </option>
               ))}
             </select>
@@ -200,7 +245,7 @@ export default function Settings() {
         <InfoBanner tone="muted">
           AI serveri ulanmaganda yozish va gapirish tahlili <b>qoidaviy dvigatel</b> bilan bajariladi va natijada «Qoidaviy
           tahlil» deb belgilanadi. Hech qachon mavjud bo‘lmagan AI natijasi ko‘rsatilmaydi. AI kalitlari faqat serverda
-          saqlanadi; server chaosida <code>VITE_AI_ENABLED=true</code> bayrog‘i va serverless funksiya qo‘shilsagina bu
+          saqlanadi; deploy paytida <code>VITE_AI_ENABLED=true</code> bayrog‘i qo‘yilib, serverless funksiya qo‘shilsagina bu
           belgi «ulangan» ga o‘zgaradi.
         </InfoBanner>
       </Card>
@@ -294,10 +339,10 @@ export default function Settings() {
         <h2 className="font-bold text-[var(--bad)]">Xavf zonasi</h2>
         <p className="text-sm muted">
           Quyidagi amallar qaytarib bo‘lmaydi. Ma’lumotlar shu qurilmadagi keshdan, sinxron navbatidan va offline
-          fayllardan o‘chiriladi.
+          fayllardan{hasServerCopy ? ', shuningdek serverdan' : ''} o‘chiriladi.
         </p>
         <div className="flex flex-wrap gap-2">
-          <Button variant="danger" onClick={() => setConfirmReset(true)}>
+          <Button variant="danger" disabled={syncing || signingOut} onClick={() => setConfirmReset(true)}>
             Barcha ma’lumotni o‘chirish
           </Button>
         </div>
@@ -327,40 +372,38 @@ export default function Settings() {
         </div>
       </Modal>
 
-      <Modal open={confirmReset} title="Ma’lumotlarni o‘chirasizmi?" onClose={() => setConfirmReset(false)}>
+      <Modal
+        open={confirmReset}
+        title="Ma’lumotlarni o‘chirasizmi?"
+        onClose={() => {
+          if (deleting) return
+          setDeleteError(null)
+          setConfirmReset(false)
+        }}
+      >
         <div className="grid gap-3">
           <p className="text-sm">
             Bu amal {data.attempts.length} ta urinish, {Object.keys(data.srs).length} ta so‘z holati,
             {' '}{data.writing.length} ta yozish va {data.speaking.length} ta gapirish seansini o‘chiradi.
           </p>
-          <InfoBanner tone="warn">Serverdagi yozuvlar Supabase siyosati bo‘yicha saqlanadi; mahalliy kesh to‘liq tozalanadi.</InfoBanner>
+          <InfoBanner tone="warn">
+            {hasServerCopy
+              ? 'Serverdagi barcha shaxsiy yozuvlaringiz ham o‘chiriladi (hisobning o‘zi qoladi), so‘ng shu qurilmadagi kesh tozalanadi.'
+              : 'Ma’lumotlar faqat shu qurilmada saqlangan — mahalliy kesh to‘liq tozalanadi.'}
+          </InfoBanner>
+          {deleteError && <InfoBanner tone="warn">{deleteError} Qurilmadagi ma’lumotlar o‘zgarmadi.</InfoBanner>}
           <div className="flex gap-2 justify-end">
-            <Button variant="ghost" onClick={() => setConfirmReset(false)}>
-              Bekor qilish
-            </Button>
             <Button
-              variant="danger"
+              variant="ghost"
+              disabled={deleting}
               onClick={() => {
-                try {
-                  void purgeUserData(data.userId)
-                  actions.resetAll()
-                  localStorage.removeItem(`aea-drafts:${data.userId}`)
-                  // Service Worker keshlaridagi Supabase javoblari ham tozalanadi
-                  // (logout'dagi kabi) — aks holda o'chirilgan ma'lumot cache'da qolardi.
-                  try {
-                    if (typeof caches !== 'undefined') {
-                      void caches.keys().then((names) => Promise.all(names.filter((n) => n.startsWith('aea-')).map((n) => caches.delete(n))))
-                    }
-                  } catch {
-                    /* kesh o'chirilmasa ham xavfsizlik RLS'da */
-                  }
-                  setResetDone(true)
-                } catch (e) {
-                  setSyncMsg({ ok: false, text: safeErrorMessage(e) })
-                }
+                setDeleteError(null)
                 setConfirmReset(false)
               }}
             >
+              Bekor qilish
+            </Button>
+            <Button variant="danger" busy={deleting} onClick={() => void deleteAll()}>
               Ha, o‘chirilsin
             </Button>
           </div>

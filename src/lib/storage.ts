@@ -114,6 +114,12 @@ export function migrate(raw: AppData): AppData {
   // Eski onboarding 15–25 daqiqaga ruxsat berardi — DB CHECK (30..240) bunday
   // sozlamani rad etib, sinxron navbatini abadiy to'xtatib qo'yardi.
   next.settings.dailyMinutes = clampDailyMinutes(next.settings.dailyMinutes)
+  // `onboardedAt` keyin qo'shilgan: diagnostikasi yoki mashq tarixi bor eski
+  // foydalanuvchi onboarding'dan o'tgan hisoblanadi (banner qayta chiqmasin).
+  const legacy = raw as Partial<AppData>
+  if (legacy.onboardedAt === undefined) {
+    next.onboardedAt = legacy.diagnostic?.at ?? legacy.attempts?.[0]?.at ?? null
+  }
   // Eski kalit: `<matn>|gl-<so'z>` — bir so'z ikki matnda uchrasa ikkita
   // alohida SRS yozuvi paydo bo'lardi va Lug'at ro'yxatidagi bitta kalit bilan
   // adashib, so'z "deyarli ko'rinmas" holatga tushardi. Endi kalit `gl-<so'z>`.

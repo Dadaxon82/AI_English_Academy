@@ -60,9 +60,10 @@ export const diagnosticTest = {
       id: 'dg-04',
       kind: 'translation',
       instructionUz: 'Inglizchaga tarjima qiling.',
-      source: 'Men kecha kutga bordim.',
+      source: 'Men kecha kutubxonaga bordim.',
       sourceLang: 'uz',
-      accepted: ['i went to the library yesterday', 'i went to the library last week'],
+      // "kecha" = yesterday: "last week" ma'nosi boshqa — qabul qilinmaydi.
+      accepted: ['i went to the library yesterday', 'yesterday i went to the library'],
       level: 'A2',
       skill: 'grammar',
       difficulty: 3,
@@ -98,7 +99,7 @@ export const diagnosticTest = {
     {
       id: 'dg-07',
       kind: 'multiple-choice',
-      instructionUz: 'Sözning ma‘nosini tanlang.',
+      instructionUz: 'So‘zning ma’nosini tanlang.',
       question: '“reluctant” means…',
       options: ['very happy', 'not wanting to do something', 'very fast', 'dangerous'],
       answerIndex: 1,

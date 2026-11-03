@@ -236,8 +236,10 @@ function PassageDetail({ passage, onBack }: { passage: ReadingPassage; onBack: (
     // `passage.id` bog'liq EMAS: SRS kaliti endi matndan qat'iy emas.
   }, [selection, passage.glossary, vocabIndex])
 
-  const saveWord = (s: Saver, grade: 'again' | 'good') => {
-    actions.gradeVocab(s.id, grade)
+  // "Saqlash" — takrorlash jadvaliga qo'shish (xato emas); "Bilaman" — haqiqiy baho.
+  const saveWord = (s: Saver, how: 'save' | 'good') => {
+    if (how === 'save') actions.saveVocab(s.id)
+    else actions.gradeVocab(s.id, 'good')
     setSavedIds((prev) => (prev.includes(s.id) ? prev : [...prev, s.id]))
   }
 
@@ -365,7 +367,7 @@ function PassageDetail({ passage, onBack }: { passage: ReadingPassage; onBack: (
                 </div>
               </div>
               <div className="flex flex-wrap gap-2">
-                <Button size="sm" variant="secondary" onClick={() => saveWord(picked, 'again')}>
+                <Button size="sm" variant="secondary" onClick={() => saveWord(picked, 'save')}>
                   Lug'atga saqlash (takrorlashga)
                 </Button>
                 <Button size="sm" variant="success" onClick={() => saveWord(picked, 'good')}>
@@ -373,7 +375,7 @@ function PassageDetail({ passage, onBack }: { passage: ReadingPassage; onBack: (
                 </Button>
               </div>
               <p className="text-[11px] muted">
-                "Qayta mashq qilish" ma'nosida <code>again</code> baholanadi — so'z SRS jadvaliga kiritiladi.
+                Saqlangan so'z takrorlash jadvaliga qo'shiladi va bugun takrorlanadi — bu xato deb sanalmaydi.
               </p>
             </div>
           )}
@@ -403,7 +405,11 @@ function PassageDetail({ passage, onBack }: { passage: ReadingPassage; onBack: (
                   </span>
                   <div className="flex items-center gap-1.5">
                     <SpeakButton text={g.word} label={`${g.word} — talaffuz`} />
-                    <Button size="sm" variant={known ? 'ghost' : 'secondary'} onClick={() => actions.gradeVocab(id, 'again')}>
+                    <Button
+                      size="sm"
+                      variant={known ? 'ghost' : 'secondary'}
+                      onClick={() => (known ? actions.gradeVocab(id, 'again') : actions.saveVocab(id))}
+                    >
                       {known ? 'Qayta mashq qilish' : "Lug'atga"}
                     </Button>
                   </div>

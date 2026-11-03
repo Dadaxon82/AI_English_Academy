@@ -138,7 +138,7 @@ export function analyzeWriting(text: string, task: WritingTask): WritingAnalysis
   }
 
   if (words >= task.minWords) strengthsUz.push(`Hajm talabi bajarildi: ${words} so‘z.`)
-  if (linkers >= 3) strengthsUz.push('Gaplar bog‘lovchilar bilan mantliq bog‘langan.')
+  if (linkers >= 3) strengthsUz.push('Gaplar bog‘lovchilar bilan mantiqiy bog‘langan.')
   if (unique.size >= words * 0.55 && words > 20) strengthsUz.push('So‘z boyligi yaxshi — takrorlar kam.')
   if (errors.length === 0) strengthsUz.push('Tekshirilgan asosiy xatolar topilmadi.')
 
@@ -221,7 +221,7 @@ export function analyzeSpeaking(transcript: string, durationSec: number, task: {
   const notesUz: string[] = []
   if (durationSec < task.minSeconds) notesUz.push(`Javob qisqa: ${durationSec}s. Kamida ${task.minSeconds} sekund gapirishga harakat qiling.`)
   if (wpm > 0 && wpm < 60) notesUz.push('Gapirish sekin — gaplar orasidagi pauzalarni kamaytiring, kunni shu mavzuda 1 daqiqa mashq qilib ko‘ring.')
-  if (unique.size <= 8 && words > 0) notesUz.push('Kam so‘z ishlatsiz — kunlik lug‘atdan 3–4 ta yangi so‘zni shu javobga qo‘shib ko‘ring.')
+  if (unique.size <= 8 && words > 0) notesUz.push('Kam so‘z ishlatdingiz — kunlik lug‘atdan 3–4 ta yangi so‘zni shu javobga qo‘shib ko‘ring.')
   if (sents.length < 3) notesUz.push('Fikrlarni alohida gaplarga bo‘ling: kim, nima, qachon, nega.')
   if (notesUz.length === 0) notesUz.push('Yaxshi javob: davomiylik va tuzilish A1 me’yoriga mos.')
 

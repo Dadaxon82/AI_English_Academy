@@ -34,6 +34,7 @@ type Action =
   | { type: 'settings'; patch: Partial<UserSettings> }
   | { type: 'attempt'; record: AttemptRecord }
   | { type: 'srs'; vocabId: string; grade: SrsGrade }
+  | { type: 'srs-add'; vocabId: string }
   | { type: 'timer-start'; sessionId: string; skill: Skill }
   | { type: 'timer-pause' }
   | { type: 'timer-stop' }
@@ -44,6 +45,7 @@ type Action =
   | { type: 'merge-remote'; userId: string; remote: RemoteSnapshot }
   | { type: 'day-complete'; dayId: string; testScore?: number; testId?: string }
   | { type: 'diagnostic'; at: number; level: CefrLevel | null; labelUz: string; confidence: number }
+  | { type: 'onboarded'; at: number }
   | { type: 'level-set'; level: CefrLevel }
   | { type: 'reset' }
 
@@ -131,6 +133,11 @@ export function reducer(state: AppData, action: Action): AppData {
         },
       }
     }
+    case 'srs-add':
+      // "Lug'atimga saqlash": so'z takrorlash jadvaliga qo'shiladi (bugun
+      // takrorlanadi). ESKI KAMCHILIK: bu `again` bahosi bilan qilinardi —
+      // saqlash xato (lapse) va "takrorlangan so'z" sifatida sanalardi.
+      return state.srs[action.vocabId] ? state : { ...state, srs: { ...state.srs, [action.vocabId]: initialSrsState() } }
     case 'timer-start': {
       // MUHIM: boshqa mashg'ulotga o'tishda oldingi sessiyaning yig'ilgan
       // vaqti AVVAL kundalik hisobga yoziladi. Oldin `startTimer` bu sekundlarni
@@ -219,6 +226,8 @@ export function reducer(state: AppData, action: Action): AppData {
     }
     case 'diagnostic':
       return { ...state, diagnostic: { at: action.at, level: action.level, labelUz: action.labelUz, confidence: action.confidence } }
+    case 'onboarded':
+      return state.onboardedAt === null ? { ...state, onboardedAt: action.at } : state
     case 'level-set':
       return { ...state, settings: { ...state.settings, currentLevel: action.level } }
     case 'reset':
@@ -307,6 +316,8 @@ export interface StoreValue {
     setSettings(patch: Partial<UserSettings>): void
     recordAttempt(input: { exercise: Exercise; correct: boolean; partial: number; given: string; secondsSpent: number; source: AttemptSource }): void
     gradeVocab(vocabId: string, grade: SrsGrade): void
+    /** So'zni takrorlash jadvaliga qo'shish (baho emas — xato yoki takror sanalmaydi). */
+    saveVocab(vocabId: string): void
     startTimer(sessionId: string, skill: Skill): void
     pauseTimer(): void
     stopTimer(): void
@@ -317,6 +328,8 @@ export interface StoreValue {
     recordMockTime(entries: { skill: CoreSkill; seconds: number }[]): void
     completeDay(dayId: string, testId?: string, testScore?: number): void
     setDiagnostic(level: CefrLevel | null, labelUz: string, confidence: number): void
+    /** Onboarding yakunlandi (diagnostika o'tkazib yuborilgan bo'lsa ham). */
+    markOnboarded(): void
     setLevel(level: CefrLevel): void
     resetAll(): void
     /** Server bilan sinxronlash: avval serverdagisi birlashtiriladi, so'ng butun navbat yuboriladi. */
@@ -389,11 +402,15 @@ export function StoreProvider({
     }
   }, [userId, remoteSync])
 
-  // Har soniyada taymer ko'rsatkichi uchun qayta render
+  // Taymer yurganda har soniyada qayta render (ko'rsatkichlar uchun).
+  // ESKI KAMCHILIK: bu taymer yurmaganda ham ishlardi — butun ilova (store'ni
+  // ishlatadigan har bir komponent) har soniyada behuda qayta chizilardi.
+  const timerRunning = data.timer.startedAt !== null
   useEffect(() => {
+    if (!timerRunning) return
     const iv = window.setInterval(() => setTick((t) => (t + 1) % 1_000_000), 1000)
     return () => window.clearInterval(iv)
-  }, [])
+  }, [timerRunning])
 
   // Onlayn/offlayn kuzatuvi
   useEffect(() => {
@@ -446,6 +463,7 @@ export function StoreProvider({
   const gradeVocab = useCallback((vocabId: string, grade: SrsGrade) => {
     dispatch({ type: 'srs', vocabId, grade })
   }, [])
+  const saveVocab = useCallback((vocabId: string) => dispatch({ type: 'srs-add', vocabId }), [])
 
   const startT = useCallback((sessionId: string, skill: Skill) => dispatch({ type: 'timer-start', sessionId, skill }), [])
   const pauseT = useCallback(() => dispatch({ type: 'timer-pause' }), [])
@@ -521,6 +539,7 @@ export function StoreProvider({
     dispatch({ type: 'diagnostic', at: Date.now(), level, labelUz, confidence })
   }, [])
 
+  const markOnboarded = useCallback(() => dispatch({ type: 'onboarded', at: Date.now() }), [])
   const setLevel = useCallback((level: CefrLevel) => dispatch({ type: 'level-set', level }), [])
   const resetAll = useCallback(() => dispatch({ type: 'reset' }), [])
 
@@ -601,12 +620,16 @@ export function StoreProvider({
   const totalVocab = useMemo(() => totalVocabCount(), [])
   const vocabSummary = `${learnedCount}/${totalVocab}${learnedExtraCount > 0 ? ` +${learnedExtraCount} matn so‘zi` : ''}`
 
+  const todaySeconds = data.activity[todayKey()]?.seconds ?? 0
   const timerView = useMemo(() => {
     const e = currentElapsed(data.timer)
     void tick // re-render triggers recalculation
     const planned = allocation.total
-    return { elapsed: e, label: formatDuration(e), progress: planProgress(e, planned) }
-  }, [data.timer, tick, allocation.total])
+    // Kunlik reja progressi = bugun hisobga yozilgan vaqt + hali yozilmagan
+    // taymer vaqti. ESKI BUG: faqat joriy taymer sanalardi — 20 daqiqalik
+    // mashg'ulot to'xtatilgach sarlavha yana "0/90 daq" ko'rsatardi.
+    return { elapsed: e, label: formatDuration(e), progress: planProgress(todaySeconds + e, planned) }
+  }, [data.timer, tick, allocation.total, todaySeconds])
 
   const value: StoreValue = {
     data,
@@ -626,6 +649,7 @@ export function StoreProvider({
       setSettings,
       recordAttempt,
       gradeVocab,
+      saveVocab,
       startTimer: startT,
       pauseTimer: pauseT,
       stopTimer: stopT,
@@ -635,6 +659,7 @@ export function StoreProvider({
       recordMockTime,
       completeDay,
       setDiagnostic,
+      markOnboarded,
       setLevel,
       resetAll,
       sync,

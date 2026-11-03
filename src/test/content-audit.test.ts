@@ -223,7 +223,7 @@ describe('Kontent auditi — mashqlar yaxlitligi', () => {
     expectClean(bad, 'translation')
   })
 
-  it('mock imtihon: bo‘lim bo‘sh emas, savol ko‘nikması bo‘limga mos', () => {
+  it('mock imtihon: bo‘lim bo‘sh emas, savol ko‘nikmasi bo‘limga mos', () => {
     const bad: string[] = []
     for (const s of mockExamA1.sections) {
       const hasTask = Boolean(s.writingTask || s.speakingTask)

@@ -85,7 +85,22 @@ describe('Sinxronlash payload — PostgREST ustun nomlari (snake_case)', () => {
     const p = toQueueItems(d).find((i) => i.table === 'learning_plans')?.payload as Record<string, unknown>
     expect(p).toBeTruthy()
     expect(p.diagnostic_level).toBeNull()
-    expect(p.plan).toEqual({ path: d.path, xp: 42, diagnostic: null })
+    expect(p.plan).toEqual({ path: d.path, xp: 42, diagnostic: null, onboardedAt: null })
+  })
+})
+
+describe('migrate — onboarding belgisi (`onboardedAt`) eski keshda', () => {
+  it('diagnostikasi yoki mashq tarixi bor foydalanuvchi onboarding’dan o‘tgan hisoblanadi', () => {
+    const base = emptyData(UID)
+    const legacy = (extra: Record<string, unknown>) => {
+      const raw: Record<string, unknown> = { ...base, ...extra }
+      delete raw.onboardedAt
+      return migrate(raw as unknown as typeof base)
+    }
+    expect(legacy({}).onboardedAt).toBeNull()
+    expect(legacy({ diagnostic: { at: 5, level: 'A1', labelUz: 'A1', confidence: 0.5 } }).onboardedAt).toBe(5)
+    const attempt = { id: 'a', exerciseId: 'e', skill: 'grammar', level: 'A1', correct: true, partial: 1, difficulty: 1, secondsSpent: 1, source: 'practice', answerGiven: 'x', at: 7 }
+    expect(legacy({ attempts: [attempt] }).onboardedAt).toBe(7)
   })
 })
 

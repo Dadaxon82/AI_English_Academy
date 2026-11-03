@@ -241,7 +241,7 @@ export default function MockExam() {
     const secs = sections.map((s) => {
       const p = list.find((x) => x.sectionId === s.id)!
       const total = examExercises(s).length
-      // `note:` bilan boshlanadigan yozuvlar — erkin matnli javob (G‘apirish
+      // `note:` bilan boshlanadigan yozuvlar — erkin matnli javob (Gapirish
       // bo‘limidagi qoralama). Ular SAVOL EMAS: hisobga, ballga va xatolar
       // ro'yxatiga kirmaydi. (Eski bug: "1/0 javob" va soxta ijobiy natija.)
       const graded = Object.entries(p.results).filter(([k]) => !k.startsWith('note:'))
@@ -323,7 +323,7 @@ export default function MockExam() {
                 <ul className="text-xs muted">
                   {examExercises(s).length > 0 && <li>{examExercises(s).length} ta savol ({kindSummary(s)})</li>}
                   {s.writingTask && <li>Yozish: {s.writingTask.minWords}–{s.writingTask.maxWords} so‘z</li>}
-                  {s.speakingTask && <li>G‘apirish: {s.speakingTask.targetSeconds}s</li>}
+                  {s.speakingTask && <li>Gapirish: {s.speakingTask.targetSeconds}s</li>}
                   {s.audio && !hasAudio(manifestOk, s.audio) && <li className="!text-[var(--warn)]">Audio fayl topilmadi — tinglash bo‘limi matn asosida o‘tkaziladi</li>}
                 </ul>
                 {!s.formatVerified && (
@@ -452,7 +452,7 @@ export default function MockExam() {
             <h2 className="font-bold">{section.speakingTask.questionEn}</h2>
             <p className="text-sm muted">{section.speakingTask.hintUz}</p>
             <InfoBanner tone="warn">
-              G‘apirish bo‘limida audio yozish va baholash{' '}
+              Gapirish bo‘limida audio yozish va baholash{' '}
               <Link to="/speaking" className="underline font-semibold">Speaking</Link> bo‘limida mavjud. Bu yerda javob
               matnini qoldirishingiz mumkin — baho rasmiy imtihon natijasi emas.
             </InfoBanner>
@@ -566,11 +566,13 @@ function MiniWriting({ taskId, prompt, instruction, onDone }: { taskId: string; 
         <span className="flex-1" />
         <Button
           onClick={() => {
-            actions.addWriting(taskId, text, 0, null)
+            // Bo'sh javob saqlanmaydi: u yozish ko'nikmasiga soxta past ball
+            // (dalil) qo'shardi. Bo'lim baribir yakunlanadi.
+            if (words > 0) actions.addWriting(taskId, text, 0, null)
             onDone()
           }}
         >
-          Saqlash va bo'limni yakunlash
+          {words > 0 ? "Saqlash va bo'limni yakunlash" : "Javobsiz yakunlash"}
         </Button>
       </div>
     </Card>
@@ -581,7 +583,7 @@ function Writing2Note({ textAnswer, onSave, onFinish }: { textAnswer: string; on
   const [v, setV] = useState(textAnswer)
   return (
     <div className="grid gap-2">
-      <textarea value={v} onChange={(e) => setV(e.target.value)} rows={6} className="w-full rounded-xl border bg-[var(--panel)] p-3 text-sm" placeholder="Write your answer here…" aria-label="G'apirish bo'limi matn javobi" />
+      <textarea value={v} onChange={(e) => setV(e.target.value)} rows={6} className="w-full rounded-xl border bg-[var(--panel)] p-3 text-sm" placeholder="Write your answer here…" aria-label="Gapirish bo'limi matn javobi" />
       <div className="flex gap-2">
         <Button variant="secondary" onClick={() => onSave(v)}>Javobni saqlash</Button>
         <Button onClick={onFinish}>Bo'limni yakunlash</Button>
@@ -592,8 +594,11 @@ function Writing2Note({ textAnswer, onSave, onFinish }: { textAnswer: string; on
 
 // ---------------------- Natijalar ----------------------
 function Results({ exam, attempt, onRetry }: { exam: NonNullable<ReturnType<typeof getBundle>['mockExam']>; attempt: NonNullable<ReturnType<typeof useStore>['data']['mockAttempts'][number]>; onRetry: () => void }) {
-  const strong = attempt.sections.filter((s) => (s.score ?? 0) >= 75).map((s) => s.skill)
-  const weak = attempt.sections.filter((s) => (s.score ?? 0) < 60).map((s) => s.skill)
+  // Baholanmagan bo'limlar (Writing/Speaking — ball yo'q) kuchli ham, zaif ham
+  // deb hisoblanmaydi. ESKI BUG: `null` 0 deb olinib, ular doim "zaif" chiqardi.
+  const scored = attempt.sections.filter((s) => s.score !== null)
+  const strong = scored.filter((s) => (s.score ?? 0) >= 75).map((s) => s.skill)
+  const weak = scored.filter((s) => (s.score ?? 0) < 60).map((s) => s.skill)
 
   const mistakes = attempt.sections.flatMap((s) =>
     Object.entries(s.exerciseResults)
@@ -645,7 +650,7 @@ function Results({ exam, attempt, onRetry }: { exam: NonNullable<ReturnType<type
         <InfoBanner>
           <b>Tavsiya:</b>{' '}
           {weak.length
-            ? `Zaif bo‘limlarni kundalik rejada kuchaytirdik — Progress bo‘limida yangi taqsimotni ko‘rasiz. ${weak.join(', ')} bo‘limlaridagi mashqlarni takrorlang.`
+            ? `${weak.join(', ')} bo‘limlaridagi mashqlarni takrorlang. Ko‘nikma bahosi 65 dan past va natijalar yetarli bo‘lsa, kundalik reja unga avtomatik ko‘proq vaqt ajratadi — taqsimotni Dashboard va Sozlamalarda ko‘rasiz.`
             : 'Umumiy holat yaxshi. Keyingi daraja uchun bo‘lim testlaridan o‘tishni davom ettiring.'}
         </InfoBanner>
       </Card>

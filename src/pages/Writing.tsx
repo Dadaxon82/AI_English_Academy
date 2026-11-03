@@ -36,7 +36,7 @@ export default function Writing() {
     }
   })
   const [submitted, setSubmitted] = useState<WritingSubmission[]>([])
-  const [compareWith, setCompareWith] = useState<string | null>(null)
+  const [showCompare, setShowCompare] = useState(false)
   const [saveNote, setSaveNote] = useState<string | null>(null)
 
   // saqlangan javoblarni yuklash
@@ -95,9 +95,11 @@ export default function Writing() {
   // `prior` XRONOLOGIK tartibda (eski → yangi). Solishtiruv uchun "eng yangi"
   // = oxirgi element; "oldingi javob" = undan bitta oldingi.
   const newest = prior[prior.length - 1] ?? null
-  const compareTarget = compareWith
-    ? data.writing.find((w) => w.id === compareWith)
-    : (prior[prior.length - 2] ?? prior[0] ?? null)
+  // ESKI BUG: bitta javob bo'lsa ham panel chiqib, javobni O'ZI bilan
+  // solishtirardi, "Solishtirishni yopish" esa uni yopmasdi. Endi panel faqat
+  // kamida ikki javob bo'lganda va foydalanuvchi ochganda ko'rinadi.
+  const previous = prior.length >= 2 ? prior[prior.length - 2]! : null
+  const compareTarget = showCompare ? previous : null
 
   return (
     <div className="grid gap-4">
@@ -154,7 +156,8 @@ export default function Writing() {
               variant="secondary"
               disabled={words === 0}
               onClick={() => {
-                const sub = actions.addWriting(task.id, draft, seconds, prior[0]?.id ?? null)
+                // Qayta yozish oxirgi javobga bog'lanadi (eski: doim birinchisiga).
+                const sub = actions.addWriting(task.id, draft, seconds, newest?.id ?? null)
                 setSubmitted((s) => [...s, sub])
               }}
             >
@@ -192,13 +195,9 @@ export default function Writing() {
                 </Chip>
                 <Chip>{sub.wordCount} so‘z</Chip>
                 <span className="muted">{new Date(sub.createdAt).toLocaleString('uz')}</span>
-                {i === 0 && submitted.length > 1 && (
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => setCompareWith(compareWith ? null : submitted[submitted.length - 2]!.id)}
-                  >
-                    {compareWith ? 'Solishtirishni yopish' : "Oldingi javob bilan solishtirish"}
+                {i === 0 && previous && (
+                  <Button size="sm" variant="ghost" aria-pressed={showCompare} onClick={() => setShowCompare((v) => !v)}>
+                    {showCompare ? 'Solishtirishni yopish' : 'Oldingi javob bilan solishtirish'}
                   </Button>
                 )}
               </div>

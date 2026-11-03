@@ -19,7 +19,7 @@ Loyiha talabnomasi (`AI English Academy_v2.docx`) to'liq bajarilgan:
 - ✅ AI "ulangan" deb ko'rsatilmaydi — AI bo'lmasa **qoidaviy dvigatel** (`engine: 'rule-based'`) ishlatiladi
 - ✅ **7+ kun A1 kontenti** alohida (`src/content/day-01…07.ts`)
 - ✅ **13 ta jadval** (`supabase/migrations/0001_init.sql`), ID'lar, `created_at`, FK va indexlar bilan
-- ✅ Testlar: `tsc` tip tekshiruvi, ESLint, `vitest` (138 test), production build, smoke + render tekshiruvi
+- ✅ Testlar: `tsc` tip tekshiruvi, ESLint, `vitest` (151 test), production build, smoke + render tekshiruvi
 - ✅ JSON/CSV **eksport** va **ma'lumotlarni o'chirish**
 - ✅ **HECH QANDAY TUGMA DEKORATSIYA EMAS** — har bir tugma haqiqiy harakat bajaradi
 
@@ -99,7 +99,7 @@ npm run icons:build   # PWA ikonalaria (0 bog'liqlik, sof Node)
 ```bash
 npm run typecheck     # tsc — 0 xato
 npm run lint          # eslint — 0 xato
-npm test              # vitest — 138 test (SRS, taymer/vaqt hisobi, tekshiruv, kontent auditi, audio yaxlitligi, rejalashtirish, daraja, sync, server birlashmasi, sahifalar)
+npm test              # vitest — 151 test (SRS, taymer/vaqt hisobi, tekshiruv, kontent auditi, audio yaxlitligi, rejalashtirish, daraja, sync, server birlashmasi, sahifalar)
 npm run build         # production build + Service Worker
 npm run smoke         # dist'ni serverda ochib tekshirish + 375/1280 skrinshot
 npm run render:check  # 15 marshrutni CDP orqali ochib DOM tekshiruvi + konsol xatolari
@@ -149,7 +149,7 @@ bajariladi.
 
 **Daraja siyosati:** 4 ta ko'nikmada kamida 4 tadan isbot, og'irlikli ball ≥ 72 (mock imtihon og'irligi 0.35, eski natijalar 30 kunlik "half-life" bilan kamayadi) → tizim keyingi darajani **tavsiya** qiladi; qaror foydalanuvchida.
 
-**Maxfiylik:** speaking yozuvlari faqat brauzerda; serverga faqat matn transkripsiyasi va `audio_stored:false` yuboriladi; "Barcha ma'lumotni o'chirish" hozircha faqat shu qurilmadagi kesh, navbat va offline fayllarni tozalaydi — serverdagi yozuvlar o'chirilmaydi.
+**Maxfiylik:** speaking yozuvlari faqat brauzerda; serverga faqat matn transkripsiyasi va `audio_stored:false` yuboriladi; "Barcha ma'lumotni o'chirish" hisobga kirgan foydalanuvchida avval serverdagi barcha shaxsiy yozuvlarni o'chiradi (`profiles` qatori — hisobning o'zi — qoladi), so'ng qurilmadagi kesh, navbat va offline fayllarni tozalaydi. Server o'chira olmasa (masalan internet yo'q), qurilmadagi ma'lumot ham tegilmaydi.
 
 ## 7. Litsenziya va kontent
 

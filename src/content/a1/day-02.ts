@@ -829,7 +829,7 @@ export const day2: DailyPlanDay = {
     },
     { skill: 'grammar', minutes: 15, itemIds: [grammarDay2.id], titleUz: 'Grammatika: egalik va have got' },
     { skill: 'reading', minutes: 15, itemIds: [readingDay2.id], titleUz: 'O‘qish: “Mening oilam va uymiz”' },
-    { skill: 'listening', minutes: 15, itemIds: [listeningDay2.id], titleUz: 'Tinglash: oilaviy surat suhbasi' },
+    { skill: 'listening', minutes: 15, itemIds: [listeningDay2.id], titleUz: 'Tinglash: oilaviy surat suhbati' },
     { skill: 'writing', minutes: 20, itemIds: [writingDay2.id], titleUz: 'Yozish: oila haqida xabar' },
     {
       skill: 'speaking',

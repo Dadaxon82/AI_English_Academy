@@ -37,8 +37,9 @@ const Router = useHashRoutes ? HashRouter : BrowserRouter
 function Shell({ auth, onAuth }: { auth: AuthState; onAuth: (s: AuthState) => void }) {
   const { ready, data } = useStore()
   const loc = useLocation()
-  // Diagnostika topshirilmagan bo'lsa — onboarding'ga taklif qilamiz
-  const needsOnboarding = data.diagnostic === null
+  // Onboarding yakunlanmagan bo'lsa taklif qilamiz. Diagnostikani o'tkazib
+  // yuborish ham yakunlash hisoblanadi (`onboardedAt`).
+  const needsOnboarding = data.diagnostic === null && data.onboardedAt === null
 
   if (!ready) {
     return (

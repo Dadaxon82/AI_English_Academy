@@ -7,22 +7,40 @@ import { MemoryRouter } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { aiRuntimeEnabled } from '../lib/ai'
 import { StoreProvider, useStore } from '../lib/store'
-import { todayKey } from '../lib/types'
+import { emptyData, todayKey } from '../lib/types'
 import MockExam from '../pages/MockExam'
+import Onboarding from '../pages/Onboarding'
 import Speaking from '../pages/Speaking'
 import Writing from '../pages/Writing'
 
-function TodaySeconds() {
-  const { data } = useStore()
-  return <output data-testid="today-seconds">{data.activity[todayKey()]?.seconds ?? 0}</output>
+/** Store'ga bog'liq komponent har render bo'lganda chaqiriladi. */
+const probeRendered = vi.fn()
+
+/** Store holatini test uchun ko'rinadigan qiluvchi kichik "zond". */
+function Probe() {
+  const { data, dayProgress, actions } = useStore()
+  probeRendered()
+  return (
+    <>
+      <output data-testid="today-seconds">{data.activity[todayKey()]?.seconds ?? 0}</output>
+      <output data-testid="day-progress">{dayProgress.doneMin}</output>
+      <output data-testid="writing-count">{data.writing.length}</output>
+      <output data-testid="onboarded">{data.onboardedAt === null ? 'no' : 'yes'}</output>
+      <button type="button" onClick={() => actions.startTimer('probe-session', 'reading')}>
+        probe-start-timer
+      </button>
+    </>
+  )
 }
+
+const UID = 'u-page'
 
 function renderPage(page: ReactNode) {
   return render(
     <MemoryRouter>
-      <StoreProvider userId="u-page">
+      <StoreProvider userId={UID}>
         {page}
-        <TodaySeconds />
+        <Probe />
       </StoreProvider>
     </MemoryRouter>,
   )
@@ -64,6 +82,21 @@ describe('Mock imtihon — kundalik hisobga faqat ochiq turgan bo‘lim vaqti yo
     finishExam()
     await advance()
     expect(screen.getByTestId('today-seconds')).toHaveTextContent('300')
+    // Baholanmagan bo'limlar (Writing/Speaking) "zaif" deb ko'rsatilmaydi
+    const weak = screen.getByText('Zaif:').parentElement!
+    expect(weak).toHaveTextContent('reading')
+    expect(weak).not.toHaveTextContent(/writing|speaking/)
+  })
+
+  it('bo‘sh yozish javobi saqlanmaydi (soxta past ball dalili qo‘shilmaydi)', async () => {
+    renderPage(<MockExam />)
+    await advance()
+    fireEvent.click(screen.getByRole('button', { name: 'Imtihonni boshlash' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Writing' }))
+    await advance()
+    fireEvent.click(screen.getByRole('button', { name: 'Javobsiz yakunlash' }))
+    await advance()
+    expect(screen.getByTestId('writing-count')).toHaveTextContent('0')
   })
 
   it('bo‘limlar orasida o‘tish vaqtni ikki marta yozmaydi va bo‘lim taymerini qayta boshlamaydi', async () => {
@@ -92,12 +125,82 @@ describe('Yozish — AI ulanmagan bo‘lsa "AI" deb ko‘rsatilmaydi', () => {
     expect(screen.queryByText(/\+ AI/)).toBeNull()
   })
 
+  it('solishtirish paneli: bitta javobda yo‘q, ikkitada ochiladi va yopiladi', async () => {
+    renderPage(<Writing />)
+    await advance()
+    const write = async (text: string) => {
+      fireEvent.change(screen.getByLabelText('Yozish maydoni'), { target: { value: text } })
+      fireEvent.click(screen.getByRole('button', { name: 'Tahlil qilish' }))
+      await advance()
+    }
+    await write('Hello! My name is Aziz. I am a student.')
+    // ESKI BUG: bitta javob o'zi bilan solishtirilib turardi
+    expect(screen.queryByText('Eski javob')).toBeNull()
+    expect(screen.queryByRole('button', { name: 'Oldingi javob bilan solishtirish' })).toBeNull()
+
+    await write('Hello! My name is Aziz. I am a student and I like my school because my teacher is kind.')
+    expect(screen.queryByText('Eski javob')).toBeNull()
+    fireEvent.click(screen.getByRole('button', { name: 'Oldingi javob bilan solishtirish' }))
+    expect(screen.getByText('Eski javob')).toBeInTheDocument()
+    // ESKI BUG: "yopish" paneli yopmasdi
+    fireEvent.click(screen.getByRole('button', { name: 'Solishtirishni yopish' }))
+    expect(screen.queryByText('Eski javob')).toBeNull()
+  })
+
   it('"ulangan" faqat VITE_AI_ENABLED=true + foydalanuvchi bayrog‘i + internet bo‘lganda', () => {
     expect(aiRuntimeEnabled(true, true)).toBe(false)
     vi.stubEnv('VITE_AI_ENABLED', 'true')
     expect(aiRuntimeEnabled(true, true)).toBe(true)
     expect(aiRuntimeEnabled(false, true)).toBe(false)
     expect(aiRuntimeEnabled(true, false)).toBe(false)
+  })
+})
+
+describe('Onboarding — diagnostikani o‘tkazib yuborish ham yakunlash hisoblanadi', () => {
+  it('“Hozir o‘tkazmayman” dan keyin "sozlamalar to‘ldirilmagan" belgisi qolmaydi', async () => {
+    renderPage(<Onboarding />)
+    await advance()
+    expect(screen.getByTestId('onboarded')).toHaveTextContent('no')
+    fireEvent.click(screen.getByRole('button', { name: 'Davom etish' })) // maqsadlar
+    fireEvent.click(screen.getByRole('button', { name: 'Davom etish' })) // kundalik reja
+    fireEvent.click(screen.getByRole('button', { name: /Hozir o.tkazmayman/ }))
+    await advance()
+    expect(screen.getByTestId('onboarded')).toHaveTextContent('yes')
+  })
+})
+
+describe('Store — sarlavhadagi kunlik progress va keraksiz renderlar', () => {
+  it('kunlik progress bugungi BUTUN vaqtni ko‘rsatadi (eski: faqat joriy taymer)', async () => {
+    const seeded = {
+      ...emptyData(UID),
+      onboardedAt: 1,
+      activity: { [todayKey()]: { date: todayKey(), seconds: 1200, attempts: 2, correct: 2, newWords: 0, reviewedWords: 0, skills: { reading: 1200 } } },
+    }
+    localStorage.setItem(`aea:data:${UID}`, JSON.stringify(seeded))
+    renderPage(<div />)
+    await advance()
+    expect(screen.getByTestId('day-progress')).toHaveTextContent('20')
+    fireEvent.click(screen.getByRole('button', { name: 'probe-start-timer' }))
+    await advance(2 * 60_000)
+    expect(screen.getByTestId('day-progress')).toHaveTextContent('22')
+  })
+
+  it('taymer yurmaganda ilova har soniyada qayta chizilmaydi', async () => {
+    // act() bitta qadamdagi bir nechta yangilanishni bitta renderga jamlaydi —
+    // shuning uchun soniyama-soniya suriladi.
+    const seconds = async (n: number) => {
+      for (let i = 0; i < n; i++) await advance(1000)
+    }
+    renderPage(<div />)
+    await advance()
+    const renders = () => probeRendered.mock.calls.length
+    const idle = renders()
+    await seconds(5)
+    expect(renders()).toBe(idle)
+    fireEvent.click(screen.getByRole('button', { name: 'probe-start-timer' }))
+    const running = renders()
+    await seconds(3)
+    expect(renders()).toBeGreaterThanOrEqual(running + 3)
   })
 })
 

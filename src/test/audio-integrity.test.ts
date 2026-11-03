@@ -6,7 +6,7 @@
  * Ikkita narsa solishtiriladi:
  *  1) har bir tinglash topshirigining `audio.id` manifestda bor va
  *     `available: true`;
- *  2) kontentdagı `audio.src` manifestdagi manzil bilan BIR XIL
+ *  2) kontentdagi `audio.src` manifestdagi manzil bilan BIR XIL
  *     (aksi holda manifest o'qib bo'lmasa pleyer mavjud bo'lmagan faylga
  *     murojaat qiladi — eski holatda 8 tasining ham manzili noto'g'ri edi).
  */
@@ -52,7 +52,7 @@ describe('Audio yaxlitligi', () => {
     expect(bad, `Audio manifesti muammolari (${bad.length} ta):\n` + bad.join('\n')).toEqual([])
   })
 
-  it('kontentdagı audio.src manifest manzili bilan bir xil', () => {
+  it('kontentdagi audio.src manifest manzili bilan bir xil', () => {
     const bad: string[] = []
     for (const { where, audio } of audioRefs) {
       const item = byId.get(audio.id)

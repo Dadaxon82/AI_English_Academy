@@ -388,7 +388,7 @@ function isAnswerEmpty(ex: Exercise, a: unknown): boolean {
 
 function kindLabel(k: Exercise['kind']): string {
   return {
-    'multiple-choice': 'Tanlovi',
+    'multiple-choice': 'Tanlov',
     'true-false-notgiven': 'True / False / Not Given',
     matching: 'Juftlik',
     'gap-fill': 'Bo‘shliq',

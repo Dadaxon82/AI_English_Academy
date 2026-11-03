@@ -80,7 +80,7 @@ export function toQueueItems(data: AppData): Omit<QueueItem, 'id' | 'tries'>[] {
       current_level: data.settings.currentLevel,
       target_level: data.settings.targetLevel,
       diagnostic_level: data.diagnostic?.level ?? null,
-      plan: { path: data.path, xp: data.xp, diagnostic: data.diagnostic },
+      plan: { path: data.path, xp: data.xp, diagnostic: data.diagnostic, onboardedAt: data.onboardedAt },
     },
   })
 
@@ -417,6 +417,48 @@ export async function queueAllData(data: AppData): Promise<number> {
   return pending.length
 }
 
+/* ------------------------------ o'chirish ------------------------------ */
+
+/** Foydalanuvchining shaxsiy jadvallari ("Barcha ma'lumotni o'chirish" shularni tozalaydi). */
+const PERSONAL_TABLES = [
+  'exercise_attempts',
+  'user_vocabulary',
+  'daily_activity',
+  'writing_submissions',
+  'speaking_sessions',
+  'mock_exam_attempts',
+  'learning_plans',
+  'user_settings',
+] as const
+
+/**
+ * Serverdagi barcha shaxsiy yozuvlarni o'chirish (RLS: faqat o'z qatorlari).
+ * `profiles` qatori qoldiriladi — u hisobning o'zi (auth bilan bog'langan).
+ *
+ * ESKI KAMCHILIK: "Barcha ma'lumotni o'chirish" faqat qurilmani tozalardi;
+ * endi hisobga kirganda progress serverdan tiklangani uchun serverdagi
+ * yozuvlar qolsa, o'chirilgan ma'lumot keyingi kirishda qaytib kelardi.
+ */
+export async function deleteRemoteData(userId: string): Promise<{ ok: boolean; reasonUz: string | null }> {
+  if (!supabaseConfigured) return { ok: true, reasonUz: null }
+  if (networkStatus() === 'offline') return { ok: false, reasonUz: 'Internet yo‘q — serverdagi ma’lumot o‘chirilmadi.' }
+  const sb = getSupabase()
+  if (!sb) return { ok: false, reasonUz: 'Supabase mijoziga ulanib bo‘lmadi.' }
+  const { data: sess, error: authErr } = await sb.auth.getSession()
+  if (authErr || !sess.session || sess.session.user.id !== userId) {
+    return { ok: false, reasonUz: 'Tizimga kirilmagan — serverdagi ma’lumot o‘chirilmadi.' }
+  }
+  for (const table of PERSONAL_TABLES) {
+    try {
+      const { error } = await sb.from(table).delete().eq('user_id', userId)
+      if (error) return { ok: false, reasonUz: 'Serverdagi ma’lumotni o‘chirib bo‘lmadi. Keyinroq qayta urinib ko‘ring.' }
+    } catch {
+      return { ok: false, reasonUz: 'Serverdagi ma’lumotni o‘chirib bo‘lmadi. Internetni tekshiring.' }
+    }
+  }
+  return { ok: true, reasonUz: null }
+}
+
 /* ------------------------------- o'qish ------------------------------- */
 
 type Row = Record<string, unknown>
@@ -483,6 +525,7 @@ function planFromRow(r: Row | null): RemoteSnapshot['plan'] {
     }
   }
   if (typeof p.xp === 'number' && Number.isFinite(p.xp)) out.xp = p.xp
+  if (typeof p.onboardedAt === 'number' && Number.isFinite(p.onboardedAt)) out.onboardedAt = p.onboardedAt
   if (isObj(p.diagnostic) && typeof p.diagnostic.at === 'number') {
     const d = p.diagnostic
     out.diagnostic = {

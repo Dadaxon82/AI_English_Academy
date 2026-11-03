@@ -129,7 +129,9 @@ export default function Login({ onAuth, authState }: { onAuth: (s: AuthState) =>
         <div className="grid gap-2 text-center">
           <span className="chip mx-auto">Bepul / arzon xizmatlar ustuvor</span>
           {authState.kind === 'local-only' && (
-            <Button variant="secondary" onClick={() => nav('/onboarding')}>
+            // Mavjud hisob — o'qishni davom ettirish (onboarding'ni qayta boshlamaydi;
+            // tugallanmagan bo'lsa Dashboard o'zi taklif qiladi).
+            <Button variant="secondary" onClick={() => nav('/dashboard')}>
               Davom etish (mavjud mahalliy hisob)
             </Button>
           )}

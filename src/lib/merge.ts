@@ -22,7 +22,7 @@ import { HISTORY_LIMITS } from './types'
 /** Serverdan o'qilgan holat (faqat foydalanuvchining o'z qatorlari — RLS). */
 export interface RemoteSnapshot {
   settings: Partial<UserSettings> | null
-  plan: { path?: AppData['path']; xp?: number; diagnostic?: AppData['diagnostic'] } | null
+  plan: { path?: AppData['path']; xp?: number; diagnostic?: AppData['diagnostic']; onboardedAt?: number } | null
   attempts: AttemptRecord[]
   srs: Record<string, SrsState>
   activity: Record<string, DayActivity>
@@ -41,7 +41,8 @@ export function isPristine(d: AppData): boolean {
     d.speaking.length === 0 &&
     d.mockAttempts.length === 0 &&
     d.path.completedDays.length === 0 &&
-    d.diagnostic === null
+    d.diagnostic === null &&
+    d.onboardedAt === null
   )
 }
 
@@ -103,6 +104,9 @@ export function mergeRemote(local: AppData, remote: RemoteSnapshot): AppData {
   const ld = local.diagnostic
   const rd = remote.plan?.diagnostic ?? null
   const diagnostic = !rd ? ld : !ld ? rd : rd.at > ld.at ? rd : ld
+  // Onboarding bir marta (istalgan qurilmada) yakunlangan bo'lsa yetarli — eng birinchisi.
+  const ro = remote.plan?.onboardedAt ?? null
+  const onboardedAt = local.onboardedAt === null ? ro : ro === null ? local.onboardedAt : Math.min(local.onboardedAt, ro)
 
   return {
     ...local,
@@ -116,5 +120,6 @@ export function mergeRemote(local: AppData, remote: RemoteSnapshot): AppData {
     xp: Math.max(local.xp, remote.plan?.xp ?? 0),
     path: { completedDays, passedTests, currentDayId },
     diagnostic,
+    onboardedAt,
   }
 }

@@ -155,7 +155,7 @@ export function skillLabelUz(s: Skill): string {
     reading: 'O‘qish',
     listening: 'Tinglash',
     writing: 'Yozish',
-    speaking: 'G‘apirish',
+    speaking: 'Gapirish',
   }
   return map[s]
 }

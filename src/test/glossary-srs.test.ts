@@ -8,11 +8,12 @@
  * bir ora qayta ko'rikmasdi).
  */
 import { describe, expect, it } from 'vitest'
-import { a1, allGlossaryVocab, allVocab, glossaryVocabId, wordKeyOf } from '../content'
+import { a1, allGlossaryVocab, allVocab, findExercise, glossaryVocabId, vocabQuizExercise, wordKeyOf } from '../content'
+import { checkAnswer } from '../lib/check'
 import { reducer } from '../lib/store'
 import { migrate } from '../lib/storage'
 import { initialSrsState } from '../lib/srs'
-import { emptyData, type AppData } from '../lib/types'
+import { emptyData, todayKey, type AppData } from '../lib/types'
 
 describe('Matn glossariyi so‘zlari', () => {
   const gl = allGlossaryVocab()
@@ -59,6 +60,34 @@ describe('Matn glossariyi so‘zlari', () => {
       expect(g.topic).toBe('matndan olingan')
       expect(g.level).toBe('A1')
     }
+  })
+
+  it('“Lug‘atimga saqlash” so‘zni jadvalga qo‘shadi, lekin xato yoki takror deb sanamaydi', () => {
+    const word = allVocab()[0]!
+    let s = emptyData('u1')
+    s = reducer(s, { type: 'srs-add', vocabId: word.id })
+    const st = s.srs[word.id]
+    expect(st).toBeDefined()
+    expect(st!.lapses).toBe(0)
+    expect(st!.reps).toBe(0)
+    expect(st!.dueAt).toBeLessThanOrEqual(Date.now()) // bugun takrorlanadi
+    expect(s.activity[todayKey()]).toBeUndefined() // statistika o'zgarmaydi
+    // Qayta saqlash mavjud holatni buzmaydi
+    const graded = reducer(s, { type: 'srs', vocabId: word.id, grade: 'good' })
+    expect(reducer(graded, { type: 'srs-add', vocabId: word.id }).srs[word.id]).toEqual(graded.srs[word.id])
+  })
+
+  it('lug‘at testidagi xato uchun Xatolar daftari to‘g‘ri javobni tiklay oladi', () => {
+    const word = allVocab()[0]!
+    const quiz = vocabQuizExercise(word, ['boshqa', word.translationUz, 'yana biri'])
+    const restored = findExercise(quiz.id)
+    expect(restored).toBeDefined()
+    expect(restored!.instructionUz).toBe(quiz.instructionUz)
+    // Xatolar daftari saqlangan javob matnini tekshirib, "to'g'ri javob"ni ko'rsatadi
+    expect(checkAnswer(restored!, 'boshqa').expected).toBe(word.translationUz)
+    // Glossariy so'zi uchun ham
+    const gl = allGlossaryVocab()[0]!
+    expect(findExercise(vocabQuizExercise(gl).id)).toBeDefined()
   })
 
   it('eski kesh kaliti (`<matn>|gl-…`) yangisiga migratsiya qilinadi', () => {

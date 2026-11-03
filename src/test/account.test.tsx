@@ -1,8 +1,10 @@
 /**
- * Hisobdan chiqish xavfsizligi.
+ * Hisob amallari: chiqish va "Barcha ma'lumotni o'chirish".
  *
- * ESKI BUG: "Hisobdan chiqish" lokal ma'lumot va sinxron navbatini darhol
- * o'chirardi — serverga yetmagan progress jimgina yo'qolardi.
+ * ESKI BUG'lar: "Hisobdan chiqish" lokal ma'lumot va sinxron navbatini darhol
+ * o'chirardi — serverga yetmagan progress jimgina yo'qolardi; "Barcha
+ * ma'lumotni o'chirish" esa serverdagi yozuvlarga tegmasdi (endi ular
+ * keyingi kirishda qaytib kelardi).
  */
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
@@ -16,9 +18,14 @@ vi.mock('../lib/supabase', async (importOriginal) => {
 
 import { server } from './fakeSupabase'
 import { AuthContext } from '../lib/authContext'
-import { StoreProvider } from '../lib/store'
+import { StoreProvider, useStore } from '../lib/store'
 import { emptyData, type AppData } from '../lib/types'
 import Settings from '../pages/Settings'
+
+function AttemptCount() {
+  const { data } = useStore()
+  return <output data-testid="attempts">{data.attempts.length}</output>
+}
 
 const UID = 'u-test'
 
@@ -49,6 +56,7 @@ function renderSettings(signOut: () => void) {
       <AuthContext.Provider value={{ signOut }}>
         <StoreProvider userId={UID} remoteSync>
           <Settings />
+          <AttemptCount />
         </StoreProvider>
       </AuthContext.Provider>
     </MemoryRouter>,
@@ -85,5 +93,37 @@ describe('Hisobdan chiqish — avval sinxron, yuborilmagan narsa qolsa ogohlanti
     expect(signOut).not.toHaveBeenCalled()
     fireEvent.click(screen.getByRole('button', { name: 'Baribir chiqish' }))
     expect(signOut).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe('Barcha ma’lumotni o‘chirish — hisobga kirgan foydalanuvchida serverdan ham', () => {
+  const openAndConfirm = async () => {
+    fireEvent.click(await screen.findByRole('button', { name: 'Barcha ma’lumotni o‘chirish' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Ha, o‘chirilsin' }))
+  }
+
+  it('serverdagi shaxsiy yozuvlar va qurilmadagi ma’lumot o‘chadi', async () => {
+    seedLocal(5)
+    server.tables.set('exercise_attempts', new Map([['att-1', { id: 'att-1', user_id: UID }]]))
+    server.tables.set('user_settings', new Map([[UID, { user_id: UID, daily_minutes: 90 }]]))
+    renderSettings(vi.fn())
+    expect(await screen.findByTestId('attempts')).toHaveTextContent('5')
+    await openAndConfirm()
+    expect(await screen.findByText(/Ma’lumotlar o‘chirildi/)).toBeInTheDocument()
+    expect(server.rows('exercise_attempts')).toHaveLength(0)
+    expect(server.rows('user_settings')).toHaveLength(0)
+    expect(screen.getByTestId('attempts')).toHaveTextContent('0')
+  })
+
+  it('server o‘chira olmasa qurilmadagi ma’lumot ham tegilmaydi (qayta urinish mumkin)', async () => {
+    seedLocal(5)
+    server.tables.set('exercise_attempts', new Map([['att-1', { id: 'att-1', user_id: UID }]]))
+    server.network = true
+    renderSettings(vi.fn())
+    expect(await screen.findByTestId('attempts')).toHaveTextContent('5')
+    await openAndConfirm()
+    expect(await screen.findByText(/Qurilmadagi ma’lumotlar o‘zgarmadi/)).toBeInTheDocument()
+    expect(screen.getByTestId('attempts')).toHaveTextContent('5')
+    expect(server.rows('exercise_attempts')).toHaveLength(1)
   })
 })

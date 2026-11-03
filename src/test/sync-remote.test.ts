@@ -16,7 +16,7 @@ vi.mock('../lib/supabase', async (importOriginal) => {
 })
 
 import { server } from './fakeSupabase'
-import { pullRemote, queueAllData, syncNow, toQueueItems } from '../lib/sync'
+import { deleteRemoteData, pullRemote, queueAllData, syncNow, toQueueItems } from '../lib/sync'
 import { loadQueue } from '../lib/storage'
 import { mergeRemote } from '../lib/merge'
 import { analyzeSpeaking, analyzeWriting } from '../lib/analyze'
@@ -80,6 +80,7 @@ function richData(uid: string): AppData {
     xp: 150,
     path: { completedDays: ['a1-day-01'], passedTests: { 'a1-test-day-01': 80 }, currentDayId: 'a1-day-02' },
     diagnostic: { at: Date.UTC(2026, 10, 1, 8), level: 'A1', labelUz: 'Diagnostika natijasi: A1.', confidence: 0.6 },
+    onboardedAt: Date.UTC(2026, 10, 1, 8, 5),
   }
 }
 
@@ -158,6 +159,7 @@ describe('pullRemote — serverdagi progress qayta tiklanadi', () => {
     expect(restored.path).toEqual(rich.path)
     expect(restored.xp).toBe(rich.xp)
     expect(restored.diagnostic).toEqual(rich.diagnostic)
+    expect(restored.onboardedAt).toBe(rich.onboardedAt)
   })
 
   it('boshqa foydalanuvchining sessiyasi bilan o‘qilmaydi', async () => {
@@ -172,5 +174,30 @@ describe('pullRemote — serverdagi progress qayta tiklanadi', () => {
     server.network = true
     const res = await pullRemote(UID)
     expect(res).toMatchObject({ ok: false, snapshot: null })
+  })
+})
+
+describe('deleteRemoteData — serverdagi shaxsiy yozuvlar o‘chiriladi', () => {
+  it('barcha shaxsiy jadvallar tozalanadi, boshqa foydalanuvchiniki qoladi', async () => {
+    await queueAllData(richData(UID))
+    await syncNow(UID)
+    server.tables.get('exercise_attempts')?.set('other', { id: 'other', user_id: 'someone-else' })
+    expect(server.rows('writing_submissions')).toHaveLength(1)
+
+    expect(await deleteRemoteData(UID)).toEqual({ ok: true, reasonUz: null })
+    for (const t of ['exercise_attempts', 'user_vocabulary', 'daily_activity', 'writing_submissions', 'speaking_sessions', 'mock_exam_attempts', 'learning_plans', 'user_settings']) {
+      expect(server.rows(t).filter((r) => r.user_id === UID), t).toHaveLength(0)
+    }
+    expect(server.rows('exercise_attempts')).toEqual([{ id: 'other', user_id: 'someone-else' }])
+    // Keyingi kirishda tiklanadigan narsa qolmaydi
+    const pulled = await pullRemote(UID)
+    expect(pulled.snapshot?.attempts).toEqual([])
+  })
+
+  it('tarmoq xatosida ok: false — chaqiruvchi qurilmadagi ma’lumotni o‘chirmasligi uchun', async () => {
+    server.network = true
+    const res = await deleteRemoteData(UID)
+    expect(res.ok).toBe(false)
+    expect(res.reasonUz).toBeTruthy()
   })
 })

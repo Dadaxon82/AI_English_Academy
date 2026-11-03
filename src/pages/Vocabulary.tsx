@@ -13,7 +13,7 @@
  */
 
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { allGlossaryVocab, allVocab, getBundle } from '../content'
+import { allGlossaryVocab, allVocab, getBundle, vocabQuizExercise } from '../content'
 import { CEFR_LEVELS, type CefrLevel, type MultipleChoiceExercise, type PartOfSpeech, type VocabularyItem } from '../content/types'
 import { checkAnswer, type CheckResult } from '../lib/check'
 import { initialSrsState, isDue, review } from '../lib/srs'
@@ -28,11 +28,11 @@ const POS_UZ: Record<PartOfSpeech, string> = {
   verb: 'fe\'l',
   adjective: 'sifat',
   adverb: 'ravish',
-  pronoun: 'olmos',
-  preposition: 'kelik',
+  pronoun: 'olmosh',
+  preposition: 'predlog',
   conjunction: 'bog\'lovchi',
   determiner: 'belgilovchi',
-  interjection: 'undosh',
+  interjection: 'undov',
 }
 
 const GRADE_LABELS: { grade: SrsGrade; label: string }[] = [
@@ -262,7 +262,13 @@ export default function Vocabulary() {
           ) : (
             <div className="grid sm:grid-cols-2 gap-3">
               {filtered.map((v) => (
-                <WordCard key={v.id} item={v} state={srsOf(data.srs, v.id)} onGrade={(id, g) => actions.gradeVocab(id, g)} />
+                <WordCard
+                  key={v.id}
+                  item={v}
+                  state={srsOf(data.srs, v.id)}
+                  onGrade={(id, g) => actions.gradeVocab(id, g)}
+                  onSave={(id) => actions.saveVocab(id)}
+                />
               ))}
             </div>
           )}
@@ -297,10 +303,12 @@ function WordCard({
   item,
   state,
   onGrade,
+  onSave,
 }: {
   item: VocabularyItem
   state: SrsState | undefined
   onGrade: (id: string, grade: SrsGrade) => void
+  onSave: (id: string) => void
 }) {
   const [preview, setPreview] = useState<{ grade: SrsGrade; next: SrsState } | null>(null)
   const now = Date.now()
@@ -368,7 +376,12 @@ function WordCard({
       <div className="flex flex-wrap gap-2">
         <SpeakButton text={item.pronunciation?.ttsText ?? item.word} label={`${item.word} — talaffuz`} />
         {!state && (
-          <Button variant="secondary" size="sm" onClick={() => grade('again')} title="So'z takrorlash jadvaliga kiritiladi">
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => onSave(item.id)}
+            title="So'z takrorlash jadvaliga kiritiladi (xato deb sanalmaydi)"
+          >
             Lug'atimga saqlash
           </Button>
         )}
@@ -614,20 +627,8 @@ function buildQuiz(pool: readonly VocabularyItem[], srs: Record<string, SrsState
       .slice(0, 3)
       .map((o) => o.translationUz)
     const options = shuffle([v.translationUz, ...distractors])
-    const exercise: MultipleChoiceExercise = {
-      id: `vocab-quiz-${v.id}`,
-      kind: 'multiple-choice',
-      instructionUz: `“${v.word}” so‘zining o‘zbekcha ma‘nosini tanlang.`,
-      level: v.level,
-      skill: 'vocabulary',
-      explanationUz: `${v.word} — ${v.translationUz}. ${v.explanationEn}`,
-      difficulty: v.level === 'A1' ? 1 : 2,
-      tags: ['vocab quiz', v.topic],
-      question: `What does “${v.word}” mean?`,
-      options,
-    answerIndex: options.indexOf(v.translationUz),
-    }
-    return { exercise, vocab: v }
+    // Savol tuzilishi content/index'dagi bilan bir xil — Xatolar daftari uni id bo'yicha tiklaydi.
+    return { exercise: vocabQuizExercise(v, options), vocab: v }
   })
 }
 

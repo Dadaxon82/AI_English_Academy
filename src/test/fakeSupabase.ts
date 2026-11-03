@@ -20,7 +20,7 @@ export const server = {
   /** Sessiya egasi */
   userId: 'u-test',
   tables: new Map<string, Map<string, Row>>(),
-  calls: [] as { table: string; op: 'upsert' | 'select'; rows: number }[],
+  calls: [] as { table: string; op: 'upsert' | 'select' | 'delete'; rows: number }[],
   /** true — har so'rov tarmoq xatosi bilan qaytadi */
   network: false,
   /** Qatorni rad etish (SQLSTATE kodi) — null bo'lsa qabul */
@@ -62,6 +62,29 @@ function select(table: string) {
   return builder
 }
 
+function remove(table: string) {
+  const filters: [string, unknown][] = []
+  const builder = {
+    eq: (column: string, value: unknown) => {
+      filters.push([column, value])
+      return builder
+    },
+    then<A, B = never>(
+      resolve: (v: { error: DbError | null }) => A | PromiseLike<A>,
+      reject?: (e: unknown) => B | PromiseLike<B>,
+    ): Promise<A | B> {
+      server.calls.push({ table, op: 'delete', rows: 0 })
+      if (server.network) return Promise.resolve({ error: networkError }).then(resolve, reject)
+      const t = server.tables.get(table)
+      for (const [key, row] of [...(t?.entries() ?? [])]) {
+        if (filters.every(([c, v]) => row[c] === v)) t?.delete(key)
+      }
+      return Promise.resolve({ error: null }).then(resolve, reject)
+    },
+  }
+  return builder
+}
+
 export const client = {
   auth: {
     getSession: async () => ({ data: { session: { user: { id: server.userId } } }, error: null }),
@@ -70,6 +93,7 @@ export const client = {
   from(table: string) {
     return {
       select: () => select(table),
+      delete: () => remove(table),
       upsert: async (values: Row | Row[]): Promise<{ error: DbError | null }> => {
         const rows = Array.isArray(values) ? values : [values]
         server.calls.push({ table, op: 'upsert', rows: rows.length })

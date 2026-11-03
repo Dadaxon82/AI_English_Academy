@@ -332,7 +332,7 @@ function DayCard({
           </div>
 
           <p className="text-[11px] muted">
-            Taymer {day.id} seaniga bog‘langan. Sahifaga o‘tganingizda sahifa o‘z bo‘lim taymerini yoqsa, hisob shu
+            Taymer {day.id} sessiyasiga bog‘langan. Sahifaga o‘tganingizda sahifa o‘z bo‘lim taymerini yoqsa, hisob shu
             mashg‘ulotga ko‘chadi — buni oldindan to‘xtatish halolroq.
           </p>
 

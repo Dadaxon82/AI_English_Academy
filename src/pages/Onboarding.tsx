@@ -59,7 +59,19 @@ export default function Onboarding() {
 
         {step === 0 && <Basics level={level} setLevel={setLevel} target={target} setTarget={setTarget} onNext={saveBasics} />}
         {step === 1 && <Schedule minutes={minutes} setMinutes={setMinutes} examDate={examDate} setExamDate={setExamDate} onNext={saveSchedule} onBack={() => setStep(0)} />}
-        {step === 2 && <DiagnosticStep onSkip={() => setStep(3)} onDone={(res) => { actions.setDiagnostic(res.level, res.labelUz, res.confidence); setStep(3) }} />}
+        {step === 2 && (
+          <DiagnosticStep
+            onSkip={() => {
+              actions.markOnboarded()
+              setStep(3)
+            }}
+            onDone={(res) => {
+              actions.setDiagnostic(res.level, res.labelUz, res.confidence)
+              actions.markOnboarded()
+              setStep(3)
+            }}
+          />
+        )}
         {step === 3 && (
           <Card className="text-center grid gap-3">
             <h2 className="text-xl font-bold">Hammasi tayyor 🎉</h2>

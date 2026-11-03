@@ -95,6 +95,14 @@ describe('mergeRemote — server va qurilma holatini birlashtirish', () => {
     expect(mergeRemote({ ...used(), diagnostic: newer }, snap({ plan: { diagnostic: older } })).diagnostic).toEqual(newer)
   })
 
+  it('onboarding: istalgan qurilmada yakunlangan bo‘lsa yetarli (eng birinchisi saqlanadi)', () => {
+    expect(mergeRemote(used(), snap({ plan: { onboardedAt: 50 } })).onboardedAt).toBe(50)
+    expect(mergeRemote({ ...used(), onboardedAt: 40 }, snap({ plan: { onboardedAt: 50 } })).onboardedAt).toBe(40)
+    expect(mergeRemote({ ...used(), onboardedAt: 40 }, snap()).onboardedAt).toBe(40)
+    // Onboarding'dan o'tgan qurilma "bo'sh" hisoblanmaydi — sozlamalari server bilan bosilmaydi.
+    expect(isPristine({ ...emptyData(UID), onboardedAt: 1 })).toBe(false)
+  })
+
   it('serverda hech narsa bo‘lmasa qurilmadagi holat o‘zgarmaydi', () => {
     const local = { ...used(), xp: 12, activity: { '2026-11-01': day('2026-11-01', 60, { grammar: 60 }) } }
     const merged = mergeRemote(local, snap())

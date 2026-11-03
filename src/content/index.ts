@@ -10,6 +10,7 @@ import type {
   GrammarTopic,
   ListeningTask,
   MockExamSpec,
+  MultipleChoiceExercise,
   ReadingPassage,
   SectionTest,
   SpeakingTask,
@@ -204,7 +205,37 @@ export function allExercises(level: CefrLevel = 'A1'): Exercise[] {
   ]
 }
 
+/** Lug'at testidagi savollar shu prefiks + so'z idsi bilan yoziladi. */
+export const VOCAB_QUIZ_PREFIX = 'vocab-quiz-'
+
+/**
+ * Lug'at testi savoli (tarjima tanlovi). Variantlar test paytida aralashtiriladi;
+ * berilmasa — faqat to'g'ri javob (Xatolar daftarida "to'g'ri javob"ni ko'rsatish uchun).
+ */
+export function vocabQuizExercise(v: VocabularyItem, options: string[] = [v.translationUz]): MultipleChoiceExercise {
+  return {
+    id: `${VOCAB_QUIZ_PREFIX}${v.id}`,
+    kind: 'multiple-choice',
+    instructionUz: `“${v.word}” so‘zining o‘zbekcha ma’nosini tanlang.`,
+    level: v.level,
+    skill: 'vocabulary',
+    explanationUz: `${v.word} — ${v.translationUz}. ${v.explanationEn}`,
+    difficulty: v.level === 'A1' ? 1 : 2,
+    tags: ['vocab quiz', v.topic],
+    question: `What does “${v.word}” mean?`,
+    options,
+    answerIndex: options.indexOf(v.translationUz),
+  }
+}
+
 export function findExercise(id: string): Exercise | undefined {
+  // ESKI KAMCHILIK: lug'at testi savollari hech qayerda ro'yxatda yo'q edi —
+  // Xatolar daftari ular uchun to'g'ri javob o'rniga "—" ko'rsatardi.
+  if (id.startsWith(VOCAB_QUIZ_PREFIX)) {
+    const vocabId = id.slice(VOCAB_QUIZ_PREFIX.length)
+    const v = [...allVocab(), ...allGlossaryVocab()].find((x) => x.id === vocabId)
+    return v ? vocabQuizExercise(v) : undefined
+  }
   for (const lvl of LOADED_LEVELS) {
     const hit = allExercises(lvl).find((e) => e.id === id)
     if (hit) return hit
