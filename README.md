@@ -9,7 +9,7 @@ Loyiha talabnomasi (`AI English Academy_v2.docx`) to'liq bajarilgan:
 - ✅ **90 daqiqalik** asosiy kunlik reja (Vocab 10 / Grammar 15 / Reading 15 / Listening 15 / Writing 20 / Speaking 15) — zaif ko'nikma va imtihon sanasiga qarab qayta taqsimlanadi
 - ✅ **14 sahifa**: Dashboard, Learning Path, Vocabulary, Grammar, Reading, Listening, Writing, Speaking, Mock Exam, Progress, Error Log, Settings, Login, 404
 - ✅ Premium **dark/light** mavzu, to'liq **responsiv**; har joyda **loading / empty / success / error** holatlari
-- ✅ **SRS lug'at** (SM-2): har so'z statistikasida tekshiruvlar ikki marta sanalmaydi
+- ✅ **SRS lug'at** (SM-2): har so'z statistikasida tekshiruvlar ikki marta sanalmaydi; Reading matnidan saqlangan glossariy so'zlari ham Lug'at bo'limida qayta ko'rinadi va takrorlanadi
 - ✅ Tinglash uchun **HAQIQIY audio** (`npm run audio:build` — Windows SAPI). Manifestda fayli bo'lmagan audio uchun pleyer umuman ko'rsatilmaydi — soxta tugma yo'q
 - ✅ Speaking audio **rozilik siz serverga yuborilmaydi** (`audio_stored: false`)
 - ✅ **Jonli taymer** — sahifa yangilansa ham vaqt yo'qolmaydi (IndexedDB'da saqlanadi)
@@ -98,7 +98,7 @@ npm run icons:build   # PWA ikonalaria (0 bog'liqlik, sof Node)
 ```bash
 npm run typecheck     # tsc — 0 xato
 npm run lint          # eslint — 0 xato
-npm test              # vitest — 75 test (SRS, taymer/vaqt hisobi, tekshiruv, kontent auditi, audio yaxlitligi, rejalashtirish, daraja, sync)
+npm test              # vitest — 106 test (SRS, taymer/vaqt hisobi, tekshiruv, kontent auditi, audio yaxlitligi, rejalashtirish, daraja, sync)
 npm run build         # production build + Service Worker
 npm run smoke         # dist'ni serverda ochib tekshirish + 375/1280 skrinshot
 npm run render:check  # 15 marshrutni CDP orqali ochib DOM tekshiruvi + konsol xatolari
@@ -128,6 +128,13 @@ scripts/
 Taymer yurgan bo'lsa vaqt devor-soat bo'yicha (`timer-start`/`timer-stop`) yuritiladi va
 shu holatda `attempt` sekundlari qo'shilmaydi — ikki marta sanash yo'q. Hisobga yozilgan
 sekundlar darhol nollanadi, shuning uchun sessiyani qayta ochish ham takrorlamaydi.
+
+**Lug'at va SRS kalitlari:** asosiy lug'at so'zlari `a1-v*` idsi bilan yuradi. Reading
+matnidan saqlangan glossariy so'zlari `gl-<so'z>` kaliti saqlanadi va Lug'at bo'limida
+"matndan olingan" mavzusi bilan ko'rinadi (bir so'z nechta matnda uchramasin — bitta kalit).
+Eski keshdagi `<matn>|gl-<so'z>` kalitlari `storage.migrate()`da avtomatik aylantiriladi.
+Mock imtihonda sarflangan vaqt ham kundalik hisobga yoziladi (`mock-time`), lekin ball
+dalili `mockAttempts`da qayta sanalmaydi.
 
 **AI holati:** interfeysda AI faqat HAQIQIY ulanganda "AI" deb ko'rsatiladi. Serverless
 funksiya joylashtirilmagan hozirgi holatda barcha tahlil `engine: 'rule-based'` bilan

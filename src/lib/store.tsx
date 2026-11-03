@@ -7,7 +7,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useRef, useState, type ReactNode } from 'react'
 import type { CefrLevel, CoreSkill, Exercise, Skill } from '../content/types'
-import { allVocab, findExercise, getBundle, LOADED_LEVELS } from '../content/index'
+import { allGlossaryVocab, allVocab, findExercise, getBundle, LOADED_LEVELS } from '../content/index'
 import { initialSrsState, review, type SrsGrade } from './srs'
 import { clampDelta, currentElapsed, pauseTimer, startTimer, stopTimer, formatDuration, planProgress } from './timer'
 import { xpForAttempt, streakFor, evaluateLevelPromotion, weightedScore, confidenceFor, type SkillEvidence } from './skillScoring'
@@ -499,11 +499,12 @@ export function StoreProvider({ userId, children }: { userId: string; children: 
   }, [data.srs])
   const dueCount = useMemo(() => {
     const now = Date.now()
-    // Takror navbatida ham asosiy lug'at so'zlari sanaladi — Vocabulary
-    // sahifasidagi "takror" ro'yxati shu havuzni ko'rsatadi, glossariy
-    // so'zlari boshqa sahifada (Reading) takrorlanadi.
-    const real = new Set(allVocab(LOADED_LEVELS).map((v) => v.id))
-    return Object.entries(data.srs).filter(([id, s]) => s.dueAt <= now && real.has(id)).length
+    // Asosiy lug'at + matndan saqlangan glossariy so'zlari.
+    // ESKI BUG: glossariy kalitlari (`<matn>|gl-<so'z>`) sanalmasdi —
+    // foydalanuvchi Reading'da so'z saqlaydi, lekin "Bugun takror" 0
+    // ko'rsatardi va Lug'at sahifasi uni umuman qaytarmaardi.
+    const known = new Set([...allVocab(LOADED_LEVELS).map((v) => v.id), ...allGlossaryVocab(LOADED_LEVELS).map((v) => v.id)])
+    return Object.entries(data.srs).filter(([id, s]) => s.dueAt <= now && known.has(id)).length
   }, [data.srs])
   const totalVocab = useMemo(() => totalVocabCount(), [])
   const vocabSummary = `${learnedCount}/${totalVocab}${learnedExtraCount > 0 ? ` +${learnedExtraCount} matn so‘zi` : ''}`

@@ -13,7 +13,7 @@
  */
 
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { allVocab, getBundle } from '../content'
+import { allGlossaryVocab, allVocab, getBundle } from '../content'
 import { CEFR_LEVELS, type CefrLevel, type MultipleChoiceExercise, type PartOfSpeech, type VocabularyItem } from '../content/types'
 import { checkAnswer, type CheckResult } from '../lib/check'
 import { initialSrsState, isDue, review } from '../lib/srs'
@@ -100,7 +100,15 @@ export default function Vocabulary() {
   const [dueOnly, setDueOnly] = useState(false)
 
   const bundle = getBundle(data.settings.currentLevel)
-  const pool = useMemo(() => (bundle.vocab.length > 0 ? bundle.vocab : allVocab()), [bundle.vocab])
+  const pool = useMemo(() => {
+    const main = bundle.vocab.length > 0 ? bundle.vocab : allVocab()
+    // ESKI KAMCHILIK: Reading'da "Lug'atga" saqlangan glossariy so'zlari
+    // SRS'ga yozilardi, lekin bu ro'yxat ularni ko'rsatmasdi — saqlash
+    // ma'nosiz qolardi (so'z bir ora qayta ko'rikmasdi). Endi ular shu
+    // havuzda "matndan olingan" mavzusi bilan ko'rinadi va takrorlanadi.
+    const extra = allGlossaryVocab().filter((g) => g.level === data.settings.currentLevel)
+    return [...main, ...extra]
+  }, [bundle.vocab, data.settings.currentLevel])
 
   const topics = useMemo(() => {
     const counts = new Map<string, number>()
@@ -322,10 +330,12 @@ function WordCard({
 
       <p className="text-sm">{item.explanationEn}</p>
 
-      <blockquote className="rounded-xl border bg-[var(--panel-2)] p-3 grid gap-1 text-sm">
-        <span className="italic">"{item.exampleEn}"</span>
-        <span className="muted">{item.exampleUz}</span>
-      </blockquote>
+      {item.exampleEn && (
+        <blockquote className="rounded-xl border bg-[var(--panel-2)] p-3 grid gap-1 text-sm">
+          <span className="italic">"{item.exampleEn}"</span>
+          <span className="muted">{item.exampleUz}</span>
+        </blockquote>
+      )}
 
       {item.relations && (item.relations.synonym?.length || item.relations.antonym?.length) ? (
         <div className="flex flex-wrap gap-1.5">

@@ -92,6 +92,12 @@ export async function loadData(userId: string): Promise<AppData> {
   return migrate(raw)
 }
 
+/** Eski SRS kalitini (`<matn>|gl-<so'z>`) yangisiga (`gl-<so'z>`) aylantiradi. */
+function legacyGlossaryIdToNew(id: string): string {
+  const m = /^(.+)\|gl-(.+)$/.exec(id)
+  return m ? `gl-${m[2]}` : id
+}
+
 /** Versiya migratsiyasi — maydon qo'shilsa, eski saqlanganma buzilmasin. */
 export function migrate(raw: AppData): AppData {
   const base = emptyData(raw.userId)
@@ -103,6 +109,18 @@ export function migrate(raw: AppData): AppData {
     path: { ...base.path, ...(raw.path ?? {}) },
     timer: { ...base.timer, ...(raw.timer ?? {}) },
   }
+  // Eski kalit: `<matn>|gl-<so'z>` — bir so'z ikki matnda uchrasa ikkita
+  // alohida SRS yozuvi paydo bo'lardi va Lug'at ro'yxatidagi bitta kalit bilan
+  // adashib, so'z "deyarli ko'rinmas" holatga tushardi. Endi kalit `gl-<so'z>`.
+  const migratedSrs: typeof next.srs = {}
+  for (const [id, st] of Object.entries(next.srs ?? {})) {
+    const nid = legacyGlossaryIdToNew(id)
+    const prev = migratedSrs[nid]
+    // Ikkala eski yozuv bitta kalitga to'qlansa — eng keingi (kattaroq dueAt)
+    // saqlanadi: foydalanuvchi oxirgi qilgan bahosi muhimroq.
+    migratedSrs[nid] = prev && prev.dueAt >= st.dueAt ? prev : st
+  }
+  next.srs = migratedSrs
   next.version = APP_DATA_VERSION
   return next
 }

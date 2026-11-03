@@ -94,6 +94,76 @@ export function normalizeDayMinutes(
 /** Talabnomadagi asosiy kunlik reja (daqiqa). */
 export const DAILY_PLAN_TOTAL = 90
 
+/* ------------------- MATN (GLOSSARIY) SO'ZLARI ---------------------------- */
+
+/** So'zni solishtirish kaliti — Reading/Lug'at sahifalari BIR XIL kalit ishlatadi. */
+export function wordKeyOf(s: string): string {
+  return s
+    .toLocaleLowerCase('en')
+    .replace(/[‘’`´ʻ]/g, '')
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
+/**
+ * Matn glossariyi so'zi uchun barqaror SRS kaliti.
+ * Reading sahifasi shu kalit bilan `gradeVocab` chaqiradi.
+ *
+ * Matn id'si kalitga KIRTMAYDI: bir so'z ikki matnda uchrasa ikki xil kalit
+ * bo'lib, Lug'at ro'yxatidagi bittasi bilan adashib qolardi. So'z bitta —
+ * kalit ham bitta.
+ */
+export function glossaryVocabId(word: string): string {
+  return `gl-${wordKeyOf(word)}`
+}
+
+// Eski SRS kaliti (`<matn>|gl-<so'z>`) faqat kesh migratsiyasi uchun kerak —
+// u `lib/storage.ts`da yashaydi (kontentkalit qoidasini o'zi belgilamaydi).
+
+let glossaryCache: VocabularyItem[] | null = null
+
+/**
+ * Barcha o'qish matnlarining glossariy so'zlari — `VocabularyItem` ko'rinishida.
+ *
+ * ESKI KAMCHILIK: Reading sahifasida "Lug'atga" saqlangan glossariy so'zlari
+ * SRS'ga yozilardi (`<matn>|gl-<so'z>` kaliti bilan), lekin Lug'at sahifasi
+ * faqat asosiy lug'at ro'yxatini ko'rsatgani uchun ular BIR ORA QAYTA
+ * KO'RIKMASDI — saqlanganligi ma'nosiz qolardi.
+ *
+ * Asosiy lug'atda ALLQACHON bor so'zlar qayta qo'shilmaydi (bir xil so'z ikki
+ * marta ko'rinmasin va SRSda bitta kalit bo'lsin).
+ */
+export function allGlossaryVocab(levels: readonly CefrLevel[] = LOADED_LEVELS): VocabularyItem[] {
+  if (glossaryCache) return glossaryCache
+  const mainKeys = new Set(allVocab(levels).map((v) => wordKeyOf(v.word)))
+  const seen = new Set<string>()
+  const out: VocabularyItem[] = []
+  for (const lvl of levels) {
+    for (const p of getBundle(lvl).reading) {
+      for (const g of p.glossary ?? []) {
+        const key = wordKeyOf(g.word)
+        if (!key || mainKeys.has(key) || seen.has(key)) continue
+        seen.add(key)
+        out.push({
+          id: glossaryVocabId(g.word),
+          word: g.word,
+          translationUz: g.uz,
+          explanationEn: `Bu so‘z “${p.title}” matnining glossariyidan olindi.`,
+          exampleEn: '',
+          exampleUz: '',
+          pos: 'noun',
+          topic: 'matndan olingan',
+          level: p.level,
+        })
+      }
+    }
+  }
+  glossaryCache = out
+  return out
+}
+
+
 /**
  * Hozircha faqat A1 yuklangan. Qolgan darajalar bo'sh to'plam qaytaradi.
  *

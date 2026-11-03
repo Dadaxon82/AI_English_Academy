@@ -18,24 +18,19 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import ExerciseRunner from '../components/ExerciseRunner'
 import { Button, Card, Chip, EmptyState, InfoBanner, Kbd, LoadingBlock, SpeakButton, StatTile, SuccessBanner } from '../components/ui'
-import { allVocab, getBundle } from '../content'
+import { allVocab, getBundle, glossaryVocabId, wordKeyOf } from '../content'
 import type { ReadingPassage, VocabularyItem } from '../content/types'
 import { formatDuration } from '../lib/timer'
 import type { CheckResult } from '../lib/check'
 import { useStore } from '../lib/store'
 
-const wordKey = (s: string): string =>
-  s
-    .toLocaleLowerCase('en')
-    .replace(/[‘’`´ʻ]/g, '')
-    .replace(/[^a-z0-9\s-]/g, '')
-    .replace(/\s+/g, ' ')
-    .trim()
-
-/** Glossariy so'zi uchun barqaror SRS id'si (lug'atda bo'lmasa shu ishlatiladi). */
-function glossaryId(passageId: string, word: string): string {
-  return `${passageId}|gl-${wordKey(word)}`
-}
+/**
+ * Kalit va SRS idsi LUG'AT sahifasi bilan BIR XIL manbadan (content/index) —
+ * eski xato: sahifalar bitta kalitni ikki marta yozib olgani uchun birida
+ * o'zgartirilsa, saqlangan so'z Lug'at bo'limida topilmay qolardi.
+ */
+const wordKey = wordKeyOf
+const glossaryId = glossaryVocabId
 
 interface Saver {
   /** SRS kaliti */
@@ -151,7 +146,7 @@ function PassageDetail({ passage, onBack }: { passage: ReadingPassage; onBack: (
     return m
   }, [])
 
-  const glossaryIds = useMemo(() => (passage.glossary ?? []).map((g) => glossaryId(passage.id, g.word)), [passage])
+  const glossaryIds = useMemo(() => (passage.glossary ?? []).map((g) => glossaryId(g.word)), [passage])
 
   // Taymer holati (store ichida — sahifani almashtirsak ham yo'qolmaydi).
   const timerHere = data.timer.sessionId === passage.id
@@ -233,12 +228,13 @@ function PassageDetail({ passage, onBack }: { passage: ReadingPassage; onBack: (
     const gl = (passage.glossary ?? []).find((g) => wordKey(g.word) === key)
     if (gl) {
       const item = vocabIndex.get(key)
-      return { id: item?.id ?? glossaryId(passage.id, gl.word), word: gl.word, uz: gl.uz, fromVocab: item !== undefined }
+      return { id: item?.id ?? glossaryId(gl.word), word: gl.word, uz: gl.uz, fromVocab: item !== undefined }
     }
     const item = vocabIndex.get(key)
     if (item) return { id: item.id, word: item.word, uz: item.translationUz, fromVocab: true }
     return null
-  }, [selection, passage.glossary, passage.id, vocabIndex])
+    // `passage.id` bog'liq EMAS: SRS kaliti endi matndan qat'iy emas.
+  }, [selection, passage.glossary, vocabIndex])
 
   const saveWord = (s: Saver, grade: 'again' | 'good') => {
     actions.gradeVocab(s.id, grade)
@@ -398,7 +394,7 @@ function PassageDetail({ passage, onBack }: { passage: ReadingPassage; onBack: (
         ) : (
           <div className="flex flex-wrap gap-2">
             {passage.glossary?.map((g) => {
-              const id = vocabIndex.get(wordKey(g.word))?.id ?? glossaryId(passage.id, g.word)
+              const id = vocabIndex.get(wordKey(g.word))?.id ?? glossaryId(g.word)
               const known = data.srs[id] !== undefined || savedIds.includes(id)
               return (
                 <div key={g.word} className="rounded-xl border bg-[var(--panel-2)] px-3 py-2 grid gap-1.5">
