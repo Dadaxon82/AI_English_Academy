@@ -186,10 +186,20 @@ async function checkRoute(url) {
     lastKey = key
     snap = cur
   }
+
+  // Telefon kengligi (375px): sahifa yonga surilmasligi kerak. ESKI BUG:
+  // Dashboard 395px, O'quv yo'li 411px kenglikka cho'zilardi.
+  await cdp.send('Emulation.setDeviceMetricsOverride', { width: 375, height: 800, deviceScaleFactor: 1, mobile: true })
+  await new Promise((r) => setTimeout(r, 600))
+  const w = await cdp.send('Runtime.evaluate', {
+    expression: 'JSON.stringify({ sw: document.documentElement.scrollWidth, cw: document.documentElement.clientWidth })',
+    returnByValue: true,
+  })
+  const { sw, cw } = JSON.parse(w.result.value)
   try {
     cdp.ws.close()
   } catch {}
-  return { snap, consoleIssues }
+  return { snap, consoleIssues, mobileOverflow: sw - cw }
 }
 
 async function main() {
@@ -229,16 +239,16 @@ async function main() {
     if (!(await waitForCdp())) throw new Error('CDP porti ochilmadi')
     console.log(`Brauzer: ${path.basename(browser)} · CDP :${CDP_PORT} · dist:${PORT} · base:${BASE || '/'}\n`)
     for (const route of ROUTES) {
-      const { snap, consoleIssues } = await checkRoute(
+      const { snap, consoleIssues, mobileOverflow } = await checkRoute(
         `http://127.0.0.1:${PORT}${BASE}${route === '/' ? '/' : route}`,
       )
       const crashed = consoleIssues.some((e) => e.startsWith('EXCEPTION'))
       // 404 / bo'sh holatli sahifalar ham render bo'ladi — matni qisqa,
       // shuning uchun chegarani past tutamiz (montaj + kamida 1 tugma).
-      const ok = snap.rootKids > 0 && !crashed && (snap.textChars > 100 || snap.buttons >= 1)
+      const ok = snap.rootKids > 0 && !crashed && (snap.textChars > 100 || snap.buttons >= 1) && mobileOverflow <= 0
       if (!ok) bad++
       console.log(
-        `${ok ? '✓' : '✗'} ${route.padEnd(14)} tugma:${String(snap.buttons).padStart(3)} havola:${String(snap.links).padStart(3)} matn:${String(snap.textChars).padStart(6)}  ${snap.heading}`,
+        `${ok ? '✓' : '✗'} ${route.padEnd(14)} tugma:${String(snap.buttons).padStart(3)} havola:${String(snap.links).padStart(3)} matn:${String(snap.textChars).padStart(6)} 375px:${mobileOverflow <= 0 ? 'ok' : `+${mobileOverflow}px`}  ${snap.heading}`,
       )
       for (const e of consoleIssues.slice(0, 4)) console.log(`      ${e}`)
     }

@@ -10,6 +10,7 @@
 import { useMemo } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { BarChart, Button, Card, Chip, EmptyState, InfoBanner, LoadingBlock, StatTile } from '../components/ui'
+import InstallAppCard from '../components/InstallAppCard'
 import { MascotFigure } from '../components/Mascot'
 import { findExercise, getBundle } from '../content'
 import type { Skill } from '../content/types'
@@ -98,6 +99,9 @@ export default function Dashboard() {
 
   return (
     <div className="grid gap-4 sm:gap-5">
+      {/* ---------- Mobil ilova (PWA o'rnatish) — sahifa yuqorisida ---------- */}
+      <InstallAppCard />
+
       {/* ---------- Sarlavha va Qahramon kutib olishi ---------- */}
       <Card as="section" className="relative overflow-hidden p-4 sm:p-6 bg-gradient-to-br from-indigo-50/70 via-[var(--panel)] to-sky-50/50 dark:from-slate-900/60 dark:via-[var(--panel)] dark:to-indigo-950/30">
         <div className="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-4">

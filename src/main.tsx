@@ -1,7 +1,12 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App'
+import { initInstallPrompt } from './lib/install'
 import './index.css'
+
+// PWA o'rnatish hodisasi sahifa yuklanishi bilan keladi — Dashboard'dagi
+// "Mobil ilova" tugmasi uchun boshidanoq ushlab qolinadi.
+initInstallPrompt()
 
 // Xatolar oqibati — foydalanuvchi ko'rmaydigan "jim" xatolarni oldini olish
 window.addEventListener('error', (e) => {

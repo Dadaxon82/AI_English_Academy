@@ -102,6 +102,11 @@
 
   h1, h2, h3 { letter-spacing: -0.015em; }
 
+  /* Grid elementlari kontentning (truncate / nowrap matn) tabiiy kengligidan
+     torayishi mumkin bo'lsin. ESKI BUG: 375px telefonda Dashboard 395px,
+     O'quv yo'li 411px kenglikka cho'zilib, sahifa yonga surilardi. */
+  #main .grid > * { min-width: 0; }
+
   /* Harakatni kamaytirish so'rovi hurmat qilinadi */
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
