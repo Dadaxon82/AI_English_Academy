@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Brend palitrasi — veb `src/index.css` CSS o'zgaruvchilari (navy, accent, bg) bilan bir xil. -->
+    <color name="brand_blue">#1D4ED8</color>
+    <color name="brand_blue_dark">#1E3A8A</color>
+    <color name="brand_blue_light">#60A5FA</color>
+    <color name="accent">#0EA5E9</color>
+    <color name="accent_dark">#0369A1</color>
+
+    <color name="bg_light">#F8FAFC</color>
+    <color name="bg_dark">#0F172A</color>
+    <color name="card_light">#FFFFFF</color>
+    <color name="card_dark">#1E293B</color>
+
+    <color name="text_primary_light">#0F172A</color>
+    <color name="text_secondary_light">#475569</color>
+    <color name="text_primary_dark">#F1F5F9</color>
+    <color name="text_secondary_dark">#94A3B8</color>
+
+    <color name="ok">#059669</color>
+    <color name="warn">#D97706</color>
+    <color name="err">#DC2626</color>
+    <color name="streak">#EA580C</color>
+
+    <color name="ring_track_light">#E2E8F0</color>
+    <color name="ring_track_dark">#334155</color>
+
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="transparent">#00000000</color>
+</resources>

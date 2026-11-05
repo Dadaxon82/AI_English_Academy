@@ -1,0 +1,474 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Mashq pleyeri: 6 mashq turi bir ekranda (`kind` bo'yicha bloklar
+    ko'rsatiladi). Yuqorida index + taymer, pastda tekshirish tugmalari.
+    Qahramon javobga qarab kayfiyatini o'zgartiradi (MascotView.setMood).
+-->
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/exScroll"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/screen_pad">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/exCounter"
+                    style="@style/Text.Aea.Section"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/exTimer"
+                    style="@style/Text.Aea.Small"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp" />
+            </LinearLayout>
+
+            <com.dadaxon.aienglishacademy.ui.MascotView
+                android:id="@+id/exMascot"
+                android:layout_width="@dimen/mascot_md"
+                android:layout_height="@dimen/mascot_md"
+                android:contentDescription="@string/mascot_alt" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/exSkill"
+            style="@style/Text.Aea.Small"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_s" />
+
+        <TextView
+            android:id="@+id/exInstruction"
+            style="@style/Text.Aea.Body"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_s"
+            android:textStyle="bold" />
+
+        <!-- Matn / excerpt (o'qish-tinglash konteksti) -->
+        <TextView
+            android:id="@+id/exPassage"
+            style="@style/Text.Aea.Body"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_m"
+            android:background="@drawable/bg_stat"
+            android:padding="@dimen/gap_m"
+            android:visibility="gone" />
+
+        <!-- ============== multiple-choice / true-false-notgiven ============ -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/choiceCard"
+            style="@style/Widget.Aea.Card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_m"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/choiceQuestion"
+                    style="@style/Text.Aea.Body"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold" />
+
+                <RadioGroup
+                    android:id="@+id/choiceGroup"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/gap_s"
+                    android:orientation="vertical" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- ============================ matching =========================== -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/matchCard"
+            style="@style/Widget.Aea.Card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_m"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    style="@style/Text.Aea.Small"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/ex_match_hint" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/gap_s"
+                    android:baselineAligned="false"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:id="@+id/matchLeft"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/gap_s"
+                        android:layout_weight="1"
+                        android:orientation="vertical" />
+
+                    <LinearLayout
+                        android:id="@+id/matchRight"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/gap_s"
+                        android:layout_weight="1"
+                        android:orientation="vertical" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/matchStatus"
+                    style="@style/Text.Aea.Small"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/gap_s" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/matchClear"
+                    style="@style/Widget.Aea.Button.Text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/ex_match_clear" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- ============================ gap-fill =========================== -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/gapCard"
+            style="@style/Widget.Aea.Card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_m"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/gapText"
+                    style="@style/Text.Aea.Body"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <LinearLayout
+                    android:id="@+id/gapFields"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/gap_s"
+                    android:orientation="vertical" />
+
+                <TextView
+                    style="@style/Text.Aea.Small"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/gap_m"
+                    android:text="@string/ex_gap_hint" />
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/wordBank"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/gap_s" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- =========================== word-order ========================== -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/orderCard"
+            style="@style/Widget.Aea.Card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_m"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    style="@style/Text.Aea.Small"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/ex_word_hint" />
+
+                <TextView
+                    android:id="@+id/orderNote"
+                    style="@style/Text.Aea.Small"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp" />
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/orderBank"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/gap_s" />
+
+                <TextView
+                    style="@style/Text.Aea.Small"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/gap_m"
+                    android:text="@string/ex_word_your" />
+
+                <TextView
+                    android:id="@+id/orderAnswer"
+                    style="@style/Text.Aea.Body"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:background="@drawable/bg_stat"
+                    android:minHeight="44dp"
+                    android:padding="@dimen/gap_s" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/orderUndo"
+                    style="@style/Widget.Aea.Button.Outlined"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/gap_s"
+                    android:text="@string/ex_word_undo" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/orderClear"
+                    style="@style/Widget.Aea.Button.Text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/ex_word_clear" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- =========================== translation ========================= -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/transCard"
+            style="@style/Widget.Aea.Card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_m"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/transSource"
+                    style="@style/Text.Aea.Body"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold" />
+
+                <TextView
+                    style="@style/Text.Aea.Small"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/gap_s"
+                    android:text="@string/ex_translation_hint" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.Aea.Field"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/gap_s"
+                    android:hint="@string/ex_translation_hint">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/transField"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textCapSentences|textMultiLine" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/transGiveUp"
+                    style="@style/Widget.Aea.Button.Text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/ex_translation_give_up" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Noma'lum mashq turi (halol) -->
+        <TextView
+            android:id="@+id/exUnsupported"
+            style="@style/Text.Aea.Small"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_m"
+            android:text="@string/ex_unsupported"
+            android:visibility="gone" />
+
+        <!-- ======================= tekshiruv natijasi ====================== -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/resultCard"
+            style="@style/Widget.Aea.Card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_m"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/resultTitle"
+                    style="@style/Text.Aea.Title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/resultExpected"
+                    style="@style/Text.Aea.Small"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/gap_s" />
+
+                <TextView
+                    android:id="@+id/resultWhy"
+                    style="@style/Text.Aea.Body"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/gap_s" />
+
+                <TextView
+                    android:id="@+id/resultXp"
+                    style="@style/Text.Aea.Small"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/gap_s" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- ========================= boshqaruv tugmalari =================== -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/exCheck"
+            style="@style/Widget.Aea.Button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_l"
+            android:text="@string/ex_check" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/exNext"
+            style="@style/Widget.Aea.Button.Outlined"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_s"
+            android:text="@string/ex_next"
+            android:visibility="gone" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/exSkip"
+            style="@style/Widget.Aea.Button.Text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/ex_skip" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/exFinish"
+            style="@style/Widget.Aea.Button.Text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/ex_finish" />
+
+        <!-- ============================ yakuniy natija ===================== -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/summaryCard"
+            style="@style/Widget.Aea.Card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_m"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <com.dadaxon.aienglishacademy.ui.MascotView
+                    android:id="@+id/summaryMascot"
+                    android:layout_width="@dimen/mascot_lg"
+                    android:layout_height="@dimen/mascot_lg"
+                    android:layout_gravity="center_horizontal"
+                    android:contentDescription="@string/mascot_alt" />
+
+                <TextView
+                    style="@style/Text.Aea.Title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/gap_m"
+                    android:text="@string/ex_result_title" />
+
+                <TextView
+                    android:id="@+id/summaryText"
+                    style="@style/Text.Aea.Body"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/gap_s" />
+
+                <TextView
+                    android:id="@+id/summaryXp"
+                    style="@style/Text.Aea.Small"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/gap_s" />
+
+                <TextView
+                    android:id="@+id/summaryPromotion"
+                    style="@style/Text.Aea.Small"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/gap_s" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <TextView
+            android:id="@+id/exEmpty"
+            style="@style/Text.Aea.Small"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_m"
+            android:text="@string/ex_exercises_empty"
+            android:visibility="gone" />
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

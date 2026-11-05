@@ -15,6 +15,7 @@ Loyiha talabnomasi (`AI English Academy_v2.docx`) to'liq bajarilgan:
 - ✅ **Jonli taymer** — sahifa yangilansa ham vaqt yo'qolmaydi (IndexedDB'da saqlanadi)
 - ✅ **Offline / PWA**: sync navbati, Service Worker; logout'da avval sinxronlanadi (yuborilmagan narsa qolsa tasdiq so'raladi), so'ng kesh tozalanadi
 - ✅ **Mobil ilova**: Dashboard yuqorisidagi blok PWA'ni bosh ekranga o'rnatadi (Android/kompyuter — "Ilovani o'rnatish" tugmasi, iPhone — yo'riqnoma); APK fayl shart emas
+- ✅ **Native Android ilovasi** (`mobile/` — Kotlin + XML Views, `com.dadaxon.aienglishacademy`): bitta baza va bitta auth, 244 unit test, qahramon har ekranda — quyida 6-bo'lim
 - ✅ **Server bilan ikki tomonlama**: hisobga kirganda progress serverdan tiklanadi va qurilmadagisi bilan birlashtiriladi
 - ✅ **Supabase RLS**: har foydalanuvchi faqat o'z qatorlarini ko'radi; service role va `AI_*` kalitlari faqat serverda
 - ✅ AI "ulangan" deb ko'rsatilmaydi — AI bo'lmasa **qoidaviy dvigatel** (`engine: 'rule-based'`) ishlatiladi
@@ -109,6 +110,40 @@ npm run render:check  # 15 marshrut CDP orqali: DOM + konsol xatolari + 375px te
 > `render:check` Chrome/Edge'ni remote debugging (CDP) orqali ochadi va har
 > marshrut uchun tugmalar/havolalar/matn hajmini va istisnolarni tekshiradi.
 > Brauzer bo'lmasa skript ogohlantirib exit 0 bilan chiqadi.
+
+## 5b. Native Android ilovasi (`mobile/`)
+
+PWA'dan tashqari **mustaqil Kotlin ilovasi** yozilgan — veb kodining nusxasi
+emas, lekin **bitta Supabase bazasi, bitta auth va bitta kontent** bilan ishlaydi:
+
+```
+mobile/
+├── MOBIL_ARXITEKTURA.md   # namunaviy ilova tahlili + moslashtirish rejasi (Task-1/2)
+├── UI_KONTRAKTI.md        # ekranlar shartnomasi (qahramon, bo'laklab ro'yxatlar, stringlar)
+├── app/src/main/java/com/dadaxon/aienglishacademy/
+│   ├── data/    AppStore, AppDatabase, ContentRepository, Models
+│   ├── domain/  Analyze (qoidaviy dvigatel), Srs, Reducer, SkillScoring, AnswerChecker
+│   ├── sync/    SyncEngine + SyncProtocol (veb bilan bir javat/tizma)
+│   └── ui/      14 ekran + MascotView (qahramon) + Rows yordamchilari
+└── scripts/make_assets.py # qahramon rasm + ikonalar
+```
+
+Yig'ish (tarmoq talab qilmaydi — kecha oldindan yuklangan):
+
+```bash
+node scripts/export-content-mobile.mjs      # veb kontenti → mobile/assets (bitta manba)
+python mobile/scripts/make_assets.py        # mascot + ikonalar
+cd mobile
+JAVA_HOME=<jdk17> GRADLE_USER_HOME=<kecha papkasi> \
+  gradle --offline :app:testDebugUnitTest :app:assembleDebug
+```
+
+Tekshirilgan holat (2026-11-05): **244 unit test o'tdi**, API 26+ emulatorda
+barcha ekranlar ochiladi, ANR yo'q (Lug'at 117 so'zi bo'laklab chiziladi —
+`UI_KONTRAKTI.md`dagi qoida), `dumpsys gfxinfo` 95-persent kadr 57 ms.
+Supabase `publishable` kaliti mijozda ochiq ishlatiladi; **service-role kaliti
+hech qaysi mijozga tushmaydi**. AI ulanmagan holda ilova halol
+"Qoidaviy tahlil" deb yozadi (`engine: "rule-based"`).
 
 ## 6. Arxitektura qisqacha
 

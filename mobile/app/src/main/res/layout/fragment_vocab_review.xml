@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    FLASHCARD (SRS takror) ekrani — kartani aylantirish, 4 baho, keyingi
+    takror muddati, "Keyingi so'z", talaffuz.
+
+    Kartaning ORQA tomoni (`vrBack`) dastlab `gone` — foydalanuvchi javobni
+    o'ylab bo'lgach ochiladi (veb `Vocabulary.tsx` flashcard rejasi bilan bir
+    xil: burilmaganda baholash tugmalari ham ko'rinmaydi). Shuning uchun bu
+    holat layout'da statik, baholash mantiqi `VocabReviewFragment.kt`da.
+
+    Faqat mavjud uslublar (`Widget.Aea.*`, `Text.Aea.*`) va `@dimen/*`.
+    Qahramon HAR ekranda (3-vazifa talabi).
+-->
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/vrScroll"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/screen_pad">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/vrTitle"
+                    style="@style/Text.Aea.Title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/vocab_card_title" />
+
+                <TextView
+                    android:id="@+id/vrSubtitle"
+                    style="@style/Text.Aea.Small"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp" />
+            </LinearLayout>
+
+            <com.dadaxon.aienglishacademy.ui.MascotView
+                android:id="@+id/vrMascot"
+                android:layout_width="@dimen/mascot_md"
+                android:layout_height="@dimen/mascot_md"
+                android:contentDescription="@string/mascot_alt" />
+        </LinearLayout>
+
+        <!-- Seans tartibi: "2 / 10" (`ex_index`) — son kiruvchi navbatdan oladi. -->
+        <TextView
+            android:id="@+id/vrIndex"
+            style="@style/Text.Aea.Small"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_s" />
+
+        <!-- KARTA — bosilganda buriladi (`vocab_flip`). -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/vrCard"
+            style="@style/Widget.Aea.Card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_m"
+            android:clickable="true"
+            android:contentDescription="@string/vocab_flip"
+            android:focusable="true"
+            android:minHeight="@dimen/mascot_hero">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/gap_l">
+
+                <TextView
+                    android:id="@+id/vrWord"
+                    style="@style/Text.Aea.Number"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/vrIpa"
+                    style="@style/Text.Aea.Small"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp" />
+
+                <!-- ORQA TOMON: ma'no, izoh, misola jumlalari. -->
+                <LinearLayout
+                    android:id="@+id/vrBack"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:id="@+id/vrTranslation"
+                        style="@style/Text.Aea.Section"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/gap_m" />
+
+                    <TextView
+                        android:id="@+id/vrExplanation"
+                        style="@style/Text.Aea.Small"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp" />
+
+                    <TextView
+                        android:id="@+id/vrExample"
+                        style="@style/Text.Aea.Body"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/gap_s" />
+
+                    <TextView
+                        android:id="@+id/vrExampleUz"
+                        style="@style/Text.Aea.Small"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp" />
+
+                    <TextView
+                        android:id="@+id/vrMeta"
+                        style="@style/Text.Aea.Small"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/vrFlipHint"
+                    style="@style/Text.Aea.Small"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/gap_m"
+                    android:text="@string/vocab_flip" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Talaffuz: `assets/audio/…` bo'lsa MediaPlayer, aks holda TextToSpeech. -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/vrSpeak"
+            style="@style/Widget.Aea.Button.Outlined"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_s"
+            android:text="@string/vocab_speak" />
+
+        <TextView
+            android:id="@+id/vrSrsTitle"
+            style="@style/Text.Aea.Section"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_m"
+            android:text="@string/vocab_srs_title" />
+
+        <!-- 4 baho (`domain/Srs.kt`: again / hard / good / easy). -->
+        <LinearLayout
+            android:id="@+id/vrGradeRow1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_s"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/vrGradeAgain"
+                style="@style/Widget.Aea.Button.Outlined"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/gap_s"
+                android:layout_weight="1"
+                android:text="@string/vocab_grade_again" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/vrGradeHard"
+                style="@style/Widget.Aea.Button.Outlined"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/vocab_grade_hard" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/vrGradeRow2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/vrGradeGood"
+                style="@style/Widget.Aea.Button.Outlined"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/gap_s"
+                android:layout_weight="1"
+                android:text="@string/vocab_grade_good" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/vrGradeEasy"
+                style="@style/Widget.Aea.Button.Outlined"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/vocab_grade_easy" />
+        </LinearLayout>
+
+        <!-- Bahodan keyin: SRS hisobidagi keyingi takror muddati. -->
+        <TextView
+            android:id="@+id/vrNextReview"
+            style="@style/Text.Aea.Small"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_m" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/vrNext"
+            style="@style/Widget.Aea.Button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_s"
+            android:text="@string/vocab_open_next"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/vrDone"
+            style="@style/Text.Aea.Body"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_m"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/vrEmpty"
+            style="@style/Text.Aea.Small"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_m"
+            android:visibility="gone" />
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

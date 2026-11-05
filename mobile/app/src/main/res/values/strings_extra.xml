@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ProgressRing / WeekBar / SkillBar uchun qo'shimcha yozuvlar -->
+    <string name="dash_task_minutes_of">daq / reja</string>
+    <string name="weekbar_today">bugun</string>
+    <string name="weekbar_minutes">%1$d daq</string>
+    <string name="weekbar_none">—</string>
+    <string name="skillbar_percent">%1$d%%</string>
+    <string name="skillbar_minutes">%1$d / %2$d daq</string>
+    <!-- Ko'nikma balansi qatori: nom + baho. `%s` AYYIRIM satrlar —
+         `skillbar_percent` faqat son uchun (`%1$d`), shuning uchun nom bilan
+         birga chaqirib bo'lmaydi (format xatosi ekranni qoldtirardi). -->
+    <string name="skillbar_row">%1$s — %2$d%%</string>
+    <!-- IsHonchsiz baho: foiz ko'rsatilmaydi (qoida: `progress_evidence_hint`). -->
+    <string name="skillbar_row_unsure">%1$s — baho noaniq</string>
+</resources>

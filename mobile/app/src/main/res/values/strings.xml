@@ -1,0 +1,428 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">AI English Academy</string>
+
+    <!-- ============ Umumiy ============ -->
+    <string name="ok">Mayli</string>
+    <string name="cancel">Bekor qilish</string>
+    <string name="yes">Ha</string>
+    <string name="no">Yo‘q</string>
+    <string name="retry">Qayta urinish</string>
+    <string name="back">Orqaga</string>
+    <string name="next">Davom etish</string>
+    <string name="finish">Yakunlash</string>
+    <string name="close">Yopish</string>
+    <string name="loading">Yuklanmoqda…</string>
+    <string name="empty_generic">Hozircha bo‘sh.</string>
+    <string name="error_generic">Nimadir xato ketdi. Qayta urinib ko‘ring.</string>
+    <string name="mascot_alt">AI English Academy qahramoni</string>
+    <!-- Qahramonning kayfiyati ham ochiq aytiladi: ekran o'quvchisi uchun rasm
+         rangi ma'noga ega (halqa rangi = holat), shuning uchun matn bilan ham
+         beriladi. `MascotView` bularni o'zida yig'adi. -->
+    <string name="mascot_mood_neutral">holat: tinch</string>
+    <string name="mascot_mood_happy">holat: xursand</string>
+    <string name="mascot_mood_sad">holat: qo‘llab-quvvatlash kerak</string>
+    <string name="mascot_mood_cheer">holat: bayram — yakunlandi</string>
+    <string name="content_error">O‘quv materiali o‘qilmadi — ilova qayta o‘rnatilishi mumkin.</string>
+    <string name="content_empty">Ushbu daraja uchun material topilmadi.</string>
+
+    <!-- ============ Pastki navigatsiya ============ -->
+    <string name="nav_dashboard">Boshqaruv</string>
+    <string name="nav_path">Yo‘l</string>
+    <string name="nav_vocab">Lug‘at</string>
+    <string name="nav_progress">Progress</string>
+    <string name="nav_settings">Sozlamalar</string>
+
+    <!-- ============ Sinxronizatsiya holati ============ -->
+    <string name="sync_idle">Sinxronlangan</string>
+    <string name="sync_busy">Sinxronlanmoqda…</string>
+    <string name="sync_offline">Internetsiz — navbatda saqlandi</string>
+    <string name="sync_guest">Hisobsiz rejim — ma’lumot faqat shu qurilmada</string>
+    <string name="sync_error">Sinxronlash xatosi</string>
+    <string name="sync_now">Sinxronizatsiya</string>
+    <string name="sync_done">Sinxronizatsiya yakunlandi.</string>
+    <string name="sync_result_ok">%1$d yozuv yuborildi, %2$d xato.</string>
+
+    <!-- ============ Auth ============ -->
+    <string name="auth_title_line1">AI English</string>
+    <string name="auth_title_line2">Academy</string>
+    <string name="auth_subtitle">Sun’iy intellekt hamrohligida ingliz tilini o‘rganing.</string>
+    <string name="auth_tab_login">Kirish</string>
+    <string name="auth_tab_register">Ro‘yxatdan o‘tish</string>
+    <string name="auth_email">Email</string>
+    <string name="auth_password">Parol</string>
+    <string name="auth_display_name">Ism (ixtiyoriy)</string>
+    <string name="auth_btn_login">Kirish</string>
+    <string name="auth_btn_register">Hisob yaratish</string>
+    <string name="auth_btn_guest">Mehmon sifatida davom etish</string>
+    <string name="auth_hint_guest">Hisob shart emas — ma’lumotlar shu qurilmada saqlanadi, keyin hisobga bog‘lash mumkin.</string>
+    <string name="auth_not_configured">Supabase ulanmagan. Ilova to‘liq ishlaydi, ma’lumotlar shu qurilmada saqlanadi. Hisob yaratish istalsangiz BuildConfig’dagi SUPABASE_URL / SUPABASE_ANON_KEY ni to‘ldiring.</string>
+    <string name="auth_signed_in">Ulanish: %1$s</string>
+    <string name="auth_change_account">Hisobni almashtirish</string>
+    <string name="auth_validation_fields">Email va parolni to‘liq kiriting.</string>
+    <string name="auth_logging_in">Kirilmoqda…</string>
+
+    <!-- ============ Onboarding ============ -->
+    <string name="onb_welcome_title">Xush kelibsiz!</string>
+    <string name="onb_welcome_text">Bir necha so‘roq bilan shaxsiy rejangiz tuziladi. Bu bir daqiqa vaqt oladi.</string>
+    <string name="onb_step_of">%1$d-qadam / %2$d</string>
+    <string name="exit_hint">Chiqish uchun yana bir marta bosing.</string>
+    <string name="onb_level_title">Hozirgi darajangiz</string>
+    <string name="onb_level_hint">Diagnostikadan so‘ng bu baho avtomatik aniqlanadi.</string>
+    <string name="onb_target_title">Qaysi darajaga chiqmoqchisiz?</string>
+    <string name="onb_goal_title">Asosiy maqsadingiz</string>
+    <string name="onb_goal_ieelts">IELTS / CEFR imtihoniga tayyorlanish</string>
+    <string name="onb_goal_study">Universitetda o‘qish uchun til</string>
+    <string name="onb_goal_work">Ish va muloqot uchun til</string>
+    <string name="onb_goal_travel">Sayohat va kundalik muloqot</string>
+    <string name="onb_minutes_title">Kuniga qancha vaqt ajratasiz?</string>
+    <string name="onb_minutes_hint">%1$d daqiqa — taqsimot shunga qarab o‘zgaradi.</string>
+    <string name="onb_theme_title">Interfeys mavzusi</string>
+    <string name="onb_theme_light">Yorug‘</string>
+    <string name="onb_theme_dark">Tungi</string>
+    <string name="onb_theme_system">Tizim bilan</string>
+    <string name="onb_diag_title">Diagnostika — darajangizni aniqlaymiz</string>
+    <string name="onb_diag_hint">%1$d ta qisqa savol. Noto‘g‘ri javob uyat emas — reja shu natijaga moslanadi.</string>
+    <string name="onb_diag_start">Diagnostikani boshlash</string>
+    <string name="onb_diag_skip">O‘tkazib yuborish</string>
+    <string name="onb_diag_question">Savol %1$d / %2$d</string>
+    <string name="onb_diag_skipped">%1$d ta savol materialda o‘qilmadi — ular hisobgaolinmadi.</string>
+    <string name="onb_diag_score">%1$d/%2$d to‘g‘ri</string>
+    <!-- Birinchi parametr — TAVSIYA etilgan daraja, ikkinchisi — kontenti bo'lgan
+         (davom etiladigan) daraja. -->
+    <string name="onb_diag_no_content">Tavsiya (%1$s) qayd etildi, ammo uning kontenti hozircha yuklanmagan — %2$s bosqichida davom etasiz.</string>
+    <string name="onb_diag_done">Diagnostika yakunlandi</string>
+    <string name="onb_diag_result">Tavsiya etilgan daraja: %1$s</string>
+    <!-- Oxirgi `%` — FODIRA belgisi, shuning uchun `%%` deb yoziladi
+         (aks holda `getString` UnknownFormatConversionException beradi). -->
+    <string name="onb_diag_confidence">Ishonch: %1$d%%</string>
+    <string name="onb_ready_title">Hammasi tayyor 🎉</string>
+    <string name="onb_ready_text">Kunlik rejangiz tayyor. Quyidagi bo‘limlardan istalganini boshlang.</string>
+    <string name="onb_begin">Boshlash</string>
+
+    <!-- ============ Dashboard ============ -->
+    <string name="dash_greeting_good_morning">Xayrli tong!</string>
+    <string name="dash_greeting_good_day">Xayrli kun!</string>
+    <string name="dash_greeting_good_evening">Xayrli kech!</string>
+    <string name="dash_plan_title">Bugungi vazifalar</string>
+    <string name="dash_plan_empty">Ushbu daraja uchun kunlik reja hali tayyor emas — A1 yo‘lidagi mashqlar mavjud.</string>
+    <string name="dash_plan_all_done">Yo‘ldagi barcha kunlar yakunlangan. Sozlamalardan darajani ko‘rib chiqing.</string>
+    <string name="dash_done_count">%1$d/%2$d bajarilgan</string>
+    <string name="dash_task_done">✓ Bajarildi</string>
+    <string name="dash_task_planned">Rejada</string>
+    <string name="dash_task_minutes">%1$d daq</string>
+    <string name="dash_stat_xp">XP</string>
+    <string name="dash_stat_xp_hint">Har bir mashq uchun</string>
+    <string name="dash_stat_streak">Ketma-ket kun</string>
+    <string name="dash_stat_streak_hint">Har kuni mashq qilish zanjiri</string>
+    <string name="dash_stat_words">O‘zlashtirilgan so‘zlar</string>
+    <string name="dash_stat_words_hint">Lug‘at bo‘limida takrorlang</string>
+    <string name="dash_stat_due">Takror navbati</string>
+    <string name="dash_stat_due_none">Hozir navbatda yo‘q</string>
+    <string name="dash_skills_title">Ko‘nikmalar balansi</string>
+    <string name="dash_week_title">So‘nggi 7 kun</string>
+    <string name="dash_errors_title">Oxirgi xatolar</string>
+    <string name="dash_errors_empty_no_attempts">Hali mashq qilinmagan</string>
+    <string name="dash_errors_empty_none">So‘nggi mashqlarda xato yo‘q 👏</string>
+    <string name="dash_errors_hint">Birinchi mashqni boshlang — xatolar shu yerda ko‘rinadi.</string>
+    <string name="dash_all_errors">Barchasi</string>
+    <string name="dash_timer_title">Mashq taymeri</string>
+    <string name="dash_timer_start">Taymerni boshlash</string>
+    <string name="dash_timer_pause">Pauza</string>
+    <string name="dash_timer_stop">To‘xtatish</string>
+    <string name="dash_timer_resumed">Davom etmoqda</string>
+    <string name="dash_timer_paused">Taymer pauzada — %1$s</string>
+    <string name="dash_levelup_title">Daraja oshirish tavsiyasi</string>
+    <string name="dash_levelup_action">Darajani %1$s ga o‘zgartirish</string>
+    <string name="dash_levelup_ignore">Hozircha emas</string>
+    <string name="dash_seconds_progress">%1$d / %2$d daqiqa</string>
+    <string name="dash_confidence_low">noaniq</string>
+    <string name="dash_confidence_high">%1$d%% ishonchli</string>
+    <string name="dash_confidence_note">— bu baho aniq natija deb taqdim etilmaydi</string>
+
+    <!-- ============ O‘quv yo‘li ============ -->
+    <string name="path_title">Shaxsiy o‘quv yo‘li</string>
+    <string name="path_subtitle">%1$s darajasi · %2$d kun</string>
+    <string name="path_day_title">Kun %1$d — %2$s</string>
+    <string name="path_goal">Maqsad: %1$s</string>
+    <string name="path_section_minutes">%1$s · %2$d daq</string>
+    <string name="path_start_day">Kunni boshlash</string>
+    <string name="path_open_test">Bo‘lim testi</string>
+    <string name="path_completed">Yakunlangan</string>
+    <string name="path_current">Joriy kun</string>
+    <string name="path_test_pass">O‘tish bali: %1$d</string>
+    <string name="path_summary">%1$d/%2$d kun yakunlangan</string>
+    <string name="path_mock">Mock imtihon</string>
+    <string name="path_day_complete_title">Kun yakunlandi 🎉</string>
+    <string name="path_day_complete_yes">Ha, kunni yakunlang deb belgilang</string>
+
+    <!-- ============ Lug‘at ============ -->
+    <string name="vocab_title">Lug‘at</string>
+    <string name="vocab_search_hint">So‘z yoki ma’noni yozing…</string>
+    <string name="vocab_filter_all">Barchasi</string>
+    <string name="vocab_filter_new">Yangi</string>
+    <string name="vocab_filter_due">Takror navbatida</string>
+    <string name="vocab_filter_learned">O‘zlashtirilgan</string>
+    <string name="vocab_level_filter">Daraja</string>
+    <string name="vocab_found">%1$d ta so‘z</string>
+    <string name="vocab_empty">Bu shart bo‘yicha so‘z topilmadi.</string>
+    <!-- Ro'yxat BO'LAKLAB chiziladi (pastdagi izoh): barcha so'z kartalarini
+         bir zamlda qurish asosiy o'qimi ~10 s blokladi (emulatorda ANR). -->
+    <string name="vocab_shown">%1$d / %2$d ta ko‘rsatilmoqda</string>
+    <string name="vocab_show_more">Ko‘proq ko‘rsatish — yana %1$d ta</string>
+    <string name="vocab_speak">Talaffuz</string>
+    <string name="vocab_tts_missing">Bu qurilmada talaffuz vositasi yo‘q.</string>
+    <string name="vocab_save">Lug‘atimga saqlash</string>
+    <string name="vocab_saved">Saqlandi — bugun takrorlanadi.</string>
+    <string name="vocab_card_title">Flashcard</string>
+    <string name="vocab_flip">Kartani aylantirish</string>
+    <string name="vocab_ipa">Talaffuz: %1$s</string>
+    <string name="vocab_example">Namuna: %1$s</string>
+    <string name="vocab_example_uz">Tarjima: %1$s</string>
+    <string name="vocab_srs_title">Qanchalik bilasiz?</string>
+    <string name="vocab_grade_again">Umuman bilmadim</string>
+    <string name="vocab_grade_hard">Qiyin bo‘ldi</string>
+    <string name="vocab_grade_good">Yaxshi esladim</string>
+    <string name="vocab_grade_easy">Juda oson</string>
+    <string name="vocab_next_review">Keyingi takror: %1$s</string>
+    <string name="vocab_next_review_today">Bugun</string>
+    <string name="vocab_open_next">Keyingi so‘z</string>
+
+    <!-- ============ Grammatika ============ -->
+    <string name="grammar_title">Grammatika</string>
+    <string name="grammar_pick_hint">Mavzuni tanlang — izoh, formulalar va mashqlar ochiladi.</string>
+    <string name="grammar_explanation">Tushuntirish</string>
+    <string name="grammar_formula">Formula</string>
+    <string name="grammar_examples">Namunalar</string>
+    <string name="grammar_forms_aff">Tasdiq holat</string>
+    <string name="grammar_forms_neg">Inkor holat</string>
+    <string name="grammar_forms_ques">So‘roq holat</string>
+    <string name="grammar_mistakes">Tez-tez qilinadigan xatolar</string>
+    <string name="grammar_wrong">Noto‘g‘ri: %1$s</string>
+    <string name="grammar_right">To‘g‘ri: %1$s</string>
+    <string name="grammar_practice">Mashq qilish</string>
+    <string name="grammar_topic_level">%1$s · %2$d mashq</string>
+
+    <!-- ============ O‘qish ============ -->
+    <string name="reading_title">O‘qish</string>
+    <string name="reading_pick_hint">Matnni tanlang. Matn asli shu loyiha uchun yozilgan.</string>
+    <string name="reading_meta">%1$s · taxminan %2$d daqiqa · %3$d mashq</string>
+    <string name="reading_glossary">So‘zluk</string>
+    <string name="reading_open">Matnni ochish</string>
+    <string name="reading_start">Matn bilan ishlash</string>
+    <string name="reading_source">Manba: %1$s</string>
+
+    <!-- ============ Tinglash ============ -->
+    <string name="listening_title">Tinglash</string>
+    <string name="listening_pick_hint">Audio mashg‘ulotni tanlang.</string>
+    <string name="listening_no_audio">Bu mashg‘ulot uchun audio fayl mavjud emas — matnni o‘qib, mashqlarni bajaring.</string>
+    <string name="listening_source">Manba: %1$s</string>
+    <string name="listening_license">Litsenziya: %1$s</string>
+    <string name="listening_transcript">Matn (transkript)</string>
+    <string name="listening_transcript_after">Birinchi marta tinglagach ko‘rsatiladi.</string>
+    <string name="listening_show_transcript">Matnni ko‘rsatish</string>
+    <string name="listening_play">Ijro etish</string>
+    <string name="listening_pause">Pauza</string>
+    <string name="listening_replay">Qayta tinglash</string>
+    <string name="listening_exercises">Mashqlar</string>
+    <string name="listening_start">Boshlash</string>
+    <string name="listening_time">%1$s / %2$s</string>
+    <string name="listening_audio_missing">Audio fayl topilmadi.</string>
+
+    <!-- ============ Yozish ============ -->
+    <string name="writing_title">Yozish</string>
+    <string name="writing_pick_hint">Topshiriqni tanlang — matn yozing, tahlilini oling.</string>
+    <string name="writing_task_meta">%1$s · %2$d–%3$d so‘z · %4$d daqiqa</string>
+    <string name="writing_prompt">Vazifa: %1$s</string>
+    <string name="writing_checklist">Tekshiruv ro‘yxati</string>
+    <string name="writing_must_include">Shart: %1$s</string>
+    <string name="writing_model">Namuna javob</string>
+    <string name="writing_model_show">Namunani ko‘rsatish</string>
+    <string name="writing_input_hint">Javobingizni shu yerga yozing…</string>
+    <string name="writing_words">%1$d so‘z</string>
+    <string name="writing_submit">Tahlil qilish</string>
+    <string name="writing_analyzing">Tahlil qilinmoqda…</string>
+    <string name="writing_history">Yozish tarixi</string>
+    <string name="writing_history_empty">Hali yozish topshirilmagan.</string>
+    <string name="writing_engine_rule">Qoidaviy tahlil</string>
+    <string name="writing_engine_ai">Sun’iy intellekt tahlili</string>
+    <string name="writing_criteria">Mezonlar bo‘yicha baho</string>
+    <string name="writing_strengths">Kuchli tomonlari</string>
+    <string name="writing_weaknesses">Zaif tomonlari</string>
+    <string name="writing_suggestions">Tavsiyalar</string>
+    <string name="writing_errors">Topilgan xatolar</string>
+    <string name="writing_errors_none">Qoidaviy tekshiruv xato topmadi.</string>
+    <string name="writing_correction">To‘g‘risi: %1$s</string>
+    <string name="writing_resubmit">Qayta topshirish (oldingisini almashtiradi)</string>
+    <string name="writing_superseded">Bu vazifaning oldingi javobi almashtirildi.</string>
+    <string name="writing_min_words">Kamida %1$d so‘z yozing.</string>
+
+    <!-- ============ Gapirish ============ -->
+    <string name="speaking_title">Gapirish</string>
+    <string name="speaking_pick_hint">Mavzuni tanlang — ovoz yozing yoki matn bilan javob bering.</string>
+    <string name="speaking_question">Savol: %1$s</string>
+    <string name="speaking_hint">Maslahat: %1$s</string>
+    <string name="speaking_target">%1$d–%2$d soniya gapirish tavsiya etiladi.</string>
+    <string name="speaking_record">Yozishni boshlash</string>
+    <string name="speaking_stop">To‘xtatish</string>
+    <string name="speaking_playing">Yozilgan audio: %1$s</string>
+    <string name="speaking_play">Tinglash</string>
+    <string name="speaking_disclosure">Ovoz faqat shu qurilmada saqlanadi, serverga yuborilmaydi. Matnli javobda ravonlik o‘lchanmaydi — bu halol chegara.</string>
+    <string name="speaking_text_alt">Matn bilan javob berish</string>
+    <string name="speaking_text_hint">O‘zingiz eshitgandek yozib qoldiring.</string>
+    <string name="speaking_analyze">Tahlil qilish</string>
+    <string name="speaking_metric_fluency">Ravonlik (so‘z/daq)</string>
+    <string name="speaking_metric_words">So‘zlar</string>
+    <string name="speaking_metric_grammar">Grammatik aniqlik</string>
+    <string name="speaking_metric_length">Hajm</string>
+    <string name="speaking_no_speech">Tizimda nutqni tanib olish vositasi yo‘q — matnli javobdan foydalaning.</string>
+    <string name="speaking_mic_denied">Mikrofon ruxsati berilmadi — matnli javobdan foydalaning.</string>
+    <string name="speaking_history">Gapirish tarixi</string>
+    <string name="speaking_history_empty">Hali gapirish mashqi qilinmagan.</string>
+    <string name="speaking_mode_text">Matnli javob</string>
+    <string name="speaking_mode_audio">Ovozli javob</string>
+
+    <!-- ============ Mock imtihon ============ -->
+    <string name="mock_title">Mock imtihon</string>
+    <string name="mock_intro">Imtihon formatini sinab ko‘ring: bo‘limlar, vaqt chegarasi va yakuniy baho.</string>
+    <string name="mock_section_meta">%1$s · %2$d daqiqa</string>
+    <string name="mock_start">Bo‘limni boshlash</string>
+    <string name="mock_finish">Yakunlash va natijani ko‘rish</string>
+    <string name="mock_result_title">Imtihon natijasi</string>
+    <string name="mock_total_score">Umumiy baho: %1$s</string>
+    <string name="mock_score_na">baho hisoblanmadi</string>
+    <string name="mock_section_score">%1$s — %2$d/%3$d</string>
+    <string name="mock_speaking_advisory">Gapirish bo‘limi: %1$s</string>
+    <string name="mock_history">Imtihon tarixi</string>
+    <string name="mock_history_empty">Hali mock imtihon topshirilmagan.</string>
+    <string name="mock_saved">Natija saqlandi.</string>
+    <string name="mock_not_ready">Imtihon materiali tayyor emas.</string>
+    <string name="mock_time_left">Qolgan vaqt: %1$s</string>
+    <string name="mock_reset">Tozalash</string>
+
+    <!-- ============ Xatolar kundaligi ============ -->
+    <string name="errlog_title">Xatolar kundaligi</string>
+    <string name="errlog_hint">Noto‘g‘ri javoblar shu yerda to‘planadi — xatolik sababi bilan.</string>
+    <string name="errlog_empty">Xatolar yo‘q 👏 yoki hali mashq qilinmagan.</string>
+    <string name="errlog_filter_skill">Ko‘nikma</string>
+    <string name="errlog_retry">Qayta bajarish</string>
+    <string name="errlog_given">Sizning javobingiz: %1$s</string>
+    <string name="errlog_expected">To‘g‘ri javob: %1$s</string>
+    <string name="errlog_count">%1$d ta yozuv</string>
+
+    <!-- ============ Progress ============ -->
+    <string name="progress_title">Progress</string>
+    <string name="progress_range_7">7 kun</string>
+    <string name="progress_range_30">30 kun</string>
+    <string name="progress_range_all">Hammasi</string>
+    <string name="progress_summary">%1$d mashq · %2$d%% to‘g‘ri · %3$s vaqt</string>
+    <string name="progress_evidence_title">Ko‘nikma dalillari</string>
+    <string name="progress_evidence_hint">Har baho dalillar soni va xilma-xilligi bilan. Noaniq baholar foizsiz ko‘rsatiladi.</string>
+    <string name="progress_evidence_score">Baho: %1$s</string>
+    <string name="progress_evidence_count">%1$d ta dalil</string>
+    <string name="progress_promotion_title">Daraja tavsiyasi</string>
+    <string name="progress_promotion_ready">Tayyor ko‘nikmalar: %1$s</string>
+    <string name="progress_promotion_weak">Zaif ko‘nikmalar: %1$s</string>
+    <string name="progress_promotion_none">Daraja oshirish uchun kamida 4 ko‘nikma bo‘yicha dalil kerak.</string>
+    <string name="progress_words_title">So‘zlar statistikasi</string>
+    <string name="progress_words_learned">O‘zlashtirilgan: %1$d</string>
+    <string name="progress_words_due">Takror navbatida: %1$d</string>
+    <string name="progress_write_title">Ma’lumotni eksport qilish</string>
+    <string name="progress_export_csv">CSV eksport</string>
+    <string name="progress_export_json">JSON eksport</string>
+    <string name="progress_export_share">Ulashish</string>
+    <string name="progress_export_done">Fayl tayyor: %1$s</string>
+    <string name="progress_export_error">Eksport amalga oshmadi.</string>
+    <string name="progress_delete_title">Ma’lumotni o‘chirish</string>
+    <string name="progress_delete_text">Buning bilan mashq tarixi, so‘zlar va baho holati qurilmadan o‘chiriladi. Serverdagi yozuvlar saqlanadi.</string>
+    <string name="progress_delete_btn">O‘chirish</string>
+    <string name="progress_delete_confirm">Tasdiqlash</string>
+    <string name="progress_delete_yes">Ha, o‘chirilsin</string>
+    <string name="progress_delete_done">Mashq tarixi o‘chirildi.</string>
+    <string name="progress_badges">Yutuqlar</string>
+    <string name="progress_badges_empty">Hali yutuq olinmagan.</string>
+
+    <!-- ============ Sozlamalar ============ -->
+    <string name="settings_title">Sozlamalar</string>
+    <string name="settings_minutes_title">Kunlik vaqt</string>
+    <string name="settings_minutes_value">%1$d daqiqa</string>
+    <string name="settings_level_title">Darajalar</string>
+    <string name="settings_level_current">Hozirgi daraja</string>
+    <string name="settings_level_target">Maqsad daraja</string>
+    <string name="settings_exam_title">Imtihon sanasi</string>
+    <string name="settings_exam_none">Belgilanmagan</string>
+    <string name="settings_exam_days_left">%1$d kun qoldi</string>
+    <string name="settings_exam_passed">Sana o‘tib ketgan — reja o‘zgarmaydi.</string>
+    <string name="settings_exam_hint">Imtihon sanasi kiritilsa (30 kun ichida) reja avtomatik moslashadi.</string>
+    <string name="settings_exam_pick">Sana tanlash</string>
+    <string name="settings_exam_clear">Sanani olib tashlash</string>
+    <string name="settings_theme_title">Mavzu</string>
+    <string name="settings_allocation_title">Ko‘nikmalar taqsimoti</string>
+    <string name="settings_ai_title">Sun’iy intellekt tahlili</string>
+    <string name="settings_ai_on">Yoniq</string>
+    <string name="settings_ai_off">O‘chiq — faqat qoidaviy tahlil</string>
+    <string name="settings_account_title">Hisob</string>
+    <string name="settings_account_guest">Mehmon (hisobsiz)</string>
+    <string name="settings_account_user">Foydalanuvchi: %1$s</string>
+    <string name="settings_logout">Chiqish</string>
+    <string name="settings_logout_confirm">Chiqilsinmi? Yuborilmagan navbat avval yuboriladi.</string>
+    <string name="settings_logout_done">Chiqildi — ma’lumotlar qurilmada saqlanib qoldi.</string>
+    <string name="settings_sync_title">Sinxronizatsiya</string>
+    <string name="settings_queue_size">Navbatda: %1$d yozuv</string>
+    <string name="settings_version">Versiya %1$s</string>
+    <string name="settings_open_mirror">Xatolar kundaligi</string>
+
+    <!-- ============ Mashq pleyeri ============ -->
+    <string name="ex_title">Mashq</string>
+    <string name="ex_index">%1$d / %2$d</string>
+    <string name="ex_check">Tekshirish</string>
+    <string name="ex_next">Keyingi mashq</string>
+    <string name="ex_skip">O‘tkazib yuborish</string>
+    <string name="ex_finish">Yakunlash</string>
+    <string name="ex_correct">To‘g‘ri! 🎉</string>
+    <string name="ex_wrong">Noto‘g‘ri</string>
+    <string name="ex_partial">%1$d/%2$d qismi to‘g‘ri</string>
+    <string name="ex_result_title">Natija</string>
+    <string name="ex_result_summary">%1$d/%2$d to‘g‘ri · %3$d%%</string>
+    <string name="ex_result_xp">+ %1$d XP</string>
+    <string name="ex_result_again">Yana mashq qilish</string>
+    <string name="ex_result_back">Ekranga qaytish</string>
+    <string name="ex_match_left">Chap tomon</string>
+    <string name="ex_match_right">O‘ng tomon</string>
+    <string name="ex_match_hint">Avval chap, keyin o‘ng elementni bosing — juftlik tuziladi.</string>
+    <string name="ex_match_clear">Juftliklarni tozalash</string>
+    <string name="ex_gap_hint">Bo‘shliqlarni to‘ldiring. So‘z bankidan foydalanishingiz mumkin.</string>
+    <string name="ex_gap_slot">Bo‘shliq %1$d</string>
+    <string name="ex_word_hint">So‘zlarni bosib tartibni tuzing.</string>
+    <string name="ex_word_your">Sizning javobingiz</string>
+    <string name="ex_word_undo">Oxirgi so‘zni olish</string>
+    <string name="ex_word_clear">Tozalash</string>
+    <string name="ex_tf_true">True</string>
+    <string name="ex_tf_false">False</string>
+    <string name="ex_tf_notgiven">Not Given</string>
+    <string name="ex_translation_hint">Tarjimani yozing.</string>
+    <string name="ex_translation_give_up">Javobni ko‘rsatish</string>
+    <string name="ex_explanation">Izoh</string>
+    <string name="ex_expected">To‘g‘ri javob: %1$s</string>
+    <string name="ex_level_up">Daraja tavsiyasi: %1$s</string>
+    <string name="ex_unsupported">Bu mashq turi qo‘llab-quvvatlanmaydi.</string>
+    <string name="ex_exercises_empty">Bu bo‘limda mashq yo‘q.</string>
+    <string name="ex_answer_empty">Javob yozilmadi — tekshirish uchun biror narsa kiriting.</string>
+
+    <!-- ============ Ko‘nikma nomlari ============ -->
+    <string name="skill_vocabulary">Lug‘at</string>
+    <string name="skill_grammar">Grammatika</string>
+    <string name="skill_reading">O‘qish</string>
+    <string name="skill_listening">Tinglash</string>
+    <string name="skill_writing">Yozish</string>
+    <string name="skill_speaking">Gapirish</string>
+
+    <!-- ============ Hafta kunlari (qisqa) ============ -->
+    <string name="wd_yak">Yak</string>
+    <string name="wd_du">Du</string>
+    <string name="wd_se">Se</string>
+    <string name="wd_chor">Chor</string>
+    <string name="wd_pay">Pay</string>
+    <string name="wd_jum">Jum</string>
+    <string name="wd_shan">Shan</string>
+</resources>

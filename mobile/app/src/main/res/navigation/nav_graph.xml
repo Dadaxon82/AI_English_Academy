@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Navigatsiya grafi. Pastki panel bandlarining id'lari `menu/bottom_nav.xml`
+    bilan BIR XIL bo'lishi shart (BottomNavigationView shu id bo'yicha
+    manzilga o'tadi). Batafsil ekranlar bitta grafdagi qo'shimcha manzillar.
+-->
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/authFragment">
+
+    <fragment
+        android:id="@+id/authFragment"
+        android:name="com.dadaxon.aienglishacademy.ui.AuthFragment"
+        android:label="@string/app_name" />
+
+    <fragment
+        android:id="@+id/onboardingFragment"
+        android:name="com.dadaxon.aienglishacademy.ui.OnboardingFragment"
+        android:label="@string/onb_welcome_title" />
+
+    <fragment
+        android:id="@+id/dashboardFragment"
+        android:name="com.dadaxon.aienglishacademy.ui.DashboardFragment"
+        android:label="@string/nav_dashboard" />
+
+    <fragment
+        android:id="@+id/learningPathFragment"
+        android:name="com.dadaxon.aienglishacademy.ui.LearningPathFragment"
+        android:label="@string/nav_path" />
+
+    <fragment
+        android:id="@+id/vocabularyFragment"
+        android:name="com.dadaxon.aienglishacademy.ui.VocabularyFragment"
+        android:label="@string/nav_vocab" />
+
+    <fragment
+        android:id="@+id/progressFragment"
+        android:name="com.dadaxon.aienglishacademy.ui.ProgressFragment"
+        android:label="@string/nav_progress" />
+
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.dadaxon.aienglishacademy.ui.SettingsFragment"
+        android:label="@string/nav_settings" />
+
+    <!-- Batafsil ekranlar (pastki panel yashiriladi) -->
+    <fragment
+        android:id="@+id/exerciseFragment"
+        android:name="com.dadaxon.aienglishacademy.ui.runner.ExerciseFragment"
+        android:label="@string/ex_title" />
+
+    <fragment
+        android:id="@+id/vocabReviewFragment"
+        android:name="com.dadaxon.aienglishacademy.ui.VocabReviewFragment"
+        android:label="@string/vocab_card_title" />
+
+    <fragment
+        android:id="@+id/grammarTopicFragment"
+        android:name="com.dadaxon.aienglishacademy.ui.GrammarTopicFragment"
+        android:label="@string/grammar_title" />
+
+    <fragment
+        android:id="@+id/readingFragment"
+        android:name="com.dadaxon.aienglishacademy.ui.ReadingFragment"
+        android:label="@string/reading_title" />
+
+    <fragment
+        android:id="@+id/listeningFragment"
+        android:name="com.dadaxon.aienglishacademy.ui.ListeningFragment"
+        android:label="@string/listening_title" />
+
+    <fragment
+        android:id="@+id/writingFragment"
+        android:name="com.dadaxon.aienglishacademy.ui.WritingFragment"
+        android:label="@string/writing_title" />
+
+    <fragment
+        android:id="@+id/speakingFragment"
+        android:name="com.dadaxon.aienglishacademy.ui.SpeakingFragment"
+        android:label="@string/speaking_title" />
+
+    <fragment
+        android:id="@+id/mockExamFragment"
+        android:name="com.dadaxon.aienglishacademy.ui.MockExamFragment"
+        android:label="@string/mock_title" />
+
+    <fragment
+        android:id="@+id/errorLogFragment"
+        android:name="com.dadaxon.aienglishacademy.ui.ErrorLogFragment"
+        android:label="@string/errlog_title" />
+</navigation>

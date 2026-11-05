@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    LUG'AT ekrani — qidiruv + SRS filtrlari + so'zlar ro'yxati.
+
+    `fragment_shell` yetarli emas: bu ekranda qidiruv maydoni va filtr
+    tugmalari STATIK (soni kontentga bog'liq emas), ro'yxat qatorlari esa
+    `Rows` orqali `vocabRows` ga qo'shiladi (soni kontentga bog'liq).
+    Shuning uchun o'z layouti yozilgan (`UI_KONTRAKTI.md`: "Formali ekranlar
+    o'z layoutini yozadi").
+
+    Faqat mavjud uslublar: `Widget.Aea.Field`, `Widget.Aea.Button.Outlined`,
+    `Text.Aea.*`, `@dimen/*`. Qahramon HAR ekranda (3-vazifa talabi).
+-->
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/vocabScroll"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/screen_pad">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/vocabTitle"
+                    style="@style/Text.Aea.Title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/vocab_title" />
+
+                <TextView
+                    android:id="@+id/vocabSubtitle"
+                    style="@style/Text.Aea.Small"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp" />
+            </LinearLayout>
+
+            <com.dadaxon.aienglishacademy.ui.MascotView
+                android:id="@+id/vocabMascot"
+                android:layout_width="@dimen/mascot_md"
+                android:layout_height="@dimen/mascot_md"
+                android:contentDescription="@string/mascot_alt" />
+        </LinearLayout>
+
+        <!-- Qidiruv: so'z YOKI o'zbekcha ma'no (veb `Vocabulary.tsx` dagi
+             `query` maydoni bilan bir xil semantika). -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/vocabSearchLayout"
+            style="@style/Widget.Aea.Field"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_m"
+            android:hint="@string/vocab_search_hint">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/vocabSearchField"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:imeOptions="actionSearch"
+                android:inputType="text"
+                android:maxLines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- SRS filtrlari: barchasi / yangi / takror navbatida / o'zlashtirilgan.
+             Tanlangan tugma matnida "•" belgisi qo'yiladi (MockExamFragment'dagi
+             tanlov belgisi bilan bir xil usul). -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_s"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/vocabFilterAll"
+                style="@style/Widget.Aea.Button.Outlined"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/gap_s"
+                android:layout_weight="1"
+                android:text="@string/vocab_filter_all" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/vocabFilterNew"
+                style="@style/Widget.Aea.Button.Outlined"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/vocab_filter_new" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/vocabFilterDue"
+                style="@style/Widget.Aea.Button.Outlined"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/gap_s"
+                android:layout_weight="1"
+                android:text="@string/vocab_filter_due" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/vocabFilterLearned"
+                style="@style/Widget.Aea.Button.Outlined"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/vocab_filter_learned" />
+        </LinearLayout>
+
+        <!-- Daraja filtri — tugmalar `ContentRepository.levels()` dan yasaladi,
+             ya'ni soni ixtir qilinmaydi (faqat kontentda bor darajalar). -->
+        <TextView
+            android:id="@+id/vocabLevelLabel"
+            style="@style/Text.Aea.Small"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_s"
+            android:text="@string/vocab_level_filter" />
+
+        <LinearLayout
+            android:id="@+id/vocabLevelRow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" />
+
+        <!-- Filtr natijasi soni (`vocab_found`) — har doim ro'yxat bilan bir xil
+             hisobdan olinadi. -->
+        <TextView
+            android:id="@+id/vocabCount"
+            style="@style/Text.Aea.Small"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_s" />
+
+        <!-- Statistika plitalari va daraja tugmalari — bitta sig'im. -->
+        <LinearLayout
+            android:id="@+id/vocabRows"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_s"
+            android:orientation="vertical" />
+
+        <!-- So'z kartalari — ALOHIDA sig'im: ro'yxat bo'laklab to'ldiriladi,
+             "Ko'proq ko'rsatish" bosilganda statistika qayta qurilmaydi. -->
+        <LinearLayout
+            android:id="@+id/vocabCards"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_s"
+            android:orientation="vertical" />
+
+        <TextView
+            android:id="@+id/vocabEmpty"
+            style="@style/Text.Aea.Small"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_m"
+            android:visibility="gone" />
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

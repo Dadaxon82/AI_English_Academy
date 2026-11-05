@@ -1,0 +1,209 @@
+{
+ "id": "diagnostic-01",
+ "titleUz": "Boshlang‘ich diagnostika",
+ "descriptionUz": "Taxminan 10 daqiqa. 12 ta qisqa savol — hozirgi darajangizni aniqlash uchun. Bu test rasmiy imtihon emas.",
+ "passScore": 50,
+ "exercises": [
+  {
+   "id": "dg-01",
+   "kind": "multiple-choice",
+   "instructionUz": "Bo‘sh joyni to‘ldiring.",
+   "question": "My name ___ Sardor.",
+   "options": [
+    "is",
+    "are",
+    "am",
+    "be"
+   ],
+   "answerIndex": 0,
+   "level": "A1",
+   "skill": "grammar",
+   "difficulty": 1,
+   "explanationUz": "“My name” uchinchi shaxs birlik — “is” ishlatiladi."
+  },
+  {
+   "id": "dg-02",
+   "kind": "multiple-choice",
+   "instructionUz": "To‘g‘ri variantni tanlang.",
+   "question": "She ___ to school every day.",
+   "options": [
+    "go",
+    "goes",
+    "going",
+    "gone"
+   ],
+   "answerIndex": 1,
+   "level": "A1",
+   "skill": "grammar",
+   "difficulty": 2,
+   "explanationUz": "Present Simple, uchinchi shaxs birlikda fe‘lga -s qo‘shiladi."
+  },
+  {
+   "id": "dg-03",
+   "kind": "gap-fill",
+   "instructionUz": "Bo‘sh joyni to‘ldiring.",
+   "text": "There isn't ___ milk in the fridge.",
+   "answers": [
+    "any"
+   ],
+   "level": "A1",
+   "skill": "grammar",
+   "difficulty": 2,
+   "explanationUz": "Inkor gapda “any” ishlatiladi."
+  },
+  {
+   "id": "dg-04",
+   "kind": "translation",
+   "instructionUz": "Inglizchaga tarjima qiling.",
+   "source": "Men kecha kutubxonaga bordim.",
+   "sourceLang": "uz",
+   "accepted": [
+    "i went to the library yesterday",
+    "yesterday i went to the library"
+   ],
+   "level": "A2",
+   "skill": "grammar",
+   "difficulty": 3,
+   "explanationUz": "Past Simple: “go” → “went”, vaqt so‘zi oxirga qo‘yiladi."
+  },
+  {
+   "id": "dg-05",
+   "kind": "true-false-notgiven",
+   "instructionUz": "Matnga asoslanib javob bering.",
+   "passageId": "dg-text",
+   "statement": "Anna works in a hospital.",
+   "answer": "false",
+   "evidence": "Anna is a waiter in a small cafe",
+   "level": "A2",
+   "skill": "reading",
+   "difficulty": 2,
+   "passageExcerpt": "Anna is a waiter in a small cafe near her house. She gets up at six and takes the bus to work.",
+   "explanationUz": "Matnda u kafeda ishlashi aytilgan — shuning uchun False."
+  },
+  {
+   "id": "dg-06",
+   "kind": "true-false-notgiven",
+   "instructionUz": "Matnga asoslanib javob bering.",
+   "passageId": "dg-text",
+   "statement": "Anna earns a lot of money.",
+   "answer": "notgiven",
+   "level": "A2",
+   "skill": "reading",
+   "difficulty": 3,
+   "passageExcerpt": "Anna is a waiter in a small cafe near her house. She gets up at six and takes the bus to work.",
+   "explanationUz": "Maosh haqida hech narsa aytilmagan — Not Given."
+  },
+  {
+   "id": "dg-07",
+   "kind": "multiple-choice",
+   "instructionUz": "So‘zning ma’nosini tanlang.",
+   "question": "“reluctant” means…",
+   "options": [
+    "very happy",
+    "not wanting to do something",
+    "very fast",
+    "dangerous"
+   ],
+   "answerIndex": 1,
+   "level": "B1",
+   "skill": "vocabulary",
+   "difficulty": 3,
+   "explanationUz": "“Reluctant” — istagsiz, ko‘ngilsiz."
+  },
+  {
+   "id": "dg-08",
+   "kind": "multiple-choice",
+   "instructionUz": "To‘g‘ri variantni tanlang.",
+   "question": "If the train had left on time, we ___ here now.",
+   "options": [
+    "would be",
+    "will be",
+    "had been",
+    "are"
+   ],
+   "answerIndex": 0,
+   "level": "B2",
+   "skill": "grammar",
+   "difficulty": 4,
+   "explanationUz": "Aralash (mixed) conditional: o‘tmish sharti + hozirgi natija."
+  },
+  {
+   "id": "dg-09",
+   "kind": "gap-fill",
+   "instructionUz": "Bo‘sh joyni to‘ldiring.",
+   "text": "By this time next year, she ___ her degree.",
+   "answers": [
+    "will have finished"
+   ],
+   "acceptAlternatives": [
+    [
+     "will have finished",
+     "will have completed",
+     "will have got",
+     "will have gotten"
+    ]
+   ],
+   "level": "B2",
+   "skill": "grammar",
+   "difficulty": 4,
+   "explanationUz": "Future Perfect: kelajakdagi belgilangan nuqtadan oldin tugagan harakat."
+  },
+  {
+   "id": "dg-10",
+   "kind": "multiple-choice",
+   "instructionUz": "Ma‘noviy farqni aniqlang.",
+   "question": "“The findings were largely inconclusive” — “largely” here means…",
+   "options": [
+    "in a large building",
+    "mostly",
+    "rarely",
+    "loudly"
+   ],
+   "answerIndex": 1,
+   "level": "C1",
+   "skill": "vocabulary",
+   "difficulty": 5,
+   "explanationUz": "“Largely” — asosan, ko‘p jihatdan."
+  },
+  {
+   "id": "dg-11",
+   "kind": "word-order",
+   "instructionUz": "So‘zlarni to‘g‘ri tartibga tizing.",
+   "answer": [
+    "Never",
+    "had",
+    "she",
+    "seen",
+    "snow"
+   ],
+   "bank": [
+    "she",
+    "had",
+    "Never",
+    "seen",
+    "snow"
+   ],
+   "noteUz": "“Never” bilan boshlangan gapda invertsiya bo‘ladi.",
+   "level": "C1",
+   "skill": "grammar",
+   "difficulty": 5,
+   "explanationUz": "Inversion: Never + had + ega + V3."
+  },
+  {
+   "id": "dg-12",
+   "kind": "translation",
+   "instructionUz": "Inglizchaga tarjima qiling.",
+   "source": "Kitobni o‘qib bo‘lgach, uni yopdim.",
+   "sourceLang": "uz",
+   "accepted": [
+    "after i had finished reading the book, i closed it",
+    "having finished reading the book, i closed it",
+    "when i had finished reading the book, i closed it"
+   ],
+   "level": "B2",
+   "skill": "writing",
+   "difficulty": 4,
+   "explanationUz": "Ikki o‘tmish harakatidan oldinroq bo‘lgani uchun Past Simple (yoki Perfect participle)."
+  }
+ ]
+}

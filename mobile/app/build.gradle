@@ -1,0 +1,67 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+}
+
+android {
+    namespace 'com.dadaxon.aienglishacademy'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.dadaxon.aienglishacademy"
+        minSdk 26
+        targetSdk 34
+        versionCode 1
+        versionName "1.0.0"
+        resourceConfigurations += ['uz', 'en']
+
+        // Veb-loomihadagi VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY ning
+        // mobil hamqobili (GitHub Pages'dagi ochiq build'da ham shu qiymatlar
+        // e'lon qilingan — anon/publishable kalit, maxfiy emas).
+        buildConfigField "String", "SUPABASE_URL", '"https://igrzbfnsunedgyivmqlz.supabase.co"'
+        buildConfigField "String", "SUPABASE_ANON_KEY", '"sb_publishable_0n4Y_0BurWokN7_c2ZWGRQ_jnogS1mb"'
+    }
+
+    signingConfigs {
+        release {
+            storeFile file('../keystores/aea-release.jks')
+            storePassword 'aienglishacademy'
+            keyAlias 'aea'
+            keyPassword 'aienglishacademy'
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            signingConfig signingConfigs.release
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    kotlinOptions { jvmTarget = '17' }
+    buildFeatures { viewBinding true; buildConfig true }
+    testOptions { unitTests.returnDefaultValues = true }
+}
+
+// Diqqat: versiyalar ~/.gradle kechasidagi (offline) nusxalarga mos tanlandi.
+dependencies {
+    implementation 'androidx.core:core-ktx:1.12.0'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.google.android.material:material:1.9.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'androidx.recyclerview:recyclerview:1.1.0'
+    implementation 'androidx.fragment:fragment-ktx:1.6.2'
+    implementation 'androidx.activity:activity-ktx:1.8.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.2'
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.7.5'
+    implementation 'com.google.code.gson:gson:2.10'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4'
+
+    testImplementation 'junit:junit:4.13.2'
+}
