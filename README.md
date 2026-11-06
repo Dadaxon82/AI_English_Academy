@@ -155,6 +155,14 @@ Supabase `publishable` kaliti mijozda ochiq ishlatiladi; **service-role kaliti
 hech qaysi mijozga tushmaydi**. AI ulanmagan holda ilova halol
 "Qoidaviy tahlil" deb yozadi (`engine: "rule-based"`).
 
+Tayyor APK — GitHub Release [`v1.0.0-mobile`](https://github.com/Dadaxon82/AI_English_Academy/releases/tag/v1.0.0-mobile)
+(`app-release.apk`, 20 272 600 B; SHA256
+`d6d54992082878814196d03822ac447efc995ed2f3f310eff4d2a486b4d4017f`). 2026-11-06
+kuni Release'dan indirib `sha256sum` bilan solishtirildi — mos). Imzo
+2026-11-06 da tekshirildi (`apksigner verify --print-certs` — xato yo'q):
+`Signer #1 CN=AI English Academy, OU=AEA, O=Dadaxon, L=Kokand, ST=Fergana, C=UZ`,
+sertifikat SHA-256 `d59a899ff5b03a8d691df1e72afd99b66984bd5f5cd17bd1fd51311faf587e55`.
+
 ## 5c. `DULO_mod.apk` kloni: fayil strukturasi, darslar ketma-ketligi, animatsiyalar
 
 Namunaviy ilova (`DULO_mod.apk`, 168 MB) **o'lchab** chiqarilgan struktura,

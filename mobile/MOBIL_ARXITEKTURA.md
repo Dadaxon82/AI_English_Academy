@@ -137,6 +137,14 @@ cd mobile && gradle :app:testDebugUnitTest :app:assembleDebug :app:assembleRelea
 Release imzolangan holda chiqadi (`keystores/aea-release.jks`, generate qilingan —
 maco'lari `keystores/README.md` da).
 
+Yayilgan nusxa — GitHub Release `v1.0.0-mobile` (`app-release.apk`,
+<https://github.com/Dadaxon82/AI_English_Academy/releases/download/v1.0.0-mobile/app-release.apk>).
+O'lchangan holat (2026-11-06): **20 272 600 B**,
+SHA256 `d6d54992082878814196d03822ac447efc995ed2f3f310eff4d2a486b4d4017f`.
+Tekshirish (2026-11-06 bajarilgan): fayl Release'dan indirildi va `sha256sum`
+bilan solishtirildi — Release'dagi fayl diskdagi
+`S:\Agent-2026\New_loixa\AI English Academy.apk` bilan AYNAN bir xil.
+
 ## 8. `DULO_mod.apk` — fayil strukturasi, darslar ketmaketligi va animatsiyalarning KLONI
 
 Talab: modul (`DULO_mod.apk`) ning **fayil strukturasi, darslar ketma-ketligi va
