@@ -117,19 +117,27 @@ export function MascotSpeechBubble({
 
 /**
  * Mashq natijasi uchun qahramonning tezkor munosabati
+ *
+ * `xp` berilsa — XP sonining ko'tarilishi (`--animate-xp`) ko'rsatiladi.
+ * Bu mobil ilovadagi `Motion.flyXp()` ning vebdagi ko'rinishi (DULO'da
+ * har to'g'ri javobdan keyin ochko/XP animatsiyasi bor — `res/raw`dagi
+ * Lottie fayllari orasida `score`/`xp` nomlari uchraydi). Son ixtir
+ * EMAS: chaqiruvchi `xpForAttempt()` bilan hisoblab beradi.
  */
 export function MascotExerciseFeedback({
   correct,
   expected,
   whyUz,
+  xp,
 }: {
   correct: boolean
   expected?: string
   whyUz?: string
+  xp?: number
 }) {
   return (
     <div
-      className={`rounded-2xl border px-4 py-3.5 flex items-start gap-3 text-sm animate-[var(--animate-pop)] ${
+      className={`relative rounded-2xl border px-4 py-3.5 flex items-start gap-3 text-sm animate-[var(--animate-pop)] ${
         correct
           ? 'border-emerald-400/60 bg-emerald-50/90 dark:bg-emerald-950/30'
           : 'border-rose-400/60 bg-rose-50/90 dark:bg-rose-950/30'
@@ -137,6 +145,16 @@ export function MascotExerciseFeedback({
       role="status"
       aria-live="polite"
     >
+      {xp !== undefined && xp > 0 && (
+        <span
+          className={`absolute right-3 top-1 text-sm font-bold tabular-nums animate-[var(--animate-xp)] pointer-events-none ${
+            correct ? 'text-[var(--ok)]' : 'text-[var(--bad)]'
+          }`}
+          aria-label={`Bu javob uchun ${xp} XP`}
+        >
+          +{xp} XP
+        </span>
+      )}
       <MascotAvatar
         mood={correct ? 'cheer' : 'encourage'}
         size="md"

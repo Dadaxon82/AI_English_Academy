@@ -60,6 +60,11 @@ export function toQueueItems(data: AppData): Omit<QueueItem, 'id' | 'tries'>[] {
       allocation: data.settings.allocation,
       theme: data.settings.theme,
       ai_enabled: data.settings.aiEnabled,
+      // Harakat (animatsiya) holati — `motion_enabled` ustuni
+      // `supabase/migrations/0003_motion.sql`da qo'shilgan. Bu maydon
+      // yuborilmasa boshqa qurilmada (mobil ilovada) yoqilgan/o'chirilgan
+      // holat yo'qolardi — ikki tomonlama sinxron shart.
+      motion_enabled: data.settings.motionEnabled,
     },
   })
 
@@ -510,6 +515,9 @@ function settingsFromRow(r: Row | null): Partial<UserSettings> | null {
   if (SKILLS.every((s) => alloc[s] !== undefined)) out.allocation = alloc as UserSettings['allocation']
   if (r.theme === 'light' || r.theme === 'dark' || r.theme === 'system') out.theme = r.theme
   if (typeof r.ai_enabled === 'boolean') out.aiEnabled = r.ai_enabled
+  // `motion_enabled` ustuni bo'lmasa (migratsiya hali bajarilmagan baza) lokal
+  // qiymat saqlanadi — hech narsa ixtir qilinmaydi.
+  if (typeof r.motion_enabled === 'boolean') out.motionEnabled = r.motion_enabled
   return out
 }
 

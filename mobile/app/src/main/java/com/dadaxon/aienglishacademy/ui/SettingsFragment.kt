@@ -201,6 +201,30 @@ class SettingsFragment : Fragment() {
             ),
         )
 
+        /* ---- harakatlar (animatsiya) ---- */
+        // Namunaviy ilova barcha harakatni `res/raw`da saqlaydi; bizda byudjet
+        // `res/raw/motion_manifest.json`da, chizish `Motion`da. Foydalanuvchi
+        // o'chirsa — hammasi darhol holatida ko'rinadi (qoida: joyidan siljimaydi).
+        b.rows.addView(Rows.sectionTitle(ctx, getString(R.string.settings_motion_title)))
+        b.rows.addView(
+            Rows.row(
+                ctx,
+                getString(if (st.motionEnabled) R.string.settings_motion_on else R.string.settings_motion_off),
+                null,
+                null,
+                onClick = {
+                    patch { it.copy(motionEnabled = !st.motionEnabled) }
+                    Motion.reset()
+                },
+            ),
+        )
+        b.rows.addView(Rows.small(ctx, getString(R.string.settings_motion_hint)))
+        if (st.motionEnabled && !Motion.enabled(ctx)) {
+            // Halol izoh: kalit yoniq, lekin tizim animatsiyalari o'chirilgan
+            // bo'lishi mumkin — sabab ochiq aytiladi (holat ixtir qilinmaydi).
+            b.rows.addView(Rows.small(ctx, getString(R.string.settings_motion_scale_off)))
+        }
+
         /* ---- hisob ---- */
         b.rows.addView(Rows.sectionTitle(ctx, getString(R.string.settings_account_title)))
         val session: Session? = runCatching { c.auth.session() }.getOrNull()

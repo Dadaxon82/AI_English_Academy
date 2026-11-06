@@ -17,9 +17,24 @@ data class UserSettings(
     /** "light" | "dark" | "system" */
     val theme: String = THEME_SYSTEM,
     val aiEnabled: Boolean = true,
+    /**
+     * Harakat (animatsiya) yoqilganmi. Standart YOQILGAN — qoida: foydalanuvchi
+     * o'chirmaguncha ilova jonli ko'rinadi; o'chirilganda hamma narsa darhol
+     * holatida chiziladi (`ui/Motion.kt`). Tizim animatsiyalari
+     * (`animator_duration_scale = 0`) o'chirilgan bo'lsa, bu kalitga qaramay
+     * harakat chizilmaydi.
+     */
+    val motionEnabled: Boolean = true,
 ) {
     fun withTheme(t: String): UserSettings = copy(theme = t)
 }
+
+/**
+ * Harakat manifestining qurilmadagi kaliti (`MotionSpec` JSON'i).
+ * `res/raw/motion_manifest.json` ni foydalanuvchi o'zi sozlashi uchun
+ * (`Settings` → "Harakatlar"); bo'sh bo'lsa manifestning o'zi ishlatiladi.
+ */
+const val KEY_MOTION = "aea:motion"
 
 const val THEME_LIGHT = "light"
 const val THEME_DARK = "dark"

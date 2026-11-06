@@ -8,6 +8,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { Exercise } from '../content/types'
 import { checkAnswer, type CheckResult } from '../lib/check'
+import { xpForAttempt } from '../lib/skillScoring'
 import { Button, Chip, InfoBanner, inputCls } from './ui'
 import { MascotExerciseFeedback } from './Mascot'
 
@@ -53,6 +54,14 @@ export default function ExerciseRunner({ exercise, checked, index, total, onNext
     checked(r, Math.round((Date.now() - startedAt) / 1000))
   }
 
+  /**
+   * Bu javob uchun beriladigan XP — store'dagi hisob BILAN BIR XIL
+   * (`store.tsx`: `xp + xpForAttempt(correct, difficulty, true)`). Son
+   * ixtir qilinmaydi: shu funksiya chaqiriladi, shuning uchun ekrandagi
+   * son haqiqatan qo'shiladi.
+   */
+  const xpShown = result ? xpForAttempt(result.correct, exercise.difficulty, true) : undefined
+
   // Klaviatura: Enter — tekshirish / davom etish. Paydo bo'lgan matn
   // maydonida Enter hech narsa qilmasdi — endi shu hodisa o'zi ishlaydi.
   const doEnter = state === 'idle' && canCheck ? doCheck : state === 'answered' ? onNext : null
@@ -87,7 +96,7 @@ export default function ExerciseRunner({ exercise, checked, index, total, onNext
         </InfoBanner>
       )}
 
-      <p className="font-semibold">{exercise.instructionUz}</p>
+      <p className="font-semibold animate-[var(--animate-fade-in)]">{exercise.instructionUz}</p>
 
       {'passageExcerpt' in exercise && exercise.passageExcerpt && (
         <blockquote className="rounded-xl border bg-[var(--panel-2)] p-3.5 text-sm italic">
@@ -102,6 +111,7 @@ export default function ExerciseRunner({ exercise, checked, index, total, onNext
           correct={result.correct}
           expected={result.expected}
           whyUz={result.whyUz}
+          xp={xpShown}
         />
       )}
 

@@ -148,6 +148,55 @@ pairs, text/answers/wordBank, bank, source/accepted`).
   `levelLabel(level)`.
 - `domain/Diagnostic.kt`: `diagnose(mapOf("dg-01" to true, …))`.
 
+## Harakat (animatsiya) va darslar zanjiri — MAJBURIY QOIDALAR
+
+- Harakat sonlari **kodda yo'q** — yagona manba `res/raw/motion_manifest.json`
+  (`stepMs 260, outcomeMs 320, popMs 380, popScale 1.14, staggerMs 40,
+  staggerMaxItems 8, xpMs 620, chainMs 240`). O'qiysiz: `ui/Motion.kt::spec(ctx)`
+  (bir marta keshlanadi; `Motion.reset()` test/sozlama uchun). Byudjet chegarasi
+  0…1500 ms (`data/MotionManifest.kt`). Veb tomoni: `src/lib/motionManifest.ts`
+  + `src/index.css` `--aea-*`; ikkala tomonning tengligi
+  `src/test/motion.test.ts`da diskdan o'qib tekshiriladi.
+- Ekranlarni `Motion.*` bilan harakatlantiring (qo'lda `ObjectAnimator` sonlari
+  yozmang):
+  - `Motion.enabled(ctx)` — sozlama (`settings.motionEnabled`) VA telefon
+    `animator_duration_scale > 0`. **Har bir harakatdan oldin shu tekshiriladi**;
+    false bo'lsa hech narsa animatsiyalanmaydi (foydalanuvchi tanlovi).
+  - `Motion.stepIn(v)` — ekran/abzats kirishi; `Motion.pop(mascot)` — qahramon
+    "pop"i (javobdan keyin); `Motion.stagger(host, from)` — ro'yxat elementlari
+    (≤ `staggerMaxItems` ta kechiktirish, qolgani darhol);
+    `Motion.fillChainCell(cell, filled, order)` — zanjir kataki;
+    `Motion.flyXp(anchor, text)` — XP yozuvi ko'tarilib yo'qoladi (overlay).
+  - `Motion.tap(ctx, ms, amplitude)` — haptik. `VIBRATE` ruxsati manifesda bor;
+    amplitude faqat API 31+ da qo'llanadi (undan pastda oddiy titrating —
+    ixtiro EMAS, Android shunday).
+- Darslar ketma-ketligi: `domain/LessonChain.kt` — `buildChain/buildDayChains`
+  (bo'limlar `Skills.PLAN_ORDER`, test oxirda), `lessonSequence` (tur
+  almashinuvi `MIN_KIND_GAP=2` + `REINFORCE_EVERY=6` takrorlash),
+  `sequenceAudit` (bir bo'lim), `chainAudit` (butun zanjir — undagi
+  `unavoidable` yagona turli bo'limning ajratib bo'lmaydigan takrorlari).
+  PRACTICE oqimi `Nav.openExercises`
+  da `lessonSequence` bilan qayta tartiblanadi; bo'lim testi va mock imtihon
+  kontent tartibida qoladi (test savollari takrorlanmaydi). O'quv yo'lidagi
+  zanjir kartasi: `LearningPathFragment.addChainCard()`, audit satri
+  `path_chain_audit`.
+- Zanjir auditi: `chainAudit(chains, knownKind)` — sonlar ekranda ochiq
+  ko'rsatiladi (`path_chain_audit`). Veb `chainAudit` bilan bir xil; A1
+  kontentida o'lchangan sonlar `src/test/chain-audit-real.test.ts`da, mobil
+  tomoni `LessonChainTest.chainAuditSeparatesUnavoidableRepeats`da.
+  Bo'limlar ALOHIDA sanaladi, `minGap` faqat
+  2+ turlu bo'limlarda, yagona turli bo'limning takrorlari `unavoidable`da.
+- **Javob yig'ish — interfeys ↔ domen kalitlari teng bo'lishi shart.**
+  `ExerciseFragment`dagi har bir tur o'z kalit so'zini `checkAnswer` qabul
+  qiladigan shaklda beradi. REAL XATO (2026-11-06): `firstOrNull` INDEKS
+  qaytaradi (View emas) — `(v as? RadioButton)` abadiy `null` edi, true/false/
+  notgiven javoblari jim yo'qolardi. Bunday xato vizual ham ko'rinmaydi —
+  `ExerciseAnswerKeyWiringTest` kodning shakli + round-trip bilan ushlaydi.
+  `firstOrNull` natijasini View'ga `as?` bilan kastemaq.
+- Yangi string kalitlari (allaqachon `strings_extra.xml` da, IXTIRO QILMANG):
+  `settings_motion_title|on|off|hint|scale_off`,
+  `path_chain_title|hint|steps|minutes|state_done|state_current|state_locked|test|audit`.
+
 ## Audio
 
 Tinglash audio fayllari `assets/audio/<id>.wav` + `assets/audio/manifest.json`

@@ -5,6 +5,13 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!--
+        Tebranish (`Motion.tap`) — namunaviy ilovaning `.hla` fayllari
+        harakatni tebranish bilan bog'laydi (278 juft fayl, o'lchangan).
+        Ruxsat o'rnatilganda so'ralmaydi; tebranish bo'lmasa ilova
+        undaysiz ishlaydi (`hasVibrator()` tekshiriladi).
+    -->
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
         android:name=".AeaApp"

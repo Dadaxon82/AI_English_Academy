@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 import { useStore } from '../lib/store'
+import { MOTION, motionVars } from '../lib/motionManifest'
 import { Button, Chip } from './ui'
 import { MascotAvatar } from './Mascot'
 
@@ -36,9 +37,36 @@ function useTheme(theme: 'light' | 'dark' | 'system') {
   return resolved
 }
 
+/**
+ * Harakat — ikki manba hurmat qilinadi (mobilda `Motion.enabled()` xuddi
+ * shularni tekshiradi):
+ *  1) foydalanuvchi sozlamasi (`settings.motionEnabled`, hisob bilan sinxron);
+ *  2) brauzer/operatsion tizim so'rovi `prefers-reduced-motion: reduce`.
+ *
+ * Qo'shimcha ravishda manifest sonlari (`src/lib/motionManifest.ts`) `:root`ga
+ * yoziladi — CSS o'zgaruvchilari shu yerda jonli yangilanadi, shuning uchun
+ * "byudjet" matnda yozilgan bezak emas, haqiqatan ishlatiladi.
+ */
+function useMotion(settingEnabled: boolean) {
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const apply = () => {
+      const allowed = settingEnabled && !mq.matches
+      document.documentElement.classList.toggle('no-motion', !allowed)
+      const vars = motionVars(MOTION)
+      for (const [k, v] of Object.entries(vars)) document.documentElement.style.setProperty(k, v)
+    }
+    apply()
+    const handler = () => apply()
+    mq.addEventListener('change', handler)
+    return () => mq.removeEventListener('change', handler)
+  }, [settingEnabled])
+}
+
 export default function Layout({ children }: { children: React.ReactNode }) {
   const { data, netOnline, streak, allocation, dayProgress, actions } = useStore()
   const theme = useTheme(data.settings.theme)
+  useMotion(data.settings.motionEnabled)
   const [menuOpen, setMenuOpen] = useState(false)
   const loc = useLocation()
   useEffect(() => setMenuOpen(false), [loc.pathname])

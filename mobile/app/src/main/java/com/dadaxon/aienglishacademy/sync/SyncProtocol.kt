@@ -89,6 +89,11 @@ class SyncProtocol(
                 put("allocation", tree(data.settings.allocation))
                 put("theme", data.settings.theme)
                 put("ai_enabled", data.settings.aiEnabled)
+                // Harakat (animatsiya) holati — `motion_enabled` ustuni
+                // `0003_motion.sql`da qo'shilgan. Bu maydon yuborilmasa
+                // boshqa qurilmada yoqilgan/o'chirilgan holat yo'qolardi
+                // (ikki tomonlama sinxron shart).
+                put("motion_enabled", data.settings.motionEnabled)
             }),
             System.currentTimeMillis(),
         )

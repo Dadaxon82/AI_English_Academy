@@ -1,5 +1,6 @@
 package com.dadaxon.aienglishacademy.ui
 
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,8 +15,13 @@ import com.dadaxon.aienglishacademy.data.Skills
 import com.dadaxon.aienglishacademy.data.Source
 import com.dadaxon.aienglishacademy.data.VocabularyItem
 import com.dadaxon.aienglishacademy.databinding.FragmentShellBinding
+import com.dadaxon.aienglishacademy.domain.ChainState
+import com.dadaxon.aienglishacademy.domain.DayChain
+import com.dadaxon.aienglishacademy.domain.buildChain
 import com.dadaxon.aienglishacademy.domain.buildDayTasks
+import com.dadaxon.aienglishacademy.domain.chainAudit
 import com.dadaxon.aienglishacademy.domain.computeAllocation
+import com.dadaxon.aienglishacademy.domain.lessonSequence
 import com.dadaxon.aienglishacademy.domain.nextDayId
 import com.dadaxon.aienglishacademy.domain.skillEvidence
 
@@ -64,6 +70,10 @@ class LearningPathFragment : Fragment() {
             return
         }
 
+        // `days` bo'sh bo'lmasa `bundle` ham yo'q emas (yuqoridagi `?:`
+        // bir joydan keladi) — shuning uchun bu yerda null tekshiruvi takroriy
+        // va `!!` shart emas.
+        val bundleSafe = bundle ?: return
         val currentDayId = nextDayId(level, days.map { it.id }, d.path.completedDays)
 
         /* Umumiy xo'r: nechta kun yakunlangan. */
@@ -81,6 +91,14 @@ class LearningPathFragment : Fragment() {
             ),
         )
 
+        /* ---- darslar KETMA-KETLIGI (zanjir kartasi) ----
+           Namunaviy ilova dars tartibini `assets/hardcoded_sessions/` ichidagi
+           JSON'lardagi tartiblangan `challenges` massivi bilan beradi
+           (o'lchangan: 18 fayl; `math_lesson.json` — 15 mashq / 10 tur —
+           `domain/LessonChain.kt` izohida va `tools/dulo_scan/DULO_FAKTLAR.json`).
+           Bu karta shu tartibni ko'rsatadi: har kun bo'limlari qadam qatorida. */
+        addChainCard(bundleSafe, days, currentDayId, d.path.completedDays)
+
         // Mock imtihon — daraja oxirida (veb: `mockExam` bo'limi).
         bundle?.mockExam?.let { spec ->
             b.rows.addView(
@@ -94,8 +112,140 @@ class LearningPathFragment : Fragment() {
             )
         }
 
-        for (day in days) addDay(bundle!!, day, currentDayId)
+        for (day in days) addDay(bundleSafe, day, currentDayId)
     }
+
+    /**
+     * Zanjir kartasi: har kun bo'limlari qadam qatorida (to'ldirilgan katak
+     * = bajarilgan bo'lim). Harakat `Motion.fillChainCell` orqali bosqichma-
+     * bosqich to'ladi — DULO'ning "o'quv yo'li kataklari birma-bir yonadi"
+     * xulqining bizdagi ko'rinishi (tizim animatsiyalari o'chirilgan bo'lsa
+     * kataklar darhol to'la chiziladi).
+     *
+     * BYUDJET: kunlar soni daraja hajmi bilan chegaralanadi (o'lchangan:
+     * A1 — 7 kun; har kun 6 bo'lim + test = 7 qadam; jami 49 katak) —
+     * `UI_KONTRAKTI.md`dagi bo'laklab chizish qoidasi buzilmaydi.
+     */
+    private fun addChainCard(
+        bundle: com.dadaxon.aienglishacademy.data.LevelBundle,
+        days: List<DailyPlanDay>,
+        currentDayId: String,
+        completedDays: List<String>,
+    ) {
+        val ctx = requireContext()
+        b.rows.addView(Rows.sectionTitle(ctx, getString(R.string.path_chain_title)))
+        b.rows.addView(Rows.small(ctx, getString(R.string.path_chain_hint)))
+        val chains = days.map { day ->
+            buildChain(
+                day = day,
+                exerciseIdsBySkill = day.sections.associate { sec ->
+                    sec.skill to exerciseIdsFor(bundle, sec.skill, sec.itemIds)
+                },
+                dayIndex = days.indexOf(day),
+                isCurrent = day.id == currentDayId,
+                isDone = completedDays.contains(day.id),
+            ).also { b.rows.addView(chainCard(ctx, it)) }
+        }
+        // Ketma-ketlik auditi — BUTUN zanjir bo'yicha BIR marta (veb
+        // `LearningPath.tsx::ChainOverview` bilan bir xil joy va bir xil son).
+        // Raqamlar ixtira EMAS: `chainAudit` kontentdan hisoblaydi.
+        val audit = chainAudit(chains) { id -> container().content.findExercise(id)?.kind }
+        if (audit.rotationSteps > 0 || audit.reinforcement > 0) {
+            b.rows.addView(
+                Rows.small(
+                    ctx,
+                    getString(
+                        R.string.path_chain_audit,
+                        audit.rotationSteps,
+                        audit.reinforcement,
+                        audit.sameNeighbours,
+                        audit.unavoidable,
+                        audit.minGap,
+                    ),
+                ),
+            )
+        }
+    }
+
+    /** Bitta kun zanjiri: sarlavha + qadam kataklari + qadamlar ro'yxati. */
+    private fun chainCard(ctx: android.content.Context, chain: DayChain): com.google.android.material.card.MaterialCardView {
+        val card = Rows.card(ctx)
+        val col = LinearLayout(ctx).apply { orientation = LinearLayout.VERTICAL }
+
+        col.addView(
+            android.widget.TextView(ctx).apply {
+                setTextAppearance(R.style.Text_Aea_Body)
+                text = getString(R.string.path_day_title, chain.day.dayNumber, chain.day.titleUz) +
+                    " · " + getString(R.string.path_chain_steps, chain.steps.size)
+            },
+        )
+
+        // Qadam kataklari — har biri bo'limni bildiredi.
+        // Rang mavzuga mos tanlanadi (`values-night` HTML ranglari `colors.xml`da
+        // alohida nomlangan — `ring_track_dark`), shuning uchun tungi mavzuda
+        // katak fonga erib ketmaydi.
+        val dark = (ctx.resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) ==
+            android.content.res.Configuration.UI_MODE_NIGHT_YES
+        val row = LinearLayout(ctx).apply { orientation = LinearLayout.HORIZONTAL }
+        chain.steps.forEachIndexed { i, step ->
+            val st = chain.stepState(i)
+            val filled = st != ChainState.LOCKED
+            val cell = View(ctx).apply {
+                background = GradientDrawable().apply {
+                    shape = GradientDrawable.RECTANGLE
+                    cornerRadius = dp(ctx, 6).toFloat()
+                    setColor(
+                        when (st) {
+                            ChainState.DONE -> ctx.getColor(R.color.ok)
+                            ChainState.CURRENT -> ctx.getColor(R.color.accent)
+                            else -> ctx.getColor(if (dark) R.color.ring_track_dark else R.color.ring_track_light)
+                        },
+                    )
+                    setStroke(dp(ctx, 1), ctx.getColor(if (dark) R.color.text_secondary_dark else R.color.text_secondary_light))
+                }
+                contentDescription = stepTitle(ctx, step)
+            }
+            val lp = LinearLayout.LayoutParams(dp(ctx, 18), dp(ctx, 18))
+            lp.marginEnd = dp(ctx, 4)
+            row.addView(cell, lp)
+            Motion.fillChainCell(cell, filled, i)
+        }
+        col.addView(row)
+
+        // Qadamlar ro'yxati: nom + daqiqa + holat (matn versiyasi — katakka
+        // qarab rangni o'qib bo'lmaydi, screen reader uchun ham kerak).
+        chain.steps.forEachIndexed { i, step ->
+            val st = chain.stepState(i)
+            val label = StringBuilder(stepTitle(ctx, step))
+            if (step.minutes > 0) label.append(" · ").append(getString(R.string.path_chain_minutes, step.minutes))
+            label.append(" · ").append(
+                when (st) {
+                    ChainState.DONE -> getString(R.string.path_chain_state_done)
+                    ChainState.CURRENT -> getString(R.string.path_chain_state_current)
+                    else -> getString(R.string.path_chain_state_locked)
+                },
+            )
+            col.addView(Rows.small(ctx, label))
+        }
+
+        // Ketma-ketlik auditi kun kartasida EMAS — butun zanjir bo'yicha bir
+        // marta chiziladi (`addChainCard` oxiri), veb `ChainOverview` bilan
+        // bir xil. Shunda "bir xil tur qo'shni" soni har kun uchun 17 deb
+        // takrorlanmaydi va yagona turli bo'lim (lug'at testi majburiy
+        // qo'shni) alohida sanaladi.
+
+        card.addView(col)
+        Motion.stepIn(card, enter = true)
+        return card
+    }
+
+    /** Bo'lim yorliqi: testda alohida so'z, aks holda bo'lim sarlavhasi. */
+    private fun stepTitle(ctx: android.content.Context, step: com.dadaxon.aienglishacademy.domain.ChainStep): String =
+        if (step.isTest) getString(R.string.path_chain_test)
+        else step.titleUz.ifBlank { Rows.skillName(ctx, step.skill) }
+
+    private fun dp(ctx: android.content.Context, v: Int): Int =
+        (v * ctx.resources.displayMetrics.density).toInt()
 
     private fun addDay(bundle: com.dadaxon.aienglishacademy.data.LevelBundle, day: DailyPlanDay, currentDayId: String) {
         val ctx = requireContext()

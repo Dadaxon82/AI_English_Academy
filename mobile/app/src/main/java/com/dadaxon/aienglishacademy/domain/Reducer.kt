@@ -110,6 +110,8 @@ data class SettingsPatch(
     val allocation: Map<String, Int>? = null,
     val theme: String? = null,
     val aiEnabled: Boolean? = null,
+    /** Harakatlar (animatsiya) yoqish/o'chirish — `UserSettings.motionEnabled`. */
+    val motionEnabled: Boolean? = null,
 )
 
 /** Veb: `{ skill: CoreSkill; seconds: number }`. */
@@ -411,6 +413,7 @@ private fun applySettings(
         allocation = patch.allocation ?: settings.allocation,
         theme = patch.theme ?: settings.theme,
         aiEnabled = patch.aiEnabled ?: settings.aiEnabled,
+        motionEnabled = patch.motionEnabled ?: settings.motionEnabled,
     )
 }
 

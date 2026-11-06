@@ -14,6 +14,7 @@ describe('Sinxronlash payload — PostgREST ustun nomlari (snake_case)', () => {
       examDate: '2026-12-01',
       theme: 'dark' as const,
       aiEnabled: false,
+      motionEnabled: false,
     },
     diagnostic: { at: Date.UTC(2026, 0, 5), level: 'A2' as const, labelUz: 'A2', confidence: 0.8 },
   }
@@ -29,10 +30,20 @@ describe('Sinxronlash payload — PostgREST ustun nomlari (snake_case)', () => {
     expect(p.theme).toBe('dark')
     expect(p.ai_enabled).toBe(false)
     expect(p.exam_date).toBe('2026-12-01')
+    // Harakat holati ham yuboriladi (`0003_motion.sql` ustuni) — aksi holda
+    // telefondagi "harakat o'chirilgan" tanlovi brauzerga yetmasdi.
+    expect(p.motion_enabled).toBe(false)
     // Eski bug: `...data.settings` camelCase maydonlarni olib kelardi
-    for (const camel of ['dailyMinutes', 'currentLevel', 'targetLevel', 'aiEnabled', 'examDate']) {
+    for (const camel of ['dailyMinutes', 'currentLevel', 'targetLevel', 'aiEnabled', 'examDate', 'motionEnabled']) {
       expect(p).not.toHaveProperty(camel)
     }
+  })
+
+  it('harakat standart holati ham yuboriladi (yoqilgan → true)', () => {
+    const p = toQueueItems(emptyData(UID))
+      .find((i) => i.table === 'user_settings')!
+      .payload as Record<string, unknown>
+    expect(p.motion_enabled).toBe(true)
   })
 
   it('exercise_attempts qiyinlik (difficulty) maydonini yuboradi', () => {

@@ -19,6 +19,7 @@ import { Button, Card, Chip, EmptyState, InfoBanner, LoadingBlock, ProgressRing,
 import { getBundle } from '../content'
 import type { Exercise, GrammarTopic } from '../content/types'
 import { nextExerciseIndex, type CheckResult } from '../lib/check'
+import { lessonSequence } from '../lib/lessonChain'
 import { useStore } from '../lib/store'
 
 /* --------------------------- progress hisobi --------------------------- */
@@ -167,7 +168,9 @@ function TopicDetail({ topic, onBack }: { topic: GrammarTopic; onBack: () => voi
   const total = topic.exercises.length
 
   // --- moslashuvchan tartib: qADAMMA-qADAM ko'ringan mashqlar ketma-ketligi ---
-  const [order, setOrder] = useState<number[]>([0])
+  // `order` bo'sh boshlanadi: birinchi mashq `baseOrder`dan (DULO tur
+  // almashinuvi) olinadi.
+  const [order, setOrder] = useState<number[]>([])
   const [pos, setPos] = useState(0)
   const [results, setResults] = useState<CheckResult[]>([])
   const [answered, setAnswered] = useState<Record<number, CheckResult>>({})
@@ -181,6 +184,34 @@ function TopicDetail({ topic, onBack }: { topic: GrammarTopic; onBack: () => voi
     }
     return n
   }, [results])
+
+  /**
+   * DULO tarzidagi ASOSIY tartib: bir xil turdagi mashq qo'shni kelmasligi
+   * uchun pool tartibi qayta tartiblanadi (`src/lib/lessonChain.ts`,
+   * MIN_KIND_GAP=2 — `DULO_mod.apk` `math/math_lesson.json`dan o'lchangan).
+   * Bu ro'yxat qADAMMA mashq tanlashda ishlatiladi; natijaga qarab keyingi
+   * mashqni tanlash qoidasi (`check.ts::nextExerciseIndex`) o'zgarmaydi,
+   * shuning uchun adaptivlik ham, tur almashinuvi ham saqlanadi.
+   */
+  const baseOrder = useMemo(() => {
+    const ids = topic.exercises.map((e) => e.id)
+    const kind = new Map(ids.map((id, i) => [id, topic.exercises[i]?.kind]))
+    // reinforce=false: mustahkamlashni bizda `nextExerciseIndex` xato bo'lsa
+    // qiladi (oldingi mashqni qaytaradi) — ro'yxat shishmaydi, son o'zgarmaydi.
+    return lessonSequence(ids, (id) => kind.get(id), false).map((id) => ids.indexOf(id))
+  }, [topic])
+
+  /** Bajarilmagan mashqni DULO tartibida topish (aylana bo'yicha). */
+  const pickUnanswered = (candidate: number): number => {
+    if (answered[candidate] === undefined) return candidate
+    const start = baseOrder.indexOf(candidate)
+    if (start < 0) return candidate
+    for (let k = 1; k <= total; k++) {
+      const c = baseOrder[(start + k) % total]
+      if (c !== undefined && answered[c] === undefined) return c
+    }
+    return candidate
+  }
 
   const scrollToShow = (ref: RefObject<HTMLElement | null>) => {
     ref.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
@@ -197,31 +228,26 @@ function TopicDetail({ topic, onBack }: { topic: GrammarTopic; onBack: () => voi
       setFinished(true)
       return
     }
-    const currentBase = order[pos] ?? 0
-    let candidate = nextExerciseIndex(currentBase, results, total)
-    // Agar tanlangan mashq allaqachon bajarilgan bo'lsa — keyingi bajarilmaganini
-    // olamiz (xato bo'lsa bir pog'ona orqaga qaytish qoidasi saqlanadi).
-    if (answered[candidate] !== undefined) {
-      let steps = 0
-      while (answered[candidate] !== undefined && steps < total * 2) {
-        candidate = (candidate + 1) % total
-        steps += 1
-      }
-    }
+    const currentBase = order[pos] ?? baseOrder[pos] ?? 0
+    const candidate = pickUnanswered(nextExerciseIndex(currentBase, results, total))
+    // `pickUnanswered` bajarilgan mashq o'rniga DULO tartibidagi
+    // (`baseOrder`) keyingi bajarilmaganini oladi — xato bo'lsa bir pog'ona
+    // orqaga qaytish qoidasi (`nextExerciseIndex`) shu yerda saqlanadi.
     setOrder((prev) => [...prev, candidate])
     setPos((prev) => prev + 1)
     scrollToShow(runnerRef)
   }
 
   const restart = () => {
-    setOrder([0])
+    setOrder([])
     setPos(0)
     setResults([])
     setAnswered({})
     setFinished(false)
   }
 
-  const currentIdx = order[pos] ?? 0
+  // Birinchi qadam `order`da yo'q — DULO tartibi (`baseOrder`)dan olinadi.
+  const currentIdx = order[pos] ?? baseOrder[pos] ?? 0
   const current: Exercise | undefined = topic.exercises[currentIdx]
   const prevResult = pos > 0 ? results[pos - 1] ?? null : null
 

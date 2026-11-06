@@ -15,13 +15,14 @@ Loyiha talabnomasi (`AI English Academy_v2.docx`) to'liq bajarilgan:
 - ✅ **Jonli taymer** — sahifa yangilansa ham vaqt yo'qolmaydi (IndexedDB'da saqlanadi)
 - ✅ **Offline / PWA**: sync navbati, Service Worker; logout'da avval sinxronlanadi (yuborilmagan narsa qolsa tasdiq so'raladi), so'ng kesh tozalanadi
 - ✅ **Mobil ilova**: Dashboard yuqorisidagi blok PWA'ni bosh ekranga o'rnatadi (Android/kompyuter — "Ilovani o'rnatish" tugmasi, iPhone — yo'riqnoma); APK fayl shart emas
-- ✅ **Native Android ilovasi** (`mobile/` — Kotlin + XML Views, `com.dadaxon.aienglishacademy`): bitta baza va bitta auth, 244 unit test, qahramon har ekranda — quyida 6-bo'lim
+- ✅ **Native Android ilovasi** (`mobile/` — Kotlin + XML Views, `com.dadaxon.aienglishacademy`): bitta baza va bitta auth, **268 unit test**, qahramon har ekranda; DULO_mod.apk dan o'lchangan **darslar ketma-ketligi va harakat byudjeti** ikkala platformada — quyida 5b-bo'lim va
+`mobile/MOBIL_ARXITEKTURA.md` 8-bo'limi
 - ✅ **Server bilan ikki tomonlama**: hisobga kirganda progress serverdan tiklanadi va qurilmadagisi bilan birlashtiriladi
 - ✅ **Supabase RLS**: har foydalanuvchi faqat o'z qatorlarini ko'radi; service role va `AI_*` kalitlari faqat serverda
 - ✅ AI "ulangan" deb ko'rsatilmaydi — AI bo'lmasa **qoidaviy dvigatel** (`engine: 'rule-based'`) ishlatiladi
 - ✅ **7+ kun A1 kontenti** alohida (`src/content/day-01…07.ts`)
-- ✅ **13 ta jadval** (`supabase/migrations/0001_init.sql`), ID'lar, `created_at`, FK va indexlar bilan
-- ✅ Testlar: `tsc` tip tekshiruvi, ESLint, `vitest` (157 test), production build, smoke + render tekshiruvi
+- ✅ **13 ta jadval** (`supabase/migrations/0001_init.sql`), ID'lar, `created_at`, FK va indexlar bilan; keyin `0002_fix_content_fk.sql` va `0003_motion.sql` (harakat sozlamasi — `motion_enabled`)
+- ✅ Testlar: `tsc` tip tekshiruvi, ESLint, `vitest` (**190 test**), production build, smoke + render tekshiruvi
 - ✅ JSON/CSV **eksport** va **ma'lumotlarni o'chirish**
 - ✅ **HECH QANDAY TUGMA DEKORATSIYA EMAS** — har bir tugma haqiqiy harakat bajaradi
 
@@ -69,6 +70,9 @@ cp .env.example .env
    2. `supabase/migrations/0002_fix_content_fk.sql` — bo'sh kontent jadvallariga
       qo'yilgan FK'larni olib tashlaydi (ular sinxronlashni butunlay to'sib
       qo'yardi) va kontent jadvallariga service_role yozish policylarini qo'shadi.
+   3. `supabase/migrations/0003_motion.sql` — `user_settings.motion_enabled`
+      ustuni (telefon ⇄ brauzer harakat sozlamasi). Bu ustun bo'lmasa sinxron
+      yozuvi `PGRST204` bilan rad etiladi; skript oxirida tekshiruv `SELECT` bor.
    Skript oxirida tekshiruv `SELECT` bor: `fk_qoldi = 0` va `policies_soni = 21`
    chiqishi kerak. **0002 qo'llanilmasa Supabase'ga hech qanday yozuv kirmaydi**
    (FK'lar bo'sh kontent jadvallariga bog'langan). Ushbu loyihaning bazasida
@@ -101,7 +105,7 @@ npm run icons:build   # PWA ikonalaria (0 bog'liqlik, sof Node)
 ```bash
 npm run typecheck     # tsc — 0 xato
 npm run lint          # eslint — 0 xato
-npm test              # vitest — 157 test (SRS, taymer/vaqt hisobi, tekshiruv, kontent auditi, audio yaxlitligi, rejalashtirish, daraja, sync, server birlashmasi, sahifalar)
+npm test              # vitest — 190 test (SRS, taymer/vaqt hisobi, tekshiruv, kontent auditi, audio yaxlitligi, rejalashtirish, daraja, sync, server birlashmasi, sahifalar, darslar zanjiri + HAQIQIY A1 kontentida zanjir auditi, harakat manifesti (mobil res/raw bilan solishtiradi))
 npm run build         # production build + Service Worker
 npm run smoke         # dist'ni serverda ochib tekshirish + 375/1280 skrinshot
 npm run render:check  # 15 marshrut CDP orqali: DOM + konsol xatolari + 375px telefonda yonga surilmasligi
@@ -121,10 +125,12 @@ mobile/
 ├── MOBIL_ARXITEKTURA.md   # namunaviy ilova tahlili + moslashtirish rejasi (Task-1/2)
 ├── UI_KONTRAKTI.md        # ekranlar shartnomasi (qahramon, bo'laklab ro'yxatlar, stringlar)
 ├── app/src/main/java/com/dadaxon/aienglishacademy/
-│   ├── data/    AppStore, AppDatabase, ContentRepository, Models
-│   ├── domain/  Analyze (qoidaviy dvigatel), Srs, Reducer, SkillScoring, AnswerChecker
+│   ├── data/    AppStore, AppDatabase, ContentRepository, Models, MotionManifest
+│   ├── domain/  Analyze (qoidaviy dvigatel), Srs, Reducer, SkillScoring, AnswerChecker,
+│   │            LessonChain (darslar ketma-ketligi — DULO qoidalari)
 │   ├── sync/    SyncEngine + SyncProtocol (veb bilan bir javat/tizma)
-│   └── ui/      14 ekran + MascotView (qahramon) + Rows yordamchilari
+│   └── ui/      14 ekran + MascotView (qahramon) + Rows yordamchilari + Motion (harakat)
+├── app/src/main/res/raw/motion_manifest.json  # harakat byudjeti (DULO usuli)
 └── scripts/make_assets.py # qahramon rasm + ikonalar
 ```
 
@@ -138,12 +144,64 @@ JAVA_HOME=<jdk17> GRADLE_USER_HOME=<kecha papkasi> \
   gradle --offline :app:testDebugUnitTest :app:assembleDebug
 ```
 
-Tekshirilgan holat (2026-11-05): **244 unit test o'tdi**, API 26+ emulatorda
-barcha ekranlar ochiladi, ANR yo'q (Lug'at 117 so'zi bo'laklab chiziladi —
-`UI_KONTRAKTI.md`dagi qoida), `dumpsys gfxinfo` 95-persent kadr 57 ms.
+Tekshirilgan holat (2026-11-06): **268 unit test o'tdi** (22 klass), API 26+
+emulatorda barcha ekranlar ochiladi, ANR yo'q (`/data/anr/` bo'sh; Lug'at 117
+so'zi bo'laklab chiziladi — `UI_KONTRAKTI.md`dagi qoida), `dumpsys gfxinfo`
+95-persent kadr 61 ms. Emulatorda qayta tasdiqlangan: o'quv yo'lida zanjir
+auditi satri **bir marta** ko'rsatiladi (sonlar vebda o'lchangani bilan bir xil),
+Sozlamalarda harakat tugmasi "Yoniq ⇄ O'chiq" holatini almashtiradi,
+true/false/notgiven mashqida javob qabul qilinadi (2/2 · 100%).
 Supabase `publishable` kaliti mijozda ochiq ishlatiladi; **service-role kaliti
 hech qaysi mijozga tushmaydi**. AI ulanmagan holda ilova halol
 "Qoidaviy tahlil" deb yozadi (`engine: "rule-based"`).
+
+## 5c. `DULO_mod.apk` kloni: fayil strukturasi, darslar ketma-ketligi, animatsiyalar
+
+Namunaviy ilova (`DULO_mod.apk`, 168 MB) **o'lchab** chiqarilgan struktura,
+dars tartibi va animatsiya mexanizmlari ikkala platformaga kiritildi.
+Sonlarning manbasi — repodagi skript (qayta ishga tushirib bo'ladi):
+
+```bash
+python -I tools/dulo_scan/dulo_facts.py <DULO_mod.apk> > tools/dulo_scan/DULO_FAKTLAR.json
+```
+
+O'lchangan (2026-11-05): 18 229 kirish; `res/raw` 1 212 fayl / 75,5 MB
+(290 Rive `.riv`, 195 Lottie JSON, 278 `.hla` haptik traektoriya, 297 mp3,
+135 ogg); Lottie davomiyligi 483 ms / median 2 917 ms / 14 815 ms; `.hla`
+`Duration` 1 ms / median 947 ms / 7 005 ms; `assets/hardcoded_sessions/`da
+18 dars JSON'i — har birida `challenges[]` tartibi o'quv tartibidir.
+`math/math_lesson.json`: 15 mashq / 10 tur, **3 qo'shni bir xil tur**, eng
+qisqa takror masofasi 1; aralash 5 darsda (45 qo'shni juftlik) bir xillik
+**31.1%**.
+
+Bizda (klon):
+
+| Nima | mobil | veb |
+|---|---|---|
+| Harakat byudjeyti — fayl `res/raw`da (DULO usuli) | `res/raw/motion_manifest.json` + `data/MotionManifest.kt` | `src/lib/motionManifest.ts` + `src/index.css` `--aea-*` |
+| Harakat mexanizmlari | `ui/Motion.kt` (stepIn, pop, stagger, fillChainCell, flyXp, tap) | `Layout.useMotion()`, `animate-[var(--animate-*)]`, XP ko'rsatmasi |
+| Darslar zanjiri va tur almashinuvi | `domain/LessonChain.kt` | `src/lib/lessonChain.ts` |
+| Zanjir ko'rinishi | `LearningPathFragment.addChainCard()` | `LearningPath.tsx::ChainOverview` |
+| Sozlama (harakat yoqilsin/yo'q) | `settings.motionEnabled` + `animator_duration_scale` | `settings.motionEnabled` + `prefers-reduced-motion` |
+
+Sonlar **ikki tomonda teng** — buni `src/test/motion.test.ts` diskdan o'qib
+tekshiradi (mobil `res/raw/motion_manifest.json` va `src/index.css`ni),
+zanjir qoidalari esa `src/test/lesson-chain.test.ts` va
+`mobile/.../LessonChainTest.kt`da bir xil holatlar bilan.
+
+Zanjir auditi (`chainAudit`) HAQIQIY A1 kontentida o'lchangan (2026-11-06,
+`src/test/chain-audit-real.test.ts` — 7 kun / 49 bo'lim, 35 bo'lim auditi):
+**287 mashq qadami + 21 takrorlash = 308 rejalashtirilgan qadam; bir xil turli
+qo'shni 77 ta va ularning HAMMASI majburiy** (yagona turli bo'limlar — masalan
+lug'at testlari), `minGap = 2`. Ya'ni aralash turlu bo'limlarda bir xil qo'shni
+0 ga tushgan. Sonlar kunlar/bo'limlar tartibiga bog'liq emas (test shuni ham
+tekshiradi), ekranda esa bitta satr bo'lib chiqadi (`path_chain_audit` /
+`LearningPath.tsx`).
+**Nusxalanmagan (ataylab):** Rive/Lottie binar fayllari va ularning litsenziyasi,
+DULO ovoz fayllari, hamda DULO ning 31.1% bir xillik soni — biz aralash havzada
+`MIN_KIND_GAP=2` bilan 0 ga tushiramiz (asosi hujjatda izohlangan).
+Mavjud bo'lmagan narsa ham ochiq aytilgan: `challengeTransitionMs` kaliti APK
+ichida **yo'q** (dastlabki taxmin bikr qilindi).
 
 ## 6. Arxitektura qisqacha
 
@@ -157,6 +215,12 @@ src/
 supabase/
   migrations/0001_init.sql           # 13 jadval + RLS + triggerlar
   migrations/0002_fix_content_fk.sql # FK'larni olish + kontent yozish policylari
+  migrations/0003_motion.sql         # user_settings.motion_enabled (harakat sozlamasi)
+src/lib/
+  lessonChain.ts                      # darslar zanjiri (mobil LessonChain.kt bilan bir xil)
+  motionManifest.ts                   # harakat byudjeti (mobil res/raw bilan bir xil)
+tools/dulo_scan/
+  dulo_facts.py  DULO_FAKTLAR.json    # namunaviy APK dan o'lchangan sonlar (qayta ishga tushiriladi)
 scripts/
   build-audio.mjs  make-icons.mjs  smoke.mjs  render-check.mjs
 ```

@@ -1,0 +1,11 @@
+{
+  "_comment": "Harakat (animatsiya) byudjeti. Rive/Lottie fayllari ko'chirilmagan — namunaviy ilova `res/raw`da 290 .riv + 198 .json (Lottie) saqlaydi; bizning harakatimiz ViewPropertyAnimator bilan chiziladi, byudjet esa SHU fayldan o'qiladi. Qiymatlar Material muddatlari atrofida (260—620 ms): DULO Lottie medianasi 2917 ms (o'lchangan), biz foydalanuvchini kutdirmaymiz.",
+  "stepMs": 260,
+  "outcomeMs": 320,
+  "popMs": 380,
+  "popScale": 1.14,
+  "staggerMs": 40,
+  "staggerMaxItems": 8,
+  "xpMs": 620,
+  "chainMs": 240
+}

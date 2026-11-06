@@ -15,6 +15,16 @@ export interface UserSettings {
   theme: 'light' | 'dark' | 'system'
   /** AI xizmati ulanganmi (sozlamadan ham o'chiriladi) */
   aiEnabled: boolean
+  /**
+   * Harakat (animatsiya) yoqilganmi. Standart YOQILGAN.
+   *
+   * Bu maydon `0003_motion.sql`dag `motion_enabled` ustuniga yoziladi — mobil
+   * ilova bilan BITTА sinxron qilinadi (telefonning o'z sozlamasi emas,
+   * hisobning sozlamasi). Brauzer `prefers-reduced-motion: reduce` so'rovi
+   * alohida hurmat qilinadi (`src/index.css`), bu maydon esa qo'shimcha
+   * "o'chirish" tugmasi.
+   */
+  motionEnabled: boolean
 }
 
 export const DEFAULT_ALLOCATION: Record<Skill, number> = {
@@ -34,6 +44,7 @@ export const DEFAULT_SETTINGS: UserSettings = {
   allocation: { ...DEFAULT_ALLOCATION },
   theme: 'system',
   aiEnabled: true,
+  motionEnabled: true,
 }
 
 /**

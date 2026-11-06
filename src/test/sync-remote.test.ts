@@ -50,7 +50,7 @@ function richData(uid: string): AppData {
   const transcript = 'I go to school every day and I learn English words. I can read. I like it because it is fun.'
   return {
     ...base,
-    settings: { ...base.settings, dailyMinutes: 120, examDate: '2026-12-01', theme: 'dark', aiEnabled: false, targetLevel: 'B2' },
+    settings: { ...base.settings, dailyMinutes: 120, examDate: '2026-12-01', theme: 'dark', aiEnabled: false, motionEnabled: false, targetLevel: 'B2' },
     srs: {
       'a1-v1-hello': { learnedAt: Date.UTC(2026, 10, 1), dueAt: Date.UTC(2026, 10, 4), intervalDays: 3, ease: 2.6, reps: 2, lapses: 0, lastReviewedAt: Date.UTC(2026, 10, 1, 12) },
       'gl-orchard': { learnedAt: null, dueAt: Date.UTC(2026, 10, 1, 12, 10), intervalDays: 0, ease: 2.18, reps: 1, lapses: 1, lastReviewedAt: Date.UTC(2026, 10, 1, 12) },

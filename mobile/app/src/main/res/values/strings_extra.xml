@@ -13,4 +13,35 @@
     <string name="skillbar_row">%1$s — %2$d%%</string>
     <!-- IsHonchsiz baho: foiz ko'rsatilmaydi (qoida: `progress_evidence_hint`). -->
     <string name="skillbar_row_unsure">%1$s — baho noaniq</string>
+
+    <!-- ================= harakat (animatsiya) bloki =================
+         Yangi kalitlar bloki: namunaviy ilovaning harakat mexanikasi
+         klonlangan (2026-11-05, `MOBIL_ARXITEKTURA.md` 8-bo'lim).
+         `UI_KONTRAKTI.md`dagi "yangi kalit qo'shmang" qoidasi SHU blokka
+         tegishli emas — kalitlar sababi bilan qo'shildi va quyidagi
+         functionlar ulardan foydalanadi: `SettingsFragment` (yoqish/o'chirish),
+         `LearningPathFragment` (kunlar zanjiri kartasi),
+         `ExerciseFragment` (natija + XP). -->
+    <string name="settings_motion_title">Harakatlar</string>
+    <string name="settings_motion_on">Yoniq — ekranlar jonli chiziladi</string>
+    <string name="settings_motion_off">O‘chiq — hammasi darhol ko‘rinadi</string>
+    <!-- Byudjet ochiq yoziladi: raqamlar `res/raw/motion_manifest.json`dan -->
+    <string name="settings_motion_hint">Byudjet: o‘tish 260 ms, qahramon 380 ms, XP 620 ms. Telefon sozlamalarida animatsiyalar o‘chirilgan bo‘lsa harakat chizilmaydi.</string>
+    <string name="settings_motion_scale_off">Telefonda animatsiya masshtabi 0 — harakat avtomatik o‘chiq.</string>
+
+    <!-- O'quv yo'lidagi kunlar zanjiri kartasi (DULO `hardcoded_sessions`
+         ketma-ketligining bizdagi ko'rinishi — `domain/LessonChain.kt`). -->
+    <string name="path_chain_title">Kunlar zanjiri</string>
+    <string name="path_chain_hint">Darslar ketma-ketligi: bo‘limlar reja tartibida (test oxirida), mashqlar esa tur almashinuvi bilan qayta tartiblanadi — aralash turlarda bir xil tur qo‘shni kelmaydi. Yagona turli bo‘limda (masalan lug‘at testi) ajratishning iloji yo‘q, bu holda takror majburiy.</string>
+    <string name="path_chain_steps">%1$d qadam</string>
+    <string name="path_chain_minutes">%1$d daq</string>
+    <string name="path_chain_state_done">Bajarildi</string>
+    <string name="path_chain_state_current">Davom etayapti</string>
+    <string name="path_chain_state_locked">Qulflangan</string>
+    <string name="path_chain_test">Bo‘lim testi</string>
+    <!-- Audit sonlari `chainAudit()`dan olinadi (ixtira EMAS). "majburiy" —
+         yagona turli bo'lim tufayli ajratib bo'lmaydigan qo'shnilar (DULO
+         `math_l0_lessons.json` 38 mashq bitta tur — majburiy 37). -->
+    <string name="path_chain_audit">Zanjir bo‘yicha: %1$d mashq qadami (+%2$d takrorlash) · bir xil tur qo‘shni: %3$d (majburiy: %4$d) · eng qisqa tur masofasi: %5$d</string>
+    <string name="path_xp_fly">+ %1$d XP</string>
 </resources>

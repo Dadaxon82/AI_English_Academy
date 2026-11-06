@@ -30,6 +30,7 @@ import com.dadaxon.aienglishacademy.store.AppStore
 import com.dadaxon.aienglishacademy.store.StoreAction
 import com.dadaxon.aienglishacademy.ui.MascotDialog
 import com.dadaxon.aienglishacademy.ui.MascotView
+import com.dadaxon.aienglishacademy.ui.Motion
 import com.dadaxon.aienglishacademy.ui.Nav
 import com.dadaxon.aienglishacademy.ui.Rows
 import com.google.android.material.button.MaterialButton
@@ -181,6 +182,12 @@ class ExerciseFragment : Fragment() {
         b.resultCard.visibility = View.GONE
         b.exMascot.setMood(MascotView.Mood.NEUTRAL)
         b.exScroll.scrollTo(0, 0)
+
+        // Harakat: mashq bloki pastdan kiradi (DULO mashq o'tish animatsiyasining
+        // mohiyati — eski mashq yo'qoladi, yangisi kiradi). O'chirilganda view
+        // darhol holatida qoladi (`Motion.enabled` tekshiriladi).
+        Motion.stepIn(b.exInstruction, enter = true)
+        Motion.stepIn(b.exSkill, enter = true)
     }
 
     private fun hideAllInputs() {
@@ -251,10 +258,14 @@ class ExerciseFragment : Fragment() {
             }
             b.choiceGroup.addView(rb)
         }
+        // `firstOrNull` INDEKS qaytaradi (View emas!) — shuning uchun kalit so'z
+        // shu ro'yxatdan indeks bo'yicha olinadi. eski yozuv `(v as? RadioButton)`
+        // Edit`da abadiy null qaytarardi (xato: "cast can never succeed") va
+        // javob hamisha "javob berilmagan" deb qolardi.
         b.choiceGroup.setOnCheckedChangeListener { group, checkedId ->
-            val v = (0 until group.childCount)
+            val i = (0 until group.childCount)
                 .firstOrNull { group.getChildAt(it).id == checkedId }
-            tfAnswer = (v as? RadioButton)?.tag as? String
+            tfAnswer = i?.let { keys[it].first }
         }
         b.choiceCard.visibility = View.VISIBLE
         return true
@@ -523,6 +534,25 @@ class ExerciseFragment : Fragment() {
         b.resultWhy.text = out.whyUz
         b.resultXp.text = getString(R.string.ex_result_xp, xp)
         b.exScroll.smoothScrollTo(0, b.resultCard.top)
+
+        /* ---- harakat qatlami (klonlangan mexanika) ----
+           1. natija kartasi kiradi (`stepIn`) — DULO natija qatlamining
+              fade/slide ko'rinishi;
+           2. qahramon "sakraydi" (`pop`) — `duo_perfect_*.riv` masshtabli
+              qahramon animatsiyasi o'rniga;
+           3. XP soni ko'tarilib so'nadi (`flyXp`) — `…xp…/score…` animatsiyalari;
+           4. tebranish (`tap`) — `.hla` fayllaridagi Duration/Amplitudes juftligi.
+           Byudjet `res/raw/motion_manifest.json`da; hammasi `Motion.enabled`
+           orqali o'chiriladi (emulator o'lchovlarimiz uzilmasligi uchun ham). */
+        val ctx = requireContext()
+        Motion.stepIn(b.resultCard, enter = true)
+        if (out.correct) {
+            Motion.pop(b.exMascot)
+            Motion.flyXp(b.exMascot, getString(R.string.path_xp_fly, xp), R.color.ok)
+            Motion.tap(ctx, durationMs = 30L, amplitude = 127)
+        } else {
+            Motion.flyXp(b.exMascot, getString(R.string.path_xp_fly, xp), R.color.err)
+        }
     }
 
     /* --------------------------- harakatlar ----------------------------- */
@@ -573,6 +603,17 @@ class ExerciseFragment : Fragment() {
         b.summaryPromotion.visibility = View.VISIBLE
         b.summaryMascot.setMood(if (percent >= 70) MascotView.Mood.CHEER else MascotView.Mood.HAPPY)
         b.summaryCard.visibility = View.VISIBLE
+
+        // Yakuniy hisob — DULO dars yakunidagi "bayram" qatlami: qahramon
+        // sakraydi, XP ko'tariladi, tebranish bir marta (foydalanuvchi
+        // o'chirmaganida). Natija past bo'lsa ham qahramon quvonchi saqlanadi —
+        // urinish uchun (veb: `ex_result_summary`).
+        if (Motion.enabled(requireContext())) {
+            Motion.stepIn(b.summaryCard, enter = true)
+            Motion.pop(b.summaryMascot)
+            if (xpGained > 0) Motion.flyXp(b.summaryMascot, getString(R.string.path_xp_fly, xpGained), R.color.ok)
+            Motion.tap(requireContext(), durationMs = 40L, amplitude = 127)
+        }
 
         if (total > 0 && dayId != null) {
             if (source == Source.SECTION_TEST) {

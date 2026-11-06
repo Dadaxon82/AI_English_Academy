@@ -493,6 +493,9 @@ class SyncEngine(
         if (r.get("ai_enabled") != null && !r.get("ai_enabled").isJsonNull) {
             out = out.copy(aiEnabled = r.get("ai_enabled").asBoolean)
         }
+        // Qatorda ustun bo'lmasa (migratsiya qollanilmagan baza) LOCAL qiymat
+        // saqlanadi — jimgina "o'chiq" bo'lib qolmaydi.
+        r.get("motion_enabled")?.takeIf { !it.isJsonNull }?.let { out = out.copy(motionEnabled = it.asBoolean) }
         return out
     }
 

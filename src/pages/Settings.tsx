@@ -13,6 +13,7 @@ import { aiRuntimeEnabled } from '../lib/ai'
 import { useStore } from '../lib/store'
 import { skillLabelUz, daysUntil } from '../lib/planning'
 import { loadCacheMeta, loadQueue, purgeUserData, storageBackend } from '../lib/storage'
+import { MOTION, motionAllowed } from '../lib/motionManifest'
 import { supabaseConfigured, safeErrorMessage } from '../lib/supabase'
 import { deleteRemoteData } from '../lib/sync'
 import { LOADED_LEVELS } from '../content'
@@ -248,6 +249,25 @@ export default function Settings() {
           saqlanadi; deploy paytida <code>VITE_AI_ENABLED=true</code> bayrog‘i qo‘yilib, serverless funksiya qo‘shilsagina bu
           belgi «ulangan» ga o‘zgaradi.
         </InfoBanner>
+      </Card>
+
+      {/* --- Harakat (animatsiya) holati — DULO zanjiri va harakat mantiqi --- */}
+      <Card className="grid gap-3">
+        <div className="flex flex-wrap items-center gap-2">
+          <h2 className="font-bold">Harakat va darslar ketma-ketligi</h2>
+          <Chip tone={motionAllowed(s.motionEnabled) ? 'ok' : 'warn'}>
+            {motionAllowed(s.motionEnabled) ? 'Harakat yoqilgan' : 'Harakat o‘chirilgan'}
+          </Chip>
+        </div>
+        <label className="flex items-center gap-2 text-sm">
+          <input
+            type="checkbox"
+            checked={s.motionEnabled}
+            onChange={(e) => actions.setSettings({ motionEnabled: e.target.checked })}
+          />
+          Harakatlarni yoqish (o‘tish, qahramon sakrashi, XP ko‘tarilishi, zanjir kataklari)
+        </label>
+        <p className="text-xs muted">Byudjet: o‘tish {MOTION.stepMs} ms, qahramon {MOTION.popMs} ms, XP {MOTION.xpMs} ms. Brauzer «kamaytirilgan harakat» so‘rovi bo‘lsa harakat avtomatik o‘chiriladi. Bu sozlama telefon ilovasi bilan ham sinxronlanadi.</p>
       </Card>
 
       {/* --- Sinxronizatsiya --- */}

@@ -4,6 +4,8 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.dadaxon.aienglishacademy.R
+import com.dadaxon.aienglishacademy.container
+import com.dadaxon.aienglishacademy.domain.lessonSequence
 
 /**
  * Ekranlararo o'tish shartnomasi (bitta joyda).
@@ -59,12 +61,36 @@ object Nav {
         return b
     }
 
-    /** Mashq pleyeri — id'lar RO'YXAT BILAN beriladi (tartib muhim). */
+    /**
+     * Mashq pleyeri — id'lar RO'YXAT BILAN beriladi (tartib muhim).
+     *
+     * KETMA-KETLIK: `practice` oqimida tartib `domain/lessonSequence` bilan
+     * qayta quriladi (DULO `assets/hardcoded_sessions` JSON'laridagi
+     * tartiblangan `challenges` massivi qoidasi: bitta tur qo'shni qadamda
+     * takrorlanmaydi — o'lchangan 68.9% almashinuv; har 6-qadamda bitta
+     * mashq qayta takrorlanadi).
+     *
+     * BO'LIM TESTI va MOCK imtihonda tartib O'ZGARMAYDI: ular baholash
+     * uchun (veb kontentida savollar tartibi hujjatlangan), mashqda esa
+     * biz o'qish tartibini o'zimiz belgilaymiz. Ro'yxatdagi id'lar soni
+     * ham o'smaydi (takrorlar faqat `practice`da).
+     */
     fun openExercises(f: Fragment, ids: List<String>, contentId: String?, dayId: String?, source: String, title: String) {
+        val ordered = if (source == com.dadaxon.aienglishacademy.data.Source.PRACTICE) {
+            val cr = runCatching { f.requireActivity().container().content }.getOrNull()
+            lessonSequence(
+                dayId = dayId ?: contentId ?: "",
+                orderedIds = ids,
+                knownKind = { id -> runCatching { cr?.findExercise(id)?.kind }.getOrNull() },
+                reinforce = true,
+            )
+        } else {
+            ids
+        }
         f.findNavController().navigate(
             R.id.exerciseFragment,
             args(
-                ARG_EXERCISE_IDS to ArrayList(ids),
+                ARG_EXERCISE_IDS to ArrayList(ordered),
                 ARG_CONTENT_ID to contentId,
                 ARG_DAY_ID to dayId,
                 ARG_SOURCE to source,
