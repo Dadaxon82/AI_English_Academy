@@ -15,14 +15,14 @@ Loyiha talabnomasi (`AI English Academy_v2.docx`) to'liq bajarilgan:
 - ✅ **Jonli taymer** — sahifa yangilansa ham vaqt yo'qolmaydi (IndexedDB'da saqlanadi)
 - ✅ **Offline / PWA**: sync navbati, Service Worker; logout'da avval sinxronlanadi (yuborilmagan narsa qolsa tasdiq so'raladi), so'ng kesh tozalanadi
 - ✅ **Mobil ilova**: Dashboard yuqorisidagi blok PWA'ni bosh ekranga o'rnatadi (Android/kompyuter — "Ilovani o'rnatish" tugmasi, iPhone — yo'riqnoma); APK fayl shart emas
-- ✅ **Native Android ilovasi** (`mobile/` — Kotlin + XML Views, `com.dadaxon.aienglishacademy`): bitta baza va bitta auth, **268 unit test**, qahramon har ekranda; DULO_mod.apk dan o'lchangan **darslar ketma-ketligi va harakat byudjeti** ikkala platformada — quyida 5b-bo'lim va
+- ✅ **Native Android ilovasi** (`mobile/` — Kotlin + XML Views, `com.dadaxon.aienglishacademy`): bitta baza va bitta auth, **336 unit test**, qahramon har ekranda; DULO_mod.apk dan o'lchangan **darslar ketma-ketligi va harakat byudjeti** ikkala platformada — quyida 5b-bo'lim va
 `mobile/MOBIL_ARXITEKTURA.md` 8-bo'limi
 - ✅ **Server bilan ikki tomonlama**: hisobga kirganda progress serverdan tiklanadi va qurilmadagisi bilan birlashtiriladi
 - ✅ **Supabase RLS**: har foydalanuvchi faqat o'z qatorlarini ko'radi; service role va `AI_*` kalitlari faqat serverda
 - ✅ AI "ulangan" deb ko'rsatilmaydi — AI bo'lmasa **qoidaviy dvigatel** (`engine: 'rule-based'`) ishlatiladi
 - ✅ **7+ kun A1 kontenti** alohida (`src/content/day-01…07.ts`)
-- ✅ **13 ta jadval** (`supabase/migrations/0001_init.sql`), ID'lar, `created_at`, FK va indexlar bilan; keyin `0002_fix_content_fk.sql` va `0003_motion.sql` (harakat sozlamasi — `motion_enabled`)
-- ✅ Testlar: `tsc` tip tekshiruvi, ESLint, `vitest` (**190 test**), production build, smoke + render tekshiruvi
+- ✅ **13 ta jadval** (`supabase/migrations/0001_init.sql`), ID'lar, `created_at`, FK va indexlar bilan; keyin `0002_fix_content_fk.sql` (FK), `0003_motion.sql` (harakat sozlamasi — `motion_enabled`) va `0004_weekly_xp.sql` (haftalik XP — real ligalar)
+- ✅ Testlar: `tsc` tip tekshiruvi, ESLint, `vitest` (**267 test**), production build, smoke + render tekshiruvi
 - ✅ JSON/CSV **eksport** va **ma'lumotlarni o'chirish**
 - ✅ **HECH QANDAY TUGMA DEKORATSIYA EMAS** — har bir tugma haqiqiy harakat bajaradi
 
@@ -65,7 +65,7 @@ cp .env.example .env
      beriladi — xuddi shu ma'noda, ikkalasi ham ishlataveradi.
    - `service_role` kalitini **bu yerga kiritmang** — u faqat serverda.
 3. **Ma'lumotlar bazasini tayyorlang:** paneldagi **SQL Editor** ga ketma-ket
-   ikki skriptni qo'yib **Run** qiling:
+   to'rt skriptni qo'yib **Run** qiling:
    1. `supabase/migrations/0001_init.sql` — 13 jadval + RLS + triggerlar;
    2. `supabase/migrations/0002_fix_content_fk.sql` — bo'sh kontent jadvallariga
       qo'yilgan FK'larni olib tashlaydi (ular sinxronlashni butunlay to'sib
@@ -73,6 +73,11 @@ cp .env.example .env
    3. `supabase/migrations/0003_motion.sql` — `user_settings.motion_enabled`
       ustuni (telefon ⇄ brauzer harakat sozlamasi). Bu ustun bo'lmasa sinxron
       yozuvi `PGRST204` bilan rad etiladi; skript oxirida tekshiruv `SELECT` bor.
+   4. `supabase/migrations/0004_weekly_xp.sql` — liga uchun `weekly_xp` jadvali
+      (haftalik XP, rakiblar qatorlarini o'qish siyosati bilan) va
+      `user_settings.xp_goal_xp` + `hearts_enabled` ustunlari. Bo'lmasa o'yin
+      qatlamining sinxron yozuvi rad etiladi. Tekshiruv `SELECT`:
+      `jadval_bor = 1`, `ustunlar = 6`, `politsiyalar = 4`, `sozlama_ustunlari = 2`.
    Skript oxirida tekshiruv `SELECT` bor: `fk_qoldi = 0` va `policies_soni = 21`
    chiqishi kerak. **0002 qo'llanilmasa Supabase'ga hech qanday yozuv kirmaydi**
    (FK'lar bo'sh kontent jadvallariga bog'langan). Ushbu loyihaning bazasida
@@ -165,6 +170,12 @@ kuni Release'dan indirib `sha256sum` bilan solishtirildi — mos). Imzo
 2026-11-06 da tekshirildi (`apksigner verify --print-certs` — xato yo'q):
 `Signer #1 CN=AI English Academy, OU=AEA, O=Dadaxon, L=Kokand, ST=Fergana, C=UZ`,
 sertifikat SHA-256 `d59a899ff5b03a8d691df1e72afd99b66984bd5f5cd17bd1fd51311faf587e55`.
+
+**Halol eslatma (2026-11-08):** bu Release APK 2026-11-06 kuni yig'ilgan — unda
+o'yin qatlami (5d-bo'lim: yuraklar, questlar, gem/do'kon, liga) **yo'q**. Mahalliy
+`assembleDebug` yangi kod bilan muvaffaqiyatli yig'iladi, lekin yangi **Release**
+APK hali yig'ilmagan va Release'ga chiqarilmagan (eski hajm/SHA256 eski APK'ga
+tegishli — yangisiga nisbatan ixtira qilinmagan).
 
 ## 5c. `DULO_mod.apk` kloni: fayil strukturasi, darslar ketma-ketligi, animatsiyalar
 
@@ -260,6 +271,7 @@ supabase/
   migrations/0001_init.sql           # 13 jadval + RLS + triggerlar
   migrations/0002_fix_content_fk.sql # FK'larni olish + kontent yozish policylari
   migrations/0003_motion.sql         # user_settings.motion_enabled (harakat sozlamasi)
+  migrations/0004_weekly_xp.sql      # weekly_xp (liga) + xp_goal_xp/hearts_enabled
 src/lib/
   lessonChain.ts                      # darslar zanjiri (mobil LessonChain.kt bilan bir xil)
   motionManifest.ts                   # harakat byudjeti (mobil res/raw bilan bir xil)
