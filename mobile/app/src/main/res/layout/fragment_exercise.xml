@@ -380,6 +380,59 @@
         </com.google.android.material.card.MaterialCardView>
 
         <!-- ========================= boshqaruv tugmalari =================== -->
+        <!-- Yurak darvozasi — veb `ExerciseRunner.tsx` `blocked` banneri.
+             Yuraklar tugaganida ko'rsatiladi va TEKSHIRISH bloklanadi;
+             mock/diagnostika/bo'lim testlarida yurak talab qilinmaydi,
+             shuning uchun bu manbalarda blok chiqmaydi. Matn va sonlar
+             `ExerciseFragment.heartsGateBlocked()`da `GameConfig`/`heartsView`
+             dan yoziladi (ixtira yo'q). -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/heartsGate"
+            style="@style/Widget.Aea.Card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_m"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/heartsGateTitle"
+                    style="@style/Text.Aea.Body"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/heartsGateHint"
+                    style="@style/Text.Aea.Small"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/gap_s" />
+
+                <!-- Vebdagi ikkita HAQIQIY havola (`/vocabulary` va
+                     `/settings`) — darvoza shunchaki taqiq emas, yo'l
+                     ko'rsatadi. Ikkalasi ham mavjud manzillarga o'tadi. -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/heartsGatePractice"
+                    style="@style/Widget.Aea.Button.Outlined"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/gap_s"
+                    android:text="@string/hearts_blocked_practice" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/heartsGateSettings"
+                    style="@style/Widget.Aea.Button.Text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/hearts_blocked_settings" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/exCheck"
             style="@style/Widget.Aea.Button"

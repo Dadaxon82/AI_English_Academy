@@ -248,6 +248,9 @@ export function DiagnosticStep({ onDone, onSkip }: { onDone: (r: ReturnType<type
               if (idx + 1 < total) setIdx(idx + 1)
               else setDone(true)
             }}
+            // Diagnostika darajani o'lchash uchun — yurak jarimasi YO'Q
+            // (foydalanuvchi yuraklari tugagan bo'lsa ham o'lcanadi).
+            heartFree
           />
         </>
       ) : (

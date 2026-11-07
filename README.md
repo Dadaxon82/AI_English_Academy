@@ -105,7 +105,7 @@ npm run icons:build   # PWA ikonalaria (0 bog'liqlik, sof Node)
 ```bash
 npm run typecheck     # tsc — 0 xato
 npm run lint          # eslint — 0 xato
-npm test              # vitest — 190 test (SRS, taymer/vaqt hisobi, tekshiruv, kontent auditi, audio yaxlitligi, rejalashtirish, daraja, sync, server birlashmasi, sahifalar, darslar zanjiri + HAQIQIY A1 kontentida zanjir auditi, harakat manifesti (mobil res/raw bilan solishtiradi))
+npm test              # vitest — 267 test (SRS, taymer/vaqt hisobi, tekshiruv, kontent auditi, audio yaxlitligi, rejalashtirish, daraja, sync, server birlashmasi, sahifalar, darslar zanjiri + HAQIQIY A1 kontentida zanjir auditi, harakat manifesti (mobil res/raw bilan solishtiradi), O'YIN QATLAMI: yurak/quest/gem/liga + o'yin manifesti (mobil GameConfig.kt bilan solishtiradi))
 npm run build         # production build + Service Worker
 npm run smoke         # dist'ni serverda ochib tekshirish + 375/1280 skrinshot
 npm run render:check  # 15 marshrut CDP orqali: DOM + konsol xatolari + 375px telefonda yonga surilmasligi
@@ -144,7 +144,10 @@ JAVA_HOME=<jdk17> GRADLE_USER_HOME=<kecha papkasi> \
   gradle --offline :app:testDebugUnitTest :app:assembleDebug
 ```
 
-Tekshirilgan holat (2026-11-06): **268 unit test o'tdi** (22 klass), API 26+
+Tekshirilgan holat (2026-11-08): **336 unit test o'tdi** (26 klass — 2026-11-06
+dagi 268 taga o'yin qatlami qo'shilgach 68 ta qo'shildi; `GameOpsTest` 15 ta —
+jonli do'kon `AppStore.reduceLocal` o'yin qatlamini HAQIQATAN qo'llashini
+tekshiradi), API 26+
 emulatorda barcha ekranlar ochiladi, ANR yo'q (`/data/anr/` bo'sh; Lug'at 117
 so'zi bo'laklab chiziladi — `UI_KONTRAKTI.md`dagi qoida), `dumpsys gfxinfo`
 95-persent kadr 61 ms. Emulatorda qayta tasdiqlangan: o'quv yo'lida zanjir
@@ -210,6 +213,39 @@ DULO ovoz fayllari, hamda DULO ning 31.1% bir xillik soni — biz aralash havzad
 `MIN_KIND_GAP=2` bilan 0 ga tushiramiz (asosi hujjatda izohlangan).
 Mavjud bo'lmagan narsa ham ochiq aytilgan: `challengeTransitionMs` kaliti APK
 ichida **yo'q** (dastlabki taxmin bikr qilindi).
+
+## 5d. O'yin qatlami — Duolingo mexanikasi (veb va mobil bir xil)
+
+2026-11-08 qo'shildi. Mexanika namunaviy DULO/APK'dan **o'lchab** olingan Duolingo
+qoidalariga asoslanadi; sonlarning aksari manbali, «biznik» deb belgilanganlari
+`gameConfig.ts` izohlarida ochiq yozilgan (ixtira son yo'q).
+
+| Qatlam | Veb | Mobil | Sonlar manbasi |
+|---|---|---|---|
+| Yuraklar (5 ta, xatoda −1, 30 da: +1, tugasa darvoza) | `game.ts::heartsView/afterAttempt`, `ExerciseRunner.tsx` darvozasi | `GameLogic.kt`, `ExerciseFragment.heartsGateBlocked()` | `gameConfig.ts` ↔ `GameConfig.kt` ↔ `res/raw/game_manifest.json` |
+| Kunlik XP maqsadi (5 pog'ona 50/100/200/300/500) | `Settings.tsx` tugmalari, `goalView` | `SettingsFragment` (`MaterialButtonToggleGroup`) | DB `CHECK` bilan bir xil |
+| Questlar (kuniga 3 tasi, kun kaliti bilan), gem | `Dashboard.tsx` «Bugungi questlar» | `DashboardFragment` (2c bo'limi) | `QUEST_POOL` + FNV-1a/LCG kun kaliti |
+| Qalqon (streak freeze), 2× XP byusti, do'kon | `Settings.tsx` «Do'kon» | `SettingsFragment` «Do'kon» | `SHOP_ITEMS` |
+| «Double or Nothing» garovi (50 gem → 7 kun → 100 gem) | `Settings.tsx` | `SettingsFragment` | `BET_*` |
+| Yutuqlar/badges (6 ta, darajalar, halol beriladi) | `game.ts::settleAchievements` | `GameLogic.settleAchievements` | `ACHIEVEMENTS` |
+| Liga (haftalik XP) | `weekly_xp` + `0004_weekly_xp.sql` | `SupabaseClient`/`SyncProtocol` | server jadvali |
+
+**Bir xillik sharti:** `src/test/game-config.test.ts` va mobil
+`GameManifestTest.kt` barcha sonlar bilan birga `titleUz` matnlarini ham
+uchala manba (`gameConfig.ts`, `game_manifest.json`, `GameConfig.kt`) bo'yicha
+solishtiradi; farq bo'lsa test yiqiladi. Quest tanlash kaliti ham ikkala
+tomonda bir xil (`2026-11-07 → dayHash = 1 864 244 822`, questlar
+`q-lis-180 / q-perf-1 / q-xp-300`) — shuning uchun foydalanuvchi telefon va
+brauzerda BIR XIL kunlik questlarni ko'radi.
+
+**Halol qoidalar:** yuraklar mock imtihon, diagnostika va bo'lim testlarida
+jarima qilinmaydi (`HEART_FREE_SOURCES`, ekranda ochiq aytiladi); sozlamada
+o'chirilsa darvoza butunlay yo'l qo'yadi; buyum/garov rad etilsa SABAB ochiq
+ko'rsatiladi (`reasonUz`), son ixtir qilinmaydi; liga offline bo'lsa oxirgi
+snapshot «halol» belgisi bilan ko'rsatiladi. Garov tugmasining HAQIQIY ishlashi
+vebda `src/test/pages.test.tsx`da tekshiriladi: gem yetarli bo'lsa gem yechiladi
+va ochiq garov ko'rsatiladi, yetmasa SABAB chiqadi, shartlar matni esa `gameConfig`
+sonlari bilan bir xil ekanini solishtiradi.
 
 ## 6. Arxitektura qisqacha
 

@@ -14,6 +14,8 @@ import { useStore } from '../lib/store'
 import { skillLabelUz, daysUntil } from '../lib/planning'
 import { loadCacheMeta, loadQueue, purgeUserData, storageBackend } from '../lib/storage'
 import { MOTION, motionAllowed } from '../lib/motionManifest'
+import { GameIcon } from '../components/icons'
+import { BET_COST_GEMS, BET_DAYS, BET_STREAK_DAYS, BET_WIN_GEMS, GOAL_GEM_REWARD, HEARTS_COST_WRONG, HEARTS_MAX, HEART_COMBO_STREAK, HEART_PRACTICE_REVIEWS, HEART_REFILL_MINUTES, MAX_FREEZES, XP_GOAL_TIERS } from '../lib/gameConfig'
 import { supabaseConfigured, safeErrorMessage } from '../lib/supabase'
 import { deleteRemoteData } from '../lib/sync'
 import { LOADED_LEVELS } from '../content'
@@ -35,7 +37,7 @@ function examHint(examLeft: number | null): string {
 }
 
 export default function Settings() {
-  const { data, actions, allocation, evidence, netOnline, promotion } = useStore()
+  const { data, actions, allocation, evidence, netOnline, promotion, hearts, goal, shop } = useStore()
   const authActions = useAuthActions()
   const nav = useNavigate()
   const s = data.settings
@@ -50,6 +52,12 @@ export default function Settings() {
   const [unsynced, setUnsynced] = useState<{ pending: number; reasonUz: string | null } | null>(null)
   const [deleting, setDeleting] = useState(false)
   const [deleteError, setDeleteError] = useState<string | null>(null)
+  // Do'kon xaridining natija xabari (muvaffaqiyat yoki sababi bilan).
+  const [shopMsg, setShopMsg] = useState<{ ok: boolean; text: string } | null>(null)
+  // Garov natija xabari — xarid kabi: rad etilsa SABAB ochiq ko'rsatiladi.
+  const [betMsg, setBetMsg] = useState<{ ok: boolean; text: string } | null>(null)
+  // Ochiq garov (bo'lsa) — sarlavhadagi satr shu ma'lumotdan olinadi.
+  const bet = data.game.bet
   const isGuest = data.userId.startsWith('local-')
   const hasServerCopy = !isGuest && supabaseConfigured
 
@@ -268,6 +276,124 @@ export default function Settings() {
           Harakatlarni yoqish (o‘tish, qahramon sakrashi, XP ko‘tarilishi, zanjir kataklari)
         </label>
         <p className="text-xs muted">Byudjet: o‘tish {MOTION.stepMs} ms, qahramon {MOTION.popMs} ms, XP {MOTION.xpMs} ms. Brauzer «kamaytirilgan harakat» so‘rovi bo‘lsa harakat avtomatik o‘chiriladi. Bu sozlama telefon ilovasi bilan ham sinxronlanadi.</p>
+      </Card>
+
+      {/* --- O‘yin qatlami: yuraklar va kunlik XP maqsadi --- */}
+      <Card className="grid gap-3">
+        <div className="flex flex-wrap items-center gap-2">
+          <h2 className="font-bold">O‘yin qatlami</h2>
+          <Chip tone={s.heartsEnabled ? 'brand' : 'warn'}>{s.heartsEnabled ? 'Yuraklar yoqilgan' : 'Yuraklar o‘chiq'}</Chip>
+          <Chip tone={goal.reached ? 'ok' : 'warn'}>
+            Bugun {goal.value}/{goal.target} XP
+          </Chip>
+        </div>
+
+        <label className="flex items-center gap-2 text-sm">
+          <input type="checkbox" checked={s.heartsEnabled} onChange={(e) => actions.setSettings({ heartsEnabled: e.target.checked })} />
+          Yuraklar tizimi (har xato javobda bitta yurak ketadi)
+        </label>
+        <InfoBanner tone="muted">
+          Yuraklar soni <b>{HEARTS_MAX}</b> ta, har xato javob uchun <b>{HEARTS_COST_WRONG}</b> tasi ketadi va{' '}
+          {HEART_REFILL_MINUTES} daqiqada bittasi qaytadi. Yuraklar tugasa <b>takrorlash darsi</b> ochiladi —{' '}
+          {HEART_PRACTICE_REVIEWS} ta so‘z takrorlansa bitta yurak qaytadi. Ketma-ket {HEART_COMBO_STREAK} ta to‘g‘ri
+          javob uchun ham bitta yurak qaytariladi. Mock imtihon, diagnostika va bo‘lim testlarida yurak{' '}
+          <b>jarima qilinmaydi</b>. O‘chirilsa — hech qanday jarima darvozasi qolmaydi. Sozlama telefon ilovasi bilan
+          ham sinxronlanadi.
+        </InfoBanner>
+        <div className="flex items-center gap-2 text-sm">
+          <GameIcon name="heart" size={18} className="text-[var(--heart)]" title="Yuraklar" />
+          <span className="font-semibold">{hearts.count}</span>
+          <span className="muted">
+            /{hearts.max}
+            {hearts.count < hearts.max && hearts.minutesLeft > 0 ? ` · keyingi yurak: ${hearts.minutesLeft} daqiqa` : ''}
+          </span>
+        </div>
+
+        <div className="grid gap-1.5">
+          <span className="text-sm font-semibold">Kunlik XP maqsadi</span>
+          <div className="flex flex-wrap gap-2">
+            {XP_GOAL_TIERS.map((t) => (
+              <button
+                key={t.id}
+                onClick={() => actions.setSettings({ xpGoalXp: t.xp })}
+                className={`chip cursor-pointer ${s.xpGoalXp === t.xp ? '!border-[var(--accent)] !text-[var(--accent)] font-bold' : ''}`}
+              >
+                {t.titleUz} — {t.xp} XP
+              </button>
+            ))}
+          </div>
+          <p className="text-xs muted">
+            Bosqichlar Duolingo‘ning 5 pog‘onasi (Basic/Casual/Regular/Serious/Intense) — bizning XP masshtabimizga moslab
+            10 marta kattalashtirilgan. Maqsadga yetilsa {GOAL_GEM_REWARD} gem beriladi; kunlik daqiqa rejasi
+            ({s.dailyMinutes} daqiqa) alohida maqsad bo‘lib qoladi.
+          </p>
+        </div>
+
+        <div className="grid gap-1.5">
+          <span className="text-sm font-semibold">Do‘kon (gemlar: {data.game.gems})</span>
+          <div className="grid sm:grid-cols-2 gap-2">
+            {shop.map((it) => (
+              <div key={it.id} className="rounded-xl border border-[var(--line)] p-3 grid gap-1.5">
+                <div className="flex items-center gap-2">
+                  <GameIcon name={it.id === 'freeze' ? 'shield' : it.id === 'xpBoost' ? 'bolt' : 'heart'} size={16} className="text-[var(--accent)]" />
+                  <span className="text-sm font-semibold">{it.titleUz}</span>
+                  <Chip tone={data.game.gems >= it.price ? 'ok' : 'warn'}>
+                    <GameIcon name="gem" size={12} /> {it.price}
+                  </Chip>
+                </div>
+                <p className="text-xs muted">{it.noteUz}</p>
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  onClick={() => {
+                    const res = actions.buy(it.id)
+                    setShopMsg({ ok: res.ok, text: res.ok ? `${it.titleUz} olindi — ${it.price} gem sarflandi.` : (res.reasonUz ?? 'Xarid qilmab bo‘lmadi.') })
+                  }}
+                >
+                  Sotib olish
+                </Button>
+              </div>
+            ))}
+          </div>
+          <p className="text-xs muted">
+            Narxlar Duolingo do‘konidan olindi (yuraklarni to‘ldirish 350 gem, streak qalqoni 200 gem); bitta yurak va
+            XP byusti narxi — bizning qarorimiz. Omborda eng ko‘p {MAX_FREEZES} ta qalqon saqlanadi.
+          </p>
+          {shopMsg && (shopMsg.ok ? <SuccessBanner>{shopMsg.text}</SuccessBanner> : <InfoBanner tone="warn">{shopMsg.text}</InfoBanner>)}
+        </div>
+
+        {/* --- "Double or Nothing" garovi (Duolingo mexanikasi: 50 gem → 100 gem) ---
+            Telefon ilovasi (`SettingsFragment`) bilan bir xil; shartlar soni
+            `gameConfig`dan olinadi — matnda ixtira son yo‘q. */}
+        <div className="grid gap-1.5">
+          <span className="text-sm font-semibold">Garov — «Double or Nothing»</span>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button
+              size="sm"
+              variant="secondary"
+              onClick={() => {
+                const res = actions.placeStreakBet()
+                setBetMsg({
+                  ok: res.ok,
+                  text: res.ok ? `Garov tikildi — ${BET_COST_GEMS} gem sarflandi.` : (res.reasonUz ?? 'Garov qo‘ymas bo‘ldi.'),
+                })
+              }}
+            >
+              Garov: {BET_COST_GEMS} gem tikib, zanjirni {BET_STREAK_DAYS} kunga uzaytirsak {BET_WIN_GEMS} gem qaytadi
+            </Button>
+            {bet && (
+              <Chip tone="brand">
+                Garov ochiq: {bet.startDay} kunidan {bet.gems} gem tikilgan
+              </Chip>
+            )}
+          </div>
+          <p className="text-xs muted">
+            Garov ochilgan kundan {BET_DAYS} kun o‘tsa va zanjir kamida {BET_STREAK_DAYS} kunga o‘sgan bo‘lsa{' '}
+            {BET_WIN_GEMS} gem qaytadi; aks holda tikilgan gem yo‘qoladi. Qalqonlar zanjirni uzmaydi — ular ham
+            garov hisobiga kiradi.
+          </p>
+          {betMsg && (betMsg.ok ? <SuccessBanner>{betMsg.text}</SuccessBanner> : <InfoBanner tone="warn">{betMsg.text}</InfoBanner>)}
+        </div>
       </Card>
 
       {/* --- Sinxronizatsiya --- */}

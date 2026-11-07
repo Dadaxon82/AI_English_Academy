@@ -10,7 +10,24 @@ import type { CefrLevel, CoreSkill, Exercise, Skill } from '../content/types'
 import { allGlossaryVocab, allVocab, findExercise, getBundle, LOADED_LEVELS } from '../content/index'
 import { initialSrsState, review, type SrsGrade } from './srs'
 import { MAX_CONTINUOUS_SEC, currentElapsed, pauseTimer, startTimer, stopTimer, formatDuration, planProgress } from './timer'
-import { xpForAttempt, streakFor, evaluateLevelPromotion, weightedScore, confidenceFor, type SkillEvidence } from './skillScoring'
+import { streakFor, evaluateLevelPromotion, weightedScore, confidenceFor, type SkillEvidence } from './skillScoring'
+import {
+  achievementViews,
+  afterAttempt,
+  afterReview,
+  buy as buyItem,
+  goalView,
+  heartsView,
+  lessonComplete,
+  placeBet,
+  questView,
+  settle,
+  streakWithFreezes,
+  xpGain,
+  type AchievementView,
+} from './game'
+import { SHOP_ITEMS } from './game'
+import type { ShopItemId } from './gameConfig'
 import { analyzeSpeaking, analyzeSpeakingText, analyzeWriting, countWords, speakingScore } from './analyze'
 import { computeAllocation, type Allocation } from './planning'
 import { loadData, saveData } from './storage'
@@ -26,7 +43,7 @@ import type {
   UserSettings,
   WritingSubmission,
 } from './types'
-import { HISTORY_LIMITS, emptyData, todayKey } from './types'
+import { HISTORY_LIMITS, emptyData, nearestXpGoal, todayKey } from './types'
 
 // ---------- Actions ----------
 type Action =
@@ -48,6 +65,14 @@ type Action =
   | { type: 'onboarded'; at: number }
   | { type: 'level-set'; level: CefrLevel }
   | { type: 'reset' }
+  /** O'yin qatlamining yig'uvchisi (idempotent) — har o'zgarishdan keyin. */
+  | { type: 'game-settle' }
+  /** Dars (mashq bloki) yakuni: bonus XP + xatosiz dars hisobi. */
+  | { type: 'lesson-complete'; exercises: number; mistakes: number }
+  /** Do'kon xaridi (gem). */
+  | { type: 'game-buy'; item: ShopItemId }
+  /** "Double or Nothing" garovi. */
+  | { type: 'game-bet' }
 
 /** Kundalik faollikka daqiqa/sekund qo'shish (taymer hisobi uchun umumiy). */
 function addActivitySeconds(state: AppData, seconds: number, skill: Skill): AppData {
@@ -67,16 +92,33 @@ function addActivitySeconds(state: AppData, seconds: number, skill: Skill): AppD
   }
 }
 
+/**
+ * O'yin qatlamining yig'uvchisini chaqirish (yurak tiklash, quest/maqsad/
+ * sandiq/yutuq sovg'alari, qalqonlar). IDEMPOTENT — qayta-qaeta chaqirilsa
+ * natija o'zgarmaydi, shuning uchun har o'zgarishdan keyin xavfsiz.
+ */
+function settled(state: AppData): AppData {
+  return settle(state, Date.now(), todayKey())
+}
+
 /** Reducer — testlar uchun ham ochiq (vaqt hisobi regressiyaga qarshi). */
 export function reducer(state: AppData, action: Action): AppData {
   switch (action.type) {
     case 'hydrate':
-      return action.data
-    case 'settings':
-      return { ...state, settings: { ...state.settings, ...action.patch } }
+      // Ochilishda ham yig'ish: kechikkan kun uchun questlar yangilanadi,
+      // yuraklar tiklanadi, ochilgan yutuqlar beriladi.
+      return settled(action.data)
+    case 'settings': {
+      const patch = { ...action.patch }
+      // XP maqsadi FAQAT bosqich qiymati (`XP_GOAL_TIERS`) — bosqichdan tashqari
+      // son yuborilsa ENG YAQIN bosqichga qaytariladi.
+      if (patch.xpGoalXp !== undefined) patch.xpGoalXp = nearestXpGoal(patch.xpGoalXp)
+      return { ...state, settings: { ...state.settings, ...patch } }
+    }
     case 'attempt': {
       const r = action.record
       const key = todayKey()
+      const now = Date.now()
       const cur = state.activity[key] ?? { date: key, seconds: 0, attempts: 0, correct: 0, newWords: 0, reviewedWords: 0, skills: {} }
       // Ikki marta sanash qoidasi: taymer yurayotgan bo'lsa vaqt devor-soat
       // bo'yicha ALLOQACHON hisoblanadi — lekin FaqAT shu taymer sessiyasining
@@ -84,12 +126,19 @@ export function reducer(state: AppData, action: Action): AppData {
       // taymeri yurarida 300 sekundlik Grammatika mashqi) o'z sekundlarini
       // olib keladi va ULAR YO'QOLMASLIGI kerak (eski bug: grammar=0).
       const timerCoversThisSkill = state.timer.startedAt !== null && state.timer.skill === r.skill
-      return {
-        ...state,
-        attempts: [...state.attempts, r].slice(-HISTORY_LIMITS.attempts),
-        xp: state.xp + xpForAttempt(r.correct, r.difficulty, true),
+      // Avval kun/yurak holati yangilanadi (kecha qolib ketgan `today` hisobi
+      // bugungi mashqqa yozilib qolmasin).
+      const fresh = settle(state, now, key)
+      // XP: asos son `xpForAttempt`, byust faol bo'lsa ×2 (`game.ts::xpGain`).
+      const gained = xpGain(fresh.game, r.correct, r.difficulty, now)
+      const game = afterAttempt(fresh.game, r.correct, r.source, gained, now)
+      return settled({
+        ...fresh,
+        attempts: [...fresh.attempts, r].slice(-HISTORY_LIMITS.attempts),
+        xp: fresh.xp + gained,
+        game,
         activity: {
-          ...state.activity,
+          ...fresh.activity,
           [key]: {
             ...cur,
             attempts: cur.attempts + 1,
@@ -110,19 +159,27 @@ export function reducer(state: AppData, action: Action): AppData {
             },
           },
         },
-      }
+      })
     }
     case 'srs': {
       const prev = state.srs[action.vocabId] ?? initialSrsState()
       const next = review(prev, action.grade)
       const key = todayKey()
+      const now = Date.now()
       const cur = state.activity[key] ?? { date: key, seconds: 0, attempts: 0, correct: 0, newWords: 0, reviewedWords: 0, skills: {} }
       const firstLearn = prev.learnedAt === null && next.learnedAt !== null
-      return {
-        ...state,
-        srs: { ...state.srs, [action.vocabId]: next },
+      const fresh = settle(state, now, key)
+      return settled({
+        ...fresh,
+        srs: { ...fresh.srs, [action.vocabId]: next },
+        // O'yin tomoni: takros haqiqiy TAKROR bo'lsa kuns hisobiga yoziladi
+        // (quest mezoni), yuraklar 0 bo'lsa "takrorlash darsi" darvozasi
+        // olgatiladi — `HEART_PRACTICE_REVIEWS` yetganda 1 yurak qaytadi.
+        // Yangi so'zni BIRINCHI marta o'rganish takror sanalmaydi (faqat
+        // oldindan o'zlashtirilgan so'z qayta takrorlanadi).
+        game: afterReview(fresh.game, prev.learnedAt !== null, now),
         activity: {
-          ...state.activity,
+          ...fresh.activity,
           [key]: {
             ...cur,
             // Takrorlangan so'z IKKI marta hisoblanmaydi: `newWords` faqat
@@ -131,7 +188,7 @@ export function reducer(state: AppData, action: Action): AppData {
             reviewedWords: cur.reviewedWords + (firstLearn ? 0 : 1),
           },
         },
-      }
+      })
     }
     case 'srs-add':
       // "Lug'atimga saqlash": so'z takrorlash jadvaliga qo'shiladi (bugun
@@ -211,7 +268,9 @@ export function reducer(state: AppData, action: Action): AppData {
     }
     case 'merge-remote':
       // Boshqa foydalanuvchiga tegishli (kechikkan) javob bu holatga aralashmaydi.
-      return action.userId === state.userId ? mergeRemote(state, action.remote) : state
+      // Birlashtirishdan keyin ham yig'ish: serverdan kelgan yutuq/liga sovg'asi
+      // shu qurilmada ham berilishi kerak.
+      return action.userId === state.userId ? settled(mergeRemote(state, action.remote)) : state
     case 'day-complete': {
       const completedDays = state.path.completedDays.includes(action.dayId)
         ? state.path.completedDays
@@ -232,6 +291,20 @@ export function reducer(state: AppData, action: Action): AppData {
       return { ...state, settings: { ...state.settings, currentLevel: action.level } }
     case 'reset':
       return emptyData(state.userId)
+    case 'game-settle':
+      return settled(state)
+    case 'lesson-complete':
+      // Dars yakuni: bonus XP (`lessonComplete` o'zi qo'shadi — `xp` va
+      // `game.today.xp`), 0 xato bo'lsa "xatosiz dars" hisobi.
+      return settled(lessonComplete(state, action.exercises, action.mistakes))
+    case 'game-buy': {
+      const res = buyItem(state, action.item)
+      return res.ok ? settled(res.data) : state
+    }
+    case 'game-bet': {
+      const res = placeBet(state, streakWithFreezes(state, todayKey()))
+      return res.ok ? settled(res.data) : state
+    }
   }
 }
 
@@ -305,6 +378,8 @@ export interface StoreValue {
   evidence: SkillEvidence[]
   promotion: ReturnType<typeof evaluateLevelPromotion>
   streak: number
+  /** Zanjir + qalqon (freeze) kunlari hisobga olingan holda (o'yin ko'rsatkichi). */
+  streakProtected: number
   learnedCount: number
   /** Asosiy lug'at bo'yicha "o'rganilgan/jami"; matn (glossariy) so'zlari alohida belgilanadi. */
   vocabSummary: string
@@ -312,6 +387,17 @@ export interface StoreValue {
   timerElapsed: number
   timerLabel: string
   dayProgress: ReturnType<typeof planProgress>
+  /* --- O'yin qatlami (Duolingo mexanikasi, `src/lib/game.ts`) --- */
+  /** Yuraklar holati (son, tiklanish vaqti, darvoza, byust). */
+  hearts: ReturnType<typeof heartsView>
+  /** Kunlik XP maqsadi (bugungi XP / tanlangan bosqich). */
+  goal: ReturnType<typeof goalView>
+  /** Bugungi 3 quest holati (kun kalitiga qarab — ikkala qurilmada bir xil). */
+  quests: ReturnType<typeof questView>
+  /** Yutuqlar (daraja, mezon qiymati, keyingi bosqich). */
+  achievements: AchievementView[]
+  /** Do'kon ro'yxati (narxlar bilan) — xarid qilish mumkinmi, gem yetadimi. */
+  shop: typeof SHOP_ITEMS
   actions: {
     setSettings(patch: Partial<UserSettings>): void
     recordAttempt(input: { exercise: Exercise; correct: boolean; partial: number; given: string; secondsSpent: number; source: AttemptSource }): void
@@ -332,6 +418,14 @@ export interface StoreValue {
     markOnboarded(): void
     setLevel(level: CefrLevel): void
     resetAll(): void
+    /** Dars (mashq bloki) yakunlandi: bonus XP + xatosiz dars hisobi. */
+    completeLesson(exercises: number, mistakes: number): void
+    /** Do'kon xaridi. Natija: ok/sabab (gem yetmasa, chegarada bo'lsa). */
+    buy(item: ShopItemId): { ok: boolean; reasonUz: string | null }
+    /** "Double or Nothing" garovi (streak 7 kun o'ssa gem qaytadi). */
+    placeStreakBet(): { ok: boolean; reasonUz: string | null }
+    /** O'yin hisoblarini qayta yig'ish (vaqt o'tishi bilan — yurak/quest). */
+    settleGame(): void
     /** Server bilan sinxronlash: avval serverdagisi birlashtiriladi, so'ng butun navbat yuboriladi. */
     sync(): Promise<SyncOutcome>
   }
@@ -411,6 +505,35 @@ export function StoreProvider({
     const iv = window.setInterval(() => setTick((t) => (t + 1) % 1_000_000), 1000)
     return () => window.clearInterval(iv)
   }, [timerRunning])
+
+  // O'yin qatlami VAQTGA bog'liq: yuraklar tiklanadi, byust tugaydi, kun
+  // o'zgarsa questlar yangilanadi. Shuning uchun bir daqiqada bir marta:
+  //  1) `game-settle` — hisoblarni yig'adi (`settle()` hech narsa o'zgarmasa
+  //     SAYO BILAN BIR XIL obyek qaytaradi → saqlash navbati qo'zg'almaydi);
+  //  2) `minuteTick` — "keyingi yurak: 12 daqiqa" yozuvi ham yangilanishi
+  //     uchun (holat o'zgarmasa ham matn o'zgaradi).
+  // DAQIQA chegarasi — ekranda sekund ko'rsatilmaydi; eski kamchilik bundan
+  // ham og'ir edi: taymer yurmaғanda ham har SONIYADA qayta chizilardi.
+  const [minuteTick, setMinuteTick] = useState(0)
+  useEffect(() => {
+    if (!ready || loadedFor.current !== userId) return
+    const iv = window.setInterval(() => {
+      dispatch({ type: 'game-settle' })
+      setMinuteTick((t) => (t + 1) % 1_000_000)
+    }, 60_000)
+    return () => window.clearInterval(iv)
+  }, [ready, userId])
+
+  // Saxifa ko'zga tashlanganda (telefon qulfi, boshqa tab) ham yig'ish —
+  // oradan soatlar o'tgan bo'lishi mumkin.
+  useEffect(() => {
+    if (!ready) return
+    const onVis = () => {
+      if (document.visibilityState === 'visible') dispatch({ type: 'game-settle' })
+    }
+    document.addEventListener('visibilitychange', onVis)
+    return () => document.removeEventListener('visibilitychange', onVis)
+  }, [ready])
 
   // Onlayn/offlayn kuzatuvi
   useEffect(() => {
@@ -543,6 +666,30 @@ export function StoreProvider({
   const setLevel = useCallback((level: CefrLevel) => dispatch({ type: 'level-set', level }), [])
   const resetAll = useCallback(() => dispatch({ type: 'reset' }), [])
 
+  // ---- O'yin qatlami amallari ----
+  const completeLesson = useCallback((exercises: number, mistakes: number) => {
+    dispatch({ type: 'lesson-complete', exercises, mistakes })
+  }, [])
+
+  // Xarid/garov natijasi reducerda belgilanadi; bu yerda SABAB ochiq
+  // qaytariladi (gem yetmasa / chegarada bo'lsa) — foydalanuvchi tushunadi.
+  const buyAction = useCallback<StoreValue['actions']['buy']>(
+    (item) => {
+      const res = buyItem(data, item)
+      if (res.ok) dispatch({ type: 'game-buy', item })
+      return { ok: res.ok, reasonUz: res.reasonUz }
+    },
+    [data],
+  )
+
+  const placeStreakBet = useCallback<StoreValue['actions']['placeStreakBet']>(() => {
+    const res = placeBet(data, streakWithFreezes(data, todayKey()))
+    if (res.ok) dispatch({ type: 'game-bet' })
+    return { ok: res.ok, reasonUz: res.reasonUz }
+  }, [data])
+
+  const settleGame = useCallback(() => dispatch({ type: 'game-settle' }), [])
+
   // Bir vaqtda bitta sinxron (tugma ikki marta bosilsa yoki logout paytida).
   const syncInFlight = useRef<Promise<SyncOutcome> | null>(null)
   const sync = useCallback(async (): Promise<SyncOutcome> => {
@@ -591,6 +738,8 @@ export function StoreProvider({
       .map((a) => a.date)
     return streakFor(days, todayKey())
   }, [data.activity])
+  // Zanjir + qalqon kunlari (o'yin ko'rsatkichi — Header/Dashboard'da).
+  const streakProtected = useMemo(() => streakWithFreezes(data, todayKey()), [data])
 
   // ESKI BUG: Reading'dagi glossariy so'zlari lug'at ro'yxatida bo'lmasa
   // ular uchun SUN'IY SRS idsi (`<passage>-gloss:<word>`) yasalar edi.
@@ -631,6 +780,21 @@ export function StoreProvider({
     return { elapsed: e, label: formatDuration(e), progress: planProgress(todaySeconds + e, planned) }
   }, [data.timer, tick, allocation.total, todaySeconds])
 
+  // --- O'yin qatlami ko'rinishlari ---
+  // `minuteTick` ixtiyoriy qatorda ishlatiladi: daqiqada bir marta qayta
+  // hisoblanadi (yurak/byust countdowni uchun).
+  const gameViews = useMemo(() => {
+    void minuteTick
+    const now = Date.now()
+    return {
+      hearts: heartsView(data, now),
+      goal: goalView(data),
+      quests: questView(data),
+      achievements: achievementViews(data, streakProtected),
+    }
+    // `data` o'zgarganda qayta hisoblanadi; daqiqada bir marta — minuteTick.
+  }, [data, minuteTick, streakProtected])
+
   const value: StoreValue = {
     data,
     ready,
@@ -639,12 +803,18 @@ export function StoreProvider({
     evidence,
     promotion,
     streak,
+    streakProtected,
     learnedCount,
     vocabSummary,
     dueCount,
     timerElapsed: timerView.elapsed,
     timerLabel: timerView.label,
     dayProgress: timerView.progress,
+    hearts: gameViews.hearts,
+    goal: gameViews.goal,
+    quests: gameViews.quests,
+    achievements: gameViews.achievements,
+    shop: SHOP_ITEMS,
     actions: {
       setSettings,
       recordAttempt,
@@ -662,6 +832,10 @@ export function StoreProvider({
       markOnboarded,
       setLevel,
       resetAll,
+      completeLesson,
+      buy: buyAction,
+      placeStreakBet,
+      settleGame,
       sync,
     },
   }

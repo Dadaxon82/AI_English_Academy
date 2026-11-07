@@ -229,6 +229,13 @@ function DayCard({
     setScore(s)
     setPhase('done')
     actions.stopTimer()
+    // Bo'lim testi ham dars hisoblanadi: bonus XP va (0 xato bo'lsa) "xatosiz
+    // dars". Yurak bu manbada JARIMA QILINMAYDI (`HEART_FREE_SOURCES`), lekin
+    // bonus beriladi — shuning uchun aynan shu yerda chaqiriladi.
+    actions.completeLesson(
+      Object.keys(acc.current).length,
+      Object.values(acc.current).filter((r) => !r.correct).length,
+    )
     if (s >= test.passScore) actions.completeDay(day.id, test.id, s)
   }
 
@@ -391,6 +398,7 @@ function DayCard({
                   total={total}
                   onNext={onNext}
                   prevResult={lastResult && !lastResult.correct ? lastResult : null}
+                  heartFree
                 />
               )}
 

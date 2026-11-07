@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    O'yin belgisi — geometria veb `src/components/icons.tsx` dag `chest`
+    yo'llaridan SO'ZMA-SO'Z nusxa (test: `src/test/game-icons.test.ts`).
+    Rang: sandiq —haftalik sovrin, shuning uchun mavjud `@color/star`
+    (veb `star (CSS)`). SOLID ro'yxatida: fill + stroke.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24"
+    android:tint="@color/star">
+    <path
+        android:pathData="M4 8.5h16V19H4z"
+        android:fillColor="@color/star"
+        android:strokeColor="@color/star"
+        android:strokeWidth="1"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <path
+        android:pathData="M4 8.5 6 4.5h12l2 4"
+        android:fillColor="@color/star"
+        android:strokeColor="@color/star"
+        android:strokeWidth="1"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <path
+        android:pathData="M10.5 8.5V12h3V8.5"
+        android:fillColor="@color/star"
+        android:strokeColor="@color/star"
+        android:strokeWidth="1"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+</vector>

@@ -19,7 +19,6 @@ import com.dadaxon.aienglishacademy.domain.SrsGrade
 import com.dadaxon.aienglishacademy.domain.initialSrsState
 import com.dadaxon.aienglishacademy.domain.review
 import com.dadaxon.aienglishacademy.domain.streakFor
-import com.dadaxon.aienglishacademy.domain.xpForAttempt
 import com.dadaxon.aienglishacademy.sync.SyncEngine
 import com.dadaxon.aienglishacademy.sync.SyncStats
 import com.google.gson.Gson
@@ -58,6 +57,12 @@ data class StoreState(
     val lastSyncMessage: String? = null,
     /** Dashboard banneri: daraja tavsiyasi (bir marta ko'rsatiladi) */
     val levelUpHint: String? = null,
+    /**
+     * So'nggi o'yin amali SABABI (gem yetmadi / yuraklar to'la / chegarada).
+     * Vebda `buyItem` sababni bevosita chaqiruvchiga qaytaradi; mobil ekran
+     * StateFlow orqali o'qiydi — muvaffaqiyatli amalda `null` bo'ladi.
+     */
+    val gameMessage: String? = null,
 )
 
 /** Har ekrandagi tugmalar shu tilda yoziladi — yagona o'tish nuqtasi. */
@@ -78,6 +83,23 @@ sealed class StoreAction {
     data class Diagnostic(val at: Long, val level: String?, val labelUz: String, val confidence: Double) : StoreAction()
     data class Onboarded(val at: Long) : StoreAction()
     data class LevelSet(val level: String) : StoreAction()
+
+    /* ---- O'yin qatlami (veb: `lesson-complete`, `game-buy`, `game-bet`,
+       `game-settle`). Mobil ekranda ham XP bonusi, yurak, quest va gemlar
+       yurishi uchun shu harakatlar ishlatiladi. ---- */
+
+    /** Dars (mashq bloki) yakuni: bonus XP + xatosiz dars hisobi. */
+    data class LessonComplete(val exercises: Int, val mistakes: Int) : StoreAction()
+
+    /** Do'kon xaridi (gem). */
+    data class GameBuy(val item: String) : StoreAction()
+
+    /** "Double or Nothing" garovi. */
+    object GameBet : StoreAction()
+
+    /** Vaqtga bog'liq hisoblarni yig'ish (yurak tiklanishi, quest yangilanishi). */
+    object GameSettle : StoreAction()
+
     object Reset : StoreAction()
 }
 
@@ -118,6 +140,18 @@ class AppStore(private val context: Context, private val container: AppContainer
                 timer = snap.copy(elapsedSec = snap.elapsedSec + extra.coerceIn(0, MAX_CONTINUOUS_SEC), startedAtRealtime = null),
             )
             persistTimer(_state.value.timer)
+        }
+        // O'yin qatlami VAQTGA bog'liq: yuraklar tiklanadi, XP byust tugaydi, kun
+        // o'zgarsa questlar yangilanadi, ochilgan yutuqlar beriladi. Vebda buni
+        // daqiqalik `setInterval` + sahifa ko'zga tashlanganda `game-settle`
+        // bajaradi (`store.tsx`); mobilda shu fon sikli. `settle()` idempotent va
+        // o'zgarish bo'lmasa SAYO BILAN BIR XIL obyek qaytaradi — shuning uchun
+        // keraksiz saqlash/sinxron navbati qo'zg'almaydi.
+        scope.launch {
+            while (true) {
+                delay(SETTLE_INTERVAL_MS)
+                runOnMain { dispatch(StoreAction.GameSettle) }
+            }
         }
     }
 
@@ -199,55 +233,45 @@ class AppStore(private val context: Context, private val container: AppContainer
      */
     private fun reduceLocal(s: StoreState, a: StoreAction): StoreState {
         val d = s.data
+        // O'yin qatlami vaqqtga bog'liq (yurak tiklanadi, kun o'zgarsa questlar
+        // yangilanadi), shuning uchun harakatlar BIR xil `now`/`key` bilan
+        // ishlaydi — veb `store.tsx` (`Date.now()`, `todayKey()`) ham shunday.
+        val now = System.currentTimeMillis()
+        val key = todayKey(now)
         return when (a) {
-            is StoreAction.Hydrate -> s.copy(data = a.data)
+            // Ochilishda ham yig'ish (veb: `case 'hydrate'`): kechikkan kun uchun
+            // questlar yangilanadi, yuraklar tiklanadi, ochilgan yutuqlar beriladi.
+            is StoreAction.Hydrate -> s.copy(data = GameOps.settle(a.data, now, key))
 
-            is StoreAction.Settings -> s.copy(
-                data = d.copy(settings = a.patch),
+            // XP maqsadi FAQAT bosqich qiymati — bosqichdan tashqari son ENG
+            // YAQIN bosqichga qaytariladi (veb: `nearestXpGoal`; DB CHECK ham
+            // boshqa sonni rad etadi).
+            is StoreAction.Settings -> s.copy(data = GameOps.settings(d, a.patch))
+
+            is StoreAction.Attempt -> s.copy(
+                data = GameOps.attempt(
+                    d,
+                    a.record,
+                    key,
+                    timerCoversSkill = s.timer.startedAtRealtime != null && s.timer.skill == a.record.skill,
+                    now = now,
+                ),
             )
-
-            is StoreAction.Attempt -> {
-                val r = a.record
-                val key = todayKey()
-                val cur = d.activity[key] ?: DayActivity(date = key)
-                // Taymer yuraridagi ko'nikma: vaqt ALLQACHON devor-soat bo'yicha
-                // hisoblanadi — ikki marta sanamaslik uchun qo'shilmaydi.
-                val timerCovers = s.timer.startedAtRealtime != null && s.timer.skill == r.skill
-                val secs = r.secondsSpent.coerceAtLeast(0)
-                val act = cur.copy(
-                    attempts = cur.attempts + 1,
-                    correct = cur.correct + (if (r.correct) 1 else 0),
-                    seconds = if (timerCovers) cur.seconds else cur.seconds + secs,
-                    skills = LinkedHashMap(cur.skills).apply {
-                        put(r.skill, if (timerCovers) cur.skills[r.skill] ?: 0 else (cur.skills[r.skill] ?: 0) + secs)
-                    },
-                )
-                s.copy(
-                    data = d.copy(
-                        attempts = (d.attempts + r).takeLast(AppData.LIMIT_ATTEMPTS),
-                        xp = d.xp + xpForAttempt(r.correct, r.difficulty, true),
-                        activity = activityWith(d, key, act),
-                    ),
-                )
-            }
 
             is StoreAction.Srs -> {
                 val prev = d.srs[a.vocabId] ?: initialSrsState()
                 val next = review(prev, a.grade)
-                val firstLearn = prev.learnedAt == null && next.learnedAt != null
-                val key = todayKey()
-                val cur = d.activity[key] ?: DayActivity(date = key)
                 s.copy(
-                    data = d.copy(
-                        srs = LinkedHashMap(d.srs).apply { put(a.vocabId, next) },
-                        activity = activityWith(
-                            d,
-                            key,
-                            cur.copy(
-                                newWords = cur.newWords + (if (firstLearn) 1 else 0),
-                                reviewedWords = cur.reviewedWords + (if (firstLearn) 0 else 1),
-                            ),
-                        ),
+                    data = GameOps.srs(
+                        d,
+                        a.vocabId,
+                        next,
+                        firstLearn = prev.learnedAt == null && next.learnedAt != null,
+                        // Birinchi marta o'rganish TAKROR sanalmaydi (quest
+                        // mezoni va yurak hisobi shu qoidaga bo'ysunadi).
+                        reviewed = prev.learnedAt != null,
+                        key = key,
+                        now = now,
                     ),
                 )
             }
@@ -337,7 +361,34 @@ class AppStore(private val context: Context, private val container: AppContainer
 
             is StoreAction.LevelSet -> s.copy(data = d.copy(settings = d.settings.copy(currentLevel = a.level)))
 
-            is StoreAction.Reset -> s.copy(data = AppData.empty(d.userId), timer = TimerSnapshot())
+            /* ---- O'yin qatlami (veb `store.tsx` bandlari bilan bir xil) ---- */
+
+            is StoreAction.LessonComplete -> s.copy(
+                data = GameOps.lesson(d, a.exercises, a.mistakes, key, now),
+            )
+
+            // Xarid/garov natijasi: muvaffaqiyatsiz bo'lsa SABAB ochiq saqlanadi
+            // (`gameMessage`) — foydalanuvchi nega olmaganini tushunadi, holat esa
+            // o'zgarmaydi (veb: `res.ok ? settled(res.data) : state`).
+            is StoreAction.GameBuy -> {
+                val res = GameOps.buy(d, a.item, key, now)
+                if (res.ok) s.copy(data = res.data, gameMessage = null) else s.copy(gameMessage = res.reasonUz)
+            }
+
+            is StoreAction.GameBet -> {
+                val res = GameOps.bet(d, key, now)
+                if (res.ok) s.copy(data = res.data, gameMessage = null) else s.copy(gameMessage = res.reasonUz)
+            }
+
+            // Vaqt o'tishi bilan ham yig'ish: yurak tiklanadi, byust tugaydi, kun
+            // o'zgarsa questlar yangilanadi (veb: daqiqada bir marta + sahifa
+            // ko'zga tashlanganda `game-settle`).
+            is StoreAction.GameSettle -> {
+                val next = GameOps.settle(d, now, key)
+                if (next === d) s else s.copy(data = next)
+            }
+
+            is StoreAction.Reset -> s.copy(data = AppData.empty(d.userId), timer = TimerSnapshot(), gameMessage = null)
         }
     }
 
@@ -469,6 +520,9 @@ class AppStore(private val context: Context, private val container: AppContainer
     companion object {
         const val SAVE_DEBOUNCE_MS = 500L
         const val SYNC_DEBOUNCE_MS = 3000L
+
+        /** O'yin qatlamini yig'ish oralig'i — vebdagi daqiqalik interval bilan bir xil. */
+        const val SETTLE_INTERVAL_MS = 60_000L
 
         /** Xavfsiz chegara — uxlash oralig'i "bajarilgan vaqt" bo'lib qolmasin. */
         const val MAX_CONTINUOUS_SEC = 3 * 3600

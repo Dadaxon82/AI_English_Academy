@@ -8,6 +8,20 @@ package com.dadaxon.aienglishacademy.data
 
 data class UserSettings(
     val dailyMinutes: Int = 90,
+    /**
+     * Kundalik XP maqsadi (veb: `xpGoalXp`). `GameConfig.XP_GOAL_TIERS` dagi
+     * qiymatlardan biri — ro'yxat tashqarisidagi son `migrate()` orqali ENG
+     * YAQIN bosqichga qaytariladi (DB `CHECK (50,100,200,300,500)` ham shu
+     * sonlarni kutadi). Daqiqa rejasi (`dailyMinutes`) bilan IKKITA alohida
+     * maqsad: birinchi vaqtni, ikkinchisi faollik bahosini olchaydi.
+     */
+    val xpGoalXp: Int = GameConfig.XP_GOAL_DEFAULT_XP,
+    /**
+     * Yuraklar tizimi yoqilganmi (veb: `heartsEnabled`). Standart YOQILGAN —
+     * o'chirilsa darvoza va jarimalar butunlay o'chadi (`heartsView`,
+     * `heartsBlocked` bu kalitni hurmat qiladi).
+     */
+    val heartsEnabled: Boolean = true,
     val currentLevel: String = Levels.A1,
     val targetLevel: String = Levels.C1,
     /** YYYY-MM-DD yoki null */
@@ -240,6 +254,99 @@ data class LearningPath(
     val currentDayId: String = "a1-day-01",
 )
 
+/* ------------------------- O'yin qatlami (game) ----------------------- */
+
+/**
+ * O'yin qatlami holati — veb `src/lib/types.ts::GameState` ning so'zma-so'z
+ * nusxasi. Barcha sonlar `GameConfig` da (veb: `src/lib/gameConfig.ts`,
+ * manifest: `res/raw/game_manifest.json`).
+ *
+ * Sahifa/sinxron uchun: bu obyekt `learning_plans.plan.game` JSON'ida
+ * saqlanadi — qo'shimcha jadval FAQAT liga uchun (`weekly_xp`). JSON kalitlari
+ * camelCase (veb bilan bir xil), chunki u jsonb ichida yuradi.
+ */
+data class GameState(
+    val version: Int = GameConfig.GAME_DATA_VERSION,
+    /* --- yuraklar --- */
+    val hearts: Int = GameConfig.HEARTS_MAX,
+    /** Yuraklar oxirgi o'zgargan payt — oradan `HEART_REFILL_MINUTES` o'tsa bittasi qaytadi. */
+    val heartsAt: Long = 0L,
+    /** Yuraklar tugaganida: qancha SRS takrorlash keyingi yurakni qaytardi. */
+    val practiceReviews: Int = 0,
+    /** Ketma-ket to'g'ri javoblar (Energy tizimidagi kabi yurak qaytaradi). */
+    val combo: Int = 0,
+    /* --- gemlar, byust, himoya --- */
+    val gems: Int = 0,
+    val freezes: Int = 0,
+    /** Faol 2× XP byust tugash payti (0 — yo'q). */
+    val boostUntil: Long = 0L,
+    /** "Double or Nothing" garovi (Duolingo: 50 gem → 7 kun streak bo'lsa 100 gem). */
+    val bet: BetState? = null,
+    /** Qaysi kunlar qalqon (freeze) bilan qoplangan — uzilmagan zanjir uchun. */
+    val frozenDays: List<String> = emptyList(),
+    /* --- questlar va yutuqlar --- */
+    val today: TodayCounters = TodayCounters(),
+    val questsDay: String = "",
+    val questsDone: List<QuestAward> = emptyList(),
+    val questsTotal: Int = 0,
+    /** Kunlik maqsad sovg'asi QAYSI kunda berilgan (kuniga bir marta). */
+    val goalRewardedDay: String = "",
+    val achievementLevels: Map<String, Int> = emptyMap(),
+    /** Xatosiz tugatilgan darslar (JAMI — yutuq mezoni). */
+    val perfectLessonsTotal: Int = 0,
+    /** Bajarilgan haftalik sandiq haftalari (takror ochilmasin uchun). */
+    val chestsWeeks: List<String> = emptyList(),
+    /** So'nggi o'qilgan liga tablasi (offline — oxirgi snapshot). */
+    val league: LeagueSnapshot? = null,
+)
+
+/** Kun ichida yig'iladigan o'yin hisoblari (questlar shu hissadan tekshiriladi). */
+data class TodayCounters(
+    val day: String = "",
+    /** Bugun berilgan XP (byust va bonuslar BILAN — `attempts`dan qayta hisoblanmaydi). */
+    val xp: Int = 0,
+    val attempts: Int = 0,
+    val reviews: Int = 0,
+    val perfectLessons: Int = 0,
+)
+
+/** Bir kunda beriladigan quest holati (gem avtomatik beriladi). */
+data class QuestAward(val id: String, val at: Long)
+
+/** Garov holati (veb: `bet`). */
+data class BetState(val startDay: String, val streakAtStart: Int, val gems: Int)
+
+/** Liga tablasi qatori (veb: `LeagueRow`). */
+data class LeagueRow(val userId: String, val name: String, val xp: Int)
+
+/** Liga tablalarining SAQLANGAN nusxasi — internet bo'lmasa oxirgi holat ko'rsatiladi. */
+data class LeagueSnapshot(
+    /** Hafta boshi (poneshanba) — serverdagi `week_start` bilan bir xil. */
+    val weekStart: String,
+    val leagueId: String,
+    /** Bizning o'rnimiz (1 dan sanaladi) — jadvalda biz yo'q bo'lsak 0. */
+    val rank: Int,
+    val boardSize: Int,
+    /** Ro'yxat READ qilingan payt (epoch ms). */
+    val at: Long,
+    val entries: List<LeagueRow> = emptyList(),
+    /** Hafta yakunlanib, sovg'a BERILGANMI (takror berilmasin uchun). */
+    val prizeClaimed: Boolean = false,
+)
+
+/**
+ * O'yin holatining boshlang'ichi — `day` buguniga qo'yiladi (veb `emptyGame`).
+ * `heartsAt` — hozir (veb: `Date.now()`), ya'ni tiklanish hisobi shu paytdan.
+ */
+fun emptyGame(day: String = todayKey(), now: Long = System.currentTimeMillis()): GameState =
+    GameState(
+        version = GameConfig.GAME_DATA_VERSION,
+        hearts = GameConfig.HEARTS_MAX,
+        heartsAt = now,
+        today = TodayCounters(day = day),
+        questsDay = day,
+    )
+
 /* ------------------------------- AppData ----------------------------- */
 
 data class AppData(
@@ -257,9 +364,18 @@ data class AppData(
     val xp: Int = 0,
     val streak: Streak = Streak(),
     val badges: List<BadgeAward> = emptyList(),
+    /** O'yin qatlami (yuraklar, gemlar, questlar, ligalar). */
+    val game: GameState = emptyGame(),
     val path: LearningPath = LearningPath(),
     val diagnostic: DiagnosticResult? = null,
     val onboardedAt: Long? = null,
+    /**
+     * `profiles.display_name` ning qurilmadagi KACHI — liga tablasida o'z
+     * ismimiz ko'rinishi uchun (`weekly_xp.display_name`ga yoziladi). Serverdan
+     * o'qiladi; bo'sh bo'lsa liga ekrani "Siz" deb ko'rsatadi (ism ixtir
+     * qilinmaydi).
+     */
+    val profileName: String = "",
     val updatedAt: Long = 0L,
 ) {
     companion object {

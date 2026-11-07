@@ -135,6 +135,14 @@ class SupabaseClient(
         const val WRITING_SUBMISSIONS = "writing_submissions"
         const val SPEAKING_SESSIONS = "speaking_sessions"
         const val MOCK_EXAM_ATTEMPTS = "mock_exam_attempts"
+        /**
+         * Haftalik XP ligasi (`supabase/migrations/0004_weekly_xp.sql`).
+         * PK — `(user_id, week_start)`: hafta davomida bitta qator yangilanadi.
+         */
+        const val WEEKLY_XP = "weekly_xp"
+
+        /** `profiles` — hisob qatori (`display_name` ligaga kerak). */
+        const val PROFILES = "profiles"
 
         /** `on_conflict` — PostgREST'ga konflikt kalitini ko'rsatish (0001_init.sql PKlari). */
         val ON_CONFLICT: Map<String, String> = mapOf(
@@ -146,6 +154,27 @@ class SupabaseClient(
             WRITING_SUBMISSIONS to "id",
             SPEAKING_SESSIONS to "id",
             MOCK_EXAM_ATTEMPTS to "id",
+            WEEKLY_XP to "user_id,week_start",
+        )
+
+        /**
+         * Foydalanuvchining SHAXSIY jadvallari — veb `sync.ts::PERSONAL_TABLES`
+         * bilan bir xil ro'yxat ("Barcha ma'lumotni o'chirish" shularni
+         * tozalaydi). `profiles` qatori qoldiriladi — u hisobning o'zi (auth
+         * bilan bog'langan). Ro'yxatga yangi jadval qo'shilsa, veb tomondagi
+         * ro'yxat ham yangilanishi shart (aks holda bir qurilmada o'chirilgan
+         * ma'lumot ikkinchisidan qaytib keladi).
+         */
+        val PERSONAL_TABLES: List<String> = listOf(
+            EXERCISE_ATTEMPTS,
+            USER_VOCABULARY,
+            DAILY_ACTIVITY,
+            WRITING_SUBMISSIONS,
+            SPEAKING_SESSIONS,
+            MOCK_EXAM_ATTEMPTS,
+            LEARNING_PLANS,
+            USER_SETTINGS,
+            WEEKLY_XP,
         )
     }
 

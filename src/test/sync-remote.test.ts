@@ -99,7 +99,8 @@ describe('syncNow — bitta sinxron butun navbatni yuboradi', () => {
     expect(await loadQueue(UID)).toHaveLength(0)
     expect(server.rows('exercise_attempts')).toHaveLength(200)
     // Jadval bo'yicha bulk so'rovlar: sozlamalar + reja + 2 × 100 urinish
-    expect(server.calls.filter((c) => c.op === 'upsert')).toHaveLength(4)
+    // + haftalik XP (liga — 0004 migration, 2026-11-07)
+    expect(server.calls.filter((c) => c.op === 'upsert')).toHaveLength(5)
   })
 
   it('serverda bor yozuvlar qayta yuborilmaydi — faqat o‘zgargani', async () => {

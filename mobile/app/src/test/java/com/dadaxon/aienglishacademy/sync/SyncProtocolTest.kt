@@ -166,13 +166,14 @@ class SyncProtocolTest {
             speaking = listOf(SpeakingSession("s1", "t", durationSec = 2, createdAt = 7L)),
         )
         val n1 = p.queueAllData(data)
-        // 2 (settings+plan) + attempt + srs + activity + writing + speaking
-        assertEquals(7, n1)
-        assertEquals(7, ls.queueSize("u-1"))
+        // 2 (settings+plan) + weekly_xp (0004 liga qatori — har holatda bitta
+        // qator yuboriladi) + attempt + srs + activity + writing + speaking
+        assertEquals(8, n1)
+        assertEquals(8, ls.queueSize("u-1"))
         // Ikkinchi chaqiruv: navbat kalitlari bir xil → shishmaydi (veb bugi).
         val n2 = p.queueAllData(data)
-        assertEquals(7, n2)
-        assertEquals(7, ls.queueSize("u-1"))
+        assertEquals(8, n2)
+        assertEquals(8, ls.queueSize("u-1"))
     }
 
     @Test

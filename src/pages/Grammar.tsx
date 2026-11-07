@@ -225,6 +225,11 @@ function TopicDetail({ topic, onBack }: { topic: GrammarTopic; onBack: () => voi
   const onNext = () => {
     const answeredCount = Object.keys(answered).length
     if (answeredCount >= total) {
+      // Dars yakuni — o'yin qatlami: bonus XP va (0 xato bo'lsa) "xatosiz
+      // dars" hisobi `lessonComplete` ichida qo'shiladi. Xatolar sanoqi
+      // shu yerda hisoblanadi (`wrong` konstanti quyida — olddan havola
+      // qilmaslik uchun `answered` dan bevosita sanaymiz).
+      actions.completeLesson(answeredCount, Object.values(answered).filter((r) => !r.correct).length)
       setFinished(true)
       return
     }

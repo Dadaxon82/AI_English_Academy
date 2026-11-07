@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    O'yin belgisi — geometria veb `src/components/icons.tsx` dag `lock`
+    yo'llaridan SO'ZMA-SO'Z nusxa (test: `src/test/game-icons.test.ts`).
+    Rang: qulf — yopiq dars/yutuq, shuning uchun neytral kulrang
+    `@color/text_secondary_light` (ixtir qilingan hex YO'Q). SOLID ro'yxatida.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24"
+    android:tint="@color/text_secondary_light">
+    <path
+        android:pathData="M7.5 10V8a4.5 4.5 0 0 1 9 0v2"
+        android:fillColor="@color/text_secondary_light"
+        android:strokeColor="@color/text_secondary_light"
+        android:strokeWidth="1"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <path
+        android:pathData="M5.5 10h13v9.5h-13z"
+        android:fillColor="@color/text_secondary_light"
+        android:strokeColor="@color/text_secondary_light"
+        android:strokeWidth="1"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+</vector>

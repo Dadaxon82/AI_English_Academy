@@ -14,6 +14,8 @@
 import { getSupabase, supabaseConfigured } from './supabase'
 import { enqueueMany, dedupeKey, loadQueue, loadSynced, saveSynced, updateQueue, type QueueItem } from './storage'
 import { CEFR_LEVELS, CORE_SKILLS, SKILLS, type CefrLevel, type CoreSkill, type Skill } from '../content/types'
+import { leagueWeek, normalizeGame } from './game'
+import { LEAGUE_BOARD_SIZE, leagueById } from './gameConfig'
 import type { RemoteSnapshot } from './merge'
 import { START_EASE, type SrsState } from './srs'
 import type {
@@ -21,6 +23,7 @@ import type {
   AttemptRecord,
   AttemptSource,
   DayActivity,
+  GameState,
   MockExamAttempt,
   SpeakingAnalysis,
   SpeakingSession,
@@ -28,7 +31,7 @@ import type {
   WritingAnalysis,
   WritingSubmission,
 } from './types'
-import { clampDailyMinutes } from './types'
+import { clampDailyMinutes, nearestXpGoal } from './types'
 
 export type NetState = 'online' | 'offline' | 'unknown'
 
@@ -65,6 +68,11 @@ export function toQueueItems(data: AppData): Omit<QueueItem, 'id' | 'tries'>[] {
       // yuborilmasa boshqa qurilmada (mobil ilovada) yoqilgan/o'chirilgan
       // holat yo'qolardi — ikki tomonlama sinxron shart.
       motion_enabled: data.settings.motionEnabled,
+      // O'yin qatlami sozlamalari — `supabase/migrations/0004_weekly_xp.sql`da
+      // qo'shilgan ustunlar. `xp_goal_xp` FAQAT bosqich qiymati (DB CHECK ham
+      // shuni tekshiradi), `hearts_enabled` — yuraklar tizimi.
+      xp_goal_xp: nearestXpGoal(data.settings.xpGoalXp),
+      hearts_enabled: data.settings.heartsEnabled,
     },
   })
 
@@ -85,9 +93,41 @@ export function toQueueItems(data: AppData): Omit<QueueItem, 'id' | 'tries'>[] {
       current_level: data.settings.currentLevel,
       target_level: data.settings.targetLevel,
       diagnostic_level: data.diagnostic?.level ?? null,
-      plan: { path: data.path, xp: data.xp, diagnostic: data.diagnostic, onboardedAt: data.onboardedAt },
+      // `plan` — qurilmalar orasidagi yagona holat tashuvchisi:
+      //   path/xp/diagnostic/onboardedAt (eski) + game (o'yin qatlami) +
+      //   badges (yutuq nishonlari). `game.league` SAQLANMAYDI — liga jadvali
+      //   `weekly_xp`dan o'qiladi (qator katta bo'lib, har yozuvda ko'chib
+      //   yurmasin).
+      plan: {
+        path: data.path,
+        xp: data.xp,
+        diagnostic: data.diagnostic,
+        onboardedAt: data.onboardedAt,
+        badges: data.badges,
+        game: { ...data.game, league: null },
+      },
     },
   })
+
+  // ---- Haftalik XP qatori (liga) — `0004_weekly_xp.sql` ----
+  // Son `weeklyXp()`dan: urinishlardan aniq hisoblanadi, shuning uchun ikkala
+  // mijoz BIR XIL son yuboradi (XP byusti va dars bonuslari KIRMAYDI — ular
+  // qurilmaga bog'liq, liga jadvaliga aralashmaydi).
+  {
+    const wk = leagueWeek(data)
+    items.push({
+      table: 'weekly_xp',
+      op: 'upsert',
+      at: Date.now(),
+      payload: {
+        user_id: uid,
+        week_start: wk.weekStart,
+        xp: wk.xp,
+        league_id: wk.leagueId,
+        display_name: (data.profileName || '').slice(0, 60),
+      },
+    })
+  }
 
   for (const a of data.attempts.slice(-500)) {
     items.push({
@@ -434,6 +474,7 @@ const PERSONAL_TABLES = [
   'mock_exam_attempts',
   'learning_plans',
   'user_settings',
+  'weekly_xp',
 ] as const
 
 /**
@@ -477,6 +518,19 @@ export interface RemoteRows {
   writing: Row[]
   speaking: Row[]
   mocks: Row[]
+  /** `profiles` qatori — liga uchun ko'rsatish nomi (o'z qatorimiz, RLS). */
+  profile?: Row | null
+  /** Liga tablasidagi qatorlar (o'sha hafta + o'sha liga — barcha a'zolar). */
+  leagueRows?: Row[]
+  /** O'z `weekly_xp` qatorlarimiz (so'nggi haftalar) — liga snapshoti uchun. */
+  ownWeekly?: Row[]
+}
+
+/** `weekly_xp` qatorini o'qib, liga tablasi qatoriga aylantiradi. */
+function leagueRowFromRow(r: Row): { userId: string; name: string; xp: number } | null {
+  const userId = str(r.user_id)
+  if (!userId) return null
+  return { userId, name: str(r.display_name) ?? '', xp: Math.max(0, Math.floor(num(r.xp))) }
 }
 
 const isObj = (v: unknown): v is Row => typeof v === 'object' && v !== null && !Array.isArray(v)
@@ -518,6 +572,11 @@ function settingsFromRow(r: Row | null): Partial<UserSettings> | null {
   // `motion_enabled` ustuni bo'lmasa (migratsiya hali bajarilmagan baza) lokal
   // qiymat saqlanadi — hech narsa ixtir qilinmaydi.
   if (typeof r.motion_enabled === 'boolean') out.motionEnabled = r.motion_enabled
+  // O'yin sozlamalari (`0004_weekly_xp.sql`). `xp_goal_xp` eng yaqin bosqichga
+  // qaytariladi: DB bosqichlarini CHECK ham tekshiradi, lekin eski/ boshqa
+  // bazadan kelgan son lokal qoidani buzmasligi kerak.
+  if (typeof r.xp_goal_xp === 'number' && Number.isFinite(r.xp_goal_xp)) out.xpGoalXp = nearestXpGoal(r.xp_goal_xp)
+  if (typeof r.hearts_enabled === 'boolean') out.heartsEnabled = r.hearts_enabled
   return out
 }
 
@@ -543,6 +602,16 @@ function planFromRow(r: Row | null): RemoteSnapshot['plan'] {
       confidence: num(d.confidence),
     }
   }
+  // Nishonlar (yutuqlar) — `id` bo'yicha birlashma `mergeRemote`da bo'ladi.
+  if (Array.isArray(p.badges)) {
+    out.badges = p.badges
+      .filter((b): b is Row => isObj(b) && typeof b.id === 'string')
+      .map((b) => ({ id: String(b.id), titleUz: str(b.titleUz) ?? '', at: num(b.at) }))
+  }
+  // O'yin qatlami — `normalizeGame` har bir sonni chegaralaydi (serverdagi
+  // jsonb tashqi ma'lumot: ishonchli holatga keltirilmasa `game.ts`ning
+  // hisoblashlari buziladi).
+  if (isObj(p.game)) out.game = normalizeGame(p.game as Partial<GameState>)
   return out
 }
 
@@ -688,6 +757,33 @@ export function rowsToSnapshot(rows: RemoteRows): RemoteSnapshot {
     writing: byTime(compact(rows.writing, writingFromRow), (w) => w.createdAt),
     speaking: byTime(compact(rows.speaking, speakingFromRow), (s) => s.createdAt),
     mockAttempts: byTime(compact(rows.mocks, mockFromRow), (m) => m.completedAt),
+    // Liga: o'sha haftadagi o'sha ligamız qatorlari (barcha a'zolar — RLSdagi
+    // "read league mates" siyosati). Bo'sh bo'lsa `null` — eski snapshot
+    // saqlanadi, son ixtir qilinmaydi.
+    league: buildLeagueRead(rows),
+    profileName: str(rows.profile?.display_name)?.slice(0, 60) ?? '',
+  }
+}
+
+/**
+ * O'qilgan qatorlardan liga tablasi. Biz hali bu haftani yubormagan bo'lsak
+ * (`ownWeekly` bo'sh) — o'z ligamiz aniq EMAS, tablani o'qishning ma'nosi
+ * yo'q: `null` qaytadi va eski snapshot saqlanadi (son ixtir qilinmaydi).
+ */
+function buildLeagueRead(rows: RemoteRows): RemoteSnapshot['league'] {
+  const ownRows = (rows.ownWeekly ?? []).filter((r) => str(r.week_start) && str(r.league_id))
+  if (ownRows.length === 0) return null
+  const board = (rows.leagueRows ?? [])
+    .map(leagueRowFromRow)
+    .filter((x): x is { userId: string; name: string; xp: number } => x !== null)
+    .sort((a, b) => b.xp - a.xp)
+    .slice(0, LEAGUE_BOARD_SIZE)
+  if (board.length === 0) return null
+  const latest = ownRows.reduce((a, b) => (String(b.week_start) > String(a.week_start) ? b : a))
+  return {
+    weekStart: String(latest.week_start),
+    leagueId: leagueById(String(latest.league_id)).id,
+    entries: board,
   }
 }
 
@@ -711,7 +807,7 @@ export async function pullRemote(userId: string): Promise<PullResult> {
   const failRead: PullResult = { ok: false, snapshot: null, reasonUz: 'Serverdagi ma’lumotni o‘qib bo‘lmadi.' }
   try {
     const own = (table: string) => sb.from(table).select('*').eq('user_id', userId)
-    const [settings, plan, attempts, vocabulary, activity, writing, speaking, mocks] = await Promise.all([
+    const [settings, plan, attempts, vocabulary, activity, writing, speaking, mocks, profile, ownWeekly] = await Promise.all([
       own('user_settings').maybeSingle(),
       own('learning_plans').order('updated_at', { ascending: false }).limit(1),
       own('exercise_attempts').order('created_at', { ascending: false }).limit(500),
@@ -720,9 +816,32 @@ export async function pullRemote(userId: string): Promise<PullResult> {
       own('writing_submissions').order('created_at', { ascending: false }).limit(100),
       own('speaking_sessions').order('created_at', { ascending: false }).limit(100),
       own('mock_exam_attempts').order('completed_at', { ascending: false }).limit(20),
+      // Profil nomi — liga tablasida o'z ismimiz ko'rinishi uchun (RLS: o'z qatori).
+      sb.from('profiles').select('*').eq('id', userId).maybeSingle(),
+      // O'z haftalik XP qatorlarimiz — qaysi hafta/lichamizni shundan bilamiz.
+      own('weekly_xp').order('week_start', { ascending: false }).limit(2),
     ])
     if ([settings, plan, attempts, vocabulary, activity, writing, speaking, mocks].some((r) => r.error)) return failRead
     const list = (v: unknown): Row[] => (Array.isArray(v) ? v.filter(isObj) : [])
+    const ownWeeklyRows = list(ownWeekly.data)
+    // Liga tablasini o'qish IKKINCHI QADAM: hafta va liga id'si yuqoridagi
+    // o'qishdan keladi (boshqa qurilmada yuborilgan hafta ham shu yerda).
+    // So'rov xato bo'lsa — `leagueRows` bo'sh qoladi: snapshotning eski qiymati
+    // saqlanadi,.son ixtir QILINMAYDI (hisobda "ko'rsatilgan holat" ko'rinadi).
+    let leagueRows: Row[] = []
+    if (ownWeeklyRows.length > 0 && !ownWeekly.error) {
+      const latest = ownWeeklyRows.reduce((a, b) => (String(b.week_start) > String(a.week_start) ? b : a))
+      if (typeof latest.week_start === 'string' && typeof latest.league_id === 'string') {
+        const board = await sb
+          .from('weekly_xp')
+          .select('*')
+          .eq('week_start', latest.week_start)
+          .eq('league_id', latest.league_id)
+          .order('xp', { ascending: false })
+          .limit(LEAGUE_BOARD_SIZE)
+        leagueRows = board.error ? [] : list(board.data)
+      }
+    }
     return {
       ok: true,
       reasonUz: null,
@@ -735,9 +854,21 @@ export async function pullRemote(userId: string): Promise<PullResult> {
         writing: list(writing.data),
         speaking: list(speaking.data),
         mocks: list(mocks.data),
+        profile: isObj(profile.data) ? profile.data : null,
+        leagueRows,
+        ownWeekly: ownWeeklyRows,
       }),
     }
   } catch {
     return failRead
   }
+}
+
+/**
+ * Profil nomi — snapshotdan. `mergeRemote` bu maydonni birlashtirmaydi (u
+ * faqat serverdan o'qiladi, qurilmada o'zgartirilmaydi), shuning uchun
+ * alohida funksiya: bo'sh satr bo'lsa lokal qiymat saqlanadi.
+ */
+export function profileNameFromSnapshot(snap: RemoteSnapshot): string {
+  return snap.profileName ?? ''
 }

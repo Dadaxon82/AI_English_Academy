@@ -44,4 +44,65 @@
          `math_l0_lessons.json` 38 mashq bitta tur — majburiy 37). -->
     <string name="path_chain_audit">Zanjir bo‘yicha: %1$d mashq qadami (+%2$d takrorlash) · bir xil tur qo‘shni: %3$d (majburiy: %4$d) · eng qisqa tur masofasi: %5$d</string>
     <string name="path_xp_fly">+ %1$d XP</string>
+
+    <!-- O‘yin qatlami bloki — 2026-11-08 qo‘shildi, veb `Settings.tsx`
+         («O‘yin qatlami» kartasi, 277-360-qatorlar) moslamasi.
+         DIQQAT: kalitlarda SON YO‘Q — barcha sonlar format argumanti bilan
+         `GameConfig`dan beriladi, shuning uchun bir joy o‘zgarsa matndagi son
+         ham o‘zgaradi (ixtira yo‘q). Duolingoga tegishli sonlar (350/200 gem)
+         esa izohda ochiq aytilgan manba. -->
+    <string name="settings_game_title">O‘yin qatlami</string>
+    <string name="settings_hearts_on">Yuraklar tizimi (har xato javobda bitta yurak ketadi)</string>
+    <string name="settings_hearts_state_on">Yuraklar yoqilgan</string>
+    <string name="settings_hearts_state_off">Yuraklar o‘chiq</string>
+    <string name="settings_hearts_hint">Yuraklar soni %1$d ta, har xato javob uchun %2$d tasi ketadi va %3$d daqiqada bittasi qaytadi. Yuraklar tugasa takrorlash darsi ochiladi — %4$d ta so‘z takrorlansa bitta yurak qaytadi. Ketma-ket %5$d ta to‘g‘ri javob uchun ham bitta yurak qaytariladi. Mock imtihon, diagnostika va bo‘lim testlarida yurak jarima qilinmaydi. O‘chirilsa — hech qanday jarima darvozasi qolmaydi. Bu sozlama veb bilan ham sinxronlanadi.</string>
+    <string name="settings_hearts_count">%1$d / %2$d yurak</string>
+    <string name="settings_hearts_next"> · keyingi yurak: %1$d daqiqa</string>
+    <string name="settings_goal_today">Bugun %1$d/%2$d XP</string>
+    <string name="settings_xp_goal_title">Kunlik XP maqsadi</string>
+    <string name="settings_xp_goal_row">%1$s — %2$d XP</string>
+    <string name="settings_xp_goal_hint">Bosqichlar Duolingo‘ning 5 pog‘onasi (Basic/Casual/Regular/Serious/Intense) — bizning XP masshtabimizga moslab 10 marta kattalashtirilgan. Maqsadga yetilsa %1$d gem beriladi; kunlik daqiqa rejasi (%2$d daqiqa) alohida maqsad bo‘lib qoladi.</string>
+    <string name="settings_shop_title">Do‘kon (gemlar: %1$d)</string>
+    <string name="settings_shop_price">%1$d gem</string>
+    <string name="settings_shop_buy">Sotib olish</string>
+    <string name="settings_shop_hint">Narxlar Duolingo do‘konidan olindi (yuraklarni to‘ldirish 350 gem, streak qalqoni 200 gem); bitta yurak va XP byusti narxi — bizning qarorimiz. Omborda eng ko‘p %1$d ta qalqon saqlanadi.</string>
+    <string name="settings_shop_ok">%1$s olindi — %2$d gem sarflandi.</string>
+    <string name="settings_shop_freezes">Omborda: %1$d qalqon</string>
+    <string name="settings_boost_active">2× XP byusti faol — %1$d daqiqa qoldi</string>
+    <string name="settings_boost_none">XP byusti hozir yo‘q</string>
+    <string name="settings_bet_open">Garov ochiq: %1$s kunidan %2$d gem tikilgan</string>
+    <string name="settings_bet_button">Garov: %1$d gem tikib, zanjirni %2$d kunga uzaytirsak %3$d gem qaytadi</string>
+    <string name="settings_bet_ok">Garov tikildi — %1$d gem sarflandi.</string>
+
+    <!-- Boshqaruv panelidagi o‘yin qatlami plitkalari va questlar —
+         veb `Dashboard.tsx` («O‘yin qatlami ko‘rsatkichlari» va
+         «Bugungi questlar» kartalari). Sonlar `GameLogic`/`GameConfig`dan
+         format argumanti bilan beriladi — kalitda son yo‘q. -->
+    <string name="dash_stat_hearts">Yuraklar</string>
+    <string name="dash_hearts_short_off">o‘chiq</string>
+    <string name="dash_hearts_off">Sozlamada o‘chirilgan — jarima darvozasi yo‘q</string>
+    <string name="dash_hearts_blocked">Tugadi — %1$d ta takror bilan qaytariladi</string>
+    <string name="dash_hearts_next">Keyingi yurak: %1$d daqiqa</string>
+    <string name="dash_hearts_full">To‘la</string>
+    <string name="dash_stat_goal">Kunlik XP maqsadi</string>
+    <string name="dash_goal_done">Maqsadga yetildi (+gem)</string>
+    <string name="dash_goal_left">Yana %1$d XP kerak</string>
+    <string name="dash_stat_gems">Gem</string>
+    <string name="dash_quests_done">%1$d/%2$d bugungi quest bajarildi</string>
+    <string name="dash_stat_freezes">Qalqonlar</string>
+    <string name="dash_freezes_hint">Uzilgan kunni qoplaydi (do‘kondan)</string>
+    <string name="dash_quests_title">Bugungi questlar</string>
+    <string name="dash_quests_total">%1$d ta quest jami</string>
+    <string name="dash_quest_row">%1$s — %2$d/%3$d</string>
+    <string name="dash_quest_claimed">gem olindi</string>
+    <string name="dash_quest_reward">gem beriladi</string>
+
+    <!-- Yurak darvozasi — veb `ExerciseRunner.tsx` «Yuraklar tugadi»
+         banneri. Matndagi sonlar format argumanti (`GameConfig` /
+         `heartsView`) — ixtira yo‘q. -->
+    <string name="hearts_blocked_title">Yuraklar tugadi</string>
+    <string name="hearts_blocked_next"> · %1$d daqiqada bittasi qaytadi</string>
+    <string name="hearts_blocked_hint">Mashqni davom ettirish uchun yurak kerak. %1$d ta so‘zni takrorlab bittasini qaytarib oling (ketma-ket %2$d ta to‘g‘ri javob ham bitta yurak qaytaradi). Mock imtihon, diagnostika va bo‘lim testlarida yurak talab qilinmaydi.</string>
+    <string name="hearts_blocked_practice">Takrorlash darsini ochish</string>
+    <string name="hearts_blocked_settings">Yuraklarni sozlamada o‘chirish</string>
 </resources>

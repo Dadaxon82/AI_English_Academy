@@ -1,5 +1,6 @@
 package com.dadaxon.aienglishacademy.data
 
+import com.dadaxon.aienglishacademy.domain.GameLogic
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonArray
@@ -94,7 +95,19 @@ class LocalStore(
         var next = raw
         // Eski onboarding 15–25 daqiqaga ruxsat berardi — DB CHECK (30..240)
         // bunday sozlamani rad etib, sinxron navbatini abadiy to'xtatib qo'yardi.
-        next = next.copy(settings = next.settings.copy(dailyMinutes = clampDailyMinutes(next.settings.dailyMinutes)))
+        // XP maqsadi ham shunday: DB `CHECK (50,100,200,300,500)` — eski/buzilgan
+        // son ENG YAQIN bosqichga qaytariladi (veb: `nearestXpGoal`).
+        next = next.copy(
+            settings = next.settings.copy(
+                dailyMinutes = clampDailyMinutes(next.settings.dailyMinutes),
+                xpGoalXp = GameConfig.nearestXpGoal(next.settings.xpGoalXp),
+            ),
+        )
+        // O'yin holati — har qanday saqlanganma (eski versiya, qisman JSON)
+        // `normalizeGame` orqali o'tadi: yetishmovchi maydonlar standart, sonlar
+        // chegaraga keltiriladi. Veb `storage.ts::migrate` ham shuni qiladi.
+        val today = todayKey()
+        next = next.copy(game = GameLogic.normalizeGame(next.game, today))
         // `onboardedAt` keyin qo'shilgan: diagnostikasi yoki mashq tarixi bor
         // eski foydalanuvchi onboarding'dan o'tgan hisoblanadi (banner qayta chiqmasin).
         // Iz BO'Lmasa `null` QOLADI (veb: `... ?? null`). `0L` qo'yish
@@ -165,6 +178,14 @@ class LocalStore(
         if (table == SupabaseClient.Tables.DAILY_ACTIVITY) {
             val d = strOf(obj, "day") ?: return null
             return "uk:d:$d"
+        }
+        // Liga jadvali — tabiiy kalit `(user_id, week_start)`: hafta davomida
+        // XP o'sib boradi, har sinxron NAVBATGA BITTA yozuv qo'shadi (eskiysi
+        // almashtiriladi). Kalit bo'lmasa "Sinxronizatsiya" har bosilganda
+        // navbat shishib borardi.
+        if (table == SupabaseClient.Tables.WEEKLY_XP) {
+            val w = strOf(obj, "week_start") ?: return null
+            return "uk:wx:$w"
         }
         return null
     }

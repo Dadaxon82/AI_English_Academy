@@ -9,8 +9,9 @@
  */
 
 import { del, get, keys, set } from 'idb-keyval'
+import { normalizeGame } from './game'
 import type { AppData } from './types'
-import { APP_DATA_VERSION, clampDailyMinutes, emptyData } from './types'
+import { APP_DATA_VERSION, clampDailyMinutes, emptyData, nearestXpGoal } from './types'
 
 const DATA_KEY = (uid: string) => `aea:data:${uid}`
 const QUEUE_KEY = (uid: string) => `aea:queue:${uid}`
@@ -114,6 +115,12 @@ export function migrate(raw: AppData): AppData {
   // Eski onboarding 15–25 daqiqaga ruxsat berardi — DB CHECK (30..240) bunday
   // sozlamani rad etib, sinxron navbatini abadiy to'xtatib qo'yardi.
   next.settings.dailyMinutes = clampDailyMinutes(next.settings.dailyMinutes)
+  // Kunlik XP maqsadi FAQAT `XP_GOAL_TIERS` dagi bosqichlardan biri bo'ladi.
+  // Ro'yxat tashqarisidagi son (qo'lda yozilgan yoki eski versiya) ENG YAQIN
+  // bosqichga qaytariladi — sozlama buzilmasin, lekin son "ixtiro" qilinmasin.
+  next.settings.xpGoalXp = nearestXpGoal(next.settings.xpGoalXp)
+  // O'yin qatlami keyin qo'shildi: eski saqlanganmada `game` maydoni YO'Q.
+  next.game = normalizeGame(raw.game)
   // `onboardedAt` keyin qo'shilgan: diagnostikasi yoki mashq tarixi bor eski
   // foydalanuvchi onboarding'dan o'tgan hisoblanadi (banner qayta chiqmasin).
   const legacy = raw as Partial<AppData>
@@ -159,6 +166,8 @@ export function dedupeKey(table: string, payload: unknown): string | null {
   if (table === 'user_settings') return 'uk:user'
   if (table === 'user_vocabulary' && typeof p.vocabulary_id === 'string') return `uk:v:${p.vocabulary_id}`
   if (table === 'daily_activity' && typeof p.day === 'string') return `uk:d:${p.day}`
+  // Liga qatori: (user_id, week_start) PK — hafta bo'yicha bitta yozuv.
+  if (table === 'weekly_xp' && typeof p.week_start === 'string') return `uk:wx:${p.week_start}`
   return null
 }
 

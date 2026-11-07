@@ -103,6 +103,13 @@ html.no-motion *, html.no-motion *::before, html.no-motion *::after {
     --ok: #15803d;
     --warn: #b45309;
     --bad: #be123c;
+
+    /* O'yin belgilarining ranglari — mobil `colors.xml`dag `heart/gem/star/league`
+       bilan BIR XIL (test: `src/test/game-icons.test.ts`). */
+    --heart: #e0245e;
+    --gem: #2f6fed;
+    --star: #e8a013;
+    --league: #7c3aed;
   }
   .dark {
     color-scheme: dark;
@@ -117,6 +124,13 @@ html.no-motion *, html.no-motion *::before, html.no-motion *::after {
     --ok: #4ade80;
     --warn: #fbbf24;
     --bad: #fb7185;
+
+    /* O'yin belgilari — qorong'uda biroz yorqinroq (mobil `colors.xml` dag
+       `heart_dark` va h.k. bilan BIR XIL). */
+    --heart: #ff5c8a;
+    --gem: #6d9dff;
+    --star: #ffc53d;
+    --league: #a78bfa;
   }
 
   * { border-color: var(--border); }

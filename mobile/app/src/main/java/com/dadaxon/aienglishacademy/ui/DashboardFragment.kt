@@ -24,6 +24,7 @@ import com.dadaxon.aienglishacademy.domain.computeAllocation
 import com.dadaxon.aienglishacademy.domain.countDue
 import com.dadaxon.aienglishacademy.domain.countLearned
 import com.dadaxon.aienglishacademy.domain.evaluateLevelPromotion
+import com.dadaxon.aienglishacademy.domain.GameLogic
 import com.dadaxon.aienglishacademy.domain.lastNDays
 import com.dadaxon.aienglishacademy.domain.nextDayId
 import com.dadaxon.aienglishacademy.domain.planProgress
@@ -117,6 +118,79 @@ class DashboardFragment : Fragment() {
                 Rows.statTile(ctx, countDue(srs).toString(), getString(R.string.dash_stat_due), getString(R.string.dash_stat_due_none)),
             ),
         )
+
+        /* 2b) O'yin qatlami plitkalari — veb `Dashboard.tsx`dagi ikkinchi
+               qatorning moslamasi (yurak / kunlik XP / gem / qalqon).
+               Sonlar `GameLogic.heartsView` va `goalView`dan olinadi,
+               sozlamada yuraklar o'chirilgan bo'lsa plitka halol "o'chiq"
+               deyadi — son ixtir qilinmaydi. */
+        val now = System.currentTimeMillis()
+        val hearts = GameLogic.heartsView(d, now)
+        val goal = GameLogic.goalView(d)
+        val quests = GameLogic.questView(d)
+        val questsDone = quests.count { it.done }
+        b.rows.addView(
+            Rows.statRow(
+                ctx,
+                Rows.statTile(
+                    ctx,
+                    if (hearts.enabled) "${hearts.count}/${hearts.max}" else getString(R.string.dash_hearts_short_off),                    getString(R.string.dash_stat_hearts),
+                    when {
+                        !hearts.enabled -> getString(R.string.dash_hearts_off)
+                        hearts.blocked -> getString(R.string.dash_hearts_blocked, hearts.practiceNeeded)
+                        hearts.minutesLeft > 0 -> getString(R.string.dash_hearts_next, hearts.minutesLeft)
+                        else -> getString(R.string.dash_hearts_full)
+                    },
+                ),
+                Rows.statTile(
+                    ctx,
+                    "${goal.value}/${goal.target}",
+                    getString(R.string.dash_stat_goal),
+                    if (goal.reached) getString(R.string.dash_goal_done) else getString(R.string.dash_goal_left, goal.left),
+                ),
+                Rows.statTile(
+                    ctx,
+                    d.game.gems.toString(),
+                    getString(R.string.dash_stat_gems),
+                    getString(R.string.dash_quests_done, questsDone, quests.size),
+                ),
+                Rows.statTile(
+                    ctx,
+                    d.game.freezes.toString(),
+                    getString(R.string.dash_stat_freezes),
+                    getString(R.string.dash_freezes_hint),
+                ),
+            ),
+        )
+
+        /* 2c) Bugungi questlar — kun kaliti bilan tanlangan 3 tasi
+               (`GameLogic.questsForDay`), holat `questView`dan. Vebda ham
+               shu 3 quest chiziladi: kun kaliti bir xil bo'lgani uchun
+               ikkala qurilmada ro'yxat ham, tartib ham bir xil. */
+        b.rows.addView(Rows.sectionTitle(ctx, getString(R.string.dash_quests_title)))
+        for (q in quests) {
+            val mark = if (q.claimed) getString(R.string.dash_quest_claimed)
+            else if (q.done) getString(R.string.dash_quest_reward) else null
+            b.rows.addView(
+                Rows.row(ctx, getString(R.string.dash_quest_row, q.quest.titleUz, q.value, q.target), null, mark),
+            )
+            // Vebdagidek progress chizig'i — foiz ixtir qilinmaydi, `value`
+            // `target`ga bo'linadi (`GameLogic.questProgressOf` sonlari).
+            b.rows.addView(
+                com.google.android.material.progressindicator.LinearProgressIndicator(ctx).apply {
+                    setProgressCompat(
+                        if (q.target <= 0) 100 else (100.0 * q.value / q.target).toInt().coerceIn(0, 100),
+                        true,
+                    )
+                    trackThickness = Rows.dp(ctx, 6)
+                    layoutParams = LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                    )
+                },
+            )
+        }
+        b.rows.addView(Rows.small(ctx, getString(R.string.dash_quests_total, d.game.questsTotal)))
 
         /* 3) Bugungi vazifalar */
         b.rows.addView(Rows.sectionTitle(ctx, getString(R.string.dash_plan_title)))

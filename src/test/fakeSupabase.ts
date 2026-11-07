@@ -11,6 +11,7 @@ const pkOf = (table: string, r: Row): string => {
   if (table === 'user_settings') return String(r.user_id)
   if (table === 'user_vocabulary') return `${String(r.user_id)}|${String(r.vocabulary_id)}`
   if (table === 'daily_activity') return `${String(r.user_id)}|${String(r.day)}`
+  if (table === 'weekly_xp') return `${String(r.user_id)}|${String(r.week_start)}`
   return String(r.id)
 }
 

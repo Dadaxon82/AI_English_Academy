@@ -256,6 +256,8 @@ function TaskDetail({ task, onBack }: { task: ListeningTask; onBack: () => void 
   const onNext = () => {
     const answered = Object.keys(results).length
     if (answered >= total) {
+      // Dars yakuni: bonus XP + xatosiz dars hisobi (`lessonComplete`).
+      actions.completeLesson(answered, Object.values(results).filter((r) => !r.correct).length)
       setShowResults(true)
       return
     }

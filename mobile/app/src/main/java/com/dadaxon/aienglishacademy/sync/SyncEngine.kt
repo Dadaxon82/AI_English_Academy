@@ -3,9 +3,12 @@ package com.dadaxon.aienglishacademy.sync
 import com.dadaxon.aienglishacademy.data.AppData
 import com.dadaxon.aienglishacademy.data.AttemptRecord
 import com.dadaxon.aienglishacademy.data.AuthStore
+import com.dadaxon.aienglishacademy.data.BadgeAward
 import com.dadaxon.aienglishacademy.data.DayActivity
 import com.dadaxon.aienglishacademy.data.DiagnosticResult
 import com.dadaxon.aienglishacademy.data.ExerciseResult
+import com.dadaxon.aienglishacademy.data.GameConfig
+import com.dadaxon.aienglishacademy.data.LeagueRow
 import com.dadaxon.aienglishacademy.data.LocalStore
 import com.dadaxon.aienglishacademy.data.Levels
 import com.dadaxon.aienglishacademy.data.MockExamAttempt
@@ -20,7 +23,10 @@ import com.dadaxon.aienglishacademy.data.UserSettings
 import com.dadaxon.aienglishacademy.data.WritingAnalysis
 import com.dadaxon.aienglishacademy.data.WritingSubmission
 import com.dadaxon.aienglishacademy.data.clampDailyMinutes
+import com.dadaxon.aienglishacademy.data.todayKey
 import com.dadaxon.aienglishacademy.net.NetworkMonitor
+import com.dadaxon.aienglishacademy.domain.GameLogic
+import com.dadaxon.aienglishacademy.domain.RemoteLeague
 import com.dadaxon.aienglishacademy.domain.RemotePath
 import com.dadaxon.aienglishacademy.domain.RemotePlan
 import com.dadaxon.aienglishacademy.domain.RemoteSnapshot
@@ -259,6 +265,32 @@ class SyncEngine(
         val mocks = own(SupabaseClient.Tables.MOCK_EXAM_ATTEMPTS, "order=completed_at.desc&limit=20")
         if (listOf(settings, plan, attempts, vocabulary, activity, writing, speaking, mocks).any { !it.ok }) return failRead
 
+        // --- O'yin qatlami o'qishlari (veb `pullRemote` ning 9–10-qadamlari) ---
+        // Ikkalasi ham MAJBURIY EMAS: xato bo'lsa eski snapshot saqlanadi, son
+        // ixtir QILINMAYDI (vebda ham `leagueRows` bo'sh qoladi).
+        val profile = sb.select(SupabaseClient.Tables.PROFILES, "id=eq.$userId&limit=1", session.accessToken)
+        val ownWeekly = own(SupabaseClient.Tables.WEEKLY_XP, "order=week_start.desc&limit=2")
+        val leagueRows = ArrayList<JsonObject>()
+        val latestOwn = if (ownWeekly.ok) {
+            ownWeekly.rows
+                .filter { str(it, "week_start") != null && str(it, "league_id") != null }
+                .maxByOrNull { str(it, "week_start") ?: "" }
+        } else {
+            null
+        }
+        if (latestOwn != null) {
+            // Liga tablasini o'qish IKKINCHI QADAM: hafta va liga id'si yuqoridagi
+            // o'qishdan keladi (boshqa qurilmada yuborilgan hafta ham shu yerda).
+            val week = str(latestOwn, "week_start")!!
+            val leagueId = str(latestOwn, "league_id")!!
+            val board = sb.select(
+                SupabaseClient.Tables.WEEKLY_XP,
+                "week_start=eq.$week&league_id=eq.$leagueId&order=xp.desc&limit=${GameConfig.LEAGUE_BOARD_SIZE}",
+                session.accessToken,
+            )
+            if (board.ok) leagueRows.addAll(board.rows)
+        }
+
         val current = local.loadData(userId)
         return PullResult(
             ok = true,
@@ -273,6 +305,10 @@ class SyncEngine(
                 speaking = speaking.rows,
                 mocks = mocks.rows,
                 baseSettings = current.settings,
+                profile = profile.rows.firstOrNull(),
+                leagueRows = leagueRows,
+                ownWeekly = if (ownWeekly.ok) ownWeekly.rows else emptyList(),
+                today = todayKey(),
             ),
         )
     }
@@ -317,6 +353,10 @@ class SyncEngine(
         speaking: List<JsonObject>,
         mocks: List<JsonObject>,
         baseSettings: UserSettings,
+        profile: JsonObject? = null,
+        leagueRows: List<JsonObject> = emptyList(),
+        ownWeekly: List<JsonObject> = emptyList(),
+        today: String = todayKey(),
     ): RemoteSnapshot {
         val srs = LinkedHashMap<String, SrsState>()
         for (r in vocabulary) {
@@ -457,13 +497,42 @@ class SyncEngine(
 
         return RemoteSnapshot(
             settings = settingsFromRow(settings, baseSettings),
-            plan = planFromRow(plan),
+            plan = planFromRow(plan, today),
             attempts = att,
             srs = srs,
             activity = act,
             writing = wr,
             speaking = sp,
             mockAttempts = mk,
+            // Liga: o'sha haftadagi o'sha ligamız qatorlari (barcha a'zolar —
+            // RLSdagi "read league mates" siyosati). Bo'sh bo'lsa `null` —
+            // eski snapshot saqlanadi, son ixtir qilinmaydi.
+            league = buildLeagueRead(leagueRows, ownWeekly),
+            // Profil nomi — `profiles.display_name` (qator bo'lmasa bo'sh satr;
+            // `mergeRemote` bo'sh kelsa LOCAL ismni saqlaydi).
+            profileName = profile?.let { str(it, "display_name") }?.take(60) ?: "",
+        )
+    }
+
+    /**
+     * O'qilgan qatorlardan liga tablasi (veb `sync.ts::buildLeagueRead`).
+     * Biz hali bu haftani yubormagan bo'lsak (`ownWeekly` bo'sh) — o'z ligamiz
+     * aniq EMAS, tablani o'qishning ma'nosi yo'q: `null` qaytadi va eski
+     * snapshot saqlanadi (son ixtir qilinmaydi).
+     */
+    private fun buildLeagueRead(leagueRows: List<JsonObject>, ownWeekly: List<JsonObject>): RemoteLeague? {
+        val ownRows = ownWeekly.filter { str(it, "week_start") != null && str(it, "league_id") != null }
+        if (ownRows.isEmpty()) return null
+        val board = leagueRows.mapNotNull { r ->
+            val userId = str(r, "user_id") ?: return@mapNotNull null
+            LeagueRow(userId, str(r, "display_name") ?: "", num(r, "xp", 0.0).coerceAtLeast(0.0).toInt())
+        }.sortedByDescending { it.xp }.take(GameConfig.LEAGUE_BOARD_SIZE)
+        if (board.isEmpty()) return null
+        val latest = ownRows.maxByOrNull { str(it, "week_start") ?: "" }!!
+        return RemoteLeague(
+            weekStart = str(latest, "week_start")!!,
+            leagueId = GameConfig.leagueById(str(latest, "league_id") ?: "bronze").id,
+            entries = board,
         )
     }
 
@@ -496,10 +565,20 @@ class SyncEngine(
         // Qatorda ustun bo'lmasa (migratsiya qollanilmagan baza) LOCAL qiymat
         // saqlanadi — jimgina "o'chiq" bo'lib qolmaydi.
         r.get("motion_enabled")?.takeIf { !it.isJsonNull }?.let { out = out.copy(motionEnabled = it.asBoolean) }
+        // O'yin sozlamalari (`0004_weekly_xp.sql`). `xp_goal_xp` eng yaqin
+        // bosqichga qaytariladi: DB CHECK ham bosqichlarni tekshiradi, lekin
+        // eski/boshqa bazadan kelgan son lokal qoidani buzmasligi kerak.
+        if (r.get("xp_goal_xp") != null && !r.get("xp_goal_xp").isJsonNull) {
+            val v = num(r, "xp_goal_xp", Double.NaN)
+            if (!v.isNaN() && !v.isInfinite()) out = out.copy(xpGoalXp = GameConfig.nearestXpGoal(v.toInt()))
+        }
+        r.get("hearts_enabled")?.takeIf { it.isJsonPrimitive && !it.isJsonNull }?.let {
+            out = out.copy(heartsEnabled = it.asBoolean)
+        }
         return out
     }
 
-    private fun planFromRow(r: JsonObject?): RemotePlan? {
+    private fun planFromRow(r: JsonObject?, today: String = todayKey()): RemotePlan? {
         if (r == null) return null
         val p = obj(r, "plan") ?: return null
         var path: RemotePath? = null
@@ -526,7 +605,26 @@ class SyncEngine(
                 confidence = num(d, "confidence", 0.0),
             )
         }
-        return RemotePlan(path = path, xp = xp, diagnostic = diag, onboardedAt = onboardedAt)
+        // Nishonlar (yutuqlar) — `plan.badges`; `id` bo'yicha birlashma
+        // `mergeGame`/`mergeRemote` da bo'ladi.
+        val badges = arr(p, "badges").mapNotNull { el ->
+            if (!el.isJsonObject) return@mapNotNull null
+            val o = el.asJsonObject
+            val id = str(o, "id") ?: return@mapNotNull null
+            BadgeAward(id, str(o, "titleUz") ?: "", num(o, "at", 0.0).toLong())
+        }
+        // O'yin qatlami — `normalizeGameJson` har bir sonni chegaralaydi
+        // (serverdagi jsonb tashqi ma'lumot: ishonchli holatga keltirilmasa
+        // o'yin hisoblashlari buziladi).
+        val game = obj(p, "game")?.let { GameLogic.normalizeGameJson(it, today) }
+        return RemotePlan(
+            path = path,
+            xp = xp,
+            diagnostic = diag,
+            onboardedAt = onboardedAt,
+            badges = badges,
+            game = game,
+        )
     }
 
     private fun writingAnalysis(v: JsonObject?): WritingAnalysis? {

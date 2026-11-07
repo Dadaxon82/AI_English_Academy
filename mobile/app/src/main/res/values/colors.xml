@@ -25,6 +25,22 @@
     <color name="ring_track_light">#E2E8F0</color>
     <color name="ring_track_dark">#334155</color>
 
+    <!-- O'yin belgilari ranglari — veb `src/index.css` dag `heart / gem /
+         star / league` CSS o'zgaruvchilari BILAN BIR XIL (yorug' `:root` bloki).
+         Tenglikni veb `src/test/game-icons.test.ts` va mobil
+         `data/GameManifestTest.kt` sanaydi. Qorong'i rejimda (`values-night`
+         emas — test shu faylni o'qiydi) ranglar yorqinroq: `.dark` bloki.
+         Manba: Duolingo'ning o'yin semantikasi — yurak qizil, gem ko'k,
+         yulduz/olkin, liga binafsha; bu sonlar ixtir EMAS. -->
+    <color name="heart">#e0245e</color>
+    <color name="gem">#2f6fed</color>
+    <color name="star">#e8a013</color>
+    <color name="league">#7c3aed</color>
+    <color name="heart_dark">#ff5c8a</color>
+    <color name="gem_dark">#6d9dff</color>
+    <color name="star_dark">#ffc53d</color>
+    <color name="league_dark">#a78bfa</color>
+
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
     <color name="transparent">#00000000</color>

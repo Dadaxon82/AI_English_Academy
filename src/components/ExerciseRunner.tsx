@@ -6,10 +6,14 @@
  */
 
 import { useEffect, useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import type { Exercise } from '../content/types'
 import { checkAnswer, type CheckResult } from '../lib/check'
-import { xpForAttempt } from '../lib/skillScoring'
+import { xpGain } from '../lib/game'
+import { HEART_COMBO_STREAK } from '../lib/gameConfig'
+import { useStore } from '../lib/store'
 import { Button, Chip, InfoBanner, inputCls } from './ui'
+import { GameIcon } from './icons'
 import { MascotExerciseFeedback } from './Mascot'
 
 export interface ExerciseRunProps {
@@ -19,9 +23,17 @@ export interface ExerciseRunProps {
   total: number
   onNext: () => void
   prevResult?: CheckResult | null
+  /**
+   * `true` — bu mashq yurak JARIMA QILMAYDIGAN turdan (mock imtihon,
+   * diagnostika, bo'lim testi). Bunday holda yurak darvozasi KO'RSATILMAYDI:
+   * o'quvchi yuraklari tugagan bo'lsa ham imtihonni topshira oladi.
+   */
+  heartFree?: boolean
 }
 
-export default function ExerciseRunner({ exercise, checked, index, total, onNext, prevResult }: ExerciseRunProps) {
+export default function ExerciseRunner({ exercise, checked, index, total, onNext, prevResult, heartFree = false }: ExerciseRunProps) {
+  const { hearts, data } = useStore()
+  const game = data.game
   const [answer, setAnswer] = useState<unknown>(initialAnswer(exercise))
   const [state, setState] = useState<'idle' | 'answered'>('idle')
   const [result, setResult] = useState<CheckResult | null>(null)
@@ -46,8 +58,13 @@ export default function ExerciseRunner({ exercise, checked, index, total, onNext
 
   const canCheck = !isAnswerEmpty(exercise, answer)
 
+  // Yurak darvozasi: yuraklar tugagan bo'lsa va bu sinov/sanov bo'lmasa
+  // mashq BOSHLANMAYDI — o'quvchi takrorlash darsiga yo'naltiriladi
+  // (Dulo'dagi "practice to earn hearts" darvozasi).
+  const blocked = hearts.blocked && !heartFree
+
   const doCheck = () => {
-    if (state === 'answered') return
+    if (state === 'answered' || blocked) return
     const r = checkAnswer(exercise, answer)
     setResult(r)
     setState('answered')
@@ -56,11 +73,11 @@ export default function ExerciseRunner({ exercise, checked, index, total, onNext
 
   /**
    * Bu javob uchun beriladigan XP — store'dagi hisob BILAN BIR XIL
-   * (`store.tsx`: `xp + xpForAttempt(correct, difficulty, true)`). Son
-   * ixtir qilinmaydi: shu funksiya chaqiriladi, shuning uchun ekrandagi
-   * son haqiqatan qo'shiladi.
+   * (`store.tsx`: `xpGain(game, correct, difficulty, now)`, ya'ni asos son
+   * `xpForAttempt` va byust faol bo'lsa ×2). Son ixtir qilinmaydi: shu funksiya
+   * chaqiriladi, shuning uchun ekrandagi son haqiqatan qo'shiladi.
    */
-  const xpShown = result ? xpForAttempt(result.correct, exercise.difficulty, true) : undefined
+  const xpShown = result ? xpGain(game, result.correct, exercise.difficulty, Date.now()) : undefined
 
   // Klaviatura: Enter — tekshirish / davom etish. Paydo bo'lgan matn
   // maydonida Enter hech narsa qilmasdi — endi shu hodisa o'zi ishlaydi.
@@ -84,11 +101,58 @@ export default function ExerciseRunner({ exercise, checked, index, total, onNext
         <span className="text-xs font-semibold muted tabular-nums">
           {index + 1} / {total}
         </span>
-        <div className="flex gap-1.5">
+        <div className="flex items-center gap-1.5">
           <Chip>{kindLabel(exercise.kind)}</Chip>
           <Chip>{'Qiyinlik ' + exercise.difficulty}</Chip>
+          {/* Yuraklar holati (sinov/sanovda jarima qilinmaydi — shu yerda ochiq
+              aytiladi, foydalanuvchi sonni ko'rib turgani uchun adashmaydi). */}
+          {hearts.enabled && !heartFree && (
+            <span className="inline-flex items-center gap-1" title={`Yuraklar: ${hearts.count}/${hearts.max}`}>
+              {Array.from({ length: hearts.max }, (_, i) => (
+                <GameIcon
+                  key={i}
+                  name="heart"
+                  size={16}
+                  filled={i < hearts.count}
+                  className={i < hearts.count ? 'text-[var(--heart)]' : 'text-[var(--line)]'}
+                />
+              ))}
+            </span>
+          )}
+          {heartFree && <Chip tone="ok">Yurak jarimasi yo‘q</Chip>}
+          {hearts.boostActive && (
+            <Chip tone="brand">
+              <GameIcon name="bolt" size={12} /> 2× XP · {hearts.boostMinutesLeft} daq
+            </Chip>
+          )}
         </div>
       </div>
+
+      {blocked && (
+        /* Yuraklar tugadi — dars darvozasi. Havolalar HAQIQIY: birinchisi
+           SRS takrorlashiga (yurak qaytaradi), ikkinchisi sozlamaga. */
+        <InfoBanner tone="warn">
+          <div className="grid gap-2">
+            <div className="flex items-center gap-2">
+              <GameIcon name="heart" size={18} filled={false} className="text-[var(--heart)]" title="Yuraklar tugadi" />
+              <b>Yuraklar tugadi</b>
+              {hearts.minutesLeft > 0 && <span>· {hearts.minutesLeft} daqiqada bittasi qaytadi</span>}
+            </div>
+            <p>
+              Mashqni davom ettirish uchun yurak kerak. <b>{hearts.practiceNeeded}</b> ta so'zni takrlab bittasini
+              qaytarib oling (ketma-ket {HEART_COMBO_STREAK} ta to'g'ri javob ham bitta yurak qaytaradi).
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <Link to="/vocabulary" className="chip">
+                Takrorlash darsini ochish
+              </Link>
+              <Link to="/settings" className="chip">
+                Yuraklarni sozlamada o‘chirish
+              </Link>
+            </div>
+          </div>
+        </InfoBanner>
+      )}
 
       {prevResult && !prevResult.correct && (
         <InfoBanner tone="warn">
@@ -117,7 +181,7 @@ export default function ExerciseRunner({ exercise, checked, index, total, onNext
 
       <div className="flex flex-wrap items-center gap-2">
         {state === 'idle' ? (
-          <Button onClick={doCheck} disabled={!canCheck}>
+          <Button onClick={doCheck} disabled={!canCheck || blocked}>
             Tekshirish
           </Button>
         ) : (

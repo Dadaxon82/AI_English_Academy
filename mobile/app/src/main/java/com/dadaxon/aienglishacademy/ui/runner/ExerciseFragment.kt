@@ -17,11 +17,13 @@ import com.dadaxon.aienglishacademy.R
 import com.dadaxon.aienglishacademy.container
 import com.dadaxon.aienglishacademy.data.AttemptRecord
 import com.dadaxon.aienglishacademy.data.Exercise
+import com.dadaxon.aienglishacademy.data.GameConfig
 import com.dadaxon.aienglishacademy.data.Kinds
 import com.dadaxon.aienglishacademy.data.Source
 import com.dadaxon.aienglishacademy.databinding.FragmentExerciseBinding
 import com.dadaxon.aienglishacademy.domain.CheckOutcome
 import com.dadaxon.aienglishacademy.domain.checkAnswer
+import com.dadaxon.aienglishacademy.domain.GameLogic
 import com.dadaxon.aienglishacademy.domain.evaluateLevelPromotion
 import com.dadaxon.aienglishacademy.domain.nextExerciseIndex
 import com.dadaxon.aienglishacademy.domain.skillEvidence
@@ -123,6 +125,15 @@ class ExerciseFragment : Fragment() {
             val first = (pool.getOrNull(index)?.accepted ?: emptyList()).firstOrNull()
             if (first != null) b.transField.setText(first)
         }
+        // Darvoza havolalari (veb: `<Link to="/vocabulary">` va `/settings`):
+        // birinchi HAQIQIY takrorlash darsini ochadi (SRS navbati — yurak
+        // qaytaradi), ikkinchi sozlamani ochadi (o'chirish tugmasi u yerda).
+        b.heartsGatePractice.setOnClickListener {
+            findNavController().navigate(R.id.vocabReviewFragment)
+        }
+        b.heartsGateSettings.setOnClickListener {
+            findNavController().navigate(R.id.settingsFragment)
+        }
 
         if (pool.isEmpty()) {
             b.exEmpty.visibility = View.VISIBLE
@@ -133,6 +144,33 @@ class ExerciseFragment : Fragment() {
             return
         }
         showExercise(index)
+    }
+
+    /* --------------------------- yurak darvozaSI ------------------------- */
+
+    /**
+     * Yurak darvozaSI — veb `ExerciseRunner.tsx` dagi `blocked =
+     * hearts.blocked && !heartFree` moslamasi.
+     *
+     * Qoida (foydalanuvchi tanlovi): darvoza DARS BOSHLANISHIDA tekshiriladi —
+     * mock imtihon, diagnostika va bo'lim testlarida (`HEART_FREE_SOURCES`)
+     * umuman ishlamaydi. Holat `GameLogic.heartsView`dan o'qiladi: sonlar
+     * ixtir qilinmaydi, sozlamada yuraklar o'chirilgan bo'lsa `blocked=false`.
+     */
+    private fun heartsGateBlocked(): Boolean {
+        val hearts = GameLogic.heartsView(container().store.state.value.data, System.currentTimeMillis())
+        val blocked = hearts.blocked && !GameLogic.heartFreeSource(source)
+        b.heartsGate.visibility = if (blocked) View.VISIBLE else View.GONE
+        if (blocked) {
+            b.heartsGateTitle.text = getString(R.string.hearts_blocked_title) +
+                if (hearts.minutesLeft > 0) getString(R.string.hearts_blocked_next, hearts.minutesLeft) else ""
+            b.heartsGateHint.text = getString(
+                R.string.hearts_blocked_hint,
+                hearts.practiceNeeded,
+                GameConfig.HEART_COMBO_STREAK,
+            )
+        }
+        return blocked
     }
 
     /* --------------------------- mashqni ochish ------------------------- */
@@ -147,6 +185,7 @@ class ExerciseFragment : Fragment() {
         checked = false
         exerciseStart = SystemClock.elapsedRealtime()
 
+        val gateBlocked = heartsGateBlocked()
         b.summaryCard.visibility = View.GONE
         b.exEmpty.visibility = View.GONE
         b.exCounter.text = getString(R.string.ex_index, i + 1, pool.size)
@@ -175,7 +214,10 @@ class ExerciseFragment : Fragment() {
             else -> supported = false
         }
         b.exUnsupported.visibility = if (supported) View.GONE else View.VISIBLE
-        b.exCheck.visibility = if (supported) View.VISIBLE else View.GONE
+        // Darvoza yopiq bo'lsa TEKSHIRISH tugmasi ham o'chiriladi (veb:
+        // `<Button ... disabled={!canCheck || blocked}>`), javobni tanlash
+        // esa mumkin — yuraklar o'rtada tiklanishi mumkin.
+        b.exCheck.visibility = if (supported && !gateBlocked) View.VISIBLE else View.GONE
         b.exNext.visibility = View.GONE
         b.exSkip.visibility = if (supported) View.VISIBLE else View.GONE
         b.exFinish.visibility = View.VISIBLE
@@ -482,6 +524,13 @@ class ExerciseFragment : Fragment() {
     private fun onCheck() {
         val e = pool.getOrNull(index) ?: return
         if (checked) return
+        // Ikkinchi tekshiruv: foydalanuvchi javobni tanlab bo'lguniga qadar
+        // yuraklar tugagan bo'lishi mumkin. Holat HOZIR qayta o'qiladi —
+        // eski ekran holatiga ishonib jarima qilinmaydi.
+        if (heartsGateBlocked()) {
+            Toast.makeText(requireContext(), R.string.hearts_blocked_title, Toast.LENGTH_SHORT).show()
+            return
+        }
         if (answerEmpty(e)) {
             Toast.makeText(requireContext(), R.string.ex_answer_empty, Toast.LENGTH_SHORT).show()
             return
@@ -616,6 +665,14 @@ class ExerciseFragment : Fragment() {
         }
 
         if (total > 0 && dayId != null) {
+            // Dars yakuni — o'yin qatlami: bonus XP va (0 xato bo'lsa) "xatosiz
+            // dars" hisobi (`GameLogic.lessonComplete`, veb:
+            // `actions.completeLesson(...)` — Grammar/Listening/Reading).
+            // Bo'lim testi ham DARS hisoblanadi: yurak bu manbada jarima
+            // qilinmaydi (`HEART_FREE_SOURCES`), lekin bonus beriladi — shu
+            // sababli `source` ga qaramasdan chaqiriladi. Xatolar soni shu
+            // yerda sanaladi (`results`dan bevosita).
+            store.dispatch(StoreAction.LessonComplete(total, results.count { !it.correct }))
             if (source == Source.SECTION_TEST) {
                 // Bo'lim testi: natija bilan birga belgilanadi (veb: passedTests).
                 store.dispatch(StoreAction.DayComplete(dayId!!, contentId, percent))

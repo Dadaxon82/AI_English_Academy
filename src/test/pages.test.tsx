@@ -6,10 +6,12 @@ import type { ReactNode } from 'react'
 import { MemoryRouter } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { aiRuntimeEnabled } from '../lib/ai'
+import { BET_COST_GEMS, BET_DAYS, BET_STREAK_DAYS, BET_WIN_GEMS } from '../lib/gameConfig'
 import { StoreProvider, useStore } from '../lib/store'
-import { emptyData, todayKey } from '../lib/types'
+import { emptyData, emptyGame, todayKey } from '../lib/types'
 import MockExam from '../pages/MockExam'
 import Onboarding from '../pages/Onboarding'
+import Settings from '../pages/Settings'
 import Speaking from '../pages/Speaking'
 import Writing from '../pages/Writing'
 
@@ -26,6 +28,8 @@ function Probe() {
       <output data-testid="day-progress">{dayProgress.doneMin}</output>
       <output data-testid="writing-count">{data.writing.length}</output>
       <output data-testid="onboarded">{data.onboardedAt === null ? 'no' : 'yes'}</output>
+      <output data-testid="gems">{data.game.gems}</output>
+      <output data-testid="bet">{data.game.bet ? `${data.game.bet.startDay}:${data.game.bet.gems}` : 'yoq'}</output>
       <button type="button" onClick={() => actions.startTimer('probe-session', 'reading')}>
         probe-start-timer
       </button>
@@ -220,5 +224,52 @@ describe('Gapirish — mikrofonsiz matnli javob ham tahlil qilinadi', () => {
     expect(screen.getByText(/Javob saqlandi va tahlil qilindi/)).toBeInTheDocument()
     expect(screen.getByText('Hajm')).toBeInTheDocument()
     expect(screen.getByText('Ravonlik').nextElementSibling).toHaveTextContent('—')
+  })
+})
+
+/* Garov ("Double or Nothing") — telefon `SettingsFragment`i bilan BIR XIL
+   kirish nuqtasi. Test 2026-11-08 qo'shildi: tugma paydo bo'lgach, uning
+   HAQIQIY ish-ijarasi (gem yechishi, garov ochilishi, rad etilsa SABAB)
+   avtomatik tekshiruvda yo'q edi. Sonlar `gameConfig`dan olinadi — test
+   ham ularni import qiladi, shuning uchun son o'zgarsa test ham yuguradi. */
+describe('Sozlama — «Double or Nothing» garovi (mobil SettingsFragment bilan bir xil)', () => {
+  const betButton = () => screen.getByRole('button', { name: /Garov:.*gem tikib/ })
+
+  /** `gems` gem bilan saqlangan holatdan Sozlamani ochish. */
+  const openSettings = async (gems: number) => {
+    const seeded = { ...emptyData(UID), onboardedAt: 1, game: { ...emptyGame(), gems } }
+    localStorage.setItem(`aea:data:${UID}`, JSON.stringify(seeded))
+    renderPage(<Settings />)
+    await advance()
+    expect(screen.getByTestId('gems')).toHaveTextContent(String(gems))
+  }
+
+  it('gem yetarli bo‘lsa: garov tikiladi, gem yechiladi va ochiq garov ko‘rsatiladi', async () => {
+    await openSettings(BET_COST_GEMS)
+    expect(screen.getByTestId('bet')).toHaveTextContent('yoq')
+    // `findByText` bu faylda ishlamaydi: soxta soatda kutish oldinga
+    // surilmaydi. Banner esa tugma bosilganda SINKRON qo'yiladi
+    // (`setBetMsg`) — `fireEvent.click` uni bir React qadamida joylaydi.
+    fireEvent.click(betButton())
+    expect(screen.getByText(`Garov tikildi — ${BET_COST_GEMS} gem sarflandi.`)).toBeInTheDocument()
+    expect(screen.getByTestId('gems')).toHaveTextContent('0')
+    expect(screen.getByTestId('bet')).toHaveTextContent(`${todayKey()}:${BET_COST_GEMS}`)
+    expect(screen.getByText(`Garov ochiq: ${todayKey()} kunidan ${BET_COST_GEMS} gem tikilgan`)).toBeInTheDocument()
+  })
+
+  it('gem yetmasa: garov tikilmaydi va SABAB ochiq yoziladi (son ixtir qilinmaydi)', async () => {
+    await openSettings(BET_COST_GEMS - 1)
+    fireEvent.click(betButton())
+    expect(screen.getByText(`Garov uchun ${BET_COST_GEMS} gem kerak.`)).toBeInTheDocument()
+    expect(screen.getByTestId('gems')).toHaveTextContent(String(BET_COST_GEMS - 1))
+    expect(screen.getByTestId('bet')).toHaveTextContent('yoq')
+  })
+
+  it('shartlar matni `gameConfig` sonlari bilan yoziladi (ixtira son yo‘q)', async () => {
+    await openSettings(0)
+    expect(betButton().textContent).toBe(
+      `Garov: ${BET_COST_GEMS} gem tikib, zanjirni ${BET_STREAK_DAYS} kunga uzaytirsak ${BET_WIN_GEMS} gem qaytadi`,
+    )
+    expect(screen.getByText(new RegExp(`${BET_DAYS} kun o‘tsa va zanjir kamida ${BET_STREAK_DAYS} kunga`))).toBeInTheDocument()
   })
 })

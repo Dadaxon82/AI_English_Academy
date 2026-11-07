@@ -442,6 +442,7 @@ export default function MockExam() {
             total={exList.length}
             checked={(r) => recordResult(section.id, ex.id, r.correct, r.given)}
             onNext={advance}
+            heartFree
           />
         </Card>
       ) : section.writingTask ? (

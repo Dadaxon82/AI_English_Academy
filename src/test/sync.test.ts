@@ -96,7 +96,16 @@ describe('Sinxronlash payload — PostgREST ustun nomlari (snake_case)', () => {
     const p = toQueueItems(d).find((i) => i.table === 'learning_plans')?.payload as Record<string, unknown>
     expect(p).toBeTruthy()
     expect(p.diagnostic_level).toBeNull()
-    expect(p.plan).toEqual({ path: d.path, xp: 42, diagnostic: null, onboardedAt: null })
+    // O'yin qatlami (2026-11-07): plan ichida `badges` va `game` ham yuboriladi.
+    // `game.league` ataylab null — liga tablosi (`weekly_xp`) alohida o'qiladi.
+    expect(p.plan).toEqual({
+      path: d.path,
+      xp: 42,
+      diagnostic: null,
+      onboardedAt: null,
+      badges: d.badges,
+      game: { ...d.game, league: null },
+    })
   })
 })
 

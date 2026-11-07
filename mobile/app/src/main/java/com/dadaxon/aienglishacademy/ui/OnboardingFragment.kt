@@ -608,6 +608,11 @@ class OnboardingFragment : Fragment() {
         val base = c.store.settings()
         val patched = UserSettings(
             dailyMinutes = clampDailyMinutes(minutes),
+            // O'yin sozlamalari onboarding'da YO'QOTILADI — foydalanuvchi
+            // Sozlamalar'da tanlagan XP maqsadi va yurak kaliti saqlanadi
+            // (veb `updateSettings` qisman yangilanish qiladi).
+            xpGoalXp = base.xpGoalXp,
+            heartsEnabled = base.heartsEnabled,
             currentLevel = currentLevel,
             targetLevel = targetLevel,
             examDate = base.examDate,

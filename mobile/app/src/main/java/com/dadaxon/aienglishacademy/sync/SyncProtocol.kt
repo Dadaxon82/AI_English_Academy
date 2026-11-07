@@ -1,6 +1,7 @@
 package com.dadaxon.aienglishacademy.sync
 
 import com.dadaxon.aienglishacademy.data.AppData
+import com.dadaxon.aienglishacademy.data.GameConfig
 import com.dadaxon.aienglishacademy.data.LocalStore
 import com.dadaxon.aienglishacademy.data.MockExamAttempt
 import com.dadaxon.aienglishacademy.data.QueueItem
@@ -8,6 +9,7 @@ import com.dadaxon.aienglishacademy.data.SpeakingSession
 import com.dadaxon.aienglishacademy.data.SupabaseClient
 import com.dadaxon.aienglishacademy.data.WritingSubmission
 import com.dadaxon.aienglishacademy.data.clampDailyMinutes
+import com.dadaxon.aienglishacademy.domain.GameLogic
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
@@ -94,6 +96,11 @@ class SyncProtocol(
                 // boshqa qurilmada yoqilgan/o'chirilgan holat yo'qolardi
                 // (ikki tomonlama sinxron shart).
                 put("motion_enabled", data.settings.motionEnabled)
+                // O'yin qatlami sozlamalari — `0004_weekly_xp.sql` ustunlari.
+                // `xp_goal_xp` FAQAT bosqich qiymati (DB CHECK ham shuni
+                // tekshiradi), `hearts_enabled` — yuraklar tizimi.
+                put("xp_goal_xp", GameConfig.nearestXpGoal(data.settings.xpGoalXp))
+                put("hearts_enabled", data.settings.heartsEnabled)
             }),
             System.currentTimeMillis(),
         )
@@ -119,10 +126,44 @@ class SyncProtocol(
                     put("xp", data.xp)
                     put("diagnostic", tree(data.diagnostic))
                     put("onboardedAt", tree(data.onboardedAt))
+                    // Nishonlar (yutuqlar) — serverda `plan.badges` da yuradi;
+                    // `settleAchievements` bu ro'yxatni HAQIQIY to'ldiradi.
+                    put("badges", tree(data.badges))
+                    // O'yin qatlami — qurilmalar orasidagi yagona tashuvchi.
+                    // `game.league` SAQLANMAYDI: liga jadvali `weekly_xp`dan
+                    // o'qiladi (jsonb qatori katta bo'lib har yozuvda ko'chib
+                    // yurmasin).
+                    put("game", JsonObject().apply {
+                        val g = tree(data.game).asJsonObject
+                        for ((k, v) in g.entrySet()) add(k, v)
+                        add("league", JsonNull.INSTANCE)
+                    })
                 })
             }),
             System.currentTimeMillis(),
         )
+
+        // ---- Haftalik XP qatori (liga) — `0004_weekly_xp.sql` ----
+        // Son `GameLogic.weeklyXp()`dan: urinishlardan aniq hisoblanadi,
+        // shuning uchun ikkala mijoz BIR XIL son yuboradi (XP byusti va dars
+        // bonuslari KIRMAYDI — ular qurilmaga bog'liq, liga jadvaliga aralashmaydi).
+        run {
+            val wk = GameLogic.leagueWeek(data)
+            items += QueueItemDraft(
+                SupabaseClient.Tables.WEEKLY_XP, "upsert",
+                jsonToString(JsonObject().apply {
+                    put("user_id", uid)
+                    put("week_start", wk.weekStart)
+                    put("xp", wk.xp)
+                    put("league_id", wk.leagueId)
+                    // Ko'rsatish nomi — `weekly_xp`da saqlanadi (9-so'rov
+                    // o'rniga bitta so'rovda tabla o'qilsin). Uzunlik DB
+                    // cheklovi bo'yicha 60 belgi bilan kesiladi.
+                    put("display_name", data.profileName.take(60))
+                }),
+                System.currentTimeMillis(),
+            )
+        }
 
         for (a in data.attempts.takeLast(500)) {
             items += QueueItemDraft(

@@ -45,6 +45,13 @@ class SettingsFragment : Fragment() {
     private var _b: FragmentShellBinding? = null
     private val b get() = requireNotNull(_b)
 
+    /**
+     * Bir martalik xarid/garov xabari (veb `shopMsg` holatiga mos). Store
+     * faqat RAD ETISH sababini saqlaydi (`gameMessage`), muvaffaqiyat matni
+     * esa shu yerda yuradi va bir marta ko'rsatilib tozalanadi.
+     */
+    private var pendingGameMsg: String? = null
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, saved: Bundle?): View {
         _b = FragmentShellBinding.inflate(inflater, container, false)
         return b.root
@@ -146,6 +153,11 @@ class SettingsFragment : Fragment() {
         }
         b.rows.addView(Rows.small(ctx, getString(R.string.dash_task_minutes, alloc.total)))
         for (r in alloc.reasonUz) b.rows.addView(Rows.small(ctx, r))
+
+        /* ---- o'yin qatlami (veb Settings tsx 'O'yin qatlami' kartasi) ---- */
+        // Turli turdagi bosqichlar: sozlama + kundalik XP + do'kon. Yurak
+        // sozlamasi veb va mobil o'rtasida sinxronlanadi.
+        addGameSection()
 
         /* ---- mavzu ---- */
         b.rows.addView(Rows.sectionTitle(ctx, getString(R.string.settings_theme_title)))
@@ -261,6 +273,189 @@ class SettingsFragment : Fragment() {
             },
         )
         b.rows.addView(Rows.small(ctx, getString(R.string.settings_version, c.versionName())))
+    }
+
+    /**
+     * O'yin qatlami bloki — veb `Settings.tsx` «O'yin qatlami» kartasining
+     * mobil moslamasi: yuraklar sozlamasi + soni, kunlik XP maqsadi
+     * bosqichlari va gem do'koni.
+     *
+     * Barcha sonlar `GameConfig`dan olinadi (matnda qattiq yozilmagan),
+     * shuning uchun konfig o'zgarsa ekran ham o'zgaradi. Xarid rad etilsa
+     * SABABI ochiq ko'rsatiladi (`gameMessage`) — holat o'zgarmaydi.
+     */
+    private fun addGameSection() {
+        val ctx = requireContext()
+        val store = container().store
+        val st = store.settings()
+        val data = store.state.value.data
+        val hearts = com.dadaxon.aienglishacademy.domain.GameLogic.heartsView(data, System.currentTimeMillis())
+        val goal = com.dadaxon.aienglishacademy.domain.GameLogic.goalView(data)
+        val streak = com.dadaxon.aienglishacademy.domain.GameLogic.streakWithFreezes(data, com.dadaxon.aienglishacademy.data.todayKey())
+
+        b.rows.addView(Rows.sectionTitle(ctx, getString(R.string.settings_game_title)))
+        b.rows.addView(
+            Rows.small(
+                ctx,
+                getString(if (st.heartsEnabled) R.string.settings_hearts_state_on else R.string.settings_hearts_state_off) +
+                    " · " + getString(R.string.settings_goal_today, goal.value, goal.target),
+            ),
+        )
+
+        /* ---- yuraklar ---- */
+        b.rows.addView(
+            Rows.row(
+                ctx,
+                getString(R.string.settings_hearts_on),
+                getString(R.string.settings_hearts_count, hearts.count, hearts.max) +
+                    if (hearts.count < hearts.max && hearts.minutesLeft > 0) {
+                        getString(R.string.settings_hearts_next, hearts.minutesLeft)
+                    } else {
+                        ""
+                    },
+                null,
+                onClick = { patch { it.copy(heartsEnabled = !it.heartsEnabled) } },
+            ),
+        )
+        b.rows.addView(
+            Rows.small(
+                ctx,
+                getString(
+                    R.string.settings_hearts_hint,
+                    com.dadaxon.aienglishacademy.data.GameConfig.HEARTS_MAX,
+                    com.dadaxon.aienglishacademy.data.GameConfig.HEARTS_COST_WRONG,
+                    com.dadaxon.aienglishacademy.data.GameConfig.HEART_REFILL_MINUTES,
+                    com.dadaxon.aienglishacademy.data.GameConfig.HEART_PRACTICE_REVIEWS,
+                    com.dadaxon.aienglishacademy.data.GameConfig.HEART_COMBO_STREAK,
+                ),
+            ),
+        )
+
+        /* ---- kunlik XP maqsadi ---- */
+        b.rows.addView(Rows.small(ctx, getString(R.string.settings_xp_goal_title)))
+        val goalGroup = MaterialButtonToggleGroup(ctx).apply {
+            isSingleSelection = true
+            setSelectionRequired(true)
+        }
+        for (tier in com.dadaxon.aienglishacademy.data.GameConfig.XP_GOAL_TIERS) {
+            val btn = com.google.android.material.button.MaterialButton(
+                ctx, null, com.google.android.material.R.attr.materialButtonOutlinedStyle,
+            ).apply {
+                text = getString(R.string.settings_xp_goal_row, tier.titleUz, tier.xp)
+                id = View.generateViewId()
+                tag = tier.xp
+            }
+            goalGroup.addView(btn)
+        }
+        goalGroup.check(
+            (0 until goalGroup.childCount)
+                .firstOrNull { goalGroup.getChildAt(it).tag == st.xpGoalXp }
+                ?.let { goalGroup.getChildAt(it).id } ?: View.NO_ID,
+        )
+        goalGroup.addOnButtonCheckedListener { g, checkedId, isChecked ->
+            if (!isChecked) return@addOnButtonCheckedListener
+            val xp = (0 until g.childCount)
+                .firstOrNull { g.getChildAt(it).id == checkedId }
+                ?.let { g.getChildAt(it) as? com.google.android.material.button.MaterialButton }
+                ?.tag as? Int ?: return@addOnButtonCheckedListener
+            patch { it.copy(xpGoalXp = xp) }
+        }
+        b.rows.addView(goalGroup)
+        b.rows.addView(
+            Rows.small(
+                ctx,
+                getString(
+                    R.string.settings_xp_goal_hint,
+                    com.dadaxon.aienglishacademy.data.GameConfig.GOAL_GEM_REWARD,
+                    st.dailyMinutes,
+                ),
+            ),
+        )
+
+        /* ---- do'kon ---- */
+        b.rows.addView(Rows.small(ctx, getString(R.string.settings_shop_title, data.game.gems)))
+        b.rows.addView(
+            Rows.small(
+                ctx,
+                getString(R.string.settings_shop_freezes, data.game.freezes) + " · " +
+                    if (hearts.boostActive) {
+                        getString(R.string.settings_boost_active, hearts.boostMinutesLeft)
+                    } else {
+                        getString(R.string.settings_boost_none)
+                    },
+            ),
+        )
+        for (item in com.dadaxon.aienglishacademy.data.GameConfig.SHOP_ITEMS) {
+            b.rows.addView(
+                Rows.row(
+                    ctx,
+                    item.titleUz,
+                    item.noteUz,
+                    getString(R.string.settings_shop_price, item.price),
+                    // Yuraklar to'la / qalqon ko'p / byust faol — buyum
+                    // baribir bosiladi: rad ETISH SABABI ochiq ko'rsatiladi.
+                    onClick = { buyAndReport(item.id, item.titleUz, item.price) },
+                ),
+            )
+        }
+        b.rows.addView(
+            Rows.button(
+                ctx,
+                getString(
+                    R.string.settings_bet_button,
+                    com.dadaxon.aienglishacademy.data.GameConfig.BET_COST_GEMS,
+                    com.dadaxon.aienglishacademy.data.GameConfig.BET_STREAK_DAYS,
+                    com.dadaxon.aienglishacademy.data.GameConfig.BET_WIN_GEMS,
+                ),
+            ).apply {
+                setOnClickListener {
+                    val before = store.state.value.data.game.gems
+                    store.dispatch(StoreAction.GameBet)
+                    pendingGameMsg = if (store.state.value.data.game.gems < before) {
+                        getString(R.string.settings_bet_ok, com.dadaxon.aienglishacademy.data.GameConfig.BET_COST_GEMS)
+                    } else {
+                        null
+                    }
+                    render()
+                }
+            },
+        )
+        val bet = data.game.bet
+        if (bet != null) {
+            b.rows.addView(Rows.small(ctx, getString(R.string.settings_bet_open, bet.startDay, bet.gems)))
+        }
+        b.rows.addView(
+            Rows.small(
+                ctx,
+                getString(R.string.settings_shop_hint, com.dadaxon.aienglishacademy.data.GameConfig.MAX_FREEZES) +
+                    " · zanjir: $streak kun",
+            ),
+        )
+
+        // Xarid/garov javobi — muvaffaqiyat yoki RAD ETISH sababi (veb:
+        // `shopMsg`). `gameMessage` do'konda saqlanadi (holat o'zgarmagan
+        // holda sabab ko'rinadi), muvaffaqiyat matni esa shu ekranning
+        // bir martalik xabati (`pendingGameMsg`).
+        val msg = store.state.value.gameMessage ?: pendingGameMsg
+        pendingGameMsg = null
+        if (!msg.isNullOrBlank()) b.rows.addView(Rows.small(ctx, msg))
+    }
+
+    /**
+     * Do'kon buyumi: `GameOps.buy` reducerda bajariladi, bizga esa natija
+     * `gameMessage` orqali keladi. Gem kamaygan bo'lsa — sotib olindi (son
+     * taxmin qilinmaydi, holatdan o'qiladi); aks holda sabab `gameMessage`da.
+     */
+    private fun buyAndReport(itemId: String, titleUz: String, price: Int) {
+        val store = container().store
+        val before = store.state.value.data.game.gems
+        store.dispatch(StoreAction.GameBuy(itemId))
+        pendingGameMsg = if (store.state.value.data.game.gems < before) {
+            getString(R.string.settings_shop_ok, titleUz, price)
+        } else {
+            null
+        }
+        render()
     }
 
     /** Daraja tanlash tugmalari (kontentda bo'lmagan daraja o'chiriladi). */

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    O'yin belgisi — geometria veb `src/components/icons.tsx` dag `shield`
+    yo'lidan SO'ZMA-SO'Z nusxa (test: `src/test/game-icons.test.ts`).
+    Rang: qalqon — zanjir (streak) himoyasi, shuning uchun mavjud
+    `@color/streak` ishlatiladi. Veb tomonda `flame/shield` uchun ALOHIDA CSS
+    o'zgaruvchisi YO'Q (belgilar `currentColor`ni oladi) — shu sababli bu
+    yerda ham ixtir qilingan yangi hex YO'Q, palitradagi mavjud so'z tanlandi.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24"
+    android:tint="@color/streak">
+    <path
+        android:pathData="M12 3 4.5 6v6c0 4.5 3.2 7.7 7.5 9 4.3-1.3 7.5-4.5 7.5-9V6z"
+        android:fillColor="@color/streak"
+        android:strokeColor="@color/streak"
+        android:strokeWidth="1"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+</vector>
