@@ -458,7 +458,8 @@ PR #2/#3/#4 (commitlar `c5ad6d6`, `a612a41`, `22857df`, `387b5f7`; merelar
 
 **Halol holat — veb ↔ mobil farqi (2026-11-09, yangilandi):** PR #2–#4 mobilda
 hamdardisiz qoldi (`git diff --stat ee3d0f9 a3a3051 -- mobile` BO'SH edi).
-**BO'LIMLAR qismi endi mobilda ham bor** (`3d8dd32` + `13ae16d`, `claude/mobile-parity-boimlar` — PR #8):
+**BO'LIMLAR qismi endi mobilda ham bor** (`claude/mobile-parity-boimlar` — PR #8,
+`3d8dd32` + keyingi hujjat/test commitlari):
 
 | Mobil qism | Fayl(lar) | Paritet dalili |
 |---|---|---|
