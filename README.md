@@ -246,15 +246,14 @@ gradle --offline :app:assembleRelease      # 2026-11-08: lint-gradle kechada bo'
 ```
 
 Tekshirilgan holat (2026-11-09): **377 unit test o'tdi** (33 klass, 0 fail /
-0 error / 0 skip — `:app:testDebugUnitTest` XML laridan sanalgan). Zanjir:
-2026-11-06 dagi 268 → o'yin qatlami va mashq jarayoni qo'shilgach **349**
-(9/30/2026 §5d–§5e) → §5f Bo'limlar ikki klassi (`domain/SectionsTest` 12 ta,
-`domain/SectionJumpLogicTest` 7 ta) bilan **368 / 30 klass** → PR #6 ning mobil
- klasslari (`domain/NewKindsCheckerTest` 7, `domain/ExportedContentParityTest` 1,
+0 error / 0 skip — `:app:testDebugUnitTest` XML laridan sanalgan). Son zanjiri
+halol yozib qo'yiladi: 2026-11-06 dagi 268 → o'yin qatlami va mashq jarayoni
+qo'shilgach **349** (§5d–§5e) → §5f Bo'limlar ikki klassi (`domain/SectionsTest`
+12 ta, `domain/SectionJumpLogicTest` 7 ta) bilan **368 / 30 klass** → PR #6 ning
+mobil klasslari (`domain/NewKindsCheckerTest` 7, `domain/ExportedContentParityTest` 1,
 `domain/SelfAssessmentMergeTest` 1) rebase'dan keyin **377 / 33 klass**.
-`store/GameOpsTest` 15 ta —
-jonli do'kon `AppStore.reduceLocal` o'yin qatlamini HAQIQATAN qo'llashini
-tekshiradi), API 26+
+`store/GameOpsTest` 15 ta — jonli do'kon `AppStore.reduceLocal` o'yin qatlamini
+HAQIQATAN qo'llashini tekshiradi. API 26+
 emulatorda barcha ekranlar ochiladi, ANR yo'q (`/data/anr/` bo'sh; Lug'at 117
 so'zi bo'laklab chiziladi — `UI_KONTRAKTI.md`dagi qoida), `dumpsys gfxinfo`
 95-persent kadr 61 ms. Emulatorda qayta tasdiqlangan: o'quv yo'lida zanjir
