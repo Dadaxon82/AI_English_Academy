@@ -243,6 +243,10 @@ html.no-motion *, html.no-motion *::before, html.no-motion *::after {
     border: 1px solid var(--border);
     overflow: hidden;
   }
+  /* Dars ichida 3+ ketma-ket to'g'ri javob — chiziq oltin rangga o'tadi. */
+  .aea-step-bar-gold > span {
+    background: #f5b301 !important;
+  }
   .aea-step-bar > span {
     position: absolute;
     left: 0;

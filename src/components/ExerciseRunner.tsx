@@ -12,7 +12,7 @@
  * qizil bo'lib, natija va "KEYINGI" tugmasini ko'rsatadi.
  */
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { getBundle } from '../content'
 import type { Exercise } from '../content/types'
@@ -54,6 +54,15 @@ export interface ExerciseRunProps {
   onExit?: () => void
   /** Sarlavha ustidagi belgi (masalan «YANGI SO‘Z»); berilsa tur yorlig‘i o‘rnida chiqadi. */
   badge?: string
+  /** Belgi rangi: `new` — binafsha (yangi so'z), `fix` — to'q sariq (xatolarni tuzatamiz). */
+  badgeTone?: 'new' | 'fix'
+  /**
+   * Dars ichidagi ketma-ket to'g'ri javoblar (LessonPlayer hisoblaydi). 3 dan
+   * boshlab progress ustida "N TA KETMA-KET TO'G'RI" yoziladi va chiziq oltin rangga o'tadi.
+   */
+  streak?: number
+  /** Sarlavha ostida qo'shimcha kontekst (matn / audio tugmasi). */
+  context?: ReactNode
   /** Tanlov variantlari rasmlari (emoji) — berilsa variantlar rasmli kartalar bo'ladi. */
   optionIcons?: string[]
   /** `true` — "O‘tkazib yuborish" tugmasi (xato javob sifatida hisoblanadi, to‘g‘ri javob ko‘rsatiladi). */
@@ -71,6 +80,9 @@ export default function ExerciseRunner({
   comboTracked = false,
   onExit,
   badge,
+  badgeTone = 'new',
+  streak = 0,
+  context,
   optionIcons,
   skippable = false,
 }: ExerciseRunProps) {
@@ -167,6 +179,12 @@ export default function ExerciseRunner({
 
   return (
     <div className="aea-lesson grid gap-5">
+      {/* ---- Ketma-ket to'g'ri javoblar (dars ichida) ---- */}
+      {streak >= 3 && (
+        <p className="-mb-3 text-center text-[11px] font-extrabold uppercase tracking-wider text-amber-500 animate-[var(--animate-pop)]">
+          {streak} ta ketma-ket to‘g‘ri javob
+        </p>
+      )}
       {/* ---- Tepa qator: chiqish · progress · yuraklar ---- */}
       <div className="flex items-center gap-3">
         {onExit && (
@@ -184,7 +202,7 @@ export default function ExerciseRunner({
         {/* Progress chizig'i — son matni `aria-valuetext`da (ekranni
             o'qiydigan dastur uchun); mobilda `exBar` + `R.string.ex_index`. */}
         <div
-          className="aea-step-bar flex-1"
+          className={`aea-step-bar flex-1 ${streak >= 3 ? 'aea-step-bar-gold' : ''}`}
           role="progressbar"
           aria-label="Mashq jarayoni"
           aria-valuemin={0}
@@ -195,16 +213,13 @@ export default function ExerciseRunner({
           <span style={{ width: `${progressPct}%` }} />
         </div>
         {hearts.enabled && !heartFree && (
-          <span className="shrink-0 inline-flex items-center gap-0.5" title={`Yuraklar: ${hearts.count}/${hearts.max}`}>
-            {Array.from({ length: hearts.max }, (_, i) => (
-              <GameIcon
-                key={i}
-                name="heart"
-                size={18}
-                filled={i < hearts.count}
-                className={i < hearts.count ? 'text-[var(--heart)]' : 'text-[var(--line)]'}
-              />
-            ))}
+          <span
+            className="shrink-0 inline-flex items-center gap-1 font-extrabold tabular-nums text-[var(--heart)]"
+            title={`Yuraklar: ${hearts.count}/${hearts.max}`}
+            aria-label={`Yuraklar: ${hearts.count} / ${hearts.max}`}
+          >
+            <GameIcon name="heart" size={22} filled={hearts.count > 0} className={hearts.count > 0 ? '' : 'text-[var(--line)]'} />
+            {hearts.count}
           </span>
         )}
       </div>
@@ -261,11 +276,20 @@ export default function ExerciseRunner({
 
       {/* ---- Topshiriq sarlavhasi ---- */}
       <div className="grid gap-1 animate-[var(--animate-fade-in)]">
-        <p className="inline-flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-wider text-violet-600 dark:text-violet-400">
+        <p
+          className={`inline-flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-wider ${
+            badge && badgeTone === 'fix' ? 'text-orange-500' : 'text-violet-600 dark:text-violet-400'
+          }`}
+        >
           {badge ? (
             <>
-              <span aria-hidden className="inline-grid place-items-center w-5 h-5 rounded-full bg-violet-500 text-white text-[10px]">
-                ★
+              <span
+                aria-hidden
+                className={`inline-grid place-items-center w-5 h-5 rounded-full text-white text-[10px] ${
+                  badgeTone === 'fix' ? 'bg-orange-500' : 'bg-violet-500'
+                }`}
+              >
+                {badgeTone === 'fix' ? '↻' : '★'}
               </span>
               {badge}
             </>
@@ -277,6 +301,8 @@ export default function ExerciseRunner({
         </p>
         <h2 className="text-xl sm:text-2xl font-extrabold leading-tight">{exercise.instructionUz}</h2>
       </div>
+
+      {context}
 
       {'passageExcerpt' in exercise && exercise.passageExcerpt && (
         <blockquote className="rounded-2xl border-2 bg-[var(--panel-2)] p-3.5 text-sm italic">“{exercise.passageExcerpt}”</blockquote>

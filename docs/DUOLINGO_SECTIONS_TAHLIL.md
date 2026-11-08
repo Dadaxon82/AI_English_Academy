@@ -225,3 +225,27 @@ Duolingo dars ekranlari (`/lesson`) asosida Lug'at bo'limiga **«O'yin»** rejim
   so'z SRS jadvalida baholanadi (to'g'ri → good, xato → again), oxirida XP va aniqlik ekrani.
 
 Skrinshotlar: `wordgame-*.png`.
+
+## 9. Bo'lim darslari — Grammatika, O'qish, Tinglash, Yozish, Gapirish (2026-11-08)
+
+Umumiy `src/components/LessonPlayer.tsx` (Lug'at o'yini ham shunga o'tdi):
+- **Ketma-ket to'g'ri javoblar** — 3 dan boshlab progress ustida «N TA KETMA-KET TO'G'RI», chiziq oltin rangda.
+- **Xatolarni tuzatamiz** — xato qilingan topshiriq dars oxirida bir marta qayta beriladi (to'q sariq belgi).
+- **«Dars tugadi!»** — tajriba ochkolari (XP), aniqlik (birinchi urinishlar bo'yicha), «Darsni ko'rib chiqish» ro'yxati.
+- Yuraklar — bitta yurak + son (tepada o'ngda).
+
+Darslar (`src/lib/lessons.ts`, sof funksiyalar, `src/test/lessons.test.ts`):
+
+| Bo'lim | Dars tarkibi |
+|---|---|
+| Grammatika | Qoida kartasi (izoh + formula + 🔊 misollar) → mashqlar (osondan qiyinga) → misol gaplarni plitkalardan yig'ish |
+| O'qish | Matn kartasi (glossariy bilan) → savollar; savol paytida «Matnni ko'rish» |
+| Tinglash | Audio kartasi (faqat manifestda bor fayl — soxta pleyer yo'q) → savollar; «Audioni qayta tinglash» |
+| Yozish | Namuna javob gaplarini plitkalardan tuzish → «Endi o'zingiz yozing» → yozish maydoni |
+| Gapirish | «Ovoz chiqarib ayting» — mikrofon (brauzer nutq tanish, 70%+ so'z mos → to'g'ri); «Hozir gapira olmayman» → tinglab plitkalardan yig'ish (matn yashirin) → savolga javob |
+
+Har sahifa tepasida «… darsi» kartasi (keyingi tugallanmagan mavzu/matn/topshiriq) va har kartada «Darsni boshlash».
+Yasalgan topshiriqlar (`lesson-gtr-`, `lesson-wwo-`, `lesson-spk-`) Xatolar daftari uchun id'dan tiklanadi.
+
+Skrinshotlar: `lesson-grammar-rule.png`, `lesson-reading-question.png`, `lesson-listening-audio.png`,
+`lesson-speaking-mic.png`, `lesson-writing-tiles.png`, `lesson-end.png`, `lesson-mobile-grammar-start.png`.

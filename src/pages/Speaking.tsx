@@ -12,6 +12,8 @@ import { useEffect, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { Button, Card, Chip, EmptyState, InfoBanner, LoadingBlock, SuccessBanner } from '../components/ui'
 import { useStore } from '../lib/store'
+import { LessonStartCard, SpeakingLesson } from '../components/SectionLessons'
+import { speakingLesson } from '../lib/lessons'
 import { getBundle } from '../content'
 import { formatDuration } from '../lib/timer'
 import type { SpeakingTask } from '../content/types'
@@ -55,6 +57,7 @@ export default function Speaking() {
   const [engineUsed, setEngineUsed] = useState<'browser-speech' | 'none'>('none')
   const [recError, setRecError] = useState<string | null>(null)
   const [saved, setSaved] = useState<'analyzed' | 'saved' | null>(null)
+  const [lesson, setLesson] = useState(false)
 
   const recorderRef = useRef<MediaRecorder | null>(null)
   const chunksRef = useRef<Blob[]>([])
@@ -157,6 +160,8 @@ export default function Speaking() {
   const history = data.speaking.filter((s) => s.taskId === selectedId)
   const canRecordButDenied = recState === 'denied' || recState === 'unsupported'
 
+  if (lesson && task) return <SpeakingLesson task={task} onClose={() => setLesson(false)} />
+
   return (
     <div className="grid gap-4">
       <Card className="grid gap-3">
@@ -184,6 +189,16 @@ export default function Speaking() {
           ))}
         </div>
       </Card>
+
+      {task && (
+        <LessonStartCard
+          kicker="Gapirish darsi"
+          title={task.topicUz}
+          body="Gaplarni tinglab ovoz chiqarib takrorlang, so‘ng savolga javob bering"
+          steps={speakingLesson(task)}
+          onStart={() => setLesson(true)}
+        />
+      )}
 
       {task && (
         <Card className="grid gap-4">
