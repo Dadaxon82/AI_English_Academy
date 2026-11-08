@@ -30,6 +30,7 @@ import { day6, vocabDay6, grammarDay6, readingDay6, listeningDay6, writingDay6, 
 import { day7, vocabDay7, grammarDay7, readingDay7, listeningDay7, writingDay7, speakingDay7, testDay7 } from './a1/day-07'
 import { mockExamA1 } from './mockExamA1'
 import { GRAMMAR_EXTRA, READING_EXTRA } from './a1/new-types'
+import { REMIX_PREFIX, baseExerciseId, remixExercise } from './remix'
 import { diagnosticTest } from './diagnostic'
 
 /** Har bir daraja uchun to'plam. A2/B1/B2/C1 shu strukturada qo'shiladi. */
@@ -433,6 +434,11 @@ function lessonExercise(id: string): Exercise | undefined {
 }
 
 export function findExercise(id: string): Exercise | undefined {
+  // Xatolar daftari o'yini: "boshqa ko'rinishda" — asl mashqdan qayta quriladi.
+  if (id.startsWith(REMIX_PREFIX)) {
+    const orig = findExercise(baseExerciseId(id))
+    return orig ? remixExercise(orig) ?? undefined : undefined
+  }
   if (id.startsWith('lesson-')) return lessonExercise(id)
   const vocabById = (vid: string) => [...allVocab(), ...allGlossaryVocab()].find((x) => x.id === vid)
   if (id.startsWith(VOCAB_PIC_PREFIX)) {

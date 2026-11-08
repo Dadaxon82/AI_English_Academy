@@ -38,6 +38,8 @@ export type LessonStep =
       /** Savol paytida qayta ochiladigan kontekst (matn yoki audio). */
       context?: 'passage' | 'audio'
       badge?: string
+      /** Belgi rangi: `fix` — to'q sariq (xatolar ustida ishlash). */
+      badgeTone?: 'new' | 'fix'
       icons?: string[]
       vocabIds?: string[]
     }
