@@ -3,19 +3,27 @@
  *
  * Talablar: javobni tekshirish, xato sababini tushuntirish, keyingi
  * mashqni natijaga moslashtirish. Barcha tugmalar HAQIQIY ishlaydi.
+ *
+ * KO'RINISH — "dars rejimi" (Duolingo dars ekrani MEXANIKASI, dizayn va
+ * qahramon bizniki): tepada yopish + progress + yuraklar, katta topshiriq
+ * sarlavhasi, qahramon va gap pufagi (savol / manba matn + talaffuz),
+ * raqamli variant kartalari (1–9 tugmalari), so'z plitkalari (chiziqlar
+ * ustiga yig'iladi), pastda "TEKSHIRISH" paneli — javobdan keyin yashil /
+ * qizil bo'lib, natija va "KEYINGI" tugmasini ko'rsatadi.
  */
 
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { getBundle } from '../content'
 import type { Exercise } from '../content/types'
 import { checkAnswer, type CheckResult } from '../lib/check'
 import { xpGain } from '../lib/game'
 import { HEART_COMBO_STREAK } from '../lib/gameConfig'
 import { playFeedback } from '../lib/feedbackSound'
 import { useStore } from '../lib/store'
-import { Button, Chip, InfoBanner, inputCls } from './ui'
+import { Chip, InfoBanner, inputCls } from './ui'
 import { GameIcon } from './icons'
-import { MascotExerciseFeedback } from './Mascot'
+import { MascotExerciseFeedback, MascotFigure } from './Mascot'
 
 export interface ExerciseRunProps {
   exercise: Exercise
@@ -42,6 +50,8 @@ export interface ExerciseRunProps {
    * Standart `false` — himoyaviy: yangi sahifa qo'shilsa chip chiqmaydi.
    */
   comboTracked?: boolean
+  /** Berilsa — tepada "×" (darsdan chiqish) tugmasi chiziladi. */
+  onExit?: () => void
 }
 
 export default function ExerciseRunner({
@@ -53,6 +63,7 @@ export default function ExerciseRunner({
   prevResult,
   heartFree = false,
   comboTracked = false,
+  onExit,
 }: ExerciseRunProps) {
   const { hearts, data } = useStore()
   const game = data.game
@@ -71,13 +82,6 @@ export default function ExerciseRunner({
     setAnswer(initialAnswer(exercise))
   }
 
-  // matching uchun aralashtirilgan variantlar — hook doimiy chaqirilishi
-  // shart (switch ichida bo'la olmaydi).
-  const rights = useMemo(
-    () => (exercise.kind === 'matching' ? shuffle(exercise.pairs.map((p) => p.right), exercise.id) : []),
-    [exercise],
-  )
-
   const canCheck = !isAnswerEmpty(exercise, answer)
 
   // Yurak darvozasi: yuraklar tugagan bo'lsa va bu sinov/sanov bo'lmasa
@@ -94,116 +98,115 @@ export default function ExerciseRunner({
     // Javob ovozi — Web Audio API bilan sintez qilinadi (`feedbackSound.ts`):
     // fayl yo'q, shuning uchun `public/audio/manifest.json` qoidasi
     // ("fayl bo'lmasa pleyer ko'rsatilmaydi") buzilmaydi. Ovoz sozlamadagi
-    // bitta tugma bilan boshqariladi (`settings.motionEnabled` — "jonli
-    // feedback"). Brauzer `AudioContext`ni bermasa JIM o'tamiz.
-    // `prefers-reduced-motion` ovozni O'CHIRMAYDI: u harakat (vestibulyar)
-    // so'rovi, eshitish emas — shuning uchun shu yerda tekshirilmaydi.
+    // bitta tugma bilan boshqariladi (`settings.motionEnabled`). Brauzer
+    // `AudioContext`ni bermasa JIM o'tamiz.
     playFeedback(r.correct ? 'correct' : 'wrong', data.settings.motionEnabled)
   }
 
   /**
    * Bu javob uchun beriladigan XP — store'dagi hisob BILAN BIR XIL
-   * (`store.tsx`: `xpGain(game, correct, difficulty, now)`, ya'ni asos son
-   * `xpForAttempt` va byust faol bo'lsa ×2). Son ixtir qilinmaydi: shu funksiya
-   * chaqiriladi, shuning uchun ekrandagi son haqiqatan qo'shiladi.
+   * (`xpGain(game, correct, difficulty, now)`), son ixtir qilinmaydi.
    */
   const xpShown = result ? xpGain(game, result.correct, exercise.difficulty, Date.now()) : undefined
 
   /**
-   * Progress chizig'i — necha mashq JAVOB BERILGAN. Son ixtir qilinmagan:
-   * tekshirilgan payog`idan boshlab (`state === 'answered'`) chiziq
-   * `(index + 1) / total` gacha siljiydi, keyingi mashqqa o'tganda joyida
-   * qoladi. Ya'ni har to'g'ri/noto'g'ri javobdan keyin jonli to'ladi —
-   * DULO jarayonining mantiqi (rang/brand bizniki).
+   * Progress chizig'i — necha mashq JAVOB BERILGAN. Tekshirilgan paytdan
+   * boshlab chiziq `(index + 1) / total` gacha siljiydi.
    */
   const answeredCount = state === 'answered' ? index + 1 : index
   const progressPct = total > 0 ? Math.min(100, (answeredCount / total) * 100) : 0
 
   /**
-   * Combo chipi — `game.combo` HAQIQIY soni (store'dan o'qiladi, bu komponent
-   * o'zi sanamaydi). `HEART_COMBO_STREAK` ga yetganda yurak qaytadi — shu
-   * sababli chegara yaqinlashganda chip boshqacha ko'rinadi.
-   *
-   * SOXTA SON YO'Q: chip FAQAT `comboTracked` bo'lsa chiziladi — sahifa
-   * javobni `recordAttempt` bilan store'ga yozsa. Mock imtihon va
-   * diagnostikada (`heartFree`) `recordAttempt` chaqirilmaydi, u yerda
-   * `game.combo` o'tgan darsdan qolgan son — ko'rsatish aldash bo'lardi.
+   * Combo chipi — `game.combo` HAQIQIY soni. FAQAT `comboTracked` bo'lsa
+   * chiziladi (sahifa javobni `recordAttempt` bilan yozsa).
    */
   const combo = game.combo
   const showCombo = comboTracked && combo >= 2
   const toHeart = combo > 0 && combo % HEART_COMBO_STREAK === 0
   const comboNeeded = HEART_COMBO_STREAK - (combo % HEART_COMBO_STREAK)
 
-  // Klaviatura: Enter — tekshirish / davom etish. Paydo bo'lgan matn
-  // maydonida Enter hech narsa qilmasdi — endi shu hodisa o'zi ishlaydi.
+  // Klaviatura: Enter — tekshirish / davom etish; 1–9 — variant tanlash.
   const doEnter = state === 'idle' && canCheck ? doCheck : state === 'answered' ? onNext : null
+  const optionCount = choiceCount(exercise)
   useEffect(() => {
-    if (!doEnter) return
     const onKey = (e: KeyboardEvent) => {
-      if (e.key !== 'Enter' || e.shiftKey || e.ctrlKey || e.metaKey || e.altKey) return
-      // Tugma focus bo'lsa brauzer o'zi bosadi — ikki marta bosilmasin.
-      if (document.activeElement?.tagName === 'BUTTON') return
-      e.preventDefault()
-      doEnter()
+      if (e.shiftKey || e.ctrlKey || e.metaKey || e.altKey) return
+      const tag = document.activeElement?.tagName
+      if (e.key === 'Enter') {
+        if (!doEnter) return
+        // Tugma focus bo'lsa brauzer o'zi bosadi — ikki marta bosilmasin.
+        if (tag === 'BUTTON') return
+        e.preventDefault()
+        doEnter()
+        return
+      }
+      if (state !== 'idle' || optionCount === 0 || tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return
+      const n = Number(e.key)
+      if (Number.isInteger(n) && n >= 1 && n <= optionCount) {
+        e.preventDefault()
+        setAnswer(choiceValue(exercise, n - 1))
+      }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [doEnter])
+  }, [doEnter, state, optionCount, exercise])
+
+  const prompt = promptOf(exercise)
+  const outcomeCls = result ? (result.correct ? 'aea-outcome-correct' : 'aea-outcome-wrong') : ''
 
   return (
-    <div className="grid gap-4">
-      {/* Progress chizigi — eski `{index + 1} / {total}` MATNI SHU BILAN
-          ALMASHDI (DULO jarayoni: tepadagi chiziq har javobdan keyin siljiydi).
-          Son matni yo'qolmadi: `aria-valuetext`da haqiqiy navbat yozilgan —
-          ekranni o'qiydigan dastur shu sonni o'qiydi, vizual son ixtir emas.
-          Mobilda ham xuddi shu: `exBar`ning `contentDescription`i
-          `R.string.ex_index` (`strings.xml`) — ikkala tomonda BIR xil matn.
-          `aria-valuenow` — JAVOB BERILGAN mashqlar soni (soxta emas: tekshirish
-          bosilgandagina ortadi). */}
-      <div
-        className="aea-step-bar"
-        role="progressbar"
-        aria-label="Mashq jarayoni"
-        aria-valuemin={0}
-        aria-valuemax={total}
-        aria-valuenow={answeredCount}
-        aria-valuetext={`${answeredCount} / ${total} mashq yakunlandi`}
-      >
-        <span style={{ width: `${progressPct}%` }} />
+    <div className="aea-lesson grid gap-5">
+      {/* ---- Tepa qator: chiqish · progress · yuraklar ---- */}
+      <div className="flex items-center gap-3">
+        {onExit && (
+          <button
+            type="button"
+            onClick={onExit}
+            aria-label="Darsdan chiqish"
+            className="shrink-0 inline-grid place-items-center w-9 h-9 rounded-xl muted hover:bg-[var(--panel-2)]"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" aria-hidden>
+              <path d="M6 6l12 12M18 6 6 18" />
+            </svg>
+          </button>
+        )}
+        {/* Progress chizig'i — son matni `aria-valuetext`da (ekranni
+            o'qiydigan dastur uchun); mobilda `exBar` + `R.string.ex_index`. */}
+        <div
+          className="aea-step-bar flex-1"
+          role="progressbar"
+          aria-label="Mashq jarayoni"
+          aria-valuemin={0}
+          aria-valuemax={total}
+          aria-valuenow={answeredCount}
+          aria-valuetext={`${answeredCount} / ${total} mashq yakunlandi`}
+        >
+          <span style={{ width: `${progressPct}%` }} />
+        </div>
+        {hearts.enabled && !heartFree && (
+          <span className="shrink-0 inline-flex items-center gap-0.5" title={`Yuraklar: ${hearts.count}/${hearts.max}`}>
+            {Array.from({ length: hearts.max }, (_, i) => (
+              <GameIcon
+                key={i}
+                name="heart"
+                size={18}
+                filled={i < hearts.count}
+                className={i < hearts.count ? 'text-[var(--heart)]' : 'text-[var(--line)]'}
+              />
+            ))}
+          </span>
+        )}
       </div>
 
-      <div className="flex items-center justify-end gap-2">
-        <div className="flex items-center gap-1.5">
-          {/* Combo — store'dagi haqiqiy ketma-ket to'g'ri javoblar.
-              Yurak qaytishiga nechta qolgani ham haqiqiy hisobdan
-              (`HEART_COMBO_STREAK` — `gameConfig.ts`). */}
+      {(showCombo || heartFree || hearts.boostActive) && (
+        <div className="flex flex-wrap items-center gap-1.5 -mt-2">
+          {/* Combo — store'dagi haqiqiy ketma-ket to'g'ri javoblar. */}
           {showCombo && (
             <Chip tone="brand">
               <GameIcon name="flame" size={12} />
               {combo} ketma-ket to‘g‘ri
-              {hearts.enabled && !heartFree && hearts.count < hearts.max && !toHeart && (
-                // `toHeart` bo'lsa — yurak allaqachon qaytdi (chipning o'zi
-                // sonni ko'rsatadi), "yana N" deb aldash kerak emas.
-                <> · yana {comboNeeded} — yurak qaytadi</>
-              )}
+              {hearts.enabled && !heartFree && hearts.count < hearts.max && !toHeart && <> · yana {comboNeeded} — yurak qaytadi</>}
             </Chip>
-          )}
-          <Chip>{kindLabel(exercise.kind)}</Chip>
-          <Chip>{'Qiyinlik ' + exercise.difficulty}</Chip>
-          {/* Yuraklar holati (sinov/sanovda jarima qilinmaydi — shu yerda ochiq
-              aytiladi, foydalanuvchi sonni ko'rib turgani uchun adashmaydi). */}
-          {hearts.enabled && !heartFree && (
-            <span className="inline-flex items-center gap-1" title={`Yuraklar: ${hearts.count}/${hearts.max}`}>
-              {Array.from({ length: hearts.max }, (_, i) => (
-                <GameIcon
-                  key={i}
-                  name="heart"
-                  size={16}
-                  filled={i < hearts.count}
-                  className={i < hearts.count ? 'text-[var(--heart)]' : 'text-[var(--line)]'}
-                />
-              ))}
-            </span>
           )}
           {heartFree && <Chip tone="ok">Yurak jarimasi yo‘q</Chip>}
           {hearts.boostActive && (
@@ -212,11 +215,10 @@ export default function ExerciseRunner({
             </Chip>
           )}
         </div>
-      </div>
+      )}
 
       {blocked && (
-        /* Yuraklar tugadi — dars darvozasi. Havolalar HAQIQIY: birinchisi
-           SRS takrorlashiga (yurak qaytaradi), ikkinchisi sozlamaga. */
+        /* Yuraklar tugadi — dars darvozasi. Havolalar HAQIQIY. */
         <InfoBanner tone="warn">
           <div className="grid gap-2">
             <div className="flex items-center gap-2">
@@ -246,45 +248,155 @@ export default function ExerciseRunner({
         </InfoBanner>
       )}
 
-      <p className="font-semibold animate-[var(--animate-fade-in)]">{exercise.instructionUz}</p>
+      {/* ---- Topshiriq sarlavhasi ---- */}
+      <div className="grid gap-1 animate-[var(--animate-fade-in)]">
+        <p className="text-[11px] font-extrabold uppercase tracking-wider text-violet-600 dark:text-violet-400">
+          {kindLabel(exercise.kind)} · qiyinlik {exercise.difficulty}
+        </p>
+        <h2 className="text-xl sm:text-2xl font-extrabold leading-tight">{exercise.instructionUz}</h2>
+      </div>
 
       {'passageExcerpt' in exercise && exercise.passageExcerpt && (
-        <blockquote className="rounded-xl border bg-[var(--panel-2)] p-3.5 text-sm italic">
-          “{exercise.passageExcerpt}”
-        </blockquote>
+        <blockquote className="rounded-2xl border-2 bg-[var(--panel-2)] p-3.5 text-sm italic">“{exercise.passageExcerpt}”</blockquote>
       )}
 
-      <AnswerInput exercise={exercise} answer={answer} onChange={setAnswer} locked={state === 'answered'} rights={rights} />
-
-      {state === 'answered' && result && (
-        <div className={result.correct ? 'aea-outcome-correct' : 'aea-outcome-wrong'}>
-          <MascotExerciseFeedback
-            correct={result.correct}
-            expected={result.expected}
-            whyUz={result.whyUz}
-            xp={xpShown}
-          />
+      {/* ---- Qahramon + gap pufagi (savol / manba matn) ---- */}
+      {prompt && (
+        <div className="flex items-end gap-2 sm:gap-3">
+          <MascotFigure className="shrink-0" maxHeight="max-h-24 sm:max-h-32" alt="" />
+          <div className="relative mb-6 sm:mb-8 rounded-2xl border-2 bg-[var(--panel)] px-3.5 py-2.5 min-w-0 flex items-center gap-2">
+            <span
+              aria-hidden
+              className="absolute -left-[7px] bottom-4 w-3 h-3 rotate-45 border-l-2 border-b-2 bg-[var(--panel)]"
+            />
+            {prompt.lang === 'en' && <SpeakIcon text={prompt.text} />}
+            <p className="font-semibold break-words" lang={prompt.lang === 'en' ? 'en' : 'uz'}>
+              {prompt.text}
+            </p>
+          </div>
         </div>
       )}
 
-      <div className="flex flex-wrap items-center gap-2">
-        {state === 'idle' ? (
-          <Button onClick={doCheck} disabled={!canCheck || blocked}>
-            Tekshirish
-          </Button>
-        ) : (
-          <Button onClick={onNext}>{index + 1 < total ? 'Keyingi mashq' : 'Yakunlash'}</Button>
+      <AnswerInput key={exercise.id} exercise={exercise} answer={answer} onChange={setAnswer} locked={state === 'answered'} />
+
+      {/* ---- Pastki panel: TEKSHIRISH / natija + KEYINGI ---- */}
+      <div
+        className={`mt-1 rounded-2xl border-2 px-3.5 sm:px-5 py-3.5 sm:py-4 grid gap-3 transition-colors ${
+          result
+            ? result.correct
+              ? 'bg-emerald-50 border-emerald-300 dark:bg-emerald-950/30 dark:border-emerald-700'
+              : 'bg-rose-50 border-rose-300 dark:bg-rose-950/30 dark:border-rose-700'
+            : 'bg-[var(--panel-2)]'
+        }`}
+      >
+        {state === 'answered' && result && (
+          <div className={outcomeCls}>
+            <MascotExerciseFeedback bare correct={result.correct} expected={result.expected} whyUz={result.whyUz} xp={xpShown} />
+          </div>
         )}
-        {state === 'idle' && (
-          <Button variant="ghost" size="sm" onClick={() => setAnswer(skipAnswer(exercise))} disabled={!canCheck}>
-            Javobni tozalash
-          </Button>
-        )}
+        <div className="flex flex-wrap items-center gap-2">
+          {state === 'idle' && (
+            <button
+              type="button"
+              className="text-xs font-extrabold uppercase tracking-wide muted hover:underline disabled:opacity-40"
+              onClick={() => setAnswer(initialAnswer(exercise))}
+              disabled={!canCheck}
+            >
+              Javobni tozalash
+            </button>
+          )}
+          <span className="flex-1" />
+          {state === 'idle' ? (
+            <button
+              type="button"
+              onClick={doCheck}
+              disabled={!canCheck || blocked}
+              className={`${chunkyBtn} ${
+                canCheck && !blocked
+                  ? 'bg-emerald-500 hover:bg-emerald-400 text-white border-emerald-700'
+                  : 'bg-slate-200 text-slate-400 border-slate-300 dark:bg-slate-700 dark:text-slate-400 dark:border-slate-600'
+              }`}
+            >
+              Tekshirish
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={onNext}
+              className={`${chunkyBtn} text-white ${
+                result?.correct ? 'bg-emerald-500 hover:bg-emerald-400 border-emerald-700' : 'bg-rose-500 hover:bg-rose-400 border-rose-700'
+              }`}
+            >
+              {index + 1 < total ? 'Keyingi mashq' : 'Yakunlash'}
+            </button>
+          )}
+        </div>
+        <p className="text-[11px] muted hidden sm:block">
+          Klaviatura: <b>Enter</b> — {state === 'idle' ? 'tekshirish' : 'davom etish'}
+          {state === 'idle' && optionCount > 0 && (
+            <>
+              , <b>1–{optionCount}</b> — variant tanlash
+            </>
+          )}
+          .
+        </p>
       </div>
-      <p className="text-[11px] muted">
-        Klaviatura: <b>Enter</b> — {state === 'idle' ? 'tekshirish' : 'davom etish'}.
-      </p>
     </div>
+  )
+}
+
+/** Katta "3D" tugma (pastki chegara — chuqurlik). */
+const chunkyBtn =
+  'min-w-40 inline-flex items-center justify-center rounded-2xl px-6 py-3 text-sm font-extrabold uppercase tracking-wide ' +
+  'border-b-4 transition-all active:translate-y-0.5 active:border-b-2 focus-visible:outline-2 focus-visible:outline-offset-2 ' +
+  'disabled:cursor-not-allowed'
+
+/** Variant kartasi (raqamli belgi bilan). */
+const cardCls =
+  'aea-choice w-full flex items-center gap-3 rounded-2xl border-2 border-b-4 px-3.5 py-3 text-sm sm:text-base text-left ' +
+  'bg-[var(--panel)] disabled:cursor-default'
+const cardOn = 'border-navy-400 bg-navy-50 text-navy-800 dark:bg-navy-900/40 dark:text-navy-100 dark:border-navy-500 font-bold'
+
+/** So'z plitkasi. */
+const tileCls =
+  'aea-choice inline-flex items-center rounded-xl border-2 border-b-4 px-3 py-1.5 text-sm sm:text-base font-semibold ' +
+  'bg-[var(--panel)] disabled:cursor-default'
+
+/** Gap pufagidagi karnay — matnni brauzer TTS bilan o'qiydi (fayl yo'q). */
+function SpeakIcon({ text }: { text: string }) {
+  if (typeof window === 'undefined' || !('speechSynthesis' in window)) return null
+  return (
+    <button
+      type="button"
+      aria-label={`Tinglash: ${text}`}
+      title="Tinglash"
+      onClick={() => {
+        const u = new SpeechSynthesisUtterance(text)
+        u.lang = 'en-US'
+        u.rate = 0.92
+        window.speechSynthesis.cancel()
+        window.speechSynthesis.speak(u)
+      }}
+      className="shrink-0 inline-grid place-items-center w-8 h-8 rounded-lg text-sky-500 hover:bg-sky-50 dark:hover:bg-sky-950/40"
+    >
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+        <path d="M11 5 6 9H3v6h3l5 4V5Z" />
+        <path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 6a8 8 0 0 1 0 12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      </svg>
+    </button>
+  )
+}
+
+function NumBadge({ n, on }: { n: number; on: boolean }) {
+  return (
+    <span
+      aria-hidden
+      className={`shrink-0 inline-grid place-items-center w-7 h-7 rounded-lg border-2 text-xs font-bold ${
+        on ? 'border-navy-400 text-navy-700 dark:text-navy-200' : 'muted'
+      }`}
+    >
+      {n}
+    </span>
   )
 }
 
@@ -295,84 +407,52 @@ function AnswerInput({
   answer,
   onChange,
   locked,
-  rights,
 }: {
   exercise: Exercise
   answer: unknown
   onChange: (v: unknown) => void
   locked: boolean
-  rights: string[]
 }) {
   switch (exercise.kind) {
-    case 'multiple-choice': {
-      const chosen = typeof answer === 'number' ? answer : -1
-      return (
-        <div className="grid gap-2" role="radiogroup" aria-label="Javob variantlari">
-          {exercise.options.map((opt, i) => (
-            <button
-              key={i}
-              type="button"
-              role="radio"
-              aria-checked={chosen === i}
-              disabled={locked}
-              onClick={() => onChange(i)}
-              className={`aea-choice text-left px-3.5 py-2.5 rounded-xl border text-sm ${
-                chosen === i
-                  ? 'border-[var(--accent)] bg-navy-50 dark:bg-navy-900/40 font-semibold'
-                  : 'hover:bg-[var(--panel-2)]'
-              }`}
-            >
-              <span className="inline-grid place-items-center w-5 h-5 rounded-full border text-[10px] mr-2">
-                {String.fromCharCode(65 + i)}
-              </span>
-              {opt}
-            </button>
-          ))}
-        </div>
-      )
-    }
+    case 'multiple-choice':
     case 'true-false-notgiven': {
-      const opts: { v: string; label: string }[] = [
-        { v: 'true', label: 'True — to‘g‘ri' },
-        { v: 'false', label: 'False — noto‘g‘ri' },
-        { v: 'notgiven', label: 'Not Given — matnda yo‘q' },
-      ]
-      const chosen = String(answer ?? '')
+      const opts = choiceLabels(exercise)
+      const chosen = answer
       return (
-        <div className="grid gap-2">
-          <p className="text-sm font-medium">{exercise.statement}</p>
-          <div className="flex flex-wrap gap-2" role="radiogroup" aria-label="True / False / Not Given">
-            {opts.map((o) => (
+        <div className="grid gap-2.5" role="radiogroup" aria-label="Javob variantlari">
+          {opts.map((label, i) => {
+            const on = chosen === choiceValue(exercise, i)
+            return (
               <button
-                key={o.v}
+                key={i}
                 type="button"
                 role="radio"
-                aria-checked={chosen === o.v}
+                aria-checked={on}
                 disabled={locked}
-                onClick={() => onChange(o.v)}
-                className={`aea-choice px-3.5 py-2 rounded-xl border text-sm ${
-                  chosen === o.v ? 'border-[var(--accent)] bg-navy-50 dark:bg-navy-900/40 font-semibold' : 'hover:bg-[var(--panel-2)]'
-                }`}
+                onClick={() => onChange(choiceValue(exercise, i))}
+                className={`${cardCls} ${on ? cardOn : 'hover:bg-[var(--panel-2)]'}`}
               >
-                {o.label}
+                <NumBadge n={i + 1} on={on} />
+                <span className="flex-1 text-center">{label}</span>
+                <span className="w-7 shrink-0" aria-hidden />
               </button>
-            ))}
-          </div>
+            )
+          })}
         </div>
       )
     }
     case 'gap-fill': {
-      const arr = Array.isArray(answer) ? answer : exercise.answers.map(() => '')
+      const arr = Array.isArray(answer) ? (answer as string[]) : exercise.answers.map(() => '')
       const parts = exercise.text.split('___')
       return (
-        <div className="grid gap-3">
-          <p className="text-sm leading-8">
+        <div className="grid gap-4">
+          <p className="text-base sm:text-lg leading-[2.6rem] font-medium">
             {parts.map((p, i) => (
               <span key={i}>
                 {p}
                 {i < parts.length - 1 && (
                   <input
-                    className={`${inputCls} inline-block w-28 mx-1 px-2 py-1 text-center`}
+                    className="inline-block w-28 mx-1 px-2 py-0.5 text-center font-bold bg-transparent border-0 border-b-2 border-[var(--border)] focus:border-[var(--accent)] outline-none"
                     value={arr[i] ?? ''}
                     disabled={locked}
                     aria-label={`${i + 1}-bo‘shliq`}
@@ -381,127 +461,260 @@ function AnswerInput({
                       next[i] = e.target.value
                       onChange(next)
                     }}
-                    placeholder="____"
+                    placeholder="…"
                   />
                 )}
               </span>
             ))}
           </p>
           {exercise.wordBank && (
-            <div className="flex flex-wrap gap-1.5">
-              {exercise.wordBank.map((w, bi) => (
-                <button
-                  key={`${w}-${bi}`}
-                  type="button"
-                  disabled={locked}
-                  // ESKI BUG: tugma har doim 1-bo'shliqqa yozardi
-                  // ([w, ...arr.slice(1)]) — 4 bo'shliqli mashqni tugmalar
-                  // bilan yechib bo'lmas edi. Endi ENG BIRINCHI BO'SH
-                  // bo'shliqqa yozadi (mantiqiy ketma-ketlik).
-                  onClick={() => {
-                    const next = [...arr]
-                    const slot = next.findIndex((x) => String(x).trim() === '')
-                    if (slot > -1) next[slot] = w
-                    else next.push(w)
-                    onChange(next)
-                  }}
-                  className="chip hover:bg-[var(--panel)] cursor-pointer"
-                >
-                  {w}
-                </button>
-              ))}
+            <div className="flex flex-wrap justify-center gap-2">
+              {exercise.wordBank.map((w, bi) => {
+                const used = count(arr, w) > count(exercise.wordBank!.slice(0, bi), w)
+                return (
+                  <button
+                    key={`${w}-${bi}`}
+                    type="button"
+                    disabled={locked || used}
+                    // Tugma ENG BIRINCHI BO'SH bo'shliqqa yozadi.
+                    onClick={() => {
+                      const next = [...arr]
+                      const slot = next.findIndex((x) => String(x).trim() === '')
+                      if (slot > -1) next[slot] = w
+                      else next.push(w)
+                      onChange(next)
+                    }}
+                    className={`${tileCls} ${used ? 'opacity-40' : 'hover:bg-[var(--panel-2)]'}`}
+                  >
+                    {w}
+                  </button>
+                )
+              })}
             </div>
           )}
         </div>
       )
     }
-    case 'matching': {
-      const map = (answer ?? {}) as Record<string, string>
+    case 'matching':
+      return <MatchingInput exercise={exercise} answer={answer} onChange={onChange} locked={locked} />
+    case 'word-order':
       return (
-        <div className="grid gap-2">
-          {exercise.pairs.map((p) => (
-            <div key={p.left} className="flex items-center gap-2 text-sm">
-              <span className="flex-1 min-w-0 font-medium truncate">{p.left}</span>
-              {/* Juftlik tanlanganda o'q "o'sib" qaytadi — bosish tajribasi.
-                  `key` tanlangan qiymat bilan o'zgaradi: React qayta
-                  chizganda animatsiya qayta ishga tushadi (yoksa bir marta
-                  o'ynab, keyingi tanlovda jim qolardi).
-                  Matching vebda `<select>` bilan ishlaydi — tugma maxfiy
-                  emas, shuning uchun mikrota'sir o'qqa qo'yilgan (mobil
-                  tomonda esa tugmalar bor: `markLeftSelection`). */}
-              <span aria-hidden className={map[p.left] ? 'aea-bump' : ''} key={map[p.left] ?? ''}>
-                →
-              </span>
-              <select
-                className={`${inputCls} w-44`}
-                value={map[p.left] ?? ''}
-                disabled={locked}
-                aria-label={`${p.left} juftligi`}
-                onChange={(e) => onChange({ ...map, [p.left]: e.target.value })}
-              >
-                <option value="">tanlang…</option>
-                {rights.map((r) => (
-                  <option key={r} value={r}>
-                    {r}
-                  </option>
-                ))}
-              </select>
-            </div>
+        <TileBuilder
+          bank={exercise.bank}
+          chosen={Array.isArray(answer) ? (answer as string[]) : []}
+          onChange={onChange}
+          locked={locked}
+          note={exercise.noteUz}
+        />
+      )
+    case 'translation':
+      return <TranslationInput exercise={exercise} answer={answer} onChange={onChange} locked={locked} />
+  }
+}
+
+/**
+ * So'z plitkalari: yuqorida chiziqlar ustida tanlangan so'zlar (bosilsa
+ * qaytadi), pastda bank — ishlatilgan plitka o'rnida bo'sh "soya" qoladi.
+ */
+function TileBuilder({
+  bank,
+  chosen,
+  onChange,
+  locked,
+  note,
+}: {
+  bank: readonly string[]
+  chosen: string[]
+  onChange: (v: string[]) => void
+  locked: boolean
+  note?: string
+}) {
+  // Har bank indeksi ishlatilganmi (bir xil so'z ikki marta bo'lsa ham to'g'ri).
+  const usedIdx = new Set<number>()
+  for (const w of chosen) {
+    const i = bank.findIndex((b, j) => b === w && !usedIdx.has(j))
+    if (i > -1) usedIdx.add(i)
+  }
+  return (
+    <div className="grid gap-5">
+      <div
+        className="min-h-[6.5rem] flex flex-wrap content-start gap-2 py-1.5 bg-[repeating-linear-gradient(to_bottom,transparent_0,transparent_3rem,var(--border)_3rem,var(--border)_calc(3rem+2px))]"
+        aria-label="Javob"
+      >
+        {chosen.map((w, i) => (
+          <button
+            key={`${w}-${i}`}
+            type="button"
+            disabled={locked}
+            onClick={() => onChange(chosen.filter((_, j) => j !== i))}
+            className={`${tileCls} hover:bg-[var(--panel-2)]`}
+            title="Olib tashlash"
+          >
+            {w}
+          </button>
+        ))}
+      </div>
+      <div className="flex flex-wrap justify-center gap-2">
+        {bank.map((w, i) =>
+          usedIdx.has(i) ? (
+            <span key={`${w}-${i}`} aria-hidden className="inline-flex rounded-xl px-3 py-1.5 text-sm sm:text-base bg-[var(--panel-2)] text-transparent select-none border-2 border-transparent">
+              {w}
+            </span>
+          ) : (
+            <button
+              key={`${w}-${i}`}
+              type="button"
+              disabled={locked}
+              onClick={() => onChange([...chosen, w])}
+              className={`${tileCls} hover:bg-[var(--panel-2)]`}
+            >
+              {w}
+            </button>
+          ),
+        )}
+      </div>
+      {note && <p className="text-[11px] muted text-center">{note}</p>}
+    </div>
+  )
+}
+
+/** Juftlik: ikki ustun plitkalar — chapdan bittasini, so'ng o'ngdan juftini bosing. */
+function MatchingInput({
+  exercise,
+  answer,
+  onChange,
+  locked,
+}: {
+  exercise: Extract<Exercise, { kind: 'matching' }>
+  answer: unknown
+  onChange: (v: unknown) => void
+  locked: boolean
+}) {
+  const map = (answer ?? {}) as Record<string, string>
+  const rights = useMemo(() => shuffle(exercise.pairs.map((p) => p.right), exercise.id), [exercise])
+  const [pick, setPick] = useState<string | null>(null)
+  const lefts = exercise.pairs.map((p) => p.left)
+  const pairNo = (left: string) => lefts.filter((l) => map[l]).indexOf(left) + 1
+  const leftOfRight = (r: string) => lefts.find((l) => map[l] === r)
+
+  const tapLeft = (l: string) => {
+    if (map[l]) {
+      const next = { ...map }
+      delete next[l]
+      onChange(next)
+      setPick(null)
+      return
+    }
+    setPick(pick === l ? null : l)
+  }
+  const tapRight = (r: string) => {
+    const owner = leftOfRight(r)
+    if (owner) {
+      const next = { ...map }
+      delete next[owner]
+      onChange(next)
+      return
+    }
+    if (!pick) return
+    onChange({ ...map, [pick]: r })
+    setPick(null)
+  }
+
+  const tone = (paired: boolean, picked: boolean) =>
+    picked ? cardOn : paired ? 'border-sky-400 bg-sky-50 dark:bg-sky-950/30 dark:border-sky-600' : 'hover:bg-[var(--panel-2)]'
+
+  return (
+    <div className="grid gap-2">
+      <p className="text-xs muted text-center">Chapdan so‘zni, so‘ng o‘ngdan uning juftini bosing. Juftni bekor qilish uchun yana bosing.</p>
+      <div className="grid grid-cols-2 gap-2.5">
+        <div className="grid gap-2.5 content-start">
+          {lefts.map((l) => (
+            <button
+              key={l}
+              type="button"
+              disabled={locked}
+              aria-pressed={pick === l || Boolean(map[l])}
+              aria-label={map[l] ? `${l} — ${map[l]} bilan juftlangan` : l}
+              onClick={() => tapLeft(l)}
+              className={`${cardCls} justify-center ${tone(Boolean(map[l]), pick === l)}`}
+            >
+              {map[l] && <span className="text-xs font-extrabold text-sky-600">{pairNo(l)}</span>}
+              <span className="text-center break-words">{l}</span>
+            </button>
           ))}
         </div>
-      )
-    }
-    case 'word-order': {
-      const chosen = Array.isArray(answer) ? (answer as string[]) : []
-      const bankLeft = exercise.bank.filter((w) => chosen.lastIndexOf(w) === -1 || count(exercise.bank, w) > count(chosen, w))
-      return (
-        <div className="grid gap-3">
-          <div className="min-h-12 rounded-xl border bg-[var(--panel-2)] p-2.5 flex flex-wrap gap-1.5">
-            {chosen.length === 0 && <span className="text-sm muted">So‘zlarni quyidagi tartibda bosing…</span>}
-            {chosen.map((w, i) => (
+        <div className="grid gap-2.5 content-start">
+          {rights.map((r) => {
+            const owner = leftOfRight(r)
+            return (
               <button
-                key={`${w}-${i}`}
+                key={r}
                 type="button"
-                disabled={locked}
-                onClick={() => onChange(chosen.filter((_, j) => j !== i))}
-                className="px-2.5 py-1 rounded-lg bg-navy-700 text-white dark:bg-navy-500 dark:text-navy-950 text-sm font-medium"
-                title="Olib tashlash"
+                disabled={locked || (!pick && !owner)}
+                aria-pressed={Boolean(owner)}
+                onClick={() => tapRight(r)}
+                className={`${cardCls} justify-center ${tone(Boolean(owner), false)}`}
               >
-                {w}
+                {owner && <span className="text-xs font-extrabold text-sky-600">{pairNo(owner)}</span>}
+                <span className="text-center break-words">{r}</span>
               </button>
-            ))}
-          </div>
-          <div className="flex flex-wrap gap-1.5">
-            {bankLeft.map((w, i) => (
-              <button
-                key={`${w}-${i}`}
-                type="button"
-                disabled={locked}
-                onClick={() => onChange([...chosen, w])}
-                className="chip cursor-pointer hover:bg-[var(--panel)]"
-              >
-                {w}
-              </button>
-            ))}
-          </div>
-          {exercise.noteUz && <p className="text-[11px] muted">{exercise.noteUz}</p>}
+            )
+          })}
         </div>
-      )
-    }
-    case 'translation':
-      return (
-        <div className="grid gap-2">
-          <p className="font-medium">{exercise.source}</p>
-          <input
-            className={inputCls}
-            value={Array.isArray(answer) ? String(answer[0] ?? '') : String(answer ?? '')}
-            disabled={locked}
-            placeholder={exercise.sourceLang === 'uz' ? 'Write in English…' : "O'zbekcha yozing…"}
-            onChange={(e) => onChange([e.target.value])}
-          />
-        </div>
-      )
-  }
+      </div>
+    </div>
+  )
+}
+
+/**
+ * Tarjima: standart — so'z plitkalari (birinchi qabul qilinadigan javob
+ * so'zlari + shu darajadagi lug'atdan 2–3 chalg'ituvchi so'z, deterministik).
+ * "Klaviatura bilan yozish" — erkin matn (boshqa to'g'ri variantlar uchun).
+ */
+function TranslationInput({
+  exercise,
+  answer,
+  onChange,
+  locked,
+}: {
+  exercise: Extract<Exercise, { kind: 'translation' }>
+  answer: unknown
+  onChange: (v: unknown) => void
+  locked: boolean
+}) {
+  const [typing, setTyping] = useState(false)
+  const bank = useMemo(() => translationBank(exercise), [exercise])
+  const text = Array.isArray(answer) ? String(answer[0] ?? '') : String(answer ?? '')
+  const chosen = text.trim() === '' ? [] : text.trim().split(/\s+/)
+
+  return (
+    <div className="grid gap-3">
+      {typing || bank.length === 0 ? (
+        <textarea
+          className={`${inputCls} min-h-28 text-base rounded-2xl border-2`}
+          value={text}
+          disabled={locked}
+          aria-label="Tarjima"
+          placeholder={exercise.sourceLang === 'uz' ? 'Write in English…' : "O'zbekcha yozing…"}
+          onChange={(e) => onChange([e.target.value])}
+        />
+      ) : (
+        <TileBuilder bank={bank} chosen={chosen} onChange={(ws) => onChange([ws.join(' ')])} locked={locked} />
+      )}
+      {!locked && bank.length > 0 && (
+        <button
+          type="button"
+          className="justify-self-center text-xs font-extrabold uppercase tracking-wide text-navy-700 dark:text-navy-300 hover:underline"
+          onClick={() => {
+            setTyping((v) => !v)
+            onChange([''])
+          }}
+        >
+          {typing ? 'So‘z plitkalari bilan' : 'Klaviatura bilan yozish'}
+        </button>
+      )}
+    </div>
+  )
 }
 
 // --------------------------- yordamchi ---------------------------
@@ -523,8 +736,73 @@ function initialAnswer(ex: Exercise): unknown {
   }
 }
 
-function skipAnswer(ex: Exercise): unknown {
-  return initialAnswer(ex)
+const TFNG: { v: 'true' | 'false' | 'notgiven'; label: string }[] = [
+  { v: 'true', label: 'True — to‘g‘ri' },
+  { v: 'false', label: 'False — noto‘g‘ri' },
+  { v: 'notgiven', label: 'Not Given — matnda yo‘q' },
+]
+
+/** Raqamli variantlar soni (1–9 tugmalari uchun); variantsiz turda 0. */
+function choiceCount(ex: Exercise): number {
+  if (ex.kind === 'multiple-choice') return Math.min(9, ex.options.length)
+  if (ex.kind === 'true-false-notgiven') return TFNG.length
+  return 0
+}
+
+function choiceLabels(ex: Exercise): string[] {
+  if (ex.kind === 'multiple-choice') return ex.options
+  if (ex.kind === 'true-false-notgiven') return TFNG.map((o) => o.label)
+  return []
+}
+
+/** i-variant tanlanganda javob qiymati (tekshiruvchi kutgan shaklda). */
+function choiceValue(ex: Exercise, i: number): unknown {
+  if (ex.kind === 'true-false-notgiven') return TFNG[i]?.v ?? ''
+  return i
+}
+
+/** Gap pufagidagi matn: savol, da'vo yoki tarjima manbasi. */
+function promptOf(ex: Exercise): { text: string; lang: 'en' | 'uz' } | null {
+  switch (ex.kind) {
+    case 'multiple-choice':
+      return ex.question.trim() ? { text: ex.question, lang: guessLang(ex.question) } : null
+    case 'true-false-notgiven':
+      return { text: ex.statement, lang: 'en' }
+    case 'translation':
+      return { text: ex.source, lang: ex.sourceLang }
+    default:
+      return null
+  }
+}
+
+/**
+ * Savol tili — faqat talaffuz tugmasi uchun (inglizcha bo'lsa ko'rsatiladi).
+ * Tipik o'zbekcha so'zlar bo'lsa — o'zbekcha ("teacher’s" kabi inglizcha
+ * apostrof o'zbekcha belgisi hisoblanmaydi).
+ */
+function guessLang(text: string): 'en' | 'uz' {
+  const a = "[ʻ‘’']"
+  const uz = new RegExp(
+    `(^|\\s)(qaysi|nima|kim|qanday|nechta|qayerda|qachon|nega|so${a}z|gap|to${a}g${a}ri|ma${a}no|bilan|uchun|emas|yo${a}q|bor|qiling|tanlang)(?=$|[\\s.,?!])`,
+    'i',
+  )
+  return uz.test(text) ? 'uz' : 'en'
+}
+
+/**
+ * Tarjima plitkalari: birinchi qabul qilinadigan javob so'zlari + shu
+ * daraja lug'atidan 3 tagacha chalg'ituvchi so'z (deterministik aralash).
+ * Javob so'zlari ichida bo'lgan so'z chalg'ituvchi bo'lmaydi.
+ */
+function translationBank(ex: Extract<Exercise, { kind: 'translation' }>): string[] {
+  const words = (ex.accepted[0] ?? '').trim().split(/\s+/).filter(Boolean)
+  if (words.length === 0) return []
+  const lower = new Set(words.map((w) => w.toLowerCase()))
+  const pool = getBundle(ex.level)
+    .vocab.map((v) => (ex.sourceLang === 'uz' ? v.word : v.translationUz))
+    .filter((w) => /^[^\s]+$/.test(w) && !lower.has(w.toLowerCase()))
+  const extra = shuffle(Array.from(new Set(pool)), ex.id).slice(0, 3)
+  return shuffle([...words, ...extra], `${ex.id}:bank`)
 }
 
 function isAnswerEmpty(ex: Exercise, a: unknown): boolean {

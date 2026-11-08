@@ -129,18 +129,25 @@ export function MascotExerciseFeedback({
   expected,
   whyUz,
   xp,
+  bare = false,
 }: {
   correct: boolean
   expected?: string
   whyUz?: string
   xp?: number
+  /** `true` — ramka/fonsiz (rangli pastki panel ichida ishlatiladi). */
+  bare?: boolean
 }) {
   return (
     <div
-      className={`relative rounded-2xl border px-4 py-3.5 flex items-start gap-3 text-sm animate-[var(--animate-pop)] ${
-        correct
-          ? 'border-emerald-400/60 bg-emerald-50/90 dark:bg-emerald-950/30'
-          : 'border-rose-400/60 bg-rose-50/90 dark:bg-rose-950/30'
+      className={`relative flex items-start gap-3 text-sm animate-[var(--animate-pop)] ${
+        bare
+          ? ''
+          : `rounded-2xl border px-4 py-3.5 ${
+              correct
+                ? 'border-emerald-400/60 bg-emerald-50/90 dark:bg-emerald-950/30'
+                : 'border-rose-400/60 bg-rose-50/90 dark:bg-rose-950/30'
+            }`
       }`}
       role="status"
       aria-live="polite"

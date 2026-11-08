@@ -291,6 +291,7 @@ function JumpTest({ section, onClose }: { section: SectionCard; onClose: () => v
           prevResult={lastResult && !lastResult.correct ? lastResult : null}
           heartFree
           comboTracked
+          onExit={onClose}
         />
       )}
       {phase === 'done' && score !== null && (
