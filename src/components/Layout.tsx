@@ -8,6 +8,7 @@ import { MascotAvatar } from './Mascot'
 const NAV = [
   { to: '/dashboard', label: 'Dashboard', icon: 'M3 12 12 4l9 8M5 11v9h14v-9' },
   { to: '/path', label: "O'quv yo'li", icon: 'M4 18h4V6H4v12Zm6 0h4V6h-4v12Zm6 0h4V6h-4v12Z' },
+  { to: '/sections', label: "Bo'limlar", icon: 'M4 5h16v4H4zM4 11h16v4H4zM4 17h10v3H4z' },
   { to: '/vocabulary', label: "Lug'at", icon: 'M4 5h12a2 2 0 0 1 2 2v12H6a2 2 0 0 1-2-2V5Zm14 3h2v11H6' },
   { to: '/grammar', label: 'Grammatika', icon: 'M5 5h14M12 5v14M7 19h10' },
   { to: '/reading', label: "O'qish", icon: 'M4 6h16v12H4zM8 10h8M8 14h5' },
@@ -192,7 +193,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       {/* ---------- BOTTOM NAV (mobil) ---------- */}
       <nav aria-label="Tez navigatsiya" className="lg:hidden fixed bottom-0 inset-x-0 z-30 border-t bg-[var(--panel)] pb-[env(safe-area-inset-bottom)]">
         <div className="grid grid-cols-5">
-          {[NAV[0], NAV[2], NAV[8], NAV[10], NAV[11]].map((n) => (
+          {[NAV[0], NAV[3], NAV[9], NAV[11], NAV[12]].map((n) => (
             <NavLink
               key={n.to}
               to={n.to}
