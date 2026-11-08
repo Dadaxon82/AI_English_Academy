@@ -175,7 +175,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     private companion object {
-        /** Pastki panel ko'rinadigan 5 ta asosiy ekran (`bottom_nav.xml` bilan bir xil). */
+        /**
+         * Pastki panel ko'rinadigan 5 ta asosiy ekran (`bottom_nav.xml` bilan bir xil).
+         *
+         * Bo'limlar (`sectionsFragment`) bu ro'yxatda EMAS va panelda ham YO'Q:
+         * Material pastki paneli 5 banddan ko'pini ko'tarmaydi (o'lchangan —
+         * `IllegalArgumentException`). Bo'limlar BATAFSIL ekran kabi ochiladi
+         * (banner yoki "Barcha bo'limlar" havolasi orqali) — orqaga tugma
+         * chatda qaytadi, "ikki marta bosib chiqish" qoidasi ishlamaydi.
+         */
         val TOP_LEVEL = setOf(
             R.id.dashboardFragment,
             R.id.learningPathFragment,

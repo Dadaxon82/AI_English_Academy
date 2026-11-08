@@ -86,6 +86,10 @@ class DashboardFragment : Fragment() {
         ticker?.cancel()
         ticker = null
 
+        // Joriy bo'lim banneri — veb `Dashboard.tsx` tepasidagi `SectionBanner`
+        // bilan bir xil joy va bir xil ma'lumot (`currentSectionInfo`).
+        SectionBannerUi.show(this, b.bannerBox)
+
         b.shellSubtitle.text = greeting() + " · " + d.settings.currentLevel +
             " — " + getString(R.string.dash_seconds_progress, doneSec / 60, plannedMin)
         b.shellMascot.setMood(

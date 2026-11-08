@@ -16,6 +16,7 @@ import com.dadaxon.aienglishacademy.data.UserSettings
 import com.dadaxon.aienglishacademy.data.WritingSubmission
 import com.dadaxon.aienglishacademy.data.todayKey
 import com.dadaxon.aienglishacademy.domain.SrsGrade
+import com.dadaxon.aienglishacademy.domain.applySectionJump
 import com.dadaxon.aienglishacademy.domain.initialSrsState
 import com.dadaxon.aienglishacademy.domain.review
 import com.dadaxon.aienglishacademy.domain.streakFor
@@ -80,6 +81,14 @@ sealed class StoreAction {
     data class MockAdd(val attempt: MockExamAttempt) : StoreAction()
     data class MockTime(val entries: Map<String, Int>) : StoreAction()
     data class DayComplete(val dayId: String, val testId: String? = null, val testScore: Int? = null) : StoreAction()
+
+    /**
+     * Bo'lim sakrash testi natijasi (veb: `section-jump` →
+     * `src/lib/sections.ts::applySectionJump`). O'tilsa o'tkazib yuborilgan
+     * kunlar `completedDays`ga qo'shiladi, natija `passedTests["jump:<id>"]`ga
+     * yoziladi; DARAJAGA (`settings.currentLevel`) TEGILMAYDI.
+     */
+    data class SectionJump(val sectionId: String, val score: Int) : StoreAction()
     data class Diagnostic(val at: Long, val level: String?, val labelUz: String, val confidence: Double) : StoreAction()
     data class Onboarded(val at: Long) : StoreAction()
     data class LevelSet(val level: String) : StoreAction()
@@ -344,6 +353,15 @@ class AppStore(private val context: Context, private val container: AppContainer
                     .getOrElse { emptyList() }
                 val currentDay = dayIds.firstOrNull { !done.contains(it) } ?: d.path.currentDayId
                 s.copy(data = d.copy(path = d.path.copy(completedDays = done.distinct(), passedTests = tests, currentDayId = currentDay)))
+            }
+
+            // Bo'lim sakrash testi (veb `case 'section-jump'` — qoida
+            // `domain/Sections.kt::applySectionJump` ichida, u yerda testlanadi).
+            is StoreAction.SectionJump -> {
+                val nd = applySectionJump(d, a.sectionId, a.score) { lvl ->
+                    runCatching { container.content.bundle(lvl).days }.getOrDefault(emptyList())
+                }
+                if (nd === d) s else s.copy(data = nd)
             }
 
             is StoreAction.Diagnostic -> s.copy(
