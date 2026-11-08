@@ -147,6 +147,9 @@ python mobile/scripts/make_assets.py        # mascot + ikonalar
 cd mobile
 JAVA_HOME=<jdk17> GRADLE_USER_HOME=<kecha papkasi> \
   gradle --offline :app:testDebugUnitTest :app:assembleDebug
+# Release (imzo `mobile/keystores/aea-release.jks` da — repoda):
+gradle --offline :app:assembleRelease      # 2026-11-08: lint-gradle kechada bo'lmagani
+                                           # uchun `:app:lintVitalRelease` alohida tarmoqda bajarildi
 ```
 
 Tekshirilgan holat (2026-11-08): **336 unit test o'tdi** (26 klass — 2026-11-06
@@ -163,19 +166,25 @@ Supabase `publishable` kaliti mijozda ochiq ishlatiladi; **service-role kaliti
 hech qaysi mijozga tushmaydi**. AI ulanmagan holda ilova halol
 "Qoidaviy tahlil" deb yozadi (`engine: "rule-based"`).
 
-Tayyor APK — GitHub Release [`v1.0.0-mobile`](https://github.com/Dadaxon82/AI_English_Academy/releases/tag/v1.0.0-mobile)
-(`app-release.apk`, 20 272 600 B; SHA256
-`d6d54992082878814196d03822ac447efc995ed2f3f310eff4d2a486b4d4017f`). 2026-11-06
-kuni Release'dan indirib `sha256sum` bilan solishtirildi — mos). Imzo
-2026-11-06 da tekshirildi (`apksigner verify --print-certs` — xato yo'q):
+Tayyor APK — GitHub Release [`v1.1.0-mobile`](https://github.com/Dadaxon82/AI_English_Academy/releases/tag/v1.1.0-mobile)
+(**2026-11-08**, 1.1.0 / versionCode 2 — o'yin qatlami bilan): `app-release.apk`,
+20 336 378 B (o'lchangan), SHA256
+`0020345103c03dbaa9dac60c1c659296dcfbac038aca05707123341ac0664c09`. Imzo yangi
+faylda qayta tekshirildi (`apksigner verify --print-certs` — xato yo'q):
 `Signer #1 CN=AI English Academy, OU=AEA, O=Dadaxon, L=Kokand, ST=Fergana, C=UZ`,
-sertifikat SHA-256 `d59a899ff5b03a8d691df1e72afd99b66984bd5f5cd17bd1fd51311faf587e55`.
+sertifikat SHA-256 `d59a899ff5b03a8d691df1e72afd99b66984bd5f5cd17bd1fd51311faf587e55`
+(2026-11-06 bilan bir xil imzo kaliti).
 
-**Halol eslatma (2026-11-08):** bu Release APK 2026-11-06 kuni yig'ilgan — unda
-o'yin qatlami (5d-bo'lim: yuraklar, questlar, gem/do'kon, liga) **yo'q**. Mahalliy
-`assembleDebug` yangi kod bilan muvaffaqiyatli yig'iladi, lekin yangi **Release**
-APK hali yig'ilmagan va Release'ga chiqarilmagan (eski hajm/SHA256 eski APK'ga
-tegishli — yangisiga nisbatan ixtira qilinmagan).
+Eski release — [`v1.0.0-mobile`](https://github.com/Dadaxon82/AI_English_Academy/releases/tag/v1.0.0-mobile)
+(2026-11-06, 1.0.0 / versionCode 1, 20 272 600 B; SHA256
+`d6d54992082878814196d03822ac447efc995ed2f3f310eff4d2a486b4d4017f`) — **o'yin
+qatlamisiz** (5d-bo'lim: yuraklar, questlar, gem/do'kon, liga). `versionCode`
+1 → 2 ko'tarildi: aksi holda eski 1.0.0 ustiga yangi APK o'rnatilmasdi.
+
+Yig'ish (offline): `gradle --offline :app:assembleRelease`. 2026-11-08 da
+`lint-gradle:31.2.0` kechada yo'qligi uchun avval bosqich alohida **tarmoqda**
+bajarildi (`:app:lintVitalRelease` — BUILD SUCCESSFUL, xato yo'q), keyin
+`assembleRelease` to'liq bosqichlar bilan yig'ildi.
 
 ## 5c. `DULO_mod.apk` kloni: fayil strukturasi, darslar ketma-ketligi, animatsiyalar
 
