@@ -52,6 +52,12 @@ export interface ExerciseRunProps {
   comboTracked?: boolean
   /** Berilsa — tepada "×" (darsdan chiqish) tugmasi chiziladi. */
   onExit?: () => void
+  /** Sarlavha ustidagi belgi (masalan «YANGI SO‘Z»); berilsa tur yorlig‘i o‘rnida chiqadi. */
+  badge?: string
+  /** Tanlov variantlari rasmlari (emoji) — berilsa variantlar rasmli kartalar bo'ladi. */
+  optionIcons?: string[]
+  /** `true` — "O‘tkazib yuborish" tugmasi (xato javob sifatida hisoblanadi, to‘g‘ri javob ko‘rsatiladi). */
+  skippable?: boolean
 }
 
 export default function ExerciseRunner({
@@ -64,6 +70,9 @@ export default function ExerciseRunner({
   heartFree = false,
   comboTracked = false,
   onExit,
+  badge,
+  optionIcons,
+  skippable = false,
 }: ExerciseRunProps) {
   const { hearts, data } = useStore()
   const game = data.game
@@ -89,9 +98,11 @@ export default function ExerciseRunner({
   // (Dulo'dagi "practice to earn hearts" darvozasi).
   const blocked = hearts.blocked && !heartFree
 
-  const doCheck = () => {
+  const doCheck = (skip?: boolean) => {
     if (state === 'answered' || blocked) return
-    const r = checkAnswer(exercise, answer)
+    // O'tkazib yuborish — bo'sh javob bilan tekshiruv: natija "noto'g'ri",
+    // to'g'ri javob esa ko'rsatiladi (son ixtir emas — o'sha `checkAnswer`).
+    const r = checkAnswer(exercise, skip ? initialAnswer(exercise) : answer)
     setResult(r)
     setState('answered')
     checked(r, Math.round((Date.now() - startedAt) / 1000))
@@ -250,8 +261,19 @@ export default function ExerciseRunner({
 
       {/* ---- Topshiriq sarlavhasi ---- */}
       <div className="grid gap-1 animate-[var(--animate-fade-in)]">
-        <p className="text-[11px] font-extrabold uppercase tracking-wider text-violet-600 dark:text-violet-400">
-          {kindLabel(exercise.kind)} · qiyinlik {exercise.difficulty}
+        <p className="inline-flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-wider text-violet-600 dark:text-violet-400">
+          {badge ? (
+            <>
+              <span aria-hidden className="inline-grid place-items-center w-5 h-5 rounded-full bg-violet-500 text-white text-[10px]">
+                ★
+              </span>
+              {badge}
+            </>
+          ) : (
+            <>
+              {kindLabel(exercise.kind)} · qiyinlik {exercise.difficulty}
+            </>
+          )}
         </p>
         <h2 className="text-xl sm:text-2xl font-extrabold leading-tight">{exercise.instructionUz}</h2>
       </div>
@@ -277,7 +299,14 @@ export default function ExerciseRunner({
         </div>
       )}
 
-      <AnswerInput key={exercise.id} exercise={exercise} answer={answer} onChange={setAnswer} locked={state === 'answered'} />
+      <AnswerInput
+        key={exercise.id}
+        exercise={exercise}
+        answer={answer}
+        onChange={setAnswer}
+        locked={state === 'answered'}
+        icons={optionIcons}
+      />
 
       {/* ---- Pastki panel: TEKSHIRISH / natija + KEYINGI ---- */}
       <div
@@ -294,8 +323,18 @@ export default function ExerciseRunner({
             <MascotExerciseFeedback bare correct={result.correct} expected={result.expected} whyUz={result.whyUz} xp={xpShown} />
           </div>
         )}
-        <div className="flex flex-wrap items-center gap-2">
-          {state === 'idle' && (
+        <div className="flex flex-wrap items-center gap-2 justify-between">
+          {state === 'idle' && skippable && (
+            <button
+              type="button"
+              className="rounded-2xl border-2 border-b-4 px-3 sm:px-4 py-2.5 text-[11px] sm:text-xs font-extrabold uppercase tracking-wide muted bg-[var(--panel)] hover:bg-[var(--panel-2)] disabled:opacity-40"
+              onClick={() => doCheck(true)}
+              disabled={blocked}
+            >
+              O‘tkazib yuborish
+            </button>
+          )}
+          {state === 'idle' && !skippable && (
             <button
               type="button"
               className="text-xs font-extrabold uppercase tracking-wide muted hover:underline disabled:opacity-40"
@@ -309,7 +348,7 @@ export default function ExerciseRunner({
           {state === 'idle' ? (
             <button
               type="button"
-              onClick={doCheck}
+              onClick={() => doCheck()}
               disabled={!canCheck || blocked}
               className={`${chunkyBtn} ${
                 canCheck && !blocked
@@ -347,7 +386,7 @@ export default function ExerciseRunner({
 
 /** Katta "3D" tugma (pastki chegara — chuqurlik). */
 const chunkyBtn =
-  'min-w-40 inline-flex items-center justify-center rounded-2xl px-6 py-3 text-sm font-extrabold uppercase tracking-wide ' +
+  'min-w-32 sm:min-w-40 inline-flex items-center justify-center rounded-2xl px-4 sm:px-6 py-3 text-sm font-extrabold uppercase tracking-wide ' +
   'border-b-4 transition-all active:translate-y-0.5 active:border-b-2 focus-visible:outline-2 focus-visible:outline-offset-2 ' +
   'disabled:cursor-not-allowed'
 
@@ -407,17 +446,49 @@ function AnswerInput({
   answer,
   onChange,
   locked,
+  icons,
 }: {
   exercise: Exercise
   answer: unknown
   onChange: (v: unknown) => void
   locked: boolean
+  icons?: string[]
 }) {
   switch (exercise.kind) {
     case 'multiple-choice':
     case 'true-false-notgiven': {
       const opts = choiceLabels(exercise)
       const chosen = answer
+      if (icons && icons.length === opts.length) {
+        return (
+          <div className="grid grid-cols-3 gap-2.5 sm:gap-3" role="radiogroup" aria-label="Javob variantlari">
+            {opts.map((label, i) => {
+              const on = chosen === choiceValue(exercise, i)
+              return (
+                <button
+                  key={i}
+                  type="button"
+                  role="radio"
+                  aria-checked={on}
+                  disabled={locked}
+                  onClick={() => onChange(choiceValue(exercise, i))}
+                  className={`aea-choice flex flex-col rounded-2xl border-2 border-b-4 p-2.5 sm:p-3 bg-[var(--panel)] ${
+                    on ? cardOn : 'hover:bg-[var(--panel-2)]'
+                  }`}
+                >
+                  <span aria-hidden className="grid place-items-center h-20 sm:h-28 text-5xl sm:text-7xl select-none">
+                    {icons[i]}
+                  </span>
+                  <span className="flex items-center justify-between gap-1 pt-2">
+                    <span className="text-sm sm:text-base font-semibold break-words text-left">{label}</span>
+                    <NumBadge n={i + 1} on={on} />
+                  </span>
+                </button>
+              )
+            })}
+          </div>
+        )
+      }
       return (
         <div className="grid gap-2.5" role="radiogroup" aria-label="Javob variantlari">
           {opts.map((label, i) => {
@@ -767,9 +838,9 @@ function promptOf(ex: Exercise): { text: string; lang: 'en' | 'uz' } | null {
     case 'multiple-choice':
       return ex.question.trim() ? { text: ex.question, lang: guessLang(ex.question) } : null
     case 'true-false-notgiven':
-      return { text: ex.statement, lang: 'en' }
+      return ex.statement.trim() ? { text: ex.statement, lang: 'en' } : null
     case 'translation':
-      return { text: ex.source, lang: ex.sourceLang }
+      return ex.source.trim() ? { text: ex.source, lang: ex.sourceLang } : null
     default:
       return null
   }

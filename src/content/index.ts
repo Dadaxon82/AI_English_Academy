@@ -9,11 +9,13 @@ import type {
   Exercise,
   GrammarTopic,
   ListeningTask,
+  MatchingExercise,
   MockExamSpec,
   MultipleChoiceExercise,
   ReadingPassage,
   SectionTest,
   SpeakingTask,
+  TranslationExercise,
   VocabularyItem,
   WritingTask,
 } from './types'
@@ -228,7 +230,77 @@ export function vocabQuizExercise(v: VocabularyItem, options: string[] = [v.tran
   }
 }
 
+/* ---------------- Lug'at O'YINI topshiriqlari (id'dan tiklanadi) ---------------- */
+
+export const VOCAB_PIC_PREFIX = 'vocab-pic-'
+export const VOCAB_SENT_PREFIX = 'vocab-sent-'
+export const VOCAB_MATCH_PREFIX = 'vocab-match-'
+
+/** Rasmli tanlov: «X» so'zini tanlang — variantlar inglizcha so'zlar. */
+export function vocabPictureExercise(v: VocabularyItem, options: string[] = [v.word]): MultipleChoiceExercise {
+  return {
+    id: `${VOCAB_PIC_PREFIX}${v.id}`,
+    kind: 'multiple-choice',
+    instructionUz: `«${v.translationUz.split(/[,;]/)[0]!.trim()}» so‘zini tanlang`,
+    level: v.level,
+    skill: 'vocabulary',
+    explanationUz: `${v.translationUz} — ${v.word}.`,
+    difficulty: 1,
+    tags: ['vocab game', v.topic],
+    question: '',
+    options,
+    answerIndex: options.indexOf(v.word),
+  }
+}
+
+/** Misol gapni tarjima qilish (so'z plitkalari). `en` — inglizchadan o'zbekchaga. */
+export function vocabSentenceExercise(v: VocabularyItem, from: 'en' | 'uz'): TranslationExercise {
+  return {
+    id: `${VOCAB_SENT_PREFIX}${from}-${v.id}`,
+    kind: 'translation',
+    instructionUz: from === 'en' ? 'O‘zbekchaga tarjima qiling' : 'Inglizchaga tarjima qiling',
+    level: v.level,
+    skill: 'vocabulary',
+    explanationUz: `${v.exampleEn} — ${v.exampleUz}`,
+    difficulty: from === 'en' ? 1 : 2,
+    tags: ['vocab game', v.topic],
+    source: from === 'en' ? v.exampleEn : v.exampleUz,
+    sourceLang: from,
+    accepted: [from === 'en' ? v.exampleUz : v.exampleEn],
+  }
+}
+
+/** Juftlik: so'z ↔ tarjima (id'da so'z id'lari `~` bilan). */
+export function vocabMatchExercise(vs: readonly VocabularyItem[]): MatchingExercise {
+  return {
+    id: `${VOCAB_MATCH_PREFIX}${vs.map((v) => v.id).join('~')}`,
+    kind: 'matching',
+    instructionUz: 'Juftliklarni toping',
+    level: vs[0]?.level ?? 'A1',
+    skill: 'vocabulary',
+    explanationUz: vs.map((v) => `${v.word} — ${v.translationUz}`).join('; '),
+    difficulty: 1,
+    tags: ['vocab game'],
+    pairs: vs.map((v) => ({ left: v.word, right: v.translationUz })),
+  }
+}
+
 export function findExercise(id: string): Exercise | undefined {
+  const vocabById = (vid: string) => [...allVocab(), ...allGlossaryVocab()].find((x) => x.id === vid)
+  if (id.startsWith(VOCAB_PIC_PREFIX)) {
+    const v = vocabById(id.slice(VOCAB_PIC_PREFIX.length))
+    return v ? vocabPictureExercise(v) : undefined
+  }
+  if (id.startsWith(VOCAB_SENT_PREFIX)) {
+    const rest = id.slice(VOCAB_SENT_PREFIX.length)
+    const from = rest.startsWith('uz-') ? 'uz' : 'en'
+    const v = vocabById(rest.slice(3))
+    return v ? vocabSentenceExercise(v, from) : undefined
+  }
+  if (id.startsWith(VOCAB_MATCH_PREFIX)) {
+    const vs = id.slice(VOCAB_MATCH_PREFIX.length).split('~').map(vocabById)
+    return vs.every((v): v is VocabularyItem => v !== undefined) && vs.length > 0 ? vocabMatchExercise(vs) : undefined
+  }
   // ESKI KAMCHILIK: lug'at testi savollari hech qayerda ro'yxatda yo'q edi —
   // Xatolar daftari ular uchun to'g'ri javob o'rniga "—" ko'rsatardi.
   if (id.startsWith(VOCAB_QUIZ_PREFIX)) {

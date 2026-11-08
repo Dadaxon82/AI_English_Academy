@@ -19,9 +19,10 @@ import { checkAnswer, type CheckResult } from '../lib/check'
 import { initialSrsState, isDue, review } from '../lib/srs'
 import type { SrsGrade, SrsState } from '../lib/srs'
 import { useStore } from '../lib/store'
+import WordGame from '../components/WordGame'
 import { Button, Card, Chip, EmptyState, InfoBanner, Kbd, LoadingBlock, SpeakButton, StatTile, SuccessBanner, inputCls } from '../components/ui'
 
-type Mode = 'browse' | 'flash' | 'test'
+type Mode = 'game' | 'browse' | 'flash' | 'test'
 
 const POS_UZ: Record<PartOfSpeech, string> = {
   noun: 'ot',
@@ -93,7 +94,7 @@ function shuffle<T>(arr: readonly T[]): T[] {
 export default function Vocabulary() {
   const { data, ready, learnedCount, dueCount, actions } = useStore()
 
-  const [mode, setMode] = useState<Mode>('browse')
+  const [mode, setMode] = useState<Mode>('game')
   const [query, setQuery] = useState('')
   const [topic, setTopic] = useState<string | null>(null)
   const [levelF, setLevelF] = useState<CefrLevel | null>(null)
@@ -167,26 +168,28 @@ export default function Vocabulary() {
           </p>
         </div>
         <div className="flex gap-1.5 p-1 rounded-xl bg-[var(--panel-2)]">
-          {(['browse', 'flash', 'test'] as const).map((m) => (
+          {(['game', 'browse', 'flash', 'test'] as const).map((m) => (
             <button
               key={m}
               type="button"
-              onClick={() => setMode(m === mode ? 'browse' : m)}
+              onClick={() => setMode(m)}
               aria-pressed={mode === m}
               className={`px-3.5 py-2 rounded-lg text-sm font-semibold ${mode === m ? 'bg-[var(--panel)] shadow-sm' : 'muted hover:text-[var(--text)]'}`}
             >
-              {m === 'browse' ? 'Ro\'yxat' : m === 'flash' ? 'Flashcard' : 'Test'}
+              {m === 'game' ? 'O\'yin' : m === 'browse' ? 'Ro\'yxat' : m === 'flash' ? 'Flashcard' : 'Test'}
             </button>
           ))}
         </div>
       </header>
 
+      {mode !== 'game' && (
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
         <StatTile label="Bugun takror" value={dueCount} hint="jadval bo'yicha yetib kelganlar" tone={dueCount > 0 ? 'warn' : 'ok'} />
         <StatTile label="O'zlashtirilgan" value={learnedCount} hint="har bir so'z BIR marta sanaladi" tone="ok" />
         <StatTile label="Ro'yxatdan takrori yetgan" value={poolDue} hint={`jami ${pool.length} so'z ichida`} />
         <StatTile label="Filtr natijasi" value={filtered.length} hint={topic ? `mavzu: ${topic}` : 'barcha mavzular'} />
       </div>
+      )}
 
       {mode === 'browse' && (
         <>
@@ -274,6 +277,8 @@ export default function Vocabulary() {
           )}
         </>
       )}
+
+      {mode === 'game' && <WordGame pool={filtered.length > 0 ? filtered : pool} />}
 
       {mode === 'flash' && <Flashcards deck={filtered} srs={data.srs} onGrade={(id, g) => actions.gradeVocab(id, g)} />}
 
