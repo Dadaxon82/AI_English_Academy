@@ -210,3 +210,18 @@ sakrash testi, mock imtihon, diagnostika). Mantiq (tekshiruv, XP, yuraklar, comb
 
 Skrinshotlar: `lesson-choice.png`, `lesson-correct.png`, `lesson-wrong.png`, `lesson-translation-tiles.png`,
 `lesson-matching.png`, `lesson-mobile-translation.png`, `lesson-mobile-choice.png`.
+
+## 8. Lug'at — "So'z o'yini" (2026-11-08)
+
+Duolingo dars ekranlari (`/lesson`) asosida Lug'at bo'limiga **«O'yin»** rejimi qo'shildi (sahifa shu rejimda ochiladi):
+
+- Sessiya: **5 ta so'z** (avval takrori yetgan, so'ng yangi) — `src/lib/wordGame.ts` (sof funksiya, testlar bilan).
+- Topshiriqlar: **«YANGI SO'Z»** — tarjima tanlovi (gap pufagida so'z + karnay); **rasmli kartalar**
+  («parta» so'zini tanlang — 3 ta rasm, raqam bilan); **misol gapni plitkalardan yig'ish** (EN→UZ va UZ→EN,
+  shu daraja lug'atidan chalg'ituvchi so'zlar bilan); oxirida **juftlik**.
+- Rasmlar — tizim emoji (`src/content/vocabEmoji.ts`, faqat aniq tasvirlanadigan so'zlar; fayl/tarmoq yo'q).
+- **«O'tkazib yuborish»** — xato sifatida sanaladi, to'g'ri javob ko'rsatiladi.
+- Haqiqiy hisob: har javob `recordAttempt` (XP, yuraklar, combo, Xatolar daftari — id'dan tiklanadi),
+  so'z SRS jadvalida baholanadi (to'g'ri → good, xato → again), oxirida XP va aniqlik ekrani.
+
+Skrinshotlar: `wordgame-*.png`.
