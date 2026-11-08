@@ -169,8 +169,10 @@ hech qaysi mijozga tushmaydi**. AI ulanmagan holda ilova halol
 Tayyor APK — GitHub Release [`v1.1.0-mobile`](https://github.com/Dadaxon82/AI_English_Academy/releases/tag/v1.1.0-mobile)
 (**2026-11-08**, 1.1.0 / versionCode 2 — o'yin qatlami bilan): `app-release.apk`,
 20 336 378 B (o'lchangan), SHA256
-`0020345103c03dbaa9dac60c1c659296dcfbac038aca05707123341ac0664c09`. Imzo yangi
-faylda qayta tekshirildi (`apksigner verify --print-certs` — xato yo'q):
+`0020345103c03dbaa9dac60c1c659296dcfbac038aca05707123341ac0664c09`. 2026-11-08 kuni
+Release'dan **qayta indirib** `sha256sum` bilan solishtirildi — hajm va SHA mos;
+nusxa `S:\Agent-2026\AI_English_Academy_1.1.0_release.apk` da. Imzo yangi faylda
+qayta tekshirildi (`apksigner verify --print-certs` — xato yo'q):
 `Signer #1 CN=AI English Academy, OU=AEA, O=Dadaxon, L=Kokand, ST=Fergana, C=UZ`,
 sertifikat SHA-256 `d59a899ff5b03a8d691df1e72afd99b66984bd5f5cd17bd1fd51311faf587e55`
 (2026-11-06 bilan bir xil imzo kaliti).
