@@ -129,6 +129,9 @@ class SyncProtocol(
                     // Nishonlar (yutuqlar) — serverda `plan.badges` da yuradi;
                     // `settleAchievements` bu ro'yxatni HAQIQIY to'ldiradi.
                     put("badges", tree(data.badges))
+                    // O'z-o'zini baholash — veb Progress sahifasida qo'yiladi;
+                    // mobil uni o'zgartirmaydi, lekin O'CHIRIB YUBORMASLIGI uchun qayta yuboradi.
+                    put("selfAssessment", tree(data.selfAssessment))
                     // O'yin qatlami — qurilmalar orasidagi yagona tashuvchi.
                     // `game.league` SAQLANMAYDI: liga jadvali `weekly_xp`dan
                     // o'qiladi (jsonb qatori katta bo'lib har yozuvda ko'chib

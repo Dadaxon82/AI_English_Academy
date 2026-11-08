@@ -80,6 +80,11 @@ fun checkAnswer(exercise: Exercise, answer: Any?): CheckOutcome =
         com.dadaxon.aienglishacademy.data.Kinds.GAP_FILL -> checkGapFill(exercise, answer)
         com.dadaxon.aienglishacademy.data.Kinds.WORD_ORDER -> checkWordOrder(exercise, answer)
         com.dadaxon.aienglishacademy.data.Kinds.TRANSLATION -> checkTranslation(exercise, answer)
+        com.dadaxon.aienglishacademy.data.Kinds.MULTI_SELECT -> checkMultiSelect(exercise, answer)
+        com.dadaxon.aienglishacademy.data.Kinds.DROPDOWN_CLOZE -> checkDropdown(exercise, answer)
+        com.dadaxon.aienglishacademy.data.Kinds.SEQUENCE -> checkSequence(exercise, answer)
+        com.dadaxon.aienglishacademy.data.Kinds.CATEGORIZE -> checkCategorize(exercise, answer)
+        com.dadaxon.aienglishacademy.data.Kinds.SHORT_ANSWER -> checkShortAnswer(exercise, answer)
         // Vebda union to'liq bo'lgani uchun `default` yo'q; bu yerda turi
         // noma'lum bo'lsa javob BERILMAGAN deb hisoblanadi (yalon "to'g'ri"
         // chiqmasligi kerak).
@@ -284,6 +289,144 @@ fun checkTranslation(exercise: Exercise, answer: Any?): CheckOutcome {
                 exercise.explanationUz
             } else {
                 "Qabul qilingan variantlar: ${accepted.joinToString(", ") { "“$it”" }}. ${exercise.explanationUz}"
+            },
+        partial = if (correct) 1.0 else 0.0,
+    )
+}
+
+/* ------------------- 2026-11-08: yangi turlar (veb `check.ts` bilan bir xil) ------------------- */
+
+/** Bir nechta javob: to'plam aniq teng bo'lsa to'g'ri; ortiqcha tanlov ballni kamaytiradi. */
+fun checkMultiSelect(exercise: Exercise, answer: Any?): CheckOutcome {
+    val opts = optionsOf(exercise)
+    val raw: List<Any?> = if (answer is List<*>) answer else emptyList()
+    val chosen =
+        raw.mapNotNull { (it as? Number)?.toDouble() ?: it?.toString()?.toDoubleOrNull() }
+            .filter { it == Math.floor(it) && it >= 0 && it < opts.size }
+            .map { it.toInt() }
+            .distinct()
+            .sorted()
+    val right = (exercise.answerIndexes ?: emptyList()).distinct().sorted()
+    val hits = chosen.count { it in right }
+    val extra = chosen.size - hits
+    val correct = hits == right.size && extra == 0
+    val partial = if (right.isEmpty()) 0.0 else Math.max(0.0, (hits - extra).toDouble() / right.size)
+    var why = exercise.explanationUz
+    if (!correct) {
+        val bits = mutableListOf<String>()
+        val missed = right.filter { it !in chosen }.map { "“${opts[it]}”" }
+        val wrong = chosen.filter { it !in right }.map { "“${opts[it]}”" }
+        if (missed.isNotEmpty()) bits.add("belgilanmagan to‘g‘ri javob: ${missed.joinToString(", ")}")
+        if (wrong.isNotEmpty()) bits.add("ortiqcha belgilangan: ${wrong.joinToString(", ")}")
+        why = "${bits.joinToString("; ")}. ${exercise.explanationUz}"
+    }
+    return CheckOutcome(
+        correct = correct,
+        given = chosen.joinToString(", ") { opts[it] },
+        expected = right.mapNotNull { opts.getOrNull(it) }.joinToString(", "),
+        whyUz = why,
+        partial = if (correct) 1.0 else partial,
+    )
+}
+
+/** Ochiluvchi ro'yxat: har bo'shliq alohida baholanadi. */
+fun checkDropdown(exercise: Exercise, answer: Any?): CheckOutcome {
+    val given = toList(answer)
+    val expectedList = exercise.answers ?: emptyList()
+    var ok = 0
+    val detail = mutableListOf<String>()
+    expectedList.forEachIndexed { i, expected ->
+        val user = given.getOrNull(i) ?: ""
+        if (normalize(user) == normalize(expected)) {
+            ok += 1
+        } else {
+            detail.add("${i + 1}-bo‘shliq: “${if (user.isEmpty()) "—" else user}” emas, “$expected”")
+        }
+    }
+    val total = expectedList.size
+    return CheckOutcome(
+        correct = ok == total && total > 0,
+        given = given.joinToString(" / "),
+        expected = expectedList.joinToString(" / "),
+        whyUz = if (ok == total) exercise.explanationUz else "${detail.joinToString("; ")}. ${exercise.explanationUz}",
+        partial = if (total == 0) 0.0 else ok.toDouble() / total,
+    )
+}
+
+/** Ketma-ketlik: to'liq tartib mos bo'lsa to'g'ri; qisman — o'z joyidagilar ulushi. */
+fun checkSequence(exercise: Exercise, answer: Any?): CheckOutcome {
+    val given = toList(answer)
+    val items = exercise.items ?: emptyList()
+    val n = items.size
+    var ok = 0
+    items.forEachIndexed { i, it -> if (normalize(given.getOrNull(i) ?: "") == normalize(it)) ok += 1 }
+    val correct = ok == n && given.size == n
+    var why = exercise.explanationUz
+    if (!correct) {
+        val first = items.indices.firstOrNull { normalize(given.getOrNull(it) ?: "") != normalize(items[it]) } ?: -1
+        why = "$ok/$n ta element o‘z joyida. ${first + 1}-o‘rinda “${items.getOrNull(first) ?: "—"}” turishi kerak edi. ${exercise.explanationUz}"
+    }
+    return CheckOutcome(
+        correct = correct,
+        given = given.mapIndexed { i, g -> "${i + 1}) $g" }.joinToString(" "),
+        expected = items.mapIndexed { i, g -> "${i + 1}) $g" }.joinToString(" "),
+        whyUz = why,
+        partial = if (n == 0) 0.0 else ok.toDouble() / n,
+    )
+}
+
+/** Saralash: javob — element matni → guruh indeksi. */
+fun checkCategorize(exercise: Exercise, answer: Any?): CheckOutcome {
+    val cats = exercise.categories ?: emptyList()
+    val sortItems = exercise.sortItems ?: emptyList()
+    val map: Map<String, Int?> =
+        if (answer is Map<*, *>) {
+            answer.entries.associate { (k, v) ->
+                (k?.toString() ?: "") to ((v as? Number)?.toInt() ?: v?.toString()?.toIntOrNull())
+            }
+        } else {
+            emptyMap()
+        }
+    var ok = 0
+    val wrong = mutableListOf<String>()
+    for (it in sortItems) {
+        if (map[it.text] == it.category) ok += 1 else wrong.add("“${it.text}” → ${cats.getOrNull(it.category) ?: "—"}")
+    }
+    val total = sortItems.size
+    fun grouped(pick: (SortItemView) -> Boolean): String =
+        cats.mapIndexed { ci, c ->
+            "$c: " + sortItems.filter { pick(SortItemView(it.text, it.category, map[it.text], ci)) }.joinToString(", ") { it.text }
+        }.joinToString(" | ")
+    return CheckOutcome(
+        correct = ok == total && total > 0,
+        given = grouped { it.chosen == it.groupIndex },
+        expected = grouped { it.category == it.groupIndex },
+        whyUz =
+            if (ok == total) {
+                exercise.explanationUz
+            } else {
+                "$ok/$total to‘g‘ri. To‘g‘risi: ${wrong.take(4).joinToString("; ")}. ${exercise.explanationUz}"
+            },
+        partial = if (total == 0) 0.0 else ok.toDouble() / total,
+    )
+}
+
+private data class SortItemView(val text: String, val category: Int, val chosen: Int?, val groupIndex: Int)
+
+/** Qisqa javob: qabul qilinadigan variantlardan biriga bardoshli tenglik. */
+fun checkShortAnswer(exercise: Exercise, answer: Any?): CheckOutcome {
+    val given = toList(answer).getOrNull(0) ?: ""
+    val accepted = exercise.accepted ?: emptyList()
+    val correct = given.isNotBlank() && accepted.any { looseEquals(it, given) }
+    return CheckOutcome(
+        correct = correct,
+        given = given,
+        expected = accepted.getOrNull(0) ?: "",
+        whyUz =
+            if (correct) {
+                exercise.explanationUz
+            } else {
+                "Kutilgan javob: ${accepted.joinToString(" yoki ") { "“$it”" }}. ${exercise.explanationUz}"
             },
         partial = if (correct) 1.0 else 0.0,
     )

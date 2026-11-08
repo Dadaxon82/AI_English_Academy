@@ -16,6 +16,7 @@ import { formatDuration } from '../lib/timer'
 import { LOADED_LEVELS, getBundle } from '../content'
 import { CEFR_LEVELS } from '../content/types'
 import { DiagnosticStep } from './Onboarding'
+import SelfAssessment from '../components/SelfAssessment'
 import type { SkillEvidence } from '../lib/skillScoring'
 
 export default function Progress() {
@@ -111,6 +112,9 @@ export default function Progress() {
       </Card>
 
       {/* --- Faoliyat grafigi --- */}
+      {/* --- O'z-o'zini baholash (Likert) — darajaga ta'sir qilmaydi --- */}
+      <SelfAssessment />
+
       <Card className="grid gap-3">
         <div className="flex flex-wrap items-center gap-2">
           <h2 className="font-bold">Kunlik faoliyat</h2>

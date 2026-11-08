@@ -30,6 +30,16 @@ function rightAnswer(ex: Exercise): unknown {
       return ex.answer
     case 'translation':
       return [ex.accepted[0]]
+    case 'multi-select':
+      return ex.answerIndexes
+    case 'dropdown-cloze':
+      return ex.answers
+    case 'sequence':
+      return ex.items
+    case 'categorize':
+      return Object.fromEntries(ex.sortItems.map((it) => [it.text, it.category]))
+    case 'short-answer':
+      return [ex.accepted[0]]
   }
 }
 

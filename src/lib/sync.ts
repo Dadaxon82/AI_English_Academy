@@ -104,6 +104,7 @@ export function toQueueItems(data: AppData): Omit<QueueItem, 'id' | 'tries'>[] {
         diagnostic: data.diagnostic,
         onboardedAt: data.onboardedAt,
         badges: data.badges,
+        selfAssessment: data.selfAssessment,
         game: { ...data.game, league: null },
       },
     },
@@ -804,6 +805,19 @@ function planFromRow(r: Row | null): RemoteSnapshot['plan'] {
   // jsonb tashqi ma'lumot: ishonchli holatga keltirilmasa `game.ts`ning
   // hisoblashlari buziladi).
   if (isObj(p.game)) out.game = normalizeGame(p.game as Partial<GameState>)
+  // O'z-o'zini baholash — faqat 1..5 butun baho va son vaqt qabul qilinadi.
+  if (isObj(p.selfAssessment)) {
+    const sa: NonNullable<typeof out.selfAssessment> = {}
+    for (const [k, v] of Object.entries(p.selfAssessment)) {
+      if (!isObj(v)) continue
+      const score = v.score
+      const at = v.at
+      if (typeof score === 'number' && Number.isInteger(score) && score >= 1 && score <= 5 && typeof at === 'number' && Number.isFinite(at)) {
+        sa[k] = { score, at }
+      }
+    }
+    out.selfAssessment = sa
+  }
   return out
 }
 

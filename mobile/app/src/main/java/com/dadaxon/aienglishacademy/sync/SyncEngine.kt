@@ -4,6 +4,7 @@ import com.dadaxon.aienglishacademy.data.AppData
 import com.dadaxon.aienglishacademy.data.AttemptRecord
 import com.dadaxon.aienglishacademy.data.AuthStore
 import com.dadaxon.aienglishacademy.data.BadgeAward
+import com.dadaxon.aienglishacademy.data.SelfRating
 import com.dadaxon.aienglishacademy.data.DayActivity
 import com.dadaxon.aienglishacademy.data.DiagnosticResult
 import com.dadaxon.aienglishacademy.data.ExerciseResult
@@ -763,6 +764,23 @@ class SyncEngine(
         // (serverdagi jsonb tashqi ma'lumot: ishonchli holatga keltirilmasa
         // o'yin hisoblashlari buziladi).
         val game = obj(p, "game")?.let { GameLogic.normalizeGameJson(it, today) }
+        // O'z-o'zini baholash — faqat 1..5 butun baho va son vaqt (veb `planFromRow`).
+        val selfAssessment = obj(p, "selfAssessment")?.let { sa ->
+            val out = LinkedHashMap<String, SelfRating>()
+            for ((k, v) in sa.entrySet()) {
+                if (!v.isJsonObject) continue
+                val o = v.asJsonObject
+                val scoreEl = o.get("score")
+                val atEl = o.get("at")
+                if (scoreEl == null || atEl == null || !scoreEl.isJsonPrimitive || !atEl.isJsonPrimitive) continue
+                if (!scoreEl.asJsonPrimitive.isNumber || !atEl.asJsonPrimitive.isNumber) continue
+                val score = scoreEl.asDouble
+                val at = atEl.asDouble
+                if (score != Math.floor(score) || score < 1 || score > 5 || !at.isFinite()) continue
+                out[k] = SelfRating(score.toInt(), at.toLong())
+            }
+            out
+        }
         return RemotePlan(
             path = path,
             xp = xp,
@@ -770,6 +788,7 @@ class SyncEngine(
             onboardedAt = onboardedAt,
             badges = badges,
             game = game,
+            selfAssessment = selfAssessment,
         )
     }
 

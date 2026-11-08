@@ -398,6 +398,8 @@
     <string name="ex_gap_hint">Bo‘shliqlarni to‘ldiring. So‘z bankidan foydalanishingiz mumkin.</string>
     <string name="ex_gap_slot">Bo‘shliq %1$d</string>
     <string name="ex_word_hint">So‘zlarni bosib tartibni tuzing.</string>
+    <string name="ex_multi_hint">Barcha to‘g‘ri javoblarni belgilang — bittadan ko‘p bo‘ladi.</string>
+    <string name="ex_seq_hint">Elementlarni to‘g‘ri tartibda bosing.</string>
     <string name="ex_word_your">Sizning javobingiz</string>
     <string name="ex_word_undo">Oxirgi so‘zni olish</string>
     <string name="ex_word_clear">Tozalash</string>

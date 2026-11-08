@@ -29,6 +29,7 @@ import { day5, vocabDay5, grammarDay5, readingDay5, listeningDay5, writingDay5, 
 import { day6, vocabDay6, grammarDay6, readingDay6, listeningDay6, writingDay6, speakingDay6, testDay6 } from './a1/day-06'
 import { day7, vocabDay7, grammarDay7, readingDay7, listeningDay7, writingDay7, speakingDay7, testDay7 } from './a1/day-07'
 import { mockExamA1 } from './mockExamA1'
+import { GRAMMAR_EXTRA, READING_EXTRA } from './a1/new-types'
 import { diagnosticTest } from './diagnostic'
 
 /** Har bir daraja uchun to'plam. A2/B1/B2/C1 shu strukturada qo'shiladi. */
@@ -49,8 +50,15 @@ export const a1: LevelBundle = {
   level: 'A1',
   days: [day1, day2, day3, day4, day5, day6, day7],
   vocab: [...vocabDay1, ...vocabDay2, ...vocabDay3, ...vocabDay4, ...vocabDay5, ...vocabDay6, ...vocabDay7],
-  grammar: [grammarDay1, grammarDay2, grammarDay3, grammarDay4, grammarDay5, grammarDay6, grammarDay7],
-  reading: [readingDay1, readingDay2, readingDay3, readingDay4, readingDay5, readingDay6, readingDay7],
+  // Yangi mashq turlari (`a1/new-types.ts`) tegishli mavzu / matn oxiriga qo'shiladi.
+  grammar: [grammarDay1, grammarDay2, grammarDay3, grammarDay4, grammarDay5, grammarDay6, grammarDay7].map((t) => ({
+    ...t,
+    exercises: [...t.exercises, ...(GRAMMAR_EXTRA[t.id] ?? [])],
+  })),
+  reading: [readingDay1, readingDay2, readingDay3, readingDay4, readingDay5, readingDay6, readingDay7].map((p) => ({
+    ...p,
+    exercises: [...p.exercises, ...(READING_EXTRA[p.id] ?? [])],
+  })),
   listening: [listeningDay1, listeningDay2, listeningDay3, listeningDay4, listeningDay5, listeningDay6, listeningDay7],
   writing: [writingDay1, writingDay2, writingDay3, writingDay4, writingDay5, writingDay6, writingDay7],
   speaking: [...speakingDay1, ...speakingDay2, ...speakingDay3, ...speakingDay4, ...speakingDay5, ...speakingDay6, ...speakingDay7],

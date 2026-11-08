@@ -134,3 +134,44 @@ UI (dars rejimi bilan bir xil uslubda):
 3. Likert'ni "o'z-o'zini baholash" sifatida Progress sahifasiga qo'shamizmi (ball bermaydi)?
 4. Mobil (Kotlin) qismini ham shu bosqichda yozamizmi? Sessiyada Android SDK yo'q, shuning uchun yig'ish
    va testni siz kompyuteringizda bajarasiz.
+
+---
+
+## 6. Amalga oshirildi (2026-11-08)
+
+### 6.1. 5 ta yangi mashq turi (veb)
+| Tur | Kod | UI (dars rejimi) | Tekshiruv |
+|---|---|---|---|
+| Bir nechta javob | `multi-select` | Raqamli kartalar + ✓ belgisi, 1–9 tugmalari bilan belgilash | To'plam aniq teng → to'g'ri; ortiqcha tanlov ballni kamaytiradi |
+| Ro'yxatdan tanlash | `dropdown-cloze` | Gap ichidagi bo'shliqni bosing → pastda variantlar; keyingi bo'shliq avtomatik ochiladi | Har bo'shliq alohida, qisman ball |
+| Ketma-ketlik | `sequence` | Raqamlangan joylar; kartani bosing — navbatdagi joyga tushadi | O'z joyidagi elementlar ulushi |
+| Saralash | `categorize` | 2–3 savat; so'zni, keyin savatni bosing | Har element alohida |
+| Qisqa javob | `short-answer` | Bitta maydon | Registr, tinish belgisi, apostrofga bardoshli |
+
+Fayllar: `src/content/types.ts`, `src/lib/check.ts`, `src/components/ExerciseRunner.tsx`; testlar —
+`src/test/new-kinds.test.ts` (14), `src/test/content-audit.test.ts` (yangi 6 qoida).
+
+### 6.2. A1 kontenti — 35 ta mashq (`src/content/a1/new-types.ts`)
+Har turdan 7 tadan, kunlarning grammatika mavzusi va O'qish matniga bog'langan:
+- grammatika: bir nechta javob, ro'yxatdan tanlash, saralash; dialog ketma-ketliklari (tanishish, reja tuzish, yo'l so'rash);
+- O'qish: matn voqealari ketma-ketligi va matn bo'yicha qisqa javob (javob matnda so'zma-so'z borligi audit testida tekshiriladi).
+
+### 6.3. O'z-o'zini baholash (Likert, Progress sahifasi)
+- `src/content/canDo.ts` — A1…C1, har darajada 6 ta "Men … qila olaman" da'vosi (har ko'nikmadan bittadan).
+- 1–5 baho; **darajaga va XP'ga ta'sir qilmaydi**. Saqlanadi va sinxronlanadi (`plan.selfAssessment`,
+  birlashtirishda har da'vo bo'yicha eng keyingi baho qoladi).
+
+### 6.4. Mobil (Kotlin)
+- `ContentModels.kt` (yangi maydonlar), `AnswerChecker.kt` (5 tekshiruvchi — veb bilan bir xil),
+  `ExerciseFragment.kt` (UI: mavjud kartalarda), `strings.xml`, `Models.kt` / `Merge.kt` / `SyncEngine.kt` /
+  `SyncProtocol.kt` (`selfAssessment` o'qiladi, birlashtiriladi va qayta yuboriladi — veb baholari o'chmaydi).
+- Kontent eksporti yangilandi (`assets/content/a1.json`).
+- **Tekshirish:** Android SDK sessiyada yo'q (dl.google.com yopiq), shuning uchun `data` + `domain` qatlami
+  alohida JVM loyihasida (Maven'dan Kotlin 1.9.10) yig'ildi: **214 ta mobil unit test o'tdi**, shu jumladan
+  `NewKindsCheckerTest` (7), `ExportedContentParityTest` (haqiqiy `a1.json`dagi 35 mashq Gson bilan o'qilib
+  to'g'ri yechiladi) va `SelfAssessmentMergeTest`.
+- `ExerciseFragment.kt` (Android UI) **kompyuteringizda yig'ib tekshirilishi kerak** (`./gradlew assembleDebug`).
+  U faqat faylda allaqachon ishlatilgan API'lardan foydalanadi. Mobil Progress ekranida baholash UI'si hali yo'q.
+
+Skrinshotlar: `type-multi-select.png`, `type-dropdown-cloze.png`, `type-sequence.png`, `type-categorize.png`,
+`type-short-answer-result.png`, `self-assessment.png`, `type-mobile-categorize.png`, `type-mobile-dropdown.png`.

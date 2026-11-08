@@ -223,6 +223,82 @@ describe('Kontent auditi — mashqlar yaxlitligi', () => {
     expectClean(bad, 'translation')
   })
 
+  /* ---------------------- yangi turlar (2026-11-08) ---------------------- */
+
+  it('yangi turlarning har biridan kamida 7 ta mashq bor', () => {
+    for (const k of ['multi-select', 'dropdown-cloze', 'sequence', 'categorize', 'short-answer'] as const) {
+      expect(ITEMS.filter((i) => i.ex.kind === k).length, k).toBeGreaterThanOrEqual(7)
+    }
+  })
+
+  it('multi-select: kamida 2 to‘g‘ri javob, hammasi emas, indekslar chegarada, variantlar noyob', () => {
+    const bad: string[] = []
+    for (const { ex } of ITEMS) {
+      if (ex.kind !== 'multi-select') continue
+      const set = new Set(ex.answerIndexes)
+      if (set.size < 2) bad.push(`${ex.id}: 2 tadan kam to‘g‘ri javob (bitta bo‘lsa multiple-choice ishlating)`)
+      if (set.size >= ex.options.length) bad.push(`${ex.id}: hamma variant to‘g‘ri — tanlov ma’nosiz`)
+      if ([...set].some((i) => i < 0 || i >= ex.options.length)) bad.push(`${ex.id}: indeks chegaradan tashqarida`)
+      if (new Set(ex.options.map(norm)).size !== ex.options.length) bad.push(`${ex.id}: takroriy variant`)
+    }
+    expectClean(bad, 'multi-select')
+  })
+
+  it('dropdown-cloze: bo‘shliq = variantlar ro‘yxati = javoblar; javob variantlar ichida', () => {
+    const bad: string[] = []
+    for (const { ex } of ITEMS) {
+      if (ex.kind !== 'dropdown-cloze') continue
+      const gaps = (ex.text.match(GAP_RE) ?? []).length
+      if (gaps !== ex.answers.length || gaps !== ex.choices.length) bad.push(`${ex.id}: ${gaps} bo‘shliq / ${ex.choices.length} ro‘yxat / ${ex.answers.length} javob`)
+      ex.answers.forEach((a, i) => {
+        const ch = ex.choices[i] ?? []
+        if (!ch.includes(a)) bad.push(`${ex.id}: ${i + 1}-javob “${a}” variantlarda yo‘q`)
+        if (ch.length < 2) bad.push(`${ex.id}: ${i + 1}-ro‘yxatda 2 tadan kam variant`)
+        if (new Set(ch).size !== ch.length) bad.push(`${ex.id}: ${i + 1}-ro‘yxatda takror`)
+      })
+    }
+    expectClean(bad, 'dropdown-cloze')
+  })
+
+  it('sequence: aralash tartib — xuddi o‘sha elementlar, lekin to‘g‘ri tartib emas', () => {
+    const bad: string[] = []
+    for (const { ex } of ITEMS) {
+      if (ex.kind !== 'sequence') continue
+      if (ex.items.length < 3) bad.push(`${ex.id}: 3 tadan kam element`)
+      if (new Set(ex.items).size !== ex.items.length) bad.push(`${ex.id}: takroriy element`)
+      if ([...ex.items].sort().join('|') !== [...ex.itemsShuffled].sort().join('|')) bad.push(`${ex.id}: itemsShuffled boshqa to‘plam`)
+      if (ex.items.join('|') === ex.itemsShuffled.join('|')) bad.push(`${ex.id}: aralash tartib javobning o‘zi`)
+      if (ex.itemsShuffled[0] === ex.items[0]) bad.push(`${ex.id}: birinchi element joyida qolgan (juda oson)`)
+    }
+    expectClean(bad, 'sequence')
+  })
+
+  it('categorize: 2–3 guruh, har guruhda kamida 2 element, elementlar noyob', () => {
+    const bad: string[] = []
+    for (const { ex } of ITEMS) {
+      if (ex.kind !== 'categorize') continue
+      if (ex.categories.length < 2 || ex.categories.length > 3) bad.push(`${ex.id}: ${ex.categories.length} guruh`)
+      ex.categories.forEach((c, ci) => {
+        if (ex.sortItems.filter((it) => it.category === ci).length < 2) bad.push(`${ex.id}: “${c}” guruhida 2 tadan kam`)
+      })
+      if (ex.sortItems.some((it) => it.category < 0 || it.category >= ex.categories.length)) bad.push(`${ex.id}: guruh indeksi noto‘g‘ri`)
+      if (new Set(ex.sortItems.map((it) => norm(it.text))).size !== ex.sortItems.length) bad.push(`${ex.id}: takroriy element`)
+    }
+    expectClean(bad, 'categorize')
+  })
+
+  it('short-answer (o‘qish): javob matnda uchraydi va so‘z chegarasiga sig‘adi', () => {
+    const bad: string[] = []
+    for (const { ex, passage } of ITEMS) {
+      if (ex.kind !== 'short-answer') continue
+      if (ex.accepted.length === 0 || ex.accepted.some((a) => !a.trim())) bad.push(`${ex.id}: accepted bo‘sh`)
+      const first = ex.accepted[0] ?? ''
+      if (ex.maxWords && first.trim().split(/\s+/).length > ex.maxWords) bad.push(`${ex.id}: asosiy javob ${ex.maxWords} so‘zdan uzun`)
+      if (passage && !norm(passage.paragraphs.join(' ')).includes(norm(first))) bad.push(`${ex.id}: “${first}” matnda yo‘q`)
+    }
+    expectClean(bad, 'short-answer')
+  })
+
   it('mock imtihon: bo‘lim bo‘sh emas, savol ko‘nikmasi bo‘limga mos', () => {
     const bad: string[] = []
     for (const s of mockExamA1.sections) {

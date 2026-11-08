@@ -167,7 +167,8 @@ export default function ExerciseRunner({
       const n = Number(e.key)
       if (Number.isInteger(n) && n >= 1 && n <= optionCount) {
         e.preventDefault()
-        setAnswer(choiceValue(exercise, n - 1))
+        if (exercise.kind === 'multi-select') setAnswer((prev: unknown) => toggleIndex(prev, n - 1))
+        else setAnswer(choiceValue(exercise, n - 1))
       }
     }
     window.addEventListener('keydown', onKey)
@@ -606,7 +607,280 @@ function AnswerInput({
       )
     case 'translation':
       return <TranslationInput exercise={exercise} answer={answer} onChange={onChange} locked={locked} />
+    case 'multi-select': {
+      const chosen = Array.isArray(answer) ? (answer as number[]) : []
+      return (
+        <div className="grid gap-2.5" role="group" aria-label="Javob variantlari (bir nechtasi)">
+          <p className="text-xs font-bold muted text-center">Barcha to‘g‘ri javoblarni belgilang — bittadan ko‘p bo‘ladi.</p>
+          {exercise.options.map((label, i) => {
+            const on = chosen.includes(i)
+            return (
+              <button
+                key={i}
+                type="button"
+                role="checkbox"
+                aria-checked={on}
+                disabled={locked}
+                onClick={() => onChange(toggleIndex(chosen, i))}
+                className={`${cardCls} ${on ? cardOn : 'hover:bg-[var(--panel-2)]'}`}
+              >
+                <span
+                  aria-hidden
+                  className={`shrink-0 inline-grid place-items-center w-7 h-7 rounded-lg border-2 text-sm font-extrabold ${
+                    on ? 'bg-navy-500 border-navy-500 text-white' : 'muted'
+                  }`}
+                >
+                  {on ? '✓' : i + 1}
+                </span>
+                <span className="flex-1 text-center">{label}</span>
+                <span className="w-7 shrink-0" aria-hidden />
+              </button>
+            )
+          })}
+        </div>
+      )
+    }
+    case 'dropdown-cloze':
+      return <DropdownInput exercise={exercise} answer={answer} onChange={onChange} locked={locked} />
+    case 'sequence':
+      return <SequenceInput exercise={exercise} answer={answer} onChange={onChange} locked={locked} />
+    case 'categorize':
+      return <CategorizeInput exercise={exercise} answer={answer} onChange={onChange} locked={locked} />
+    case 'short-answer':
+      return (
+        <div className="grid gap-2">
+          <input
+            className={`${inputCls} text-base rounded-2xl border-2 py-3`}
+            value={Array.isArray(answer) ? String(answer[0] ?? '') : String(answer ?? '')}
+            disabled={locked}
+            aria-label="Qisqa javob"
+            autoComplete="off"
+            spellCheck={false}
+            placeholder={exercise.maxWords ? `Javob (${exercise.maxWords} so‘zgacha)…` : 'Javobingiz…'}
+            onChange={(e) => onChange([e.target.value])}
+          />
+        </div>
+      )
   }
+}
+
+/** Ro'yxatdagi indeksni qo'shish/olib tashlash (multi-select). */
+function toggleIndex(prev: unknown, i: number): number[] {
+  const arr = Array.isArray(prev) ? (prev as number[]) : []
+  return arr.includes(i) ? arr.filter((x) => x !== i) : [...arr, i].sort((a, b) => a - b)
+}
+
+/**
+ * Ochiluvchi ro'yxat: gap ichidagi bo'shliqni bosing — pastda shu bo'shliq
+ * variantlari chiqadi. Tanlangach keyingi bo'sh bo'shliq avtomatik ochiladi.
+ */
+function DropdownInput({
+  exercise,
+  answer,
+  onChange,
+  locked,
+}: {
+  exercise: Extract<Exercise, { kind: 'dropdown-cloze' }>
+  answer: unknown
+  onChange: (v: unknown) => void
+  locked: boolean
+}) {
+  const arr = Array.isArray(answer) ? (answer as string[]) : exercise.answers.map(() => '')
+  const [active, setActive] = useState(0)
+  const parts = exercise.text.split('___')
+  const pick = (v: string) => {
+    const next = [...arr]
+    next[active] = v
+    onChange(next)
+    const empty = next.findIndex((x, i) => i !== active && !String(x).trim())
+    if (empty > -1) setActive(empty)
+  }
+  return (
+    <div className="grid gap-4">
+      <p className="text-base sm:text-lg leading-[2.8rem] font-medium" lang="en">
+        {parts.map((p, i) => (
+          <span key={i}>
+            {p}
+            {i < parts.length - 1 && (
+              <button
+                type="button"
+                disabled={locked}
+                onClick={() => setActive(i)}
+                aria-label={`${i + 1}-bo‘shliq: ${arr[i] || 'tanlanmagan'}`}
+                aria-pressed={active === i}
+                className={`mx-1 inline-flex items-center gap-1 rounded-xl border-2 border-b-4 px-3 py-0.5 font-bold align-middle ${
+                  active === i && !locked
+                    ? 'border-navy-400 bg-navy-50 text-navy-800 dark:bg-navy-900/40 dark:text-navy-100'
+                    : arr[i]
+                      ? 'bg-[var(--panel)]'
+                      : 'bg-[var(--panel-2)] muted'
+                }`}
+              >
+                {arr[i] || '…'} <span aria-hidden className="text-xs">▾</span>
+              </button>
+            )}
+          </span>
+        ))}
+      </p>
+      {!locked && (
+        <div className="grid gap-1.5">
+          <p className="text-xs font-bold muted text-center">{active + 1}-bo‘shliq uchun tanlang:</p>
+          <div className="flex flex-wrap justify-center gap-2">
+            {(exercise.choices[active] ?? []).map((c) => (
+              <button
+                key={c}
+                type="button"
+                onClick={() => pick(c)}
+                className={`${tileCls} ${arr[active] === c ? cardOn : 'hover:bg-[var(--panel-2)]'}`}
+              >
+                {c}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+/** Ketma-ketlik: kartani bosing — u navbatdagi raqamli joyga tushadi; joydagisini bosing — qaytadi. */
+function SequenceInput({
+  exercise,
+  answer,
+  onChange,
+  locked,
+}: {
+  exercise: Extract<Exercise, { kind: 'sequence' }>
+  answer: unknown
+  onChange: (v: unknown) => void
+  locked: boolean
+}) {
+  const chosen = Array.isArray(answer) ? (answer as string[]) : []
+  const left = exercise.itemsShuffled.filter((it) => !chosen.includes(it))
+  return (
+    <div className="grid gap-4">
+      {exercise.question && <p className="text-sm font-semibold text-center">{exercise.question}</p>}
+      <ol className="grid gap-2" aria-label="Sizning tartibingiz">
+        {exercise.items.map((_, i) => {
+          const it = chosen[i]
+          return (
+            <li key={i} className="flex items-center gap-2">
+              <span className="shrink-0 w-7 text-right font-extrabold tabular-nums muted">{i + 1}.</span>
+              {it ? (
+                <button
+                  type="button"
+                  disabled={locked}
+                  onClick={() => onChange(chosen.filter((x) => x !== it))}
+                  className={`${cardCls} hover:bg-[var(--panel-2)]`}
+                  title="Olib tashlash"
+                >
+                  <span lang="en">{it}</span>
+                </button>
+              ) : (
+                <span className="flex-1 h-12 rounded-2xl border-2 border-dashed" aria-hidden />
+              )}
+            </li>
+          )
+        })}
+      </ol>
+      {left.length > 0 && (
+        <div className="grid gap-2">
+          {left.map((it) => (
+            <button
+              key={it}
+              type="button"
+              disabled={locked}
+              onClick={() => onChange([...chosen, it])}
+              className={`${cardCls} hover:bg-[var(--panel-2)]`}
+            >
+              <span lang="en">{it}</span>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+/** Saralash: so'zni bosing, so'ng guruhni bosing. Guruhdagi so'zni bosing — qaytadi. */
+function CategorizeInput({
+  exercise,
+  answer,
+  onChange,
+  locked,
+}: {
+  exercise: Extract<Exercise, { kind: 'categorize' }>
+  answer: unknown
+  onChange: (v: unknown) => void
+  locked: boolean
+}) {
+  const map = (answer && typeof answer === 'object' && !Array.isArray(answer) ? answer : {}) as Record<string, number>
+  const [pick, setPick] = useState<string | null>(null)
+  const pool = exercise.sortItems.filter((it) => map[it.text] === undefined)
+  const place = (ci: number) => {
+    if (!pick) return
+    onChange({ ...map, [pick]: ci })
+    setPick(null)
+  }
+  const remove = (text: string) => {
+    const next = { ...map }
+    delete next[text]
+    onChange(next)
+  }
+  return (
+    <div className="grid gap-4">
+      <p className="text-xs font-bold muted text-center">So‘zni bosing, so‘ng uning guruhini bosing.</p>
+      <div className={`grid gap-2.5 ${exercise.categories.length === 3 ? 'grid-cols-3' : 'grid-cols-2'}`}>
+        {exercise.categories.map((c, ci) => (
+          <div
+            key={c}
+            className={`rounded-2xl border-2 border-b-4 p-2 grid content-start gap-1.5 min-h-28 ${
+              pick ? 'border-navy-300 bg-navy-50/50 dark:bg-navy-900/20' : 'bg-[var(--panel)]'
+            }`}
+          >
+            <button
+              type="button"
+              disabled={locked || !pick}
+              onClick={() => place(ci)}
+              className="rounded-xl px-2 py-1.5 text-xs sm:text-sm font-extrabold uppercase tracking-wide text-violet-600 dark:text-violet-400 disabled:cursor-default enabled:hover:bg-violet-50 dark:enabled:hover:bg-violet-950/30"
+            >
+              {c}
+            </button>
+            {exercise.sortItems
+              .filter((it) => map[it.text] === ci)
+              .map((it) => (
+                <button
+                  key={it.text}
+                  type="button"
+                  disabled={locked}
+                  onClick={() => remove(it.text)}
+                  className="rounded-xl border-2 px-2 py-1 text-sm font-semibold bg-[var(--panel-2)] break-words"
+                  title="Qaytarish"
+                >
+                  {it.text}
+                </button>
+              ))}
+          </div>
+        ))}
+      </div>
+      {pool.length > 0 && (
+        <div className="flex flex-wrap justify-center gap-2">
+          {pool.map((it) => (
+            <button
+              key={it.text}
+              type="button"
+              disabled={locked}
+              aria-pressed={pick === it.text}
+              onClick={() => setPick(pick === it.text ? null : it.text)}
+              className={`${tileCls} ${pick === it.text ? cardOn : 'hover:bg-[var(--panel-2)]'}`}
+            >
+              {it.text}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  )
 }
 
 /**
@@ -830,6 +1104,16 @@ function initialAnswer(ex: Exercise): unknown {
       return []
     case 'translation':
       return ['']
+    case 'multi-select':
+      return []
+    case 'dropdown-cloze':
+      return ex.answers.map(() => '')
+    case 'sequence':
+      return []
+    case 'categorize':
+      return {}
+    case 'short-answer':
+      return ['']
   }
 }
 
@@ -843,6 +1127,7 @@ const TFNG: { v: 'true' | 'false' | 'notgiven'; label: string }[] = [
 function choiceCount(ex: Exercise): number {
   if (ex.kind === 'multiple-choice') return Math.min(9, ex.options.length)
   if (ex.kind === 'true-false-notgiven') return TFNG.length
+  if (ex.kind === 'multi-select') return Math.min(9, ex.options.length)
   return 0
 }
 
@@ -867,6 +1152,9 @@ function promptOf(ex: Exercise): { text: string; lang: 'en' | 'uz' } | null {
       return ex.statement.trim() ? { text: ex.statement, lang: 'en' } : null
     case 'translation':
       return ex.source.trim() ? { text: ex.source, lang: ex.sourceLang } : null
+    case 'multi-select':
+    case 'short-answer':
+      return ex.question.trim() ? { text: ex.question, lang: guessLang(ex.question) } : null
     default:
       return null
   }
@@ -916,6 +1204,16 @@ function isAnswerEmpty(ex: Exercise, a: unknown): boolean {
       return !Array.isArray(a) || a.length < ex.answer.length
     case 'translation':
       return !Array.isArray(a) || String(a[0] ?? '').trim() === ''
+    case 'multi-select':
+      return !Array.isArray(a) || a.length === 0
+    case 'dropdown-cloze':
+      return !Array.isArray(a) || a.some((x) => String(x).trim() === '')
+    case 'sequence':
+      return !Array.isArray(a) || a.length < ex.items.length
+    case 'categorize':
+      return !a || typeof a !== 'object' || Object.keys(a as object).length < ex.sortItems.length
+    case 'short-answer':
+      return !Array.isArray(a) || String(a[0] ?? '').trim() === ''
   }
 }
 
@@ -927,6 +1225,11 @@ function kindLabel(k: Exercise['kind']): string {
     'gap-fill': 'Bo‘shliq',
     'word-order': 'So‘z tartibi',
     translation: 'Tarjima',
+    'multi-select': 'Bir nechta javob',
+    'dropdown-cloze': 'Ro‘yxatdan tanlash',
+    sequence: 'Ketma-ketlik',
+    categorize: 'Saralash',
+    'short-answer': 'Qisqa javob',
   }[k]
 }
 
