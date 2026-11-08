@@ -40,6 +40,10 @@ coverage
 .vitest
 *.tsbuildinfo
 
+# Python yordamchilarining bayti (`scripts/*.py` ishga tushganda hosil bo'ladi)
+__pycache__/
+*.pyc
+
 # supabase local
 supabase/.branches
 supabase/.temp

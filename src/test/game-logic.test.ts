@@ -54,6 +54,7 @@ import {
   refillHearts,
   settle,
   settleBet,
+  settleLeaguePrize,
   streakWithFreezes,
   weeklyXp,
   xpGain,
@@ -575,6 +576,35 @@ describe('Liga haftasi (Duolingo: 10 liga, har birida 30 kishi, promoteTop jadva
     const s = settle(d, T0, DAY)
     expect(s.game.gems).toBe(0)
     expect(s.game.league?.prizeClaimed).toBe(false)
+  })
+
+  // 2026-11-09 regressiyasi: `settleLeaguePrize()` sanani o'zi qayta olgani
+  // uchun yuqoridagi sinov KUNGA qarab yiqilardi (devol 2026-11-08 da «hafta
+  // hali davom etmoqda» derdi, 09-noyabrda — «yakunlangan»). Endi `today`
+  // uzatiladi: natija FAQAT BERILGAN kundan keladi, devol sanasidan EMAS.
+  it("liga sovg‘asi FAQsAT BERILGAN KUNDAN keladi (devol sanasi ta'sir QILMAYDI)", () => {
+    const ongoing = { weekStart: WEEK, leagueId: 'gold', rank: 1, boardSize: LEAGUE_BOARD_SIZE, at: T0, entries: [{ userId: UID, name: 'Biz', xp: 900 }], prizeClaimed: false }
+    const board = new Date(WEEK + 'T00:00:00Z') // tekshiruv uchun: WEEK poneshanba
+    expect(board.getUTCDay()).toBe(1)
+
+    // Bitta snapshot, bitta ma'lumot — faqat `today` boshqa.
+    const same = fresh()
+    same.game.league = ongoing
+    expect(settleLeaguePrize(same, DAY).game.gems).toBe(0) // DAY — o'sha hafta ichida
+    expect(settleLeaguePrize(same, DAY).game.league?.prizeClaimed).toBe(false)
+
+    const later = fresh()
+    later.game.league = ongoing
+    const won = settleLeaguePrize(later, '2026-11-12') // hafta almashgan
+    expect(won.game.gems).toBe(LEAGUE_PRIZE_GEMS[0]) // 1-o'rin
+    expect(won.game.league?.prizeClaimed).toBe(true)
+
+    // `settle()` zanjiri ham shu kunni ichkariga uzatadi — tashqi devol
+    // sanasi qaysi bo'lmasin, natija `today` bo'yicha bir xil bo'lishi shart.
+    const viaSettle = fresh()
+    viaSettle.game.league = ongoing
+    expect(settle(viaSettle, T0, DAY).game.league?.prizeClaimed).toBe(false)
+    expect(settle(viaSettle, T0, '2026-11-12').game.gems).toBe(LEAGUE_PRIZE_GEMS[0])
   })
 })
 

@@ -9,12 +9,14 @@ shuning uchun DDL yo'lakay Supabase **Management API** orqali bajariladi.
 
 Talab: SUPABASE_ACCESS_TOKEN — shaxsiy access token (PAT). Olish:
    https://supabase.com/dashboard/account/tokens  → "New token"
-U MAXFIY: qatorga/bajarilgan buyruqqa YOZILMAYDI (fayldan yoki so'rovdan olinadi).
+U MAXFIY: qatorga/bajarilgan buyruqqa YOZILMAYDI (fayldan, stdin'dan yoki
+muhit o'zgaruvchisidan olinadi; skript uni chop ETMAYDI va diskka YOZMAYDI).
 
 Islatish (repa ildizidan):
     python -I scripts/apply_migrations.py --dry-run        # reja, tarmoq YO'Q
-    setx + keyin: SUPABASE_ACCESS_TOKEN ni faylga qo'yib:
-        python -I scripts/apply_migrations.py --token-file ..\\_work_aea\\pat.txt
+    python -I scripts/apply_migrations.py --token-stdin --from 3
+        # token bir qator kiritiladi: faylga TEGINMAYDI, ekranga chiqmaydi
+    python -I scripts/apply_migrations.py --token-file pat.txt --from 3
     Keyin avtomatik qayta tekshiriladi (`check_supabase_schema.py` chaqiriladi).
 
 Qoidalar:
@@ -43,7 +45,16 @@ API = "https://api.supabase.com/v1"
 
 
 def read_token(args: argparse.Namespace) -> tuple[str | None, str]:
-    """Token manbalari (ustuvorlik): --token-file > SUPABASE_ACCESS_TOKEN."""
+    """Token manbalari (ustuvorlik): --token-stdin > --token-file > SUPABASE_ACCESS_TOKEN.
+
+    `--token-stdin` — tokenni umuman FAYLGA yozmaslik uchun: foydalanuvchi
+    keyin-o'chiriladigan quvur orqali beradi (masalan
+    `read -r T; echo "$T" | python ... --token-stdin`) va biz uni faqat
+    xotirada ushlaymiz.
+    """
+    if args.token_stdin:
+        val = sys.stdin.readline().strip()
+        return (val or None), "stdin"
     if args.token_file:
         p = Path(args.token_file)
         if not p.is_file():
@@ -113,6 +124,7 @@ def main() -> int:
             stream.reconfigure(encoding="utf-8", errors="replace")
     ap = argparse.ArgumentParser(description="Supabase migratsiyalarini Management API orqali bajarish")
     ap.add_argument("--token-file", help="PAT fayli (birinchi qator) — maxfiy")
+    ap.add_argument("--token-stdin", action="store_true", help="PAT ni stdin'dan o'qish — faylga yozilmaydi")
     ap.add_argument("--dry-run", action="store_true", help="reja: nima yuboriladi (tarmoq YO'Q)")
     ap.add_argument("--from", dest="from_num", type=int, default=1, help="shu raqamdan boshlab (0001…)")
     ap.add_argument("--timeout", type=float, default=60.0)

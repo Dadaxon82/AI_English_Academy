@@ -691,12 +691,46 @@ class GameLogicTest {
         assertEquals("o'rin noma'lum — gem YO'Q", 0, marked.game.gems)
         assertTrue("lekin qayta tekshirilmasin deb belgilanadi", marked.game.league!!.prizeClaimed)
 
-        // Hali davom etayotgan hafta (soatga bog'liq emas — o'sha hafta o'zi olinadi).
-        val ongoing = d.copy(game = d.game.copy(league = snap.copy(weekStart = GameLogic.weekStartOf(todayKey()))))
-        assertSame("hafta hali davom etmoqda", ongoing, GameLogic.settleLeaguePrize(ongoing))
+        // Hali davom etayotgan hafta. `today` ANIQ beriladi: bu sinov devol
+        // sanasiga bog'liq bo'lib qolmasin (veb tomonda 2026-11-09 da aynan
+        // shu bog'liqlik sababli sinov yiqildi — quyida alohida regressiya).
+        val ongoing = d.copy(game = d.game.copy(league = snap.copy(weekStart = WEEK0)))
+        assertSame("hafta hali davom etmoqda", ongoing, GameLogic.settleLeaguePrize(ongoing, DAY))
         val noLeague = base()
-        assertSame("liga snapshoti yo'q — holat o'zgarmasin", noLeague, GameLogic.settleLeaguePrize(noLeague))
+        assertSame("liga snapshoti yo'q — holat o'zgarmasin", noLeague, GameLogic.settleLeaguePrize(noLeague, DAY))
         assertEquals(listOf(100, 50, 30), GameConfig.LEAGUE_PRIZE_GEMS)
+    }
+
+    /**
+     * 2026-11-09 REGRESSIYASI (veb `game-logic.test.ts` da ham BIR XIL):
+     * `settleLeaguePrize()` sanani o'zi qayta olgani uchun natija devol
+     * sanasiga qarab o'zgarardi. Endi `today` uzatiladi — natija FAQAT
+     * BERILGAN kundan keladi.
+     */
+    @Test
+    fun leaguePrizeUsesTheGivenDayNotTheWallClock() {
+        val snap = LeagueSnapshot(
+            weekStart = WEEK0, leagueId = "gold", rank = 1, boardSize = 30, at = T0,
+            entries = listOf(LeagueRow("u-1", "Men", 900)),
+            prizeClaimed = false,
+        )
+        assertEquals("WEEK0 — DAY haftasining boshi (poneshanba)", GameLogic.weekStartOf(DAY), WEEK0)
+
+        // O'sha hafta ichidagi kun — sovg'a YO'Q, belgi ham qo'yilmaydi.
+        val sameWeek = base().copy(game = emptyGame(DAY, T0).copy(league = snap))
+        val held = GameLogic.settleLeaguePrize(sameWeek, DAY)
+        assertEquals(0, held.game.gems)
+        assertSame(held, sameWeek)
+
+        // Haftadan KEYINGI kun — 1-o'rin sovg'asi bir marta.
+        val later = base().copy(game = emptyGame(DAY, T0).copy(league = snap))
+        val won = GameLogic.settleLeaguePrize(later, "2026-11-12")
+        assertEquals(GameConfig.LEAGUE_PRIZE_GEMS[0], won.game.gems)
+        assertTrue(won.game.league!!.prizeClaimed)
+
+        // `settle()` zanjiri ham kunni ichkariga uzatadi.
+        assertEquals(false, GameLogic.settle(sameWeek, T0, DAY).game.league!!.prizeClaimed)
+        assertEquals(GameConfig.LEAGUE_PRIZE_GEMS[0], GameLogic.settle(sameWeek, T0, "2026-11-12").game.gems)
     }
 
     /* ------------------------------ Yig'uvchi (settle) ------------------------------ */

@@ -732,12 +732,21 @@ export function rankOf(board: readonly { userId: string; xp: number }[], userId:
   return i === -1 ? 0 : i + 1
 }
 
-/** Liga sovg'asi: hafta YAKUNLANGAN snapshot uchun bir marta (top-3). */
-export function settleLeaguePrize(data: AppData): AppData {
+/**
+ * Liga sovg'asi: hafta YAKUNLANGAN snapshot uchun bir marta (top-3).
+ *
+ * `today` — qabul qilinadi, devol qayta O'QILMAYDI: qo'shni `settle()`
+ * qadamlari bilan BIR XIL kun hisoblansin uchun. Avval funksiya sanani o'zi
+ * qayta olardi (`weekStartOf(todayKey())`), ya'ni `settle()` bitta kun deb
+ * belgilagan holatda «hafta hali davom etmoqda» qarori boshqa kunga qarab
+ * o'zgarardi — kun o'tgan payt sinov ham, haqiqiy oqib ham boshqacha
+ * ishlar edi (2026-11-09 kuni aynan shu sababli sinov yiqildi).
+ */
+export function settleLeaguePrize(data: AppData, today = todayKey()): AppData {
   const g = data.game
   const snap = g.league
   if (!snap || snap.prizeClaimed) return data
-  if (snap.weekStart === weekStartOf(todayKey())) return data // hafta hali davom etmoqda
+  if (snap.weekStart === weekStartOf(today)) return data // hafta hali davom etmoqda
   const rank = rankOf(snap.entries, data.userId)
   if (rank < 1 || rank > LEAGUE_PRIZE_GEMS.length) return { ...data, game: { ...g, league: { ...snap, prizeClaimed: true } } }
   const gems = LEAGUE_PRIZE_GEMS[rank - 1] ?? 0
@@ -763,7 +772,7 @@ export function settle(data: AppData, now = Date.now(), today = todayKey()): App
   d = applyFreezes(d, today)
   d = settleAchievements(d, streakWithFreezes(d, today), now)
   d = settleBet(d, streakWithFreezes(d, today))
-  d = settleLeaguePrize(d)
+  d = settleLeaguePrize(d, today)
   return d
 }
 

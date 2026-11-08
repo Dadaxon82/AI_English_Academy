@@ -715,16 +715,23 @@ object GameLogic {
     /**
      * Liga sovg'asi: hafta YAKUNLANGAN snapshot uchun bir marta (top-3).
      *
+     * `today` qabul qilinadi, sana qayta O'QILMAYDI — `settle()` ning boshqa
+     * qadamlari bilan BIR XIL kun hisoblansin uchun. Avval funksiya sanani
+     * o'zi qayta olardi (`weekStartOf(todayKey())`), ya'ni «hafta hali davom
+     * etmoqda» qarori `settle()` belgilagan kundan mustaqil edi — kun
+     * o'tganda xulq o'zgarardi (veb tomonda 2026-11-09 kuni aynan shu sababli
+     * sinov yiqildi; ikkala tomon BIR XIL tuzatildi).
+     *
      * HALOLLIK: o'rnimiz aniq bo'lmasa (`rankOf` = 0 — jadvalda biz yo'q)
      * SOVGA BERILMAYDI, lekin `prizeClaimed: true` qo'yiladi — aks holda
      * snapshot har `settle()` da qayta tekshirilib turadi. Bu ixtir emas:
      * o'rin o'qilgan jadvaldan keladi, unda biz yo'q bo'lsa his ham yo'q.
      */
-    fun settleLeaguePrize(data: AppData): AppData {
+    fun settleLeaguePrize(data: AppData, today: String = todayKey()): AppData {
         val g = data.game
         val snap = g.league ?: return data
         if (snap.prizeClaimed) return data
-        if (snap.weekStart == weekStartOf(todayKey())) return data // hafta hali davom etmoqda
+        if (snap.weekStart == weekStartOf(today)) return data // hafta hali davom etmoqda
         val rank = rankOf(snap.entries, data.userId)
         if (rank < 1 || rank > GameConfig.LEAGUE_PRIZE_GEMS.size) {
             return data.copy(game = g.copy(league = snap.copy(prizeClaimed = true)))
@@ -761,7 +768,7 @@ object GameLogic {
         d = applyFreezes(d, today)
         d = settleAchievements(d, streakWithFreezes(d, today), now)
         d = settleBet(d, streakWithFreezes(d, today))
-        d = settleLeaguePrize(d)
+        d = settleLeaguePrize(d, today)
         return d
     }
 

@@ -15,7 +15,7 @@ Loyiha talabnomasi (`AI English Academy_v2.docx`) to'liq bajarilgan:
 - ✅ **Jonli taymer** — sahifa yangilansa ham vaqt yo'qolmaydi (IndexedDB'da saqlanadi)
 - ✅ **Offline / PWA**: sync navbati, Service Worker; logout'da avval sinxronlanadi (yuborilmagan narsa qolsa tasdiq so'raladi), so'ng kesh tozalanadi
 - ✅ **Mobil ilova**: Dashboard yuqorisidagi blok PWA'ni bosh ekranga o'rnatadi (Android/kompyuter — "Ilovani o'rnatish" tugmasi, iPhone — yo'riqnoma); APK fayl shart emas
-- ✅ **Native Android ilovasi** (`mobile/` — Kotlin + XML Views, `com.dadaxon.aienglishacademy`): bitta baza va bitta auth, **348 unit test**, qahramon har ekranda; DULO_mod.apk dan o'lchangan **darslar ketma-ketligi va harakat byudjeti** ikkala platformada — quyida 5b-bo'lim va
+- ✅ **Native Android ilovasi** (`mobile/` — Kotlin + XML Views, `com.dadaxon.aienglishacademy`): bitta baza va bitta auth, **349 unit test**, qahramon har ekranda; DULO_mod.apk dan o'lchangan **darslar ketma-ketligi va harakat byudjeti** ikkala platformada — quyida 5b-bo'lim va
 `mobile/MOBIL_ARXITEKTURA.md` 8-bo'limi
 - ✅ **Server bilan ikki tomonlama**: hisobga kirganda progress serverdan tiklanadi va qurilmadagisi bilan birlashtiriladi
 - ✅ **Baza eski sxemada ham sinxron islaydi** (2026-11-08): `0003/0004` migratsiyalari qo'llanmagan bazada sozlamalar
@@ -87,8 +87,9 @@ cp .env.example .env
    (`igrzbfnsunedgyivmqlz`) 0001 qo'llanilgan — 0002 ham albatta qo'llanilishi
    kerak.
    **Qaysilari qo'llanilganini bilish uchun:** `python -I scripts/check_supabase_schema.py`
-   bazani faqat o'qib tekshiradi va nomlab aytadi (3b-bo'lim; 2026-11-08 o'lchovda
-   bu bazada 0003 va 0004 qo'llanmagan edi).
+   bazani faqat o'qib tekshiradi va nomlab aytadi (3b-bo'lim; 2026-11-09
+   o'lchovda ham bu bazada 0003 va 0004 qo'llanmagan — jadval va ustunlar
+   yo'qligi HTTP 404 `PGRST205` / 400 `42703` bilan tasdiqlangan).
 4. **Lokal ishga tushirish:** `cp .env.example .env` ichiga ikki qiymatni yozing.
 5. **GitHub Pages uchun:** GitHub'da repo → **Settings → Secrets and variables →
    Actions → Repository variables** ga `VITE_SUPABASE_URL` va `VITE_SUPABASE_ANON_KEY`
@@ -131,18 +132,37 @@ PostgREST ixtiyoriy SQL qabul qilmaydi. Shuning uchun ikki yo'l:
 
 1. **SQL Editor** (kalit talab qilmaydi): `0003_motion.sql` va
    `0004_weekly_xp.sql` ni ketma-ket Run qilib, skriptni qayta ishga tushirish.
+   Tekshiruv so'rovi `jadval_bor=1, ustunlar=6, politsiyalar=4,
+   sozlama_ustunlari=2` qaytishi kerak.
 2. **`scripts/apply_migrations.py`** — Supabase **Management API** orqali
    (shaxsiy access token: https://supabase.com/dashboard/account/tokens):
 
 ```bash
 python -I scripts/apply_migrations.py --dry-run              # reja, tarmoq yo'q
+python -I scripts/apply_migrations.py --token-stdin --from 3 # token faylga TEGINMAYDI
 python -I scripts/apply_migrations.py --token-file pat.txt --from 3
 ```
 
 Skript tartibni saqlaydi, har faylni BUTUN holda yuboradi, birinchi xatoda
-to'xtaydi, token matni hech qayerga chiqmaydi va oxirida avtomatik qayta
-tekshiradi. Token bizda yo'q (repoda `.env` yo'q, Credential Manager'da
-Supabase yozuvi yo'q) — shu sababli hozircha 1-yo'l bilan yugurilgan.
+to'xtaydi, token matni chop etilmaydi/diskka yozilmaydi va oxirida avtomatik
+qayta tekshiradi.
+
+**Nega DDL'ni o'zimiz bajara olmadik (2026-11-08/09 o'lchovlari).** Har bir
+yo'l tekshirildi va natijasi yozilgan — taxmin emas:
+
+| Yo'l | O'lchangan natija |
+|---|---|
+| Anon kalit bilan `POST /rest/v1/...` DDL | PostgREST ixtiyoriy SQL qabul qilmaydi |
+| RPC orqali (`/rpc/execute_sql`, `/rpc/exec_sql`, `/rpc/sql`) | **404 `PGRST202`** — bunday funksiya bazada yo'q |
+| PostgREST OpenAPI speksi (`GET /rest/v1/`) | **401** — "Only secret API keys can be used for this endpoint" |
+| GitHub Actions makronlari | `variables: VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY`; **secrets: 0 ta** |
+| Credential Manager (`jarvis-aqdu` xizmati) | `SUPABASE_ACCESS_TOKEN / SERVICE_ROLE / DB_PASSWORD` — **yo'q** (nomlar bo'yicha tekshirildi, qiymat o'qilmadi) |
+| Brauzer sessiyasi (SQL Editor) | CDP bilan: SQL sahifasi `/sign-in?returnTo=…` ga qaytardi, monaco yo'q — **Supabase'ga kirilgan sessiya yo'q** |
+| Management API (`api.supabase.com/v1/projects`) | Tarmoq ochiq, javob **401** — token so'raydi |
+
+Ya'ni yetishmayotgan yagona narsa — **bitta PAT** (`SUPABASE_ACCESS_TOKEN`).
+U berilsa 2-yo'l to'liq avtomatik ishlaydi; aks holda ilova eski sxemada ham
+to'g'ri ishlaydi (quyidagi 5 band — veb va mobil testlarda qoplangan).
 
 **Ilova bunday holatda nima qiladi (veb `src/lib/sync.ts` va mobil
 `SyncEngine.kt` — ikkalasi BIR XIL siyosat):**
@@ -183,7 +203,7 @@ npm run icons:build   # PWA ikonalaria (0 bog'liqlik, sof Node)
 ```bash
 npm run typecheck     # tsc — 0 xato
 npm run lint          # eslint — 0 xato
-npm test              # vitest — 296 test (SRS, taymer/vaqt hisobi, tekshiruv, kontent auditi, audio yaxlitligi, rejalashtirish, daraja, sync, server birlashmasi, sahifalar, darslar zanjiri + HAQIQIY A1 kontentida zanjir auditi, harakat manifesti (mobil res/raw bilan solishtiradi), O‘YIN QATLAMI: yurak/quest/gem/liga + o‘yin manifesti (mobil GameConfig.kt bilan solishtiradi), MASHQ JARAYONI: progress chizig‘i + combo + bosish (store hisoblari va mobil manba bilan solishtiriladi))
+npm test              # vitest — 297 test (SRS, taymer/vaqt hisobi, tekshiruv, kontent auditi, audio yaxlitligi, rejalashtirish, daraja, sync, server birlashmasi, sahifalar, darslar zanjiri + HAQIQIY A1 kontentida zanjir auditi, harakat manifesti (mobil res/raw bilan solishtiradi), O‘YIN QATLAMI: yurak/quest/gem/liga + o‘yin manifesti (mobil GameConfig.kt bilan solishtiradi), MASHQ JARAYONI: progress chizig‘i + combo + bosish (store hisoblari va mobil manba bilan solishtiriladi))
 npm run build         # production build + Service Worker
 npm run smoke         # dist'ni serverda ochib tekshirish + 375/1280 skrinshot
 npm run render:check  # 15 marshrut CDP orqali: DOM + konsol xatolari + 375px telefonda yonga surilmasligi
@@ -225,9 +245,11 @@ gradle --offline :app:assembleRelease      # 2026-11-08: lint-gradle kechada bo'
                                            # uchun `:app:lintVitalRelease` alohida tarmoqda bajarildi
 ```
 
-Tekshirilgan holat (2026-11-08): **348 unit test o'tdi** (28 klass — 2026-11-06
+Tekshirilgan holat (2026-11-09): **349 unit test o'tdi** (28 klass — 2026-11-06
 dagi 268 taga o'yin qatlami qo'shilgach 68 ta, mashq jarayoni ikki klassi
-(`ui/ExerciseProgressTest`, `ui/ExerciseFeedbackTest`) bilan 7 ta qo'shildi; `GameOpsTest` 15 ta —
+(`ui/ExerciseProgressTest`, `ui/ExerciseFeedbackTest`) bilan 7 ta, liga sovg'asi
+sana bo'yicha regressiyasi (`GameLogicTest::leaguePrizeUsesTheGivenDayNotTheWallClock`)
+bilan 1 ta qo'shildi; `GameOpsTest` 15 ta —
 jonli do'kon `AppStore.reduceLocal` o'yin qatlamini HAQIQATAN qo'llashini
 tekshiradi), API 26+
 emulatorda barcha ekranlar ochiladi, ANR yo'q (`/data/anr/` bo'sh; Lug'at 117
@@ -254,6 +276,14 @@ keyin qayta tekshirildi (`apksigner verify --print-certs` — xato yo'q):
 `Signer #1 CN=AI English Academy, OU=AEA, O=Dadaxon, L=Kokand, ST=Fergana, C=UZ`,
 sertifikat SHA-256 `d59a899ff5b03a8d691df1e72afd99b66984bd5f5cd17bd1fd51311faf587e55`
 (1.0.0 va 1.1.0 bilan BIR XIL imzo kaliti — eski ustiga yangilanadi).
+
+**APK build'dan KEYIN kiritilgan yagona o'zgarish** (2026-11-09, 5d-bo'limdagi
+«sana izchilligi»): `settleLeaguePrize()` kunni devoldan o'zi o'qimasligi
+tuzatildi. Foydalanuvchi ko'radigan xulq O'ZGARMADI — prod'da `today` har doim
+`todayKey()` (`store.tsx:101`, `GameOps.settle(...)`), ya'ni chiqarilgan APK
+ham BIR XIL natija beradi. Shu sababli APK qayta yig'ilmadi (hash o'zgardida
+tekshirilgan qiymatlar buzilardi); tuzatish keyingi release kodiga kiradi,
+sinovlar soni shu paytdan boshlab 297 (veb) / 349 (mobil).
 
 Oldingi release — [`v1.1.0-mobile`](https://github.com/Dadaxon82/AI_English_Academy/releases/tag/v1.1.0-mobile)
 (2026-11-08, 1.1.0 / versionCode 2 — o'yin qatlami, mashq jarayonisisiz): `app-release.apk`,
@@ -345,6 +375,21 @@ solishtiradi; farq bo'lsa test yiqiladi. Quest tanlash kaliti ham ikkala
 tomonda bir xil (`2026-11-07 → dayHash = 1 864 244 822`, questlar
 `q-lis-180 / q-perf-1 / q-xp-300`) — shuning uchun foydalanuvchi telefon va
 brauzerda BIR XIL kunlik questlarni ko'radi.
+
+**Sana izchilligi (2026-11-09 da tuzatildi).** `settle()` butun zanjirga kunni
+BITTA marta beradi (`settle(data, now, today)`) — hech bir qadam devolni qayta
+o'qimasligi shart. `settleLeaguePrize()` da bu buzilgan edi: «hafta hali davom
+etmoqda» qarorini `weekStartOf(todayKey())` bilan o'zi hal qilardi, ya'ni BIR
+XIL saqlanganma BIR XIL `today` bilan chaqirilsa ham natija kunga qarab
+o'zgarardi. Natija testning o'zi ham kunga bog'lanib qolgandi (2026-11-09 da
+aynan shu sababli vitest sinovi yiqildi). Ikkala tomonda bir xil tuzatildi:
+veb `game.ts::settleLeaguePrize(data, today)` va mobil
+`GameLogic.settleLeaguePrize(data, today)`; zanjir endi `settleLeaguePrize(d,
+today)` deydi. Foydalanuvchi ko'rgan xulq O'ZGARMADI — prod'da `today` har doim
+`todayKey()` (`store.tsx:101`, `AppStore.kt`/`GameOps.kt`), shuning uchun chiqarilgan
+1.1.0/1.2.0 APK'larda ham xato yo'q edi. Regressiya endi ikkala tomonda ham sinovda:
+`src/test/game-logic.test.ts` (bir snapshot, ikki xil `today`) va
+`GameLogicTest::leaguePrizeUsesTheGivenDayNotTheWallClock`.
 
 **Halol qoidalar:** yuraklar mock imtihon, diagnostika va bo'lim testlarida
 jarima qilinmaydi (`HEART_FREE_SOURCES`, ekranda ochiq aytiladi); sozlamada
