@@ -230,18 +230,24 @@ qator navbatda qoladi va migratsiyadan keyingi `flush`da o'zi yetib boradi;
 `user_settings`da rad etilgan 3 ustun tushirilib, yozuv yetkaziladi;
 `pullRemote`da `weekly_xp`/`profiles` yo'q bo'lsa ham o'qish ok qaytadi.
 
-Tayyor APK — GitHub Release [`v1.1.0-mobile`](https://github.com/Dadaxon82/AI_English_Academy/releases/tag/v1.1.0-mobile)
-(**2026-11-08**, 1.1.0 / versionCode 2 — o'yin qatlami bilan): `app-release.apk`,
-20 336 378 B (o'lchangan), SHA256
-`0020345103c03dbaa9dac60c1c659296dcfbac038aca05707123341ac0664c09`. 2026-11-08 kuni
-Release'dan **qayta indirib** `sha256sum` bilan solishtirildi — hajm va SHA mos;
-nusxa `S:\Agent-2026\AI_English_Academy_1.1.0_release.apk` da. Imzo yangi faylda
-qayta tekshirildi (`apksigner verify --print-certs` — xato yo'q):
+Tayyor APK — GitHub Release [`v1.2.0-mobile`](https://github.com/Dadaxon82/AI_English_Academy/releases/tag/v1.2.0-mobile)
+(**2026-11-08**, 1.2.0 / versionCode 3 — mashq JARAYONI bilan, 5e-bo'lim): `app-release.apk`,
+20 341 114 B (o'lchangan), SHA256
+`433abd3ee6e891a361748311850a37c28b07554e43f5d98b5f814db3386f5708`. Imzo build'dan
+keyin qayta tekshirildi (`apksigner verify --print-certs` — xato yo'q):
 `Signer #1 CN=AI English Academy, OU=AEA, O=Dadaxon, L=Kokand, ST=Fergana, C=UZ`,
 sertifikat SHA-256 `d59a899ff5b03a8d691df1e72afd99b66984bd5f5cd17bd1fd51311faf587e55`
-(2026-11-06 bilan bir xil imzo kaliti).
+(1.0.0 va 1.1.0 bilan BIR XIL imzo kaliti — eski ustiga yangilanadi).
 
-Eski release — [`v1.0.0-mobile`](https://github.com/Dadaxon82/AI_English_Academy/releases/tag/v1.0.0-mobile)
+Oldingi release — [`v1.1.0-mobile`](https://github.com/Dadaxon82/AI_English_Academy/releases/tag/v1.1.0-mobile)
+(2026-11-08, 1.1.0 / versionCode 2 — o'yin qatlami, mashq jarayonisisiz): `app-release.apk`,
+20 336 378 B; SHA256
+`0020345103c03dbaa9dac60c1c659296dcfbac038aca05707123341ac0664c09`. 2026-11-08 kuni
+Release'dan **qayta indirib** `sha256sum` bilan solishtirilgan edi — hajm va SHA mos;
+nusxa `S:\Agent-2026\AI_English_Academy_1.1.0_release.apk` da. Signer sertifikati
+yuqoridagi bilan bir xil.
+
+Undan oldingi release — [`v1.0.0-mobile`](https://github.com/Dadaxon82/AI_English_Academy/releases/tag/v1.0.0-mobile)
 (2026-11-06, 1.0.0 / versionCode 1, 20 272 600 B; SHA256
 `d6d54992082878814196d03822ac447efc995ed2f3f310eff4d2a486b4d4017f`) — **o'yin
 qatlamisiz** (5d-bo'lim: yuraklar, questlar, gem/do'kon, liga). `versionCode`
