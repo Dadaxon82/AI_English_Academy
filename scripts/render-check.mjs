@@ -29,6 +29,7 @@ const ROUTES = [
   '/login',
   '/dashboard',
   '/path',
+  '/sections',
   '/vocabulary',
   '/grammar',
   '/reading',

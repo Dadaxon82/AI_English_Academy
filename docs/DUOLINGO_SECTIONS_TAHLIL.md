@@ -141,3 +141,41 @@ Faqat **mexanika** (ierarxiya, holatlar, sakrash testi, oldindan ko'rish) o'zimi
 2. Sakrash testi kerakmi, yoki hozircha faqat ko'rinish (progress + batafsil)?
 3. Jonli sahifani aniq takrorlash kerak bo'lsa — `ru.duolingo.com/sections` skrinshotlarini repoga
    qo'shing (sessiya tarmog'idan ochib bo'lmaydi), shunda **[X]** belgili joylarni tasdiqlaymiz.
+
+---
+
+## 6. Amalga oshirildi (2026-11-08)
+
+Qarorlar: (1) har CEFR darajasi **2 bo'lim** — A1.1 … C1.2; (2) **sakrash testi + kartalar + progress**.
+
+| Narsa | Fayl |
+|---|---|
+| Bo'limlar rejasi, holatlar, sakrash testi mantiqi (sof funksiyalar) | `src/lib/sections.ts` |
+| `/sections` sahifasi (kartalar, progress, "Batafsil", sakrash testi) | `src/pages/Sections.tsx` |
+| Store amali `jumpToSection` (`section-jump`) | `src/lib/store.tsx` |
+| Marshrut, chap menyu, O'quv yo'lidan havola, render-check | `src/App.tsx`, `src/components/Layout.tsx`, `src/pages/LearningPath.tsx`, `scripts/render-check.mjs` |
+| Testlar (9 ta) | `src/test/sections.test.ts` |
+
+Qoidalar:
+- A1.1 = 1–4-kunlar, A1.2 = 5–7-kunlar. A2…C1 — kontent yo'q, "Tayyorlanmoqda", tugmasiz.
+- Sakrash testi: o'tkazib yuboriladigan har kunning yakuniy testidan 3 tadan savol, o'tish — **80%**
+  (ikkalasi ham "bizning qarorimiz"). Yuraklar sarflanmaydi; javoblar `section_test` sifatida yoziladi.
+- O'tilsa: o'tkazib yuborilgan kunlar `completedDays`ga qo'shiladi, natija `passedTests['jump:<id>']`.
+  Mobil ilova shu ikki maydonni allaqachon sinxronlaydi — sxema o'zgarmagan.
+- **Daraja (`currentLevel`) o'zgarmaydi.**
+
+### Skrinshotlar (`docs/screenshots/`)
+
+Bular **bizning** `/sections` sahifamiz (Playwright, build qilingan ilova):
+
+| Fayl | Nima |
+|---|---|
+| `sections-desktop.png` | To'liq sahifa, kompyuter |
+| `sections-details.png` | "Batafsil" ochilgan karta |
+| `sections-jump-test.png` | A1.2 ga sakrash testi jarayonda |
+| `sections-mobile.png` | 375px telefon (gorizontal scroll yo'q) |
+| `sections-dark.png` | Tungi rejim |
+
+**Duolingo sahifasining skrinshotlari qo'shilmadi**: sessiya tarmog'i `duolingo.com`ni bloklaydi va sahifa
+login talab qiladi. Ularni o'zingiz `docs/screenshots/duolingo/` ga yuklasangiz, **[X]** belgili joylarni
+solishtirib tasdiqlayman.

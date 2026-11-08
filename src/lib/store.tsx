@@ -35,6 +35,7 @@ import { loadData, saveData } from './storage'
 import { pullRemote, queueAllData, syncNow, type PullResult } from './sync'
 import { isPristine, mergeRemote, type RemoteSnapshot } from './merge'
 import { supabaseConfigured } from './supabase'
+import { applySectionJump } from './sections'
 import type {
   AppData,
   AttemptRecord,
@@ -62,6 +63,8 @@ type Action =
   | { type: 'mock-time'; entries: { skill: CoreSkill; seconds: number }[] }
   | { type: 'merge-remote'; userId: string; remote: RemoteSnapshot }
   | { type: 'day-complete'; dayId: string; testScore?: number; testId?: string }
+  /** Bo'lim sakrash testi natijasi (`src/lib/sections.ts::applySectionJump`). */
+  | { type: 'section-jump'; sectionId: string; score: number }
   | { type: 'diagnostic'; at: number; level: CefrLevel | null; labelUz: string; confidence: number }
   | { type: 'onboarded'; at: number }
   | { type: 'level-set'; level: CefrLevel }
@@ -284,6 +287,8 @@ export function reducer(state: AppData, action: Action): AppData {
       const currentDayId = bundle.days.find((d) => !completedDays.includes(d.id))?.id ?? state.path.currentDayId
       return { ...state, path: { ...state.path, completedDays, passedTests, currentDayId } }
     }
+    case 'section-jump':
+      return applySectionJump(state, action.sectionId, action.score)
     case 'diagnostic':
       return { ...state, diagnostic: { at: action.at, level: action.level, labelUz: action.labelUz, confidence: action.confidence } }
     case 'onboarded':
@@ -416,6 +421,8 @@ export interface StoreValue {
     /** Mock imtihonda bo'lim ochiq turgan sekundlar kundalik hisobga yoziladi. */
     recordMockTime(entries: { skill: CoreSkill; seconds: number }[]): void
     completeDay(dayId: string, testId?: string, testScore?: number): void
+    /** Bo'limga sakrash testi yakuni: o'tilsa oldingi kunlar ochiladi (daraja o'zgarmaydi). */
+    jumpToSection(sectionId: string, score: number): void
     setDiagnostic(level: CefrLevel | null, labelUz: string, confidence: number): void
     /** Onboarding yakunlandi (diagnostika o'tkazib yuborilgan bo'lsa ham). */
     markOnboarded(): void
@@ -661,6 +668,10 @@ export function StoreProvider({
     dispatch({ type: 'day-complete', dayId, testId, testScore })
   }, [])
 
+  const jumpToSection = useCallback((sectionId: string, score: number) => {
+    dispatch({ type: 'section-jump', sectionId, score })
+  }, [])
+
   const setDiagnostic = useCallback((level: CefrLevel | null, labelUz: string, confidence: number) => {
     dispatch({ type: 'diagnostic', at: Date.now(), level, labelUz, confidence })
   }, [])
@@ -833,6 +844,7 @@ export function StoreProvider({
       addMockAttempt,
       recordMockTime,
       completeDay,
+      jumpToSection,
       setDiagnostic,
       markOnboarded,
       setLevel,

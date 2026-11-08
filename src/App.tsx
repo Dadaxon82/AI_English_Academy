@@ -9,6 +9,7 @@ import Login, { signOutCurrent } from './pages/Login'
 import Onboarding from './pages/Onboarding'
 import Dashboard from './pages/Dashboard'
 import LearningPath from './pages/LearningPath'
+import Sections from './pages/Sections'
 import Vocabulary from './pages/Vocabulary'
 import Grammar from './pages/Grammar'
 import Reading from './pages/Reading'
@@ -62,6 +63,7 @@ function Shell({ auth, onAuth }: { auth: AuthState; onAuth: (s: AuthState) => vo
         <Route path="/onboarding" element={<Onboarding />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/path" element={<LearningPath />} />
+        <Route path="/sections" element={<Sections />} />
         <Route path="/vocabulary" element={<Vocabulary />} />
         <Route path="/grammar" element={<Grammar />} />
         <Route path="/reading" element={<Reading />} />

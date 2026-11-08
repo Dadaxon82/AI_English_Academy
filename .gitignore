@@ -46,3 +46,5 @@ supabase/.temp
 
 # smoke-test skrinshotlari (generatsiya qilinadi)
 screenshots
+# hujjat skrinshotlari (qo'lda olingan) — repoga kiradi
+!docs/screenshots
