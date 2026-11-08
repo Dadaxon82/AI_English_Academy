@@ -65,6 +65,8 @@ type Action =
   | { type: 'day-complete'; dayId: string; testScore?: number; testId?: string }
   /** Bo'lim sakrash testi natijasi (`src/lib/sections.ts::applySectionJump`). */
   | { type: 'section-jump'; sectionId: string; score: number }
+  /** O'z-o'zini baholash (Likert 1–5). */
+  | { type: 'self-assess'; id: string; score: number; at: number }
   | { type: 'diagnostic'; at: number; level: CefrLevel | null; labelUz: string; confidence: number }
   | { type: 'onboarded'; at: number }
   | { type: 'level-set'; level: CefrLevel }
@@ -289,6 +291,10 @@ export function reducer(state: AppData, action: Action): AppData {
     }
     case 'section-jump':
       return applySectionJump(state, action.sectionId, action.score)
+    case 'self-assess': {
+      if (!Number.isInteger(action.score) || action.score < 1 || action.score > 5) return state
+      return { ...state, selfAssessment: { ...state.selfAssessment, [action.id]: { score: action.score, at: action.at } } }
+    }
     case 'diagnostic':
       return { ...state, diagnostic: { at: action.at, level: action.level, labelUz: action.labelUz, confidence: action.confidence } }
     case 'onboarded':
@@ -423,6 +429,8 @@ export interface StoreValue {
     completeDay(dayId: string, testId?: string, testScore?: number): void
     /** Bo'limga sakrash testi yakuni: o'tilsa oldingi kunlar ochiladi (daraja o'zgarmaydi). */
     jumpToSection(sectionId: string, score: number): void
+    /** O'z-o'zini baholash: da'vo id va 1–5 baho (darajaga ta'sir qilmaydi). */
+    rateCanDo(id: string, score: number): void
     setDiagnostic(level: CefrLevel | null, labelUz: string, confidence: number): void
     /** Onboarding yakunlandi (diagnostika o'tkazib yuborilgan bo'lsa ham). */
     markOnboarded(): void
@@ -672,6 +680,10 @@ export function StoreProvider({
     dispatch({ type: 'section-jump', sectionId, score })
   }, [])
 
+  const rateCanDo = useCallback((id: string, score: number) => {
+    dispatch({ type: 'self-assess', id, score, at: Date.now() })
+  }, [])
+
   const setDiagnostic = useCallback((level: CefrLevel | null, labelUz: string, confidence: number) => {
     dispatch({ type: 'diagnostic', at: Date.now(), level, labelUz, confidence })
   }, [])
@@ -845,6 +857,7 @@ export function StoreProvider({
       recordMockTime,
       completeDay,
       jumpToSection,
+      rateCanDo,
       setDiagnostic,
       markOnboarded,
       setLevel,

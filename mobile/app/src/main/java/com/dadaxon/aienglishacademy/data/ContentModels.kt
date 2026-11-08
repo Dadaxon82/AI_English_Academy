@@ -50,6 +50,13 @@ object Kinds {
     const val GAP_FILL = "gap-fill"
     const val WORD_ORDER = "word-order"
     const val TRANSLATION = "translation"
+
+    // 2026-11-08 — yangi turlar (veb: `docs/TOPSHIRIQ_TURLARI_TAHLIL.md`)
+    const val MULTI_SELECT = "multi-select"
+    const val DROPDOWN_CLOZE = "dropdown-cloze"
+    const val SEQUENCE = "sequence"
+    const val CATEGORIZE = "categorize"
+    const val SHORT_ANSWER = "short-answer"
 }
 
 /* ------------------------------- LUG'AT ------------------------------- */
@@ -78,6 +85,9 @@ data class VocabularyItem(
 /* ------------------------------- MASHQLAR ------------------------------ */
 
 data class Pair2(val left: String = "", val right: String = "")
+
+/** categorize: element va uning guruhi (`categories` indeksi). */
+data class SortItem(val text: String = "", val category: Int = 0)
 
 data class Exercise(
     val id: String,
@@ -118,7 +128,24 @@ data class Exercise(
     // translation
     val source: String? = null,
     val sourceLang: String? = null, // "en" | "uz"
-    val accepted: List<String>? = null,
+    val accepted: List<String>? = null, // translation + short-answer
+
+    // multi-select (question + options ham)
+    val answerIndexes: List<Int>? = null,
+
+    // dropdown-cloze (text + answers ham)
+    val choices: List<List<String>>? = null,
+
+    // sequence (question ixtiyoriy)
+    val items: List<String>? = null,
+    val itemsShuffled: List<String>? = null,
+
+    // categorize
+    val categories: List<String>? = null,
+    val sortItems: List<SortItem>? = null,
+
+    // short-answer (question + accepted ham)
+    val maxWords: Int? = null,
 )
 
 /* ------------------------- Grammatika / O'qish / Tinglash ------------- */

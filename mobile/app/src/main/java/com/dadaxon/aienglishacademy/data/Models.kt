@@ -236,6 +236,9 @@ data class DayActivity(
 
 data class BadgeAward(val id: String, val titleUz: String, val at: Long)
 
+/** O'z-o'zini baholash (Likert 1–5) — veb `AppData.selfAssessment` qiymati. */
+data class SelfRating(val score: Int, val at: Long)
+
 data class Streak(val count: Int = 0, val lastDate: String? = null)
 
 data class DiagnosticResult(
@@ -376,6 +379,13 @@ data class AppData(
      * qilinmaydi).
      */
     val profileName: String = "",
+    /**
+     * O'z-o'zini baholash: CEFR da'vo id → oxirgi baho (veb Progress
+     * sahifasida qo'yiladi). Mobil hozircha KO'RSATMAYDI, lekin serverdagi
+     * `plan.selfAssessment`ni o'qiydi va qayta yuboradi — mobil sinxroni veb
+     * baholarini o'chirib yubormasligi uchun.
+     */
+    val selfAssessment: Map<String, SelfRating> = emptyMap(),
     val updatedAt: Long = 0L,
 ) {
     companion object {

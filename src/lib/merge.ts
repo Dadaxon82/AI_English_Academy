@@ -23,7 +23,15 @@ import { HISTORY_LIMITS, nearestXpGoal } from './types'
 /** Serverdan o'qilgan holat (faqat foydalanuvchining o'z qatorlari — RLS). */
 export interface RemoteSnapshot {
   settings: Partial<UserSettings> | null
-  plan: { path?: AppData['path']; xp?: number; diagnostic?: AppData['diagnostic']; onboardedAt?: number; game?: GameState; badges?: BadgeAward[] } | null
+  plan: {
+    path?: AppData['path']
+    xp?: number
+    diagnostic?: AppData['diagnostic']
+    onboardedAt?: number
+    game?: GameState
+    badges?: BadgeAward[]
+    selfAssessment?: AppData['selfAssessment']
+  } | null
   attempts: AttemptRecord[]
   srs: Record<string, SrsState>
   activity: Record<string, DayActivity>
@@ -172,6 +180,9 @@ export function mergeRemote(local: AppData, remote: RemoteSnapshot): AppData {
   for (const b of local.badges) badgeMap.set(b.id, b)
   const badges = [...badgeMap.values()].sort((a, b) => a.at - b.at)
 
+  // O'z-o'zini baholash — har da'vo bo'yicha eng keyingi (`at`) baho qoladi.
+  const selfAssessment = mergeSelfAssessment(local.selfAssessment ?? {}, remote.plan?.selfAssessment ?? {})
+
   const ld = local.diagnostic
   const rd = remote.plan?.diagnostic ?? null
   const diagnostic = !rd ? ld : !ld ? rd : rd.at > ld.at ? rd : ld
@@ -193,6 +204,7 @@ export function mergeRemote(local: AppData, remote: RemoteSnapshot): AppData {
     diagnostic,
     onboardedAt,
     badges,
+    selfAssessment,
     // Profil nomi faqat serverdan o'qiladi (`profiles.display_name`); bo'sh
     // kelsa lokal qiymat saqlanadi — ism ixtir qilinmaydi.
     profileName: remote.profileName ? remote.profileName : local.profileName,
@@ -228,4 +240,17 @@ export function applyLeagueSnapshot(g: GameState, read: RemoteSnapshot['league']
       prizeClaimed: false,
     },
   }
+}
+
+/** O'z-o'zini baholash birlashmasi: kalit bo'yicha eng keyingi baho (teng bo'lsa — lokal). */
+export function mergeSelfAssessment(
+  local: AppData['selfAssessment'],
+  remote: AppData['selfAssessment'],
+): AppData['selfAssessment'] {
+  const out: AppData['selfAssessment'] = { ...local }
+  for (const [k, v] of Object.entries(remote)) {
+    const cur = out[k]
+    if (!cur || v.at > cur.at) out[k] = v
+  }
+  return out
 }

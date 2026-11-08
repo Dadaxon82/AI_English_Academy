@@ -3,6 +3,7 @@ package com.dadaxon.aienglishacademy.domain
 import com.dadaxon.aienglishacademy.data.AppData
 import com.dadaxon.aienglishacademy.data.AttemptRecord
 import com.dadaxon.aienglishacademy.data.BadgeAward
+import com.dadaxon.aienglishacademy.data.SelfRating
 import com.dadaxon.aienglishacademy.data.DayActivity
 import com.dadaxon.aienglishacademy.data.DiagnosticResult
 import com.dadaxon.aienglishacademy.data.GameConfig
@@ -45,6 +46,8 @@ data class RemotePlan(
     val badges: List<BadgeAward>? = null,
     /** O'yin qatlami — `plan.game` (liga jadvali bu yerda SAQLANMAYDI). */
     val game: GameState? = null,
+    /** O'z-o'zini baholash — `plan.selfAssessment` (veb `merge.ts`). */
+    val selfAssessment: Map<String, SelfRating>? = null,
 )
 
 data class RemotePath(
@@ -288,6 +291,7 @@ fun mergeRemote(local: AppData, remote: RemoteSnapshot, daysInLevel: List<String
         diagnostic = diagnostic,
         onboardedAt = onboardedAt,
         badges = badges,
+        selfAssessment = mergeSelfAssessment(local.selfAssessment, remote.plan?.selfAssessment ?: emptyMap()),
         // Profil nomi faqat serverdan o'qiladi (`profiles.display_name`); bo'sh
         // kelsa lokal qiymat saqlanadi — ism ixtir qilinmaydi.
         profileName = if (remote.profileName.isNotBlank()) remote.profileName else local.profileName,
@@ -297,3 +301,13 @@ fun mergeRemote(local: AppData, remote: RemoteSnapshot, daysInLevel: List<String
 
 /** Veb `{...local.settings, ...remote.settings}` — faqat serverda bor maydonlar. */
 private fun mergeSettings(local: UserSettings, remote: UserSettings): UserSettings = remote
+
+/** Veb `mergeSelfAssessment`: kalit bo'yicha eng keyingi (`at`) baho; teng bo'lsa — lokal. */
+fun mergeSelfAssessment(local: Map<String, SelfRating>, remote: Map<String, SelfRating>): Map<String, SelfRating> {
+    val out = LinkedHashMap(local)
+    for ((k, v) in remote) {
+        val cur = out[k]
+        if (cur == null || v.at > cur.at) out[k] = v
+    }
+    return out
+}

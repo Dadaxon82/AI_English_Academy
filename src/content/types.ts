@@ -102,6 +102,11 @@ export type ExerciseKind =
   | 'gap-fill'
   | 'word-order'
   | 'translation'
+  | 'multi-select'
+  | 'dropdown-cloze'
+  | 'sequence'
+  | 'categorize'
+  | 'short-answer'
 
 interface ExerciseBase {
   id: string
@@ -172,8 +177,64 @@ export interface TranslationExercise extends ExerciseBase {
   accepted: string[]
 }
 
+/** Bir nechta to'g'ri javob (checkbox). */
+export interface MultiSelectExercise extends ExerciseBase {
+  kind: 'multi-select'
+  question: string
+  options: string[]
+  /** To'g'ri variantlar indekslari (kamida 2 ta). */
+  answerIndexes: number[]
+}
+
+/** Gap ichidagi ochiluvchi ro'yxatlar: har `___` uchun variantlar. */
+export interface DropdownClozeExercise extends ExerciseBase {
+  kind: 'dropdown-cloze'
+  /** Bo'shliq ___ bilan belgilanadi */
+  text: string
+  /** Har bo'shliq uchun variantlar (to'g'risi ichida) */
+  choices: string[][]
+  /** Har bo'shliqning to'g'ri javobi */
+  answers: string[]
+}
+
+/** Ketma-ketlik: gap / voqea / dialog qatorlarini tartiblash. */
+export interface SequenceExercise extends ExerciseBase {
+  kind: 'sequence'
+  passageId?: string
+  /** Qo'shimcha izoh (masalan, "Dialogni tartiblang") */
+  question?: string
+  /** TO'G'RI tartibda */
+  items: string[]
+  /** O'quvchiga ko'rsatiladigan aralash tartib (muallif belgilaydi) */
+  itemsShuffled: string[]
+}
+
+/** Saralash: elementlarni guruhlarga ajratish. */
+export interface CategorizeExercise extends ExerciseBase {
+  kind: 'categorize'
+  /** 2–3 ta guruh nomi */
+  categories: string[]
+  /** Element va uning to'g'ri guruhi (categories indeksi) */
+  sortItems: { text: string; category: number }[]
+}
+
+/** Qisqa javob: 1–3 so'z yozish. */
+export interface ShortAnswerExercise extends ExerciseBase {
+  kind: 'short-answer'
+  passageId?: string
+  question: string
+  /** Qabul qilinadigan javoblar (registr/tinish belgisiga bardoshli) */
+  accepted: string[]
+  maxWords?: number
+}
+
 export type Exercise =
   | MultipleChoiceExercise
+  | MultiSelectExercise
+  | DropdownClozeExercise
+  | SequenceExercise
+  | CategorizeExercise
+  | ShortAnswerExercise
   | TrueFalseNotGivenExercise
   | MatchingExercise
   | GapFillExercise

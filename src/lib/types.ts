@@ -333,6 +333,12 @@ export interface AppData {
    * uni o'tkazib yuborgan foydalanuvchi bannerni har safar ko'rardi.
    */
   onboardedAt: number | null
+  /**
+   * O'z-o'zini baholash (Likert 1–5): CEFR da'vo id → oxirgi baho va vaqti.
+   * Darajaga ham, XP'ga ham ta'sir qilmaydi. Sinxron: `plan.selfAssessment`,
+   * birlashtirishda har da'vo bo'yicha ENG KEYINGI (`at`) baho qoladi.
+   */
+  selfAssessment: Record<string, { score: number; at: number }>
   timer: TimerState
   updatedAt: number
 }
@@ -388,6 +394,7 @@ export function emptyData(userId: string): AppData {
     path: { completedDays: [], passedTests: {}, currentDayId: 'a1-day-01' },
     diagnostic: null,
     onboardedAt: null,
+    selfAssessment: {},
     profileName: '',
     timer: { elapsedSec: 0, startedAt: null, sessionId: null, skill: null, updatedAt: Date.now() },
     updatedAt: Date.now(),

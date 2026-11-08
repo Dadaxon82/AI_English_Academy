@@ -3510,6 +3510,129 @@
       "you"
      ],
      "noteUz": "Javob: How old are you?"
+    },
+    {
+     "level": "A1",
+     "skill": "grammar",
+     "id": "a1-d1-ms-01",
+     "kind": "multi-select",
+     "instructionUz": "To‘g‘ri gaplarni belgilang.",
+     "question": "Which sentences are correct?",
+     "options": [
+      "I am a student.",
+      "She are my teacher.",
+      "They are my friends.",
+      "He is eleven.",
+      "We is happy."
+     ],
+     "answerIndexes": [
+      0,
+      2,
+      3
+     ],
+     "explanationUz": "I + am, he / she / it + is, we / you / they + are. “She are” va “We is” — xato.",
+     "difficulty": 1
+    },
+    {
+     "level": "A1",
+     "skill": "grammar",
+     "id": "a1-d1-dc-01",
+     "kind": "dropdown-cloze",
+     "instructionUz": "Har bo‘shliq uchun to be fe’lining to‘g‘ri shaklini tanlang.",
+     "text": "My name ___ Samir. I ___ eleven years old. Nurina and Bekzod ___ my friends.",
+     "choices": [
+      [
+       "am",
+       "is",
+       "are"
+      ],
+      [
+       "am",
+       "is",
+       "are"
+      ],
+      [
+       "am",
+       "is",
+       "are"
+      ]
+     ],
+     "answers": [
+      "is",
+      "am",
+      "are"
+     ],
+     "explanationUz": "My name — u (it) → is; I → am; Nurina and Bekzod — ular (they) → are.",
+     "difficulty": 2
+    },
+    {
+     "level": "A1",
+     "skill": "grammar",
+     "id": "a1-d1-cat-01",
+     "kind": "categorize",
+     "instructionUz": "Har so‘z bilan “is” yoki “are” ishlatiladi? Saralang.",
+     "categories": [
+      "is",
+      "are"
+     ],
+     "sortItems": [
+      {
+       "text": "he",
+       "category": 0
+      },
+      {
+       "text": "she",
+       "category": 0
+      },
+      {
+       "text": "it",
+       "category": 0
+      },
+      {
+       "text": "Samir",
+       "category": 0
+      },
+      {
+       "text": "we",
+       "category": 1
+      },
+      {
+       "text": "you",
+       "category": 1
+      },
+      {
+       "text": "they",
+       "category": 1
+      },
+      {
+       "text": "Samir and Bekzod",
+       "category": 1
+      }
+     ],
+     "explanationUz": "Bir kishi yoki narsa (he, she, it, Samir) → is; we, you, they va ikki kishi (Samir and Bekzod) → are. I bilan esa faqat am.",
+     "difficulty": 1
+    },
+    {
+     "level": "A1",
+     "skill": "grammar",
+     "id": "a1-d1-seq-01",
+     "kind": "sequence",
+     "instructionUz": "Dialogni to‘g‘ri tartibda joylashtiring.",
+     "question": "Samir yangi do‘sti bilan tanishmoqda.",
+     "items": [
+      "Hello! What is your name?",
+      "Hi! My name is Bekzod. And you?",
+      "I am Samir. How old are you?",
+      "I am twelve."
+     ],
+     "itemsShuffled": [
+      "I am Samir. How old are you?",
+      "I am twelve.",
+      "Hello! What is your name?",
+      "Hi! My name is Bekzod. And you?"
+     ],
+     "explanationUz": "Avval salom va ism so‘raladi, keyin javob beriladi, so‘ng yosh so‘raladi va javob keladi.",
+     "difficulty": 1
     }
    ],
    "commonMistakes": [
@@ -3814,6 +3937,97 @@
       "this"
      ],
      "noteUz": "Javob: Whose book is this? — Bu kimning kitobi?"
+    },
+    {
+     "level": "A1",
+     "skill": "grammar",
+     "id": "a1-d2-ms-01",
+     "kind": "multi-select",
+     "instructionUz": "To‘g‘ri gaplarni belgilang.",
+     "question": "Which sentences are correct?",
+     "options": [
+      "She has got long black hair.",
+      "He have got a blue bike.",
+      "I have got a brother.",
+      "My mother’s name is Malika.",
+      "They has got a red bag."
+     ],
+     "answerIndexes": [
+      0,
+      2,
+      3
+     ],
+     "explanationUz": "I / you / we / they + have got; he / she / it + has got. “Mother’s” — onaning (egalik).",
+     "difficulty": 2
+    },
+    {
+     "level": "A1",
+     "skill": "grammar",
+     "id": "a1-d2-dc-01",
+     "kind": "dropdown-cloze",
+     "instructionUz": "To‘g‘ri so‘zni tanlang.",
+     "text": "Sanjar ___ got a big red bag. ___ name is Sanjar. My parents ___ got a small flat.",
+     "choices": [
+      [
+       "have",
+       "has"
+      ],
+      [
+       "His",
+       "Her",
+       "Your"
+      ],
+      [
+       "have",
+       "has"
+      ]
+     ],
+     "answers": [
+      "has",
+      "His",
+      "have"
+     ],
+     "explanationUz": "Sanjar (he) → has got; o‘g‘il bolaning ismi → His name; my parents (they) → have got.",
+     "difficulty": 2
+    },
+    {
+     "level": "A1",
+     "skill": "grammar",
+     "id": "a1-d2-cat-01",
+     "kind": "categorize",
+     "instructionUz": "Kim bilan “have got”, kim bilan “has got” ishlatiladi? Saralang.",
+     "categories": [
+      "have got",
+      "has got"
+     ],
+     "sortItems": [
+      {
+       "text": "I",
+       "category": 0
+      },
+      {
+       "text": "we",
+       "category": 0
+      },
+      {
+       "text": "my parents",
+       "category": 0
+      },
+      {
+       "text": "she",
+       "category": 1
+      },
+      {
+       "text": "my brother",
+       "category": 1
+      },
+      {
+       "text": "Dilnoza",
+       "category": 1
+      }
+     ],
+     "explanationUz": "Bir kishi (he / she / ism) → has got; I, we, you, they va ko‘plik → have got.",
+     "difficulty": 1
     }
    ],
    "commonMistakes": [
@@ -4108,6 +4322,101 @@
        "right": "tennis o‘ynamoq"
       }
      ]
+    },
+    {
+     "level": "A1",
+     "skill": "grammar",
+     "id": "a1-d3-ms-01",
+     "kind": "multi-select",
+     "instructionUz": "To‘g‘ri gaplarni belgilang.",
+     "question": "Which sentences are correct?",
+     "options": [
+      "She wakes up at seven.",
+      "I gets up early.",
+      "We have lunch at twelve.",
+      "He go to school by bus.",
+      "They play tennis."
+     ],
+     "answerIndexes": [
+      0,
+      2,
+      4
+     ],
+     "explanationUz": "Present Simple: he / she / it bilan fe’lga -s / -es qo‘shiladi (wakes, goes); I / we / they bilan qo‘shilmaydi.",
+     "difficulty": 2
+    },
+    {
+     "level": "A1",
+     "skill": "grammar",
+     "id": "a1-d3-dc-01",
+     "kind": "dropdown-cloze",
+     "instructionUz": "Fe’lning to‘g‘ri shaklini tanlang.",
+     "text": "Aziza ___ up at half past six. She ___ hot tea for breakfast. Her friends ___ to school with her.",
+     "choices": [
+      [
+       "wake",
+       "wakes"
+      ],
+      [
+       "drink",
+       "drinks"
+      ],
+      [
+       "walk",
+       "walks"
+      ]
+     ],
+     "answers": [
+      "wakes",
+      "drinks",
+      "walk"
+     ],
+     "explanationUz": "Aziza / she → wakes, drinks (-s bilan); her friends (they) → walk (-s siz).",
+     "difficulty": 2
+    },
+    {
+     "level": "A1",
+     "skill": "grammar",
+     "id": "a1-d3-cat-01",
+     "kind": "categorize",
+     "instructionUz": "Azizaning ishlarini kun vaqti bo‘yicha saralang.",
+     "categories": [
+      "Ertalab",
+      "Kunduzi",
+      "Kechqurun"
+     ],
+     "sortItems": [
+      {
+       "text": "wake up",
+       "category": 0
+      },
+      {
+       "text": "have breakfast",
+       "category": 0
+      },
+      {
+       "text": "walk to school",
+       "category": 0
+      },
+      {
+       "text": "come home",
+       "category": 1
+      },
+      {
+       "text": "do homework",
+       "category": 1
+      },
+      {
+       "text": "have dinner",
+       "category": 2
+      },
+      {
+       "text": "go to bed",
+       "category": 2
+      }
+     ],
+     "explanationUz": "Ertalab — uyg‘onish, nonushta, maktabga borish; kunduzi — uyga qaytish va uy vazifasi; kechqurun — kechki ovqat va uyqu.",
+     "difficulty": 1
     }
    ],
    "commonMistakes": [
@@ -4401,6 +4710,100 @@
       "next to"
      ],
      "caseSensitive": false
+    },
+    {
+     "level": "A1",
+     "skill": "grammar",
+     "id": "a1-d4-ms-01",
+     "kind": "multi-select",
+     "instructionUz": "To‘g‘ri gaplarni belgilang.",
+     "question": "Which sentences are correct?",
+     "options": [
+      "There is a lamp in my bedroom.",
+      "There are a sofa in the living room.",
+      "There are two bedrooms in the flat.",
+      "There is five rooms.",
+      "There isn’t a computer in my room."
+     ],
+     "answerIndexes": [
+      0,
+      2,
+      4
+     ],
+     "explanationUz": "Birlik → there is (a lamp, a sofa); ko‘plik → there are (two bedrooms, five rooms). Inkor: there isn’t.",
+     "difficulty": 2
+    },
+    {
+     "level": "A1",
+     "skill": "grammar",
+     "id": "a1-d4-dc-01",
+     "kind": "dropdown-cloze",
+     "instructionUz": "Joy bildiruvchi predlogni tanlang.",
+     "text": "My school bag is ___ the chair. The kitchen is ___ to the bathroom. A picture of my family is ___ the wall.",
+     "choices": [
+      [
+       "under",
+       "on",
+       "next"
+      ],
+      [
+       "next",
+       "under",
+       "in"
+      ],
+      [
+       "on",
+       "under",
+       "next"
+      ]
+     ],
+     "answers": [
+      "under",
+      "next",
+      "on"
+     ],
+     "explanationUz": "under — ostida; next to — yonida; on the wall — devorda.",
+     "difficulty": 2
+    },
+    {
+     "level": "A1",
+     "skill": "grammar",
+     "id": "a1-d4-cat-01",
+     "kind": "categorize",
+     "instructionUz": "Narsalarni xonalar bo‘yicha saralang.",
+     "categories": [
+      "Kitchen",
+      "Bedroom",
+      "Living room"
+     ],
+     "sortItems": [
+      {
+       "text": "fridge",
+       "category": 0
+      },
+      {
+       "text": "plates",
+       "category": 0
+      },
+      {
+       "text": "bed",
+       "category": 1
+      },
+      {
+       "text": "pillow",
+       "category": 1
+      },
+      {
+       "text": "sofa",
+       "category": 2
+      },
+      {
+       "text": "TV",
+       "category": 2
+      }
+     ],
+     "explanationUz": "Oshxonada — muzlatgich va likopchalar; yotoqxonada — karavot va yostiq; mehmonxonada — divan va televizor.",
+     "difficulty": 1
     }
    ],
    "commonMistakes": [
@@ -4696,6 +5099,96 @@
       "any"
      ],
      "caseSensitive": false
+    },
+    {
+     "level": "A1",
+     "skill": "grammar",
+     "id": "a1-d5-ms-01",
+     "kind": "multi-select",
+     "instructionUz": "Sanalmaydigan (uncountable) ismlarni belgilang.",
+     "question": "Which words are uncountable?",
+     "options": [
+      "milk",
+      "apple",
+      "rice",
+      "egg",
+      "water"
+     ],
+     "answerIndexes": [
+      0,
+      2,
+      4
+     ],
+     "explanationUz": "Milk, rice, water — sanalmaydi (two milks deyilmaydi). Apple, egg — sanaladi: two apples, ten eggs.",
+     "difficulty": 2
+    },
+    {
+     "level": "A1",
+     "skill": "grammar",
+     "id": "a1-d5-dc-01",
+     "kind": "dropdown-cloze",
+     "instructionUz": "“some” yoki “any”ni tanlang.",
+     "text": "There isn’t ___ milk in the fridge. We buy ___ meat at the market. Are there ___ apples in the bag?",
+     "choices": [
+      [
+       "some",
+       "any"
+      ],
+      [
+       "some",
+       "any"
+      ],
+      [
+       "some",
+       "any"
+      ]
+     ],
+     "answers": [
+      "any",
+      "some",
+      "any"
+     ],
+     "explanationUz": "Inkor va so‘roq gapda — any; tasdiq gapda — some.",
+     "difficulty": 2
+    },
+    {
+     "level": "A1",
+     "skill": "grammar",
+     "id": "a1-d5-cat-01",
+     "kind": "categorize",
+     "instructionUz": "Ovqatlarni sanaladigan va sanalmaydiganga ajrating.",
+     "categories": [
+      "Countable",
+      "Uncountable"
+     ],
+     "sortItems": [
+      {
+       "text": "egg",
+       "category": 0
+      },
+      {
+       "text": "apple",
+       "category": 0
+      },
+      {
+       "text": "potato",
+       "category": 0
+      },
+      {
+       "text": "rice",
+       "category": 1
+      },
+      {
+       "text": "meat",
+       "category": 1
+      },
+      {
+       "text": "sugar",
+       "category": 1
+      }
+     ],
+     "explanationUz": "Countable — sanaladigan (an egg, two apples, three potatoes); uncountable — sanalmaydigan (rice, meat, sugar).",
+     "difficulty": 1
     }
    ],
    "commonMistakes": [
@@ -5004,6 +5497,122 @@
        "right": "dance"
       }
      ]
+    },
+    {
+     "level": "A1",
+     "skill": "grammar",
+     "id": "a1-d6-ms-01",
+     "kind": "multi-select",
+     "instructionUz": "To‘g‘ri gaplarni belgilang.",
+     "question": "Which sentences are correct?",
+     "options": [
+      "She can dance.",
+      "He cans swim.",
+      "I can’t play the guitar.",
+      "We are going to watch a film.",
+      "They going to ride bikes."
+     ],
+     "answerIndexes": [
+      0,
+      2,
+      3
+     ],
+     "explanationUz": "Can hech qachon o‘zgarmaydi (cans emas). Reja: am / is / are + going to + fe’l.",
+     "difficulty": 2
+    },
+    {
+     "level": "A1",
+     "skill": "grammar",
+     "id": "a1-d6-dc-01",
+     "kind": "dropdown-cloze",
+     "instructionUz": "Matnga mos so‘zni tanlang.",
+     "text": "Sardor ___ play football very well. His sister ___ swim. On Saturday Sardor and Farrukh ___ going to watch a film.",
+     "choices": [
+      [
+       "can",
+       "can’t"
+      ],
+      [
+       "can",
+       "can’t"
+      ],
+      [
+       "am",
+       "is",
+       "are"
+      ]
+     ],
+     "answers": [
+      "can",
+      "can’t",
+      "are"
+     ],
+     "explanationUz": "Sardor futbolni yaxshi o‘ynay oladi (can); singlisi suza olmaydi (can’t); ikki kishi (they) → are going to.",
+     "difficulty": 2
+    },
+    {
+     "level": "A1",
+     "skill": "grammar",
+     "id": "a1-d6-cat-01",
+     "kind": "categorize",
+     "instructionUz": "Har so‘z qaysi fe’l bilan ishlatiladi? Saralang.",
+     "categories": [
+      "play",
+      "ride",
+      "go to"
+     ],
+     "sortItems": [
+      {
+       "text": "football",
+       "category": 0
+      },
+      {
+       "text": "the guitar",
+       "category": 0
+      },
+      {
+       "text": "a bike",
+       "category": 1
+      },
+      {
+       "text": "a horse",
+       "category": 1
+      },
+      {
+       "text": "the park",
+       "category": 2
+      },
+      {
+       "text": "the cinema",
+       "category": 2
+      }
+     ],
+     "explanationUz": "play football / the guitar; ride a bike / a horse; go to the park / the cinema.",
+     "difficulty": 1
+    },
+    {
+     "level": "A1",
+     "skill": "grammar",
+     "id": "a1-d6-seq-01",
+     "kind": "sequence",
+     "instructionUz": "Dialogni to‘g‘ri tartibda joylashtiring.",
+     "question": "Ikki do‘st hafta oxirini rejalashtirmoqda.",
+     "items": [
+      "Are you free on Saturday?",
+      "Yes, I am. Why?",
+      "Let’s go to the cinema!",
+      "Great idea! What time?",
+      "At four o’clock."
+     ],
+     "itemsShuffled": [
+      "Great idea! What time?",
+      "Let’s go to the cinema!",
+      "At four o’clock.",
+      "Are you free on Saturday?",
+      "Yes, I am. Why?"
+     ],
+     "explanationUz": "Avval bo‘sh vaqt so‘raladi, keyin taklif qilinadi, so‘ng vaqt kelishiladi.",
+     "difficulty": 2
     }
    ],
    "commonMistakes": [
@@ -5299,6 +5908,121 @@
        "right": "kechirasiz"
       }
      ]
+    },
+    {
+     "level": "A1",
+     "skill": "grammar",
+     "id": "a1-d7-ms-01",
+     "kind": "multi-select",
+     "instructionUz": "To‘g‘ri gaplarni belgilang.",
+     "question": "Which sentences are correct?",
+     "options": [
+      "We were at the railway station.",
+      "She were very happy.",
+      "The museum was old.",
+      "I was in Samarkand.",
+      "They was on a train."
+     ],
+     "answerIndexes": [
+      0,
+      2,
+      3
+     ],
+     "explanationUz": "I / he / she / it + was; we / you / they + were.",
+     "difficulty": 2
+    },
+    {
+     "level": "A1",
+     "skill": "grammar",
+     "id": "a1-d7-dc-01",
+     "kind": "dropdown-cloze",
+     "instructionUz": "To‘g‘ri so‘zni tanlang.",
+     "text": "Go straight ahead and turn ___ at the crossing. The museum is ___ to the blue gate. Last weekend we ___ in Samarkand.",
+     "choices": [
+      [
+       "left",
+       "right"
+      ],
+      [
+       "next",
+       "under",
+       "on"
+      ],
+      [
+       "was",
+       "were"
+      ]
+     ],
+     "answers": [
+      "left",
+      "next",
+      "were"
+     ],
+     "explanationUz": "Matnda: “turn left at the crossing”, “next to the blue gate”; we → were.",
+     "difficulty": 2
+    },
+    {
+     "level": "A1",
+     "skill": "grammar",
+     "id": "a1-d7-cat-01",
+     "kind": "categorize",
+     "instructionUz": "So‘zlarni saralang: transport yoki joy?",
+     "categories": [
+      "Transport",
+      "Joylar"
+     ],
+     "sortItems": [
+      {
+       "text": "bus",
+       "category": 0
+      },
+      {
+       "text": "train",
+       "category": 0
+      },
+      {
+       "text": "metro",
+       "category": 0
+      },
+      {
+       "text": "museum",
+       "category": 1
+      },
+      {
+       "text": "square",
+       "category": 1
+      },
+      {
+       "text": "bridge",
+       "category": 1
+      }
+     ],
+     "explanationUz": "Transport: bus, train, metro. Shahardagi joylar: museum, square, bridge.",
+     "difficulty": 1
+    },
+    {
+     "level": "A1",
+     "skill": "grammar",
+     "id": "a1-d7-seq-01",
+     "kind": "sequence",
+     "instructionUz": "Dialogni to‘g‘ri tartibda joylashtiring.",
+     "question": "Sayyoh muzeyga yo‘l so‘ramoqda.",
+     "items": [
+      "Excuse me, how do I get to the museum?",
+      "Go straight ahead and turn left at the crossing.",
+      "Is it far?",
+      "No, it is next to the blue gate.",
+      "Thank you very much!"
+     ],
+     "itemsShuffled": [
+      "Is it far?",
+      "Thank you very much!",
+      "Go straight ahead and turn left at the crossing.",
+      "Excuse me, how do I get to the museum?",
+      "No, it is next to the blue gate."
+     ],
+     "explanationUz": "Avval “Excuse me” bilan yo‘l so‘raladi, javob olinadi, aniqlashtiriladi va oxirida rahmat aytiladi.",
+     "difficulty": 2
     }
    ],
    "commonMistakes": [
@@ -5502,6 +6226,24 @@
        "right": "son, raqam"
       }
      ]
+    },
+    {
+     "level": "A1",
+     "skill": "reading",
+     "id": "a1-r1-sa-01",
+     "kind": "short-answer",
+     "passageId": "a1-r1-text-01",
+     "instructionUz": "Matn asosida qisqa javob yozing (1–2 so‘z).",
+     "question": "How many desks are there in Samir’s classroom?",
+     "accepted": [
+      "twenty",
+      "20",
+      "twenty desks",
+      "20 desks"
+     ],
+     "maxWords": 2,
+     "explanationUz": "Matnda: “There is a board, twenty desks and a small table for the teacher.”",
+     "difficulty": 1
     }
    ]
   },
@@ -5686,6 +6428,45 @@
        "right": "opa, singil"
       }
      ]
+    },
+    {
+     "level": "A1",
+     "skill": "reading",
+     "id": "a1-r2-seq-01",
+     "kind": "sequence",
+     "instructionUz": "Gaplarni matndagi tartibda joylashtiring.",
+     "items": [
+      "Dilnoza is thirteen years old.",
+      "Her mother, Malika, is a teacher.",
+      "Her father, Rustam, has got a blue bike.",
+      "Her grandmother lives with them."
+     ],
+     "itemsShuffled": [
+      "Her father, Rustam, has got a blue bike.",
+      "Her grandmother lives with them.",
+      "Dilnoza is thirteen years old.",
+      "Her mother, Malika, is a teacher."
+     ],
+     "explanationUz": "Matn avval Dilnoza haqida, keyin onasi, otasi va oxirida buvisi haqida gapiradi.",
+     "difficulty": 2
+    },
+    {
+     "level": "A1",
+     "skill": "reading",
+     "id": "a1-r2-sa-01",
+     "kind": "short-answer",
+     "passageId": "a1-r2-text-01",
+     "instructionUz": "Matn asosida qisqa javob yozing.",
+     "question": "How old is Sanjar?",
+     "accepted": [
+      "eight",
+      "8",
+      "eight years old",
+      "8 years old"
+     ],
+     "maxWords": 3,
+     "explanationUz": "Matnda: “He is eight years old and he has got a big red bag.”",
+     "difficulty": 1
     }
    ]
   },
@@ -5867,6 +6648,44 @@
        "right": "9:00"
       }
      ]
+    },
+    {
+     "level": "A1",
+     "skill": "reading",
+     "id": "a1-r3-seq-01",
+     "kind": "sequence",
+     "instructionUz": "Azizaning kunini tartib bilan joylashtiring.",
+     "items": [
+      "Aziza wakes up at half past six.",
+      "She has breakfast with her family.",
+      "School starts at eight o’clock.",
+      "She does her homework in the afternoon.",
+      "She goes to bed at nine o’clock."
+     ],
+     "itemsShuffled": [
+      "She does her homework in the afternoon.",
+      "Aziza wakes up at half past six.",
+      "She goes to bed at nine o’clock.",
+      "School starts at eight o’clock.",
+      "She has breakfast with her family."
+     ],
+     "explanationUz": "Kun tartibi: uyg‘onish → nonushta → maktab → uy vazifasi → uyqu.",
+     "difficulty": 2
+    },
+    {
+     "level": "A1",
+     "skill": "reading",
+     "id": "a1-r3-sa-01",
+     "kind": "short-answer",
+     "passageId": "a1-r3-text-01",
+     "instructionUz": "Matn asosida bitta so‘z bilan javob bering.",
+     "question": "What is Aziza’s favourite subject?",
+     "accepted": [
+      "English"
+     ],
+     "maxWords": 1,
+     "explanationUz": "Matnda: “My favourite subject is English.”",
+     "difficulty": 1
     }
    ]
   },
@@ -6054,6 +6873,44 @@
        "right": "toza"
       }
      ]
+    },
+    {
+     "level": "A1",
+     "skill": "reading",
+     "id": "a1-r4-seq-01",
+     "kind": "sequence",
+     "instructionUz": "Gaplarni matndagi tartibda joylashtiring.",
+     "items": [
+      "I live in a flat in Tashkent.",
+      "There are five rooms in my flat.",
+      "My favourite room is my bedroom.",
+      "In the evening my family sits in the living room."
+     ],
+     "itemsShuffled": [
+      "My favourite room is my bedroom.",
+      "In the evening my family sits in the living room.",
+      "I live in a flat in Tashkent.",
+      "There are five rooms in my flat."
+     ],
+     "explanationUz": "Matn uydan boshlanadi, xonalar soni, sevimli xona va oxirida kechki payt mehmonxona haqida.",
+     "difficulty": 2
+    },
+    {
+     "level": "A1",
+     "skill": "reading",
+     "id": "a1-r4-sa-01",
+     "kind": "short-answer",
+     "passageId": "a1-r-text-04",
+     "instructionUz": "Matn asosida qisqa javob yozing (2–3 so‘z).",
+     "question": "Where is the school bag?",
+     "accepted": [
+      "under the chair",
+      "it is under the chair",
+      "it’s under the chair"
+     ],
+     "maxWords": 4,
+     "explanationUz": "Matnda: “my school bag is under the chair.”",
+     "difficulty": 2
     }
    ]
   },
@@ -6241,6 +7098,45 @@
        "right": "salat"
       }
      ]
+    },
+    {
+     "level": "A1",
+     "skill": "reading",
+     "id": "a1-r5-seq-01",
+     "kind": "sequence",
+     "instructionUz": "Voqealarni matndagi tartibda joylashtiring.",
+     "items": [
+      "They go to the market on Saturday morning.",
+      "They buy rice, meat and eggs.",
+      "The father goes to the shop for milk.",
+      "The family eats together in the evening."
+     ],
+     "itemsShuffled": [
+      "The father goes to the shop for milk.",
+      "They go to the market on Saturday morning.",
+      "The family eats together in the evening.",
+      "They buy rice, meat and eggs."
+     ],
+     "explanationUz": "Bozor → xarid → sutga do‘konga borish → kechki ovqat.",
+     "difficulty": 2
+    },
+    {
+     "level": "A1",
+     "skill": "reading",
+     "id": "a1-r5-sa-01",
+     "kind": "short-answer",
+     "passageId": "a1-r-text-05",
+     "instructionUz": "Matn asosida qisqa javob yozing.",
+     "question": "How many eggs do they buy?",
+     "accepted": [
+      "ten",
+      "10",
+      "ten eggs",
+      "10 eggs"
+     ],
+     "maxWords": 2,
+     "explanationUz": "Matnda: “We buy two kilos of rice, some meat and ten eggs.”",
+     "difficulty": 1
     }
    ]
   },
@@ -6426,6 +7322,22 @@
        "right": "bo‘sh vaqt"
       }
      ]
+    },
+    {
+     "level": "A1",
+     "skill": "reading",
+     "id": "a1-r6-sa-01",
+     "kind": "short-answer",
+     "passageId": "a1-r-text-06",
+     "instructionUz": "Matn asosida qisqa javob yozing.",
+     "question": "What can Farrukh play?",
+     "accepted": [
+      "the guitar",
+      "guitar"
+     ],
+     "maxWords": 2,
+     "explanationUz": "Matnda: “My friend Farrukh can play the guitar.”",
+     "difficulty": 1
     }
    ]
   },
@@ -6612,6 +7524,24 @@
        "right": "muzey"
       }
      ]
+    },
+    {
+     "level": "A1",
+     "skill": "reading",
+     "id": "a1-r7-sa-01",
+     "kind": "short-answer",
+     "passageId": "a1-r-text-07",
+     "instructionUz": "Matn asosida qisqa javob yozing.",
+     "question": "How long were they on the train?",
+     "accepted": [
+      "three hours",
+      "3 hours",
+      "for three hours",
+      "for 3 hours"
+     ],
+     "maxWords": 3,
+     "explanationUz": "Matnda: “We were on a big train for three hours.”",
+     "difficulty": 2
     }
    ]
   }

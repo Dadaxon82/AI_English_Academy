@@ -7,8 +7,10 @@ import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CheckBox
 import android.widget.LinearLayout
 import android.widget.RadioButton
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -37,6 +39,7 @@ import com.dadaxon.aienglishacademy.ui.Nav
 import com.dadaxon.aienglishacademy.ui.Rows
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
@@ -82,6 +85,11 @@ class ExerciseFragment : Fragment() {
     private var gapFields: List<TextInputEditText> = emptyList()
     private var bankTokens: List<String> = emptyList()
     private val orderChosen = ArrayList<Int>()
+
+    // 2026-11-08 — yangi turlar holati
+    private val msChosen = sortedSetOf<Int>()
+    private var dcChoices: Array<String?> = emptyArray()
+    private var currentKind: String = ""
 
     private var contentId: String? = null
     private var dayId: String? = null
@@ -275,6 +283,7 @@ class ExerciseFragment : Fragment() {
         }
 
         hideAllInputs()
+        currentKind = e.kind
         var supported = true
         when (e.kind) {
             Kinds.MULTIPLE_CHOICE -> supported = buildChoice(e)
@@ -283,6 +292,11 @@ class ExerciseFragment : Fragment() {
             Kinds.GAP_FILL -> buildGap(e)
             Kinds.WORD_ORDER -> supported = buildOrder(e)
             Kinds.TRANSLATION -> buildTranslation(e)
+            Kinds.MULTI_SELECT -> supported = buildMultiSelect(e)
+            Kinds.DROPDOWN_CLOZE -> supported = buildDropdown(e)
+            Kinds.SEQUENCE -> supported = buildSequence(e)
+            Kinds.CATEGORIZE -> supported = buildCategorize(e)
+            Kinds.SHORT_ANSWER -> buildShortAnswer(e)
             else -> supported = false
         }
         b.exUnsupported.visibility = if (supported) View.GONE else View.VISIBLE
@@ -313,6 +327,8 @@ class ExerciseFragment : Fragment() {
         gapFields = emptyList()
         bankTokens = emptyList()
         orderChosen.clear()
+        msChosen.clear()
+        dcChoices = emptyArray()
         b.choiceCard.visibility = View.GONE
         b.matchCard.visibility = View.GONE
         b.gapCard.visibility = View.GONE
@@ -582,18 +598,147 @@ class ExerciseFragment : Fragment() {
 
     /** Javob matnini va bankdagi chip holatini qayta yangilaydi. */
     private fun updateOrderUi() {
-        b.orderAnswer.text = orderChosen.mapNotNull { bankTokens.getOrNull(it) }.joinToString(" ")
+        val picked = orderChosen.mapNotNull { bankTokens.getOrNull(it) }
+        // Ketma-ketlikda har element alohida raqamlangan qatorda; so'z tartibida — bitta gap.
+        b.orderAnswer.text =
+            if (currentKind == Kinds.SEQUENCE) {
+                picked.mapIndexed { i, s -> "${i + 1}. $s" }.joinToString("\n")
+            } else {
+                picked.joinToString(" ")
+            }
         val used = HashSet(orderChosen)
+        // `View` sifatida: word-order'da Chip, sequence'da MaterialButton turadi.
         for (i in 0 until b.orderBank.childCount) {
-            val chip = b.orderBank.getChildAt(i) as Chip
-            chip.isEnabled = !used.contains(i)
-            chip.alpha = if (used.contains(i)) 0.4f else 1.0f
+            val v = b.orderBank.getChildAt(i)
+            v.isEnabled = !used.contains(i)
+            v.alpha = if (used.contains(i)) 0.4f else 1.0f
         }
     }
 
     /** translation — erkin javob (matn maydoni). */
     private fun buildTranslation(e: Exercise) {
         b.transSource.text = e.source ?: e.question ?: e.instructionUz
+        b.transField.setText("")
+        b.transCard.visibility = View.VISIBLE
+    }
+
+    /* ------------------- 2026-11-08: yangi turlar (veb bilan bir xil) ------------------- */
+
+    /** multi-select — checkbox'lar (javob: tanlangan indekslar ro'yxati). */
+    private fun buildMultiSelect(e: Exercise): Boolean {
+        val ctx = requireContext()
+        val opts = e.options ?: emptyList()
+        if (opts.isEmpty()) return false
+        b.choiceQuestion.text = (e.question ?: e.instructionUz) + "\n" + getString(R.string.ex_multi_hint)
+        b.choiceGroup.removeAllViews()
+        b.choiceGroup.setOnCheckedChangeListener(null)
+        for ((i, opt) in opts.withIndex()) {
+            val cb = CheckBox(ctx).apply {
+                text = opt
+                id = View.generateViewId()
+                setPadding(0, Rows.dp(ctx, 6), 0, Rows.dp(ctx, 6))
+                pressOnTouch(this)
+            }
+            cb.setOnCheckedChangeListener { _, isChecked -> if (isChecked) msChosen.add(i) else msChosen.remove(i) }
+            b.choiceGroup.addView(cb)
+        }
+        b.choiceCard.visibility = View.VISIBLE
+        return true
+    }
+
+    /** dropdown-cloze — har bo'shliq uchun variant chip'lari (bittasini tanlash). */
+    private fun buildDropdown(e: Exercise): Boolean {
+        val ctx = requireContext()
+        val choices = e.choices ?: emptyList()
+        if (choices.isEmpty()) return false
+        dcChoices = arrayOfNulls(choices.size)
+        b.gapText.text = e.text ?: ""
+        b.gapFields.removeAllViews()
+        b.wordBank.removeAllViews()
+        b.wordBank.visibility = View.GONE
+        for ((slot, opts) in choices.withIndex()) {
+            val label = TextView(ctx).apply {
+                text = getString(R.string.ex_gap_slot, slot + 1)
+                setPadding(0, Rows.dp(ctx, 8), 0, Rows.dp(ctx, 2))
+            }
+            b.gapFields.addView(label)
+            val group = ChipGroup(ctx).apply { isSingleSelection = true }
+            for (opt in opts) {
+                val chip = Chip(ctx).apply {
+                    text = opt
+                    isCheckable = true
+                    id = View.generateViewId()
+                    pressOnTouch(this)
+                }
+                chip.setOnCheckedChangeListener { _, isChecked ->
+                    if (isChecked) dcChoices[slot] = opt else if (dcChoices[slot] == opt) dcChoices[slot] = null
+                }
+                group.addView(chip)
+            }
+            b.gapFields.addView(group)
+        }
+        b.gapCard.visibility = View.VISIBLE
+        return true
+    }
+
+    /** sequence — word-order mexanikasi, lekin butun gaplar va raqamlangan javob. */
+    private fun buildSequence(e: Exercise): Boolean {
+        val shuffled = e.itemsShuffled ?: emptyList()
+        if (shuffled.isEmpty()) return false
+        bankTokens = shuffled
+        orderChosen.clear()
+        b.orderNote.text = (e.question?.let { "$it\n" } ?: "") + getString(R.string.ex_seq_hint)
+        b.orderBank.removeAllViews()
+        // Butun gaplar: Chip uzun matnni bir qatorda kesadi — shuning uchun
+        // ko'p qatorli MaterialButton (to'liq kenglikda) ishlatiladi.
+        for ((i, item) in shuffled.withIndex()) {
+            val btn = outlineButton(item)
+            btn.tag = i
+            btn.setOnClickListener { takeToken(i) }
+            b.orderBank.addView(btn)
+        }
+        updateOrderUi()
+        b.orderCard.visibility = View.VISIBLE
+        return true
+    }
+
+    /** categorize — chapda elementlar, o'ngda guruhlar (juftlik mexanikasi). */
+    private fun buildCategorize(e: Exercise): Boolean {
+        val ctx = requireContext()
+        val items = e.sortItems ?: emptyList()
+        val cats = e.categories ?: emptyList()
+        if (items.isEmpty() || cats.isEmpty()) return false
+        leftLabels = items.map { it.text }
+        for (item in items) {
+            val btn = outlineButton(item.text)
+            btn.setOnClickListener {
+                chosenLeft = item.text
+                markLeftSelection()
+            }
+            b.matchLeft.addView(btn)
+        }
+        for (c in cats) {
+            val btn = outlineButton(c)
+            btn.setOnClickListener {
+                val left = chosenLeft
+                if (left == null) {
+                    Toast.makeText(ctx, R.string.ex_match_hint, Toast.LENGTH_SHORT).show()
+                } else {
+                    matches[left] = c
+                    chosenLeft = null
+                    markLeftSelection()
+                }
+            }
+            b.matchRight.addView(btn)
+        }
+        markLeftSelection()
+        b.matchCard.visibility = View.VISIBLE
+        return true
+    }
+
+    /** short-answer — bitta qisqa matn maydoni (tarjima kartasi). */
+    private fun buildShortAnswer(e: Exercise) {
+        b.transSource.text = e.question ?: e.instructionUz
         b.transField.setText("")
         b.transCard.visibility = View.VISIBLE
     }
@@ -608,6 +753,14 @@ class ExerciseFragment : Fragment() {
         Kinds.GAP_FILL -> gapFields.map { it.text?.toString()?.trim() ?: "" }
         Kinds.WORD_ORDER -> orderChosen.mapNotNull { bankTokens.getOrNull(it) }.joinToString(" ")
         Kinds.TRANSLATION -> b.transField.text?.toString()?.trim()
+        Kinds.MULTI_SELECT -> msChosen.toList()
+        Kinds.DROPDOWN_CLOZE -> dcChoices.map { it ?: "" }
+        Kinds.SEQUENCE -> orderChosen.mapNotNull { bankTokens.getOrNull(it) }
+        Kinds.CATEGORIZE -> {
+            val cats = e.categories ?: emptyList()
+            matches.mapValues { (_, c) -> cats.indexOf(c) }
+        }
+        Kinds.SHORT_ANSWER -> b.transField.text?.toString()?.trim()
         else -> null
     }
 
@@ -618,6 +771,11 @@ class ExerciseFragment : Fragment() {
         Kinds.GAP_FILL -> gapFields.all { (it.text?.toString() ?: "").isBlank() }
         Kinds.WORD_ORDER -> orderChosen.isEmpty()
         Kinds.TRANSLATION -> (b.transField.text?.toString() ?: "").isBlank()
+        Kinds.MULTI_SELECT -> msChosen.isEmpty()
+        Kinds.DROPDOWN_CLOZE -> dcChoices.any { it.isNullOrEmpty() }
+        Kinds.SEQUENCE -> orderChosen.size < (e.items?.size ?: 0)
+        Kinds.CATEGORIZE -> matches.size < (e.sortItems?.size ?: 0)
+        Kinds.SHORT_ANSWER -> (b.transField.text?.toString() ?: "").isBlank()
         else -> true
     }
 
