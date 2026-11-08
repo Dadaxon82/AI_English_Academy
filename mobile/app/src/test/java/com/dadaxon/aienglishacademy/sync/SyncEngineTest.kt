@@ -13,6 +13,7 @@ import com.dadaxon.aienglishacademy.data.SupabaseConfig
 import com.dadaxon.aienglishacademy.net.NetworkMonitor
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -289,6 +290,143 @@ class SyncEngineTest {
         assertTrue(SyncEngine.stopsRun(null))
         assertTrue(SyncEngine.stopsRun("PGRST301"))
         assertFalse(SyncEngine.stopsRun("23505"))
+    }
+
+    /* ------------------------- baza ESKI sxemada (veb bilan bir) ----------
+     * `scripts/check_supabase_schema.py` jonli bazada o'lchadi (2026-11-08):
+     * `0003_motion.sql` / `0004_weekly_xp.sql` qo'llanmagan — `weekly_xp` yozuvi
+     * 404 PGRST205, `user_settings`da `motion_enabled / xp_goal_xp /
+     * hearts_enabled` ustunlari yo'q (PGRST204). Mobil ilova ham shu javoblarda
+     * ma'lumotni saqlab qolishi, sababni ochiq aytishi va migratsiyadan keyin
+     * o'zi tuzalishi shu testlarda talab qilinadi.
+     */
+
+    @Test
+    fun schemaMissingClassificationMatchesLiveCodes() {
+        assertTrue(SyncEngine.isSchemaMissing("PGRST204"))
+        assertTrue(SyncEngine.isSchemaMissing("PGRST205")) // jadval yo'q (jonli o'lchov)
+        assertTrue(SyncEngine.isSchemaMissing("42703"))    // ustun yo'q (jonli o'lchov)
+        assertFalse(SyncEngine.isSchemaMissing("23505"))
+        assertFalse(SyncEngine.isSchemaMissing(null))
+        // So'z chegarasi: `xp` `xp_goal_xp` ichiga kirmasin (`_` — so'z belgisi).
+        assertTrue(SyncEngine.mentionsColumn("the column xp_goal_xp does not exist", "xp_goal_xp"))
+        assertFalse(SyncEngine.mentionsColumn("the column xp_goal_xp does not exist", "xp"))
+        assertFalse(SyncEngine.mentionsColumn(null, "motion_enabled"))
+    }
+
+    @Test
+    fun weeklyXpMissingTableStaysQueuedAndResendsAfterMigration() {
+        var migrated = false
+        val h = Harness(handler = { m, url, _ ->
+            if (m == "POST" && url.contains("/rest/v1/weekly_xp")) {
+                if (migrated) HttpResp(201, "", null)
+                else HttpResp(404, "{\"code\":\"PGRST205\",\"message\":\"Could not find the table 'public.weekly_xp' in the schema cache\"}", null)
+            } else {
+                HttpResp(201, "", null)
+            }
+        })
+        val weekly = item(
+            "weekly_xp",
+            "{\"user_id\":\"u-1\",\"week_start\":\"2026-11-02\",\"xp\":120,\"league_id\":\"bronze\",\"display_name\":\"Aziz\"}",
+            "qw",
+        )
+        val settings = item("user_settings", "{\"user_id\":\"u-1\",\"daily_minutes\":90}", "qs")
+        h.local.enqueueMany("u-1", listOf(weekly, settings))
+        val st = h.engine.flush("u-1")
+        assertFalse(st.ok)
+        assertEquals(1, st.done)
+        assertEquals(1, st.failed)
+        assertEquals(0, st.rejected) // "jadval yo'q" — qabul qilmadi emas, kutadi
+        val q = h.local.loadQueue("u-1")
+        assertEquals(1, q.size)
+        assertEquals("weekly_xp", q[0].table) // qator NAVBATDA qoldi (izi yozilmadi)
+        assertNotNull(st.reasonUz)
+        assertTrue(st.reasonUz!!.contains("0004_weekly_xp.sql"))
+        assertTrue(st.reasonUz!!.contains("SQL Editor"))
+
+        // Migratsiya bajarildi — qator O'ZI qayta yuboriladi.
+        migrated = true
+        val again = h.engine.flush("u-1")
+        assertTrue(again.ok)
+        assertEquals(1, again.done)
+        assertEquals(0, h.local.queueSize("u-1"))
+    }
+
+    @Test
+    fun oldSchemaSettingsStillLandWithNamedColumnsDropped() {
+        // PostgREST har safar BITTA yo'q ustunni aytadi — mijoz o'shani tushiradi.
+        val h = Harness(handler = { m, url, body ->
+            if (m != "POST" || !url.contains("/rest/v1/user_settings")) HttpResp(201, "", null)
+            else {
+                val col = listOf("motion_enabled", "xp_goal_xp", "hearts_enabled").firstOrNull { body != null && body.contains(it) }
+                if (col == null) HttpResp(201, "", null)
+                else HttpResp(400, "{\"code\":\"PGRST204\",\"message\":\"Could not find the '$col' column of 'public.user_settings' in the schema cache\"}", null)
+            }
+        })
+        val payload = "{\"user_id\":\"u-1\",\"daily_minutes\":120,\"motion_enabled\":false,\"xp_goal_xp\":100,\"hearts_enabled\":true}"
+        h.local.enqueueMany("u-1", listOf(item("user_settings", payload, "qs")))
+        val st = h.engine.flush("u-1")
+        assertTrue(st.ok) // yozuv YETIB BORDI — faqat 3 ustun tushdi
+        assertEquals(1, st.done)
+        assertEquals(0, h.local.queueSize("u-1"))
+        val last = h.transport.calls.filter { it.first == "POST" && it.second.contains("/rest/v1/user_settings") }.last()
+        assertNotNull(last.third)
+        assertTrue(last.third!!.contains("daily_minutes"))
+        for (col in listOf("motion_enabled", "xp_goal_xp", "hearts_enabled")) {
+            assertFalse("$col tushirilishi kerak", last.third!!.contains(col))
+        }
+        // Sabab konkret: migratsiya fayllari va ustun nomlari.
+        assertNotNull(st.reasonUz)
+        assertTrue(st.reasonUz!!.contains("0003_motion.sql"))
+        assertTrue(st.reasonUz!!.contains("0004_weekly_xp.sql"))
+        // Iz HAQIQIY yuborilgan (qisqartirilgan) qator bo'yicha — shunda
+        // migratsiyadan keyin qator o'zi qayta yuboriladi.
+        val trace = h.local.loadSynced("u-1")
+        assertEquals(1, trace.size)
+        assertNotEquals(h.protocol.fingerprint(payload), trace["user_settings|uk:user"])
+    }
+
+    @Test
+    fun unknownColumnFaultIsRejectedNotSilentlyDegraded() {
+        // Matn BIZNI ustunni aytmaydi → hech narsa tushirilmaydi, yozuv ochiq
+        // rad etilgan deb sanaladi (jimgina yo'qotish YO'Q).
+        val h = Harness(handler = { _, _, _ ->
+            HttpResp(
+                400,
+                "{\"code\":\"PGRST204\",\"message\":\"Could not find the 'quantum_mode' column of 'public.user_settings' in the schema cache\"}",
+                null,
+            )
+        })
+        h.local.enqueueMany("u-1", listOf(item("user_settings", "{\"user_id\":\"u-1\",\"daily_minutes\":90,\"motion_enabled\":true}", "qs")))
+        val st = h.engine.flush("u-1")
+        assertEquals(1, st.rejected)
+        assertEquals(0, st.failed)
+        assertEquals(0, h.local.queueSize("u-1"))
+        assertNotNull(st.reasonUz)
+        assertTrue(st.reasonUz!!.contains("qabul qilmadi"))
+        assertFalse(st.reasonUz!!.contains("migratsiya"))
+    }
+
+    @Test
+    fun pullKeepsWorkingWhenLeagueTablesAreMissing() {
+        // `weekly_xp` / `profiles` bazada yo'q (404 PGRST205) — o'qish YIQILMAYNDI:
+        // progress qaytadi, liga maydoni bo'sh qoladi (eski snapshot saqlanadi,
+        // son ixtir qilinmaydi).
+        val h = Harness(handler = { m, url, _ ->
+            when {
+                m != "GET" -> HttpResp(201, "", null)
+                url.contains("/rest/v1/user_settings?") ->
+                    HttpResp(200, "[{\"user_id\":\"u-1\",\"daily_minutes\":120,\"current_level\":\"A2\"}]", null)
+                url.contains("/rest/v1/weekly_xp?") || url.contains("/rest/v1/profiles?") ->
+                    HttpResp(404, "{\"code\":\"PGRST205\",\"message\":\"Could not find the table 'public.weekly_xp' in the schema cache\"}", null)
+                else -> HttpResp(200, "[]", null)
+            }
+        })
+        val pr = h.engine.pullRemote("u-1")
+        assertTrue(pr.ok)
+        assertEquals(120, pr.snapshot!!.settings!!.dailyMinutes)
+        assertNull(pr.snapshot!!.league)
+        assertEquals("", pr.snapshot!!.profileName)
     }
 
     /* ------------------------- pull / merge (veb bilan bir) --------------- */

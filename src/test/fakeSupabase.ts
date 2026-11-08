@@ -4,8 +4,11 @@
  * qismlar bor. Ulash: `vi.mock('../lib/supabase', …)` ichida `client`ni qaytaring.
  */
 
-type Row = Record<string, unknown>
+export type Row = Record<string, unknown>
 type DbError = { message: string; details: string; hint: string; code: string }
+
+/** Sun'iy xato — PostgREST kabi kod VA matn (matn konkret ustunni aytadi). */
+export type DbFault = { code: string; message: string }
 
 const pkOf = (table: string, r: Row): string => {
   if (table === 'user_settings') return String(r.user_id)
@@ -24,18 +27,56 @@ export const server = {
   calls: [] as { table: string; op: 'upsert' | 'select' | 'delete'; rows: number }[],
   /** true — har so'rov tarmoq xatosi bilan qaytadi */
   network: false,
-  /** Qatorni rad etish (SQLSTATE kodi) — null bo'lsa qabul */
-  failRow: null as ((table: string, row: Row) => string | null) | null,
+  /** Qatorni rad etish (SQLSTATE kodi yoki kod+matn) — null bo'lsa qabul */
+  failRow: null as ((table: string, row: Row) => string | DbFault | null) | null,
+  /**
+   * Bazada YO'Q jadvalar (migratsiya qo'llanmagan holat). Ro'yxatdagi jadvalga
+   * har bir so'rov jonli bazadagi kabi javob beradi: yozish/o'chirish →
+   * 404 PGRST205, o'qish → `selectError` kodi (standart: PGRST205).
+   */
+  missingTables: [] as string[],
+  /**
+   * Jadvalda YO'Q ustunlar (0003/0004 migratsiyalari holati). Payload'da bunday
+   * ustun qatnashsa so'rov PGRST204 bilan rad etiladi va PostgREST'dagi kabi
+   * ANIQ ustun nomi aytiladi — mijoz shu matn asosida ustunni tushiradi.
+   */
+  missingColumns: {} as Record<string, string[]>,
+  /** `missingTables` jadvaliga SELECT qilinganda qaytadigan kod. */
+  selectError: 'PGRST205',
   reset(userId = 'u-test') {
     this.userId = userId
     this.tables = new Map()
     this.calls = []
     this.network = false
     this.failRow = null
+    this.missingTables = []
+    this.missingColumns = {}
+    this.selectError = 'PGRST205'
   },
   rows(table: string): Row[] {
     return [...(this.tables.get(table)?.values() ?? [])]
   },
+}
+
+/** Jadval yo'q — PostgREST 404 javobi (2026-11-08 jonli o'lchov matni bilan). */
+function missingTableError(table: string, op: 'upsert' | 'select' | 'delete'): DbError {
+  const code = op === 'select' ? server.selectError : 'PGRST205'
+  return {
+    message: `Could not find the table 'public.${table}' in the schema cache`,
+    details: '',
+    hint: '',
+    code,
+  }
+}
+
+/** Ustun yo'q — PGRST204 (matn konkret ustunni aytadi, jonli bazadagidek). */
+function missingColumnError(table: string, column: string): DbError {
+  return {
+    message: `Could not find the '${column}' column of 'public.${table}' in the schema cache`,
+    details: '',
+    hint: '',
+    code: 'PGRST204',
+  }
 }
 
 function select(table: string) {
@@ -56,7 +97,9 @@ function select(table: string) {
       const rows = server.rows(table)
       const res = server.network
         ? { data: null, error: networkError }
-        : { data: single ? (rows[0] ?? null) : rows, error: null }
+        : server.missingTables.includes(table)
+          ? { data: null, error: missingTableError(table, 'select') }
+          : { data: single ? (rows[0] ?? null) : rows, error: null }
       return Promise.resolve(res).then(resolve, reject)
     },
   }
@@ -76,6 +119,9 @@ function remove(table: string) {
     ): Promise<A | B> {
       server.calls.push({ table, op: 'delete', rows: 0 })
       if (server.network) return Promise.resolve({ error: networkError }).then(resolve, reject)
+      if (server.missingTables.includes(table)) {
+        return Promise.resolve({ error: missingTableError(table, 'delete') }).then(resolve, reject)
+      }
       const t = server.tables.get(table)
       for (const [key, row] of [...(t?.entries() ?? [])]) {
         if (filters.every(([c, v]) => row[c] === v)) t?.delete(key)
@@ -99,10 +145,20 @@ export const client = {
         const rows = Array.isArray(values) ? values : [values]
         server.calls.push({ table, op: 'upsert', rows: rows.length })
         if (server.network) return { error: networkError }
+        if (server.missingTables.includes(table)) return { error: missingTableError(table, 'upsert') }
         for (const r of rows) {
-          const code = server.failRow?.(table, r)
-          if (code) return { error: { message: 'rejected', details: '', hint: '', code } }
+          const fault = server.failRow?.(table, r)
+          if (fault) {
+            const f: DbFault = typeof fault === 'string' ? { code: fault, message: 'rejected' } : fault
+            return { error: { message: f.message, details: '', hint: '', code: f.code } }
+          }
         }
+        // Ustunlar tekshiruvi — PostgREST kabi: Bitta yo'q ustun, matnda nomi.
+        const payloadCols = new Set<string>()
+        for (const r of rows) for (const k of Object.keys(r)) {
+          if ((server.missingColumns[table] ?? []).includes(k)) payloadCols.add(k)
+        }
+        if (payloadCols.size > 0) return { error: missingColumnError(table, [...payloadCols][0]!) }
         const t = server.tables.get(table) ?? new Map<string, Row>()
         for (const r of rows) t.set(pkOf(table, r), { ...(t.get(pkOf(table, r)) ?? {}), ...r })
         server.tables.set(table, t)

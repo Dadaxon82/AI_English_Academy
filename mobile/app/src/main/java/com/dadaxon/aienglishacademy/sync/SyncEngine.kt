@@ -91,6 +91,72 @@ class SyncEngine(
 
         /** `user_vocabulary.ease` uchun standart (veb `START_EASE`). */
         const val START_EASE_FALLBACK = 2.5
+
+        /* ---------- baza sxemasi eski bo'lsa (veb `sync.ts` bilan BIR XIL) ----------
+         * 2026-11-08 jonli o'lchov: `weekly_xp` → 404 PGRST205,
+         * `user_settings.motion_enabled / xp_goal_xp / hearts_enabled` → 400 42703.
+         * Bunday holda:
+         *  a) rad etilgan ustunlar so'rovdan tushirib qo'yiladi (eski bazaga ham
+         *     yozuv yetadi, keyin migratsiya qilinsa iz mos kelmaydi — qator
+         *     avtomatik qayta yuboriladi);
+         *  b) jadval yo'q bo'lsa yozuv NAVBATDA qoladi va sababi ochiq aytiladi;
+         *  c) o'qishda jadval yo'q bo'lsa liga maydoni birlashtirilmaydi.
+         */
+
+        /** Migratsiyaga bog'liq jadvallar: jadval bo'lmasa yozuv/liga imkonsiz. */
+        val TABLE_REQUIRES_MIGRATION: Map<String, String> = mapOf("weekly_xp" to "0004_weekly_xp.sql")
+
+        /** Migratsiya qo'shgan IXTIYORIY ustunlar: yo'q bo'lsa so'rovdan tushiriladi. */
+        val OPTIONAL_COLUMNS: Map<String, Map<String, String>> = mapOf(
+            "user_settings" to mapOf(
+                "motion_enabled" to "0003_motion.sql",
+                "xp_goal_xp" to "0004_weekly_xp.sql",
+                "hearts_enabled" to "0004_weekly_xp.sql",
+            ),
+        )
+
+        /** PostgREST/Postgres "jadval yoki ustun topilmadi" xatolari (o'lchangan kodlar). */
+        fun isSchemaMissing(code: String?): Boolean =
+            code == "PGRST204" || code == "PGRST205" || code == "42703" || code == "42P01"
+
+        /** Ustun nomini xatolik matnidan topish (so'z chegarasi bilan — `xp`
+         * `xp_goal_xp` ichiga kirmasin: `_` ham so'z belgisi). */
+        fun mentionsColumn(message: String?, column: String): Boolean {
+            if (message.isNullOrEmpty()) return false
+            return Regex("(?i)\\b${Regex.escape(column)}\\b").containsMatchIn(message)
+        }
+    }
+
+    /** Bir sinxron davomida yig'ilgan "baza eski" sabablari (migratsiya nomlari). */
+    private class SchemaNotes {
+        private val missing = LinkedHashMap<String, MutableSet<String>>()
+
+        /** Jadval nomiga ko'ra sabab (konkret ustun noma'lum bo'lsa). */
+        fun noteTable(table: String) {
+            val m = TABLE_REQUIRES_MIGRATION[table] ?: return
+            if (!missing.containsKey(m)) missing[m] = LinkedHashSet()
+        }
+
+        /** Rad etilgan konkret ustun sababi — xato matnidan ajratib oladi. */
+        fun noteColumnsDropped(table: String, columns: Collection<String>, message: String?) {
+            val allowed = OPTIONAL_COLUMNS[table] ?: return
+            for (name in columns) {
+                val migration = allowed[name] ?: continue
+                if (!mentionsColumn(message, name)) continue
+                val set = missing[migration] ?: LinkedHashSet<String>().also { missing[migration] = it }
+                set.add(name)
+            }
+        }
+
+        fun isEmpty(): Boolean = missing.isEmpty()
+
+        fun text(): String = missing.entries.sortedBy { it.key }.map { (migration, columns) ->
+            if (columns.isNotEmpty()) {
+                "baza eski: $migration migratsiyasi qo‘llanmagan (${columns.sorted().joinToString(", ")} ustunlari yo‘q)"
+            } else {
+                "baza eski: jadval yo‘q — $migration migratsiyasi qo‘llanmagan"
+            }
+        }.joinToString("; ")
     }
 
     val configured: Boolean get() = client != null && client.isConfigured
@@ -150,16 +216,29 @@ class SyncEngine(
         var rejected = 0
         var stopped = false
         val failures = ArrayList<QueueItem>()
+        val notes = SchemaNotes()
 
-        fun markDone(item: QueueItem) {
+        /**
+         * Yozuv serverga yetdi. `sent` — HAQIQIY yuborilgan qator (eski sxemaga
+         * moslashtirib ustun tushirib yuborsak izi SHU qator bo'yicha qo'yiladi).
+         * Shunda migratsiya qo'llanilgach `queueAllData` izni mahalliy holat bilan
+         * mos emas deb topadi va sozlamalarni o'zi qayta yuboradi.
+         */
+        fun markDone(item: QueueItem, sent: String? = null) {
             done++
             val k = protocol.fingerprintKey(item.table, item.payload)
-            if (k != null) synced[k] = protocol.fingerprint(item.payload)
+            if (k != null) synced[k] = protocol.fingerprint(sent ?: item.payload)
         }
 
         fun fail(item: QueueItem, code: String?) {
             if (stopsRun(code)) stopped = true
             if (isPermanent(code)) rejected++ else failures.add(item.copy(tries = item.tries + 1))
+        }
+
+        /** Qatorni yoqib, ixtiyoriy ustunlarni o'chirish uchun nusxa (boshqa obyektni buzmasin). */
+        fun copyRow(el: JsonElement): JsonObject {
+            val src = if (el.isJsonObject) el.asJsonObject else JsonObject()
+            return Gson().toJsonTree(src).asJsonObject
         }
 
         fun sendOne(item: QueueItem) {
@@ -168,17 +247,52 @@ class SyncEngine(
                 failures.add(item.copy(tries = item.tries + 1))
                 return
             }
-            val res =
-                if (item.op == "delete") {
-                    val id = runCatching {
-                        JsonParser.parseString(item.payload).asJsonObject.get("id")?.asString
-                    }.getOrNull()
+            if (item.op == "delete") {
+                val id = runCatching {
+                    JsonParser.parseString(item.payload).asJsonObject.get("id")?.asString
+                }.getOrNull()
+                val resDel =
                     if (id == null) DbFail
                     else sb.delete(item.table, "user_id=eq.$userId&id=eq.$id", session.accessToken)
-                } else {
-                    sb.upsert(item.table, listOf(parseRow(item.payload)), session.accessToken)
+                if (resDel.ok) markDone(item) else fail(item, resDel.code)
+                return
+            }
+
+            val optional = OPTIONAL_COLUMNS[item.table]
+            var row = copyRow(parseRow(item.payload))
+            var res = sb.upsert(item.table, listOf(row), session.accessToken)
+            var degraded = false
+
+            // Baza eski: xatoda aytilgan ustunni tushirib qayta uriramiz. PostgREST
+            // har urinishda BITTA ustunni aytadi, shuning uchun sikl ustunlar
+            // soniga chegaralanadi (cheksiz takrorlanmasin).
+            if (optional != null) {
+                var guard = 0
+                while (!res.ok && isSchemaMissing(res.code) && guard < optional.size) {
+                    val dropped = degradedRow(item.table, row, res.errorUz)
+                    if (dropped.isEmpty()) break
+                    notes.noteColumnsDropped(item.table, dropped, res.errorUz)
+                    degraded = true
+                    res = sb.upsert(item.table, listOf(row), session.accessToken)
+                    guard++
                 }
-            if (res.ok) markDone(item) else fail(item, res.code)
+            }
+
+            if (res.ok) {
+                // `sent` FAQAT ustun tushirilgan bo'lsa: aks holda iz asl payload
+                // bo'yicha qo'yiladi (yo'q joyga iz qo'yish har sinxronda qatorni
+                // qayta yuborishga olib kelardi).
+                markDone(item, if (degraded) row.toString() else null)
+                return
+            }
+            // Jadval butunlay yo'q (`weekly_xp` → PGRST205): qator NAVBATDA qoladi —
+            // izi yozilmagani uchun migratsiya qo'llanilgach avtomatik qayta yuboriladi.
+            if (isSchemaMissing(res.code) && TABLE_REQUIRES_MIGRATION.containsKey(item.table)) {
+                notes.noteTable(item.table)
+                failures.add(item.copy(tries = item.tries + 1))
+                return
+            }
+            fail(item, res.code)
         }
 
         for (chunk in chunkForBulk(batch)) {
@@ -186,17 +300,35 @@ class SyncEngine(
                 for (it in chunk) sendOne(it)
                 continue
             }
-            var code: String? = null
-            var ok = false
-            val rows = chunk.map { parseRow(it.payload) }
-            val res = sb.upsert(chunk[0].table, rows, session.accessToken)
-            ok = res.ok
-            code = res.code
-            if (ok) {
-                chunk.forEach { markDone(it) }
-            } else if (stopsRun(code)) {
+            val table = chunk[0].table
+            var rows = chunk.map { copyRow(parseRow(it.payload)) }
+            var res = sb.upsert(table, rows, session.accessToken)
+            var degraded = false
+
+            // Baza eskiligi butun bo'lakka tegishli (bir jadval), shuning uchun
+            // tushirilgan ustunlar bir marta HAMMA qatorga qo'llanadi.
+            if (OPTIONAL_COLUMNS.containsKey(table)) {
+                var guard = 0
+                while (!res.ok && isSchemaMissing(res.code) && guard < OPTIONAL_COLUMNS.getValue(table).size) {
+                    val dropped = degradedRow(table, rows[0], res.errorUz)
+                    if (dropped.isEmpty()) break
+                    notes.noteColumnsDropped(table, dropped, res.errorUz)
+                    for (r in rows) degradedRow(table, r, res.errorUz)
+                    degraded = true
+                    res = sb.upsert(table, rows, session.accessToken)
+                    guard++
+                }
+            }
+
+            if (res.ok) {
+                for ((index, it) in chunk.withIndex()) markDone(it, if (degraded) rows[index].toString() else null)
+            } else if (stopsRun(res.code)) {
                 // Tarmoq yoki sessiya xatosi: bu va qolgan bo'laklar keyingi sinxronda.
                 stopped = true
+                for (it in chunk) failures.add(it.copy(tries = it.tries + 1))
+            } else if (isSchemaMissing(res.code) && TABLE_REQUIRES_MIGRATION.containsKey(table)) {
+                // Jadval butunlay yo'q — butun bo'lak navbatda qoladi (izi yozilmaydi).
+                notes.noteTable(table)
                 for (it in chunk) failures.add(it.copy(tries = it.tries + 1))
             } else {
                 // Bo'lakda bitta yaroqsiz qator butun so'rovni yiqitadi — qatorlarni
@@ -213,6 +345,9 @@ class SyncEngine(
         val reasons = ArrayList<String>()
         if (failed > 0) reasons.add("$failed ta yozuv yuborilmadi — keyingi sinxronda qayta uriladi.")
         if (rejected > 0) reasons.add("$rejected ta yozuvni server qabul qilmadi (ma’lumot yoki ruxsat xatosi).")
+        // Sabab ochiq aytiladi: "qabul qilinmadi" yetarli emas — foydalanuvchi
+        // nimani qilishi kerakligini bilishi kerak (SQL Editor'da migratsiya).
+        if (!notes.isEmpty()) reasons.add("Baza eski sxemada — ${notes.text()}. Supabase SQL Editor’ida shu skriptni bir marta bajaring.")
         return SyncStats(
             ok = failed == 0 && rejected == 0,
             attempted = batch.size,
@@ -222,6 +357,17 @@ class SyncEngine(
             pulled = false,
             reasonUz = reasons.joinToString(" ").ifEmpty { null },
         )
+    }
+
+    /**
+     * Xatoda aytilgan ixtiyoriy ustunlarni qatordan O'CHIRADI (obyekt o'zgartiriladi)
+     * va o'chirilgan ustun nomlarini qaytaradi.
+     */
+    private fun degradedRow(table: String, row: JsonObject, message: String?): List<String> {
+        val allowed = OPTIONAL_COLUMNS[table] ?: return emptyList()
+        val dropped = allowed.keys.filter { row.has(it) && mentionsColumn(message, it) }
+        for (name in dropped) row.remove(name)
+        return dropped
     }
 
     /** Butun holatni navbatga qo'yish (veb `queueAllData`). */

@@ -15,14 +15,17 @@ Loyiha talabnomasi (`AI English Academy_v2.docx`) to'liq bajarilgan:
 - ✅ **Jonli taymer** — sahifa yangilansa ham vaqt yo'qolmaydi (IndexedDB'da saqlanadi)
 - ✅ **Offline / PWA**: sync navbati, Service Worker; logout'da avval sinxronlanadi (yuborilmagan narsa qolsa tasdiq so'raladi), so'ng kesh tozalanadi
 - ✅ **Mobil ilova**: Dashboard yuqorisidagi blok PWA'ni bosh ekranga o'rnatadi (Android/kompyuter — "Ilovani o'rnatish" tugmasi, iPhone — yo'riqnoma); APK fayl shart emas
-- ✅ **Native Android ilovasi** (`mobile/` — Kotlin + XML Views, `com.dadaxon.aienglishacademy`): bitta baza va bitta auth, **336 unit test**, qahramon har ekranda; DULO_mod.apk dan o'lchangan **darslar ketma-ketligi va harakat byudjeti** ikkala platformada — quyida 5b-bo'lim va
+- ✅ **Native Android ilovasi** (`mobile/` — Kotlin + XML Views, `com.dadaxon.aienglishacademy`): bitta baza va bitta auth, **341 unit test**, qahramon har ekranda; DULO_mod.apk dan o'lchangan **darslar ketma-ketligi va harakat byudjeti** ikkala platformada — quyida 5b-bo'lim va
 `mobile/MOBIL_ARXITEKTURA.md` 8-bo'limi
 - ✅ **Server bilan ikki tomonlama**: hisobga kirganda progress serverdan tiklanadi va qurilmadagisi bilan birlashtiriladi
+- ✅ **Baza eski sxemada ham sinxron islaydi** (2026-11-08): `0003/0004` migratsiyalari qo'llanmagan bazada sozlamalar
+  yozuvi yetib boradi (rad etilgan ustunlar tushiriladi), liga yozuvi navbatda saqlanadi va migratsiyadan keyin
+  **o'zi** qayta yuboriladi; sabab foydalanuvchiga migratsiya fayli nomi bilan ochiq aytiladi — quyida 3b-bo'lim
 - ✅ **Supabase RLS**: har foydalanuvchi faqat o'z qatorlarini ko'radi; service role va `AI_*` kalitlari faqat serverda
 - ✅ AI "ulangan" deb ko'rsatilmaydi — AI bo'lmasa **qoidaviy dvigatel** (`engine: 'rule-based'`) ishlatiladi
 - ✅ **7+ kun A1 kontenti** alohida (`src/content/day-01…07.ts`)
 - ✅ **13 ta jadval** (`supabase/migrations/0001_init.sql`), ID'lar, `created_at`, FK va indexlar bilan; keyin `0002_fix_content_fk.sql` (FK), `0003_motion.sql` (harakat sozlamasi — `motion_enabled`) va `0004_weekly_xp.sql` (haftalik XP — real ligalar)
-- ✅ Testlar: `tsc` tip tekshiruvi, ESLint, `vitest` (**267 test**), production build, smoke + render tekshiruvi
+- ✅ Testlar: `tsc` tip tekshiruvi, ESLint, `vitest` (**274 test**), production build, smoke + render tekshiruvi
 - ✅ JSON/CSV **eksport** va **ma'lumotlarni o'chirish**
 - ✅ **HECH QANDAY TUGMA DEKORATSIYA EMAS** — har bir tugma haqiqiy harakat bajaradi
 
@@ -83,6 +86,9 @@ cp .env.example .env
    (FK'lar bo'sh kontent jadvallariga bog'langan). Ushbu loyihaning bazasida
    (`igrzbfnsunedgyivmqlz`) 0001 qo'llanilgan — 0002 ham albatta qo'llanilishi
    kerak.
+   **Qaysilari qo'llanilganini bilish uchun:** `python -I scripts/check_supabase_schema.py`
+   bazani faqat o'qib tekshiradi va nomlab aytadi (3b-bo'lim; 2026-11-08 o'lchovda
+   bu bazada 0003 va 0004 qo'llanmagan edi).
 4. **Lokal ishga tushirish:** `cp .env.example .env` ichiga ikki qiymatni yozing.
 5. **GitHub Pages uchun:** GitHub'da repo → **Settings → Secrets and variables →
    Actions → Repository variables** ga `VITE_SUPABASE_URL` va `VITE_SUPABASE_ANON_KEY`
@@ -94,6 +100,57 @@ cp .env.example .env
 | `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` |frontend (build paytida qadoqlanadi) | Anon/publishable — omboraxona (public) hisoblanadi va RLS bilan himolanadi. Bo'sh → mahalliy rejim |
 | `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` | **faqat server** | Service role kaliti hech qachon brauzerga chiqmaydi |
 | `AI_PROVIDER`, `AI_MODEL`, `AI_API_KEY`, `AI_DAILY_LIMIT`… | **faqat server** | Bo'sh bo'lsa tahlil qoidaviy dvigatel bilan bajariladi |
+
+### 3b. Baza sxemasi tekshiruvi — `scripts/check_supabase_schema.py`
+
+**Nima uchun (2026-11-08, jonli o'lchov).** Ushbu loyihaning bazasida
+(`igrzbfnsunedgyivmqlz`) 0001 va 0002 qo'llanilgan, **0003 va 0004 hali
+qo'llanmagan edi** — bu jimgina ko'rinardi (`user_settings` yozuvi har safar
+rad etilar, liga jadvali umuman yo'q). O'lchangan javoblar:
+
+| So'rov | Javob |
+|---|---|
+| `GET /rest/v1/weekly_xp?select=*&limit=0` | **404, `PGRST205`** — "Could not find the table 'public.weekly_xp' in the schema cache" |
+| `GET /rest/v1/user_settings?select=motion_enabled&limit=0` | **400, `42703`** — ustun bazada yo'q |
+| `POST /rest/v1/user_settings` (3 ustun bilan) | **400, `PGRST204`** — matn konkret ustunni aytadi |
+
+Skript shu tekshiruvni **faqat o'qib** qaytadi (POST/PATCH/DELETE yo'q,anon
+kalit yetarli) va qaysi migratsiya yetishmayapti — aniq aytadi:
+
+```bash
+python -I scripts/check_supabase_schema.py            # .env / build.gradle dan oladi
+python -I scripts/check_supabase_schema.py --json     # skriptlar uchun JSON
+python -I scripts/check_supabase_schema.py --url https://xxxx.supabase.co --key sb_publishable_…
+```
+
+Chiqish kodi: **1** — migratsiya yetishmayapti, **0** — hamma qator BOR,
+**2** — manzil/kalit topilmadi. Migratsiyani biz o'zimiz bajara olmaymiz (bu
+SQL Editor amali), shuning uchun yechim qo'lda: `0003_motion.sql` va
+`0004_weekly_xp.sql` ni ketma-ket Run qilib, skriptni qayta ishga tushirish.
+
+**Ilova bunday holatda nima qiladi (veb `src/lib/sync.ts` va mobil
+`SyncEngine.kt` — ikkalasi BIR XIL siyosat):**
+
+1. `user_settings` — PostgREST matni aytagan **ixtiyoriy** ustunni
+   (`motion_enabled`, `xp_goal_xp`, `hearts_enabled`) so'rovdan tushirib
+   qayta yuboradi: yozuv eski bazaga ham yetadi. Matn **biznik bo'lmagan**
+   ustunni aytsa — hech narsa tushirilmaydi, yozuv ochiq "server qabul
+   qilmadi" deb sanaladi (jimgina yo'qotish yo'q).
+2. `weekly_xp` — jadval yo'q bo'lsa qator **navbatda qoladi** (fingerprint izi
+   yozilmaydi), shuning uchun migratsiya qo'llanilgach keyingi sinxron uni
+   **o'zi** qayta yuboradi.
+3. Ustun tushirib yuborilgan bo'lsa iz **haqiqiy yozilgan** qator bo'yicha
+   qo'yiladi — migratsiyadan keyin holat o'zgarmasa ham qator qayta
+   navbatga tushadi va yetishmayotgan ustunlar to'ldiriladi.
+4. `pullRemote` da `profiles` / `weekly_xp` o'qilmasa o'qish **yiqilmaydi**:
+   progress qaytadi, liga maydoni bo'sh qoladi (`merge` eski snapshotni
+   saqlaydi — **son ixtir qilinmaydi**).
+5. Xulosa foydalanuvchiga ko'rsatiladi: «Baza eski sxemada — baza eski:
+   `0004_weekly_xp.sql` migratsiyasi qo'llanmagan… Supabase SQL Editor'ida
+   shu skriptni bir marta bajaring» (vebda sinxron tugmasi ostida, mobilida
+   sinxron xabari sifatida). "Barcha ma'lumotni o'chirish" ham jadval yo'q
+   bo'lsa to'xtab qolmaydi (eski holatda u tugma butunlay ishlamasdi).
+
 
 ## 4. Audio va ikonalar
 
@@ -110,7 +167,7 @@ npm run icons:build   # PWA ikonalaria (0 bog'liqlik, sof Node)
 ```bash
 npm run typecheck     # tsc — 0 xato
 npm run lint          # eslint — 0 xato
-npm test              # vitest — 267 test (SRS, taymer/vaqt hisobi, tekshiruv, kontent auditi, audio yaxlitligi, rejalashtirish, daraja, sync, server birlashmasi, sahifalar, darslar zanjiri + HAQIQIY A1 kontentida zanjir auditi, harakat manifesti (mobil res/raw bilan solishtiradi), O'YIN QATLAMI: yurak/quest/gem/liga + o'yin manifesti (mobil GameConfig.kt bilan solishtiradi))
+npm test              # vitest — 274 test (SRS, taymer/vaqt hisobi, tekshiruv, kontent auditi, audio yaxlitligi, rejalashtirish, daraja, sync, server birlashmasi, sahifalar, darslar zanjiri + HAQIQIY A1 kontentida zanjir auditi, harakat manifesti (mobil res/raw bilan solishtiradi), O'YIN QATLAMI: yurak/quest/gem/liga + o'yin manifesti (mobil GameConfig.kt bilan solishtiradi))
 npm run build         # production build + Service Worker
 npm run smoke         # dist'ni serverda ochib tekshirish + 375/1280 skrinshot
 npm run render:check  # 15 marshrut CDP orqali: DOM + konsol xatolari + 375px telefonda yonga surilmasligi
@@ -152,7 +209,7 @@ gradle --offline :app:assembleRelease      # 2026-11-08: lint-gradle kechada bo'
                                            # uchun `:app:lintVitalRelease` alohida tarmoqda bajarildi
 ```
 
-Tekshirilgan holat (2026-11-08): **336 unit test o'tdi** (26 klass — 2026-11-06
+Tekshirilgan holat (2026-11-08): **341 unit test o'tdi** (26 klass — 2026-11-06
 dagi 268 taga o'yin qatlami qo'shilgach 68 ta qo'shildi; `GameOpsTest` 15 ta —
 jonli do'kon `AppStore.reduceLocal` o'yin qatlamini HAQIQATAN qo'llashini
 tekshiradi), API 26+
@@ -165,6 +222,12 @@ true/false/notgiven mashqida javob qabul qilinadi (2/2 · 100%).
 Supabase `publishable` kaliti mijozda ochiq ishlatiladi; **service-role kaliti
 hech qaysi mijozga tushmaydi**. AI ulanmagan holda ilova halol
 "Qoidaviy tahlil" deb yozadi (`engine: "rule-based"`).
+
+Baza **eski sxemada** bo'lgan holat (0003/0004 qo'llanmagan) mobil tomonda ham
+jonli transport soxtasi bilan tekshiriladi: `weekly_xp` 404 `PGRST205` javobida
+qator navbatda qoladi va migratsiyadan keyingi `flush`da o'zi yetib boradi;
+`user_settings`da rad etilgan 3 ustun tushirilib, yozuv yetkaziladi;
+`pullRemote`da `weekly_xp`/`profiles` yo'q bo'lsa ham o'qish ok qaytadi.
 
 Tayyor APK — GitHub Release [`v1.1.0-mobile`](https://github.com/Dadaxon82/AI_English_Academy/releases/tag/v1.1.0-mobile)
 (**2026-11-08**, 1.1.0 / versionCode 2 — o'yin qatlami bilan): `app-release.apk`,

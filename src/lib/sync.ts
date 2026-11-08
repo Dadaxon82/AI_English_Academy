@@ -310,6 +310,107 @@ function stopsRun(code: string | undefined): boolean {
   return !code || /^PGRST3/.test(code)
 }
 
+/* ------------------- baza sxemasi eski bo'lsa (2026-11-08) -------------------
+ * Jonli baza tekshiruvida (`scripts/check_supabase_schema.py`) `0003_motion.sql`
+ * va `0004_weekly_xp.sql` hali qo'llanmagan edi: `weekly_xp` → 404 PGRST205,
+ * `user_settings.motion_enabled / xp_goal_xp / hearts_enabled` → 400 42703.
+ * Bunday holda oqibat HALOL aytilishi kerak — jimgina "server qabul qilmadi"
+ * emas ("nima uchun?" degan savolga javob migratsiya nomi bo'ladi):
+ *
+ *  a) `user_settings` — rad etilgan ustunlar so'rovdan tushirib qoldirilib
+ *     qayta yuboriladi (PGRST204 / 42703). Eski bazaga ham yozuv yetadi;
+ *     migratsiya keyin bajarilsa ustunlar NULL qoladi, `rowToSettings` esa
+ *     ular bo'lmasa lokal qiymatni saqlaydi (pastdagi izoh) — sinxron buzilmaydi.
+ *  b) `weekly_xp` — jadval bo'lmasa yozuv rad etiladi va sababi ochiq yoziladi.
+ *     `deletedBySchema` sanog'i SHART: bunday yozuvlar qatorlari navbatda
+ *     qoldiriladi (fingerprint izi yozilmaydi), shuning uchun migratsiya
+ *     qo'llanilgach qator avtomatik qayta yuboriladi.
+ *  c) `weekly_xp` o'qilmasa liga maydoni `undefined` qoldiriladi — `merge.ts`
+ *     (`applyLeagueSnapshot`) `undefined` holatida eski snapshotni saqlaydi,
+ *     son ixtir QILINMAYDI.
+ */
+
+/** Migratsiyaga bog'liq jadvallar: jadval bo'lmasa yozuv/liga imkonsiz. */
+const TABLE_REQUIRES_MIGRATION: Record<string, string> = { weekly_xp: '0004_weekly_xp.sql' }
+
+/** Migratsiya qo'shgan IXTIYORIY ustunlar: yo'q bo'lsa so'rovdan tushiriladi. */
+const OPTIONAL_COLUMNS: Record<string, Record<string, string>> = {
+  user_settings: { motion_enabled: '0003_motion.sql', xp_goal_xp: '0004_weekly_xp.sql', hearts_enabled: '0004_weekly_xp.sql' },
+}
+
+/** Ustun nomini xatolik matnidan topish (so'z chegarasi bilan — `xp` `xp_goal_xp` ichiga kirmasin). */
+function mentionsColumn(message: string | undefined, column: string): boolean {
+  if (!message) return false
+  const escaped = column.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  return new RegExp(`\\b${escaped}\\b`, 'i').test(message)
+}
+
+/** PostgREST javobidagi xato matni (kod emas — MATN konkret ustunni aytadi). */
+export function errorMessage(err: unknown): string | undefined {
+  const m = (err as { message?: unknown } | null | undefined)?.message
+  return typeof m === 'string' ? m : undefined
+}
+
+/** Bir sinxron davomida yig'ilgan "baza eski" sabablari (migratsiya nomlari). */
+class SchemaNotes {
+  private readonly missing = new Map<string, Set<string>>()
+
+  /** Jadval nomiga ko'ra sabab qo'shish (konkret ustun noma'lum bo'lsa). */
+  noteTable(table: string) {
+    const m = TABLE_REQUIRES_MIGRATION[table]
+    if (m) this.missing.set(m, this.missing.get(m) ?? new Set())
+  }
+
+  /** Rad etilgan konkret ustun sababi — matndan ajratib oladi. */
+  noteColumnsDropped(table: string, columns: readonly string[], message: string | undefined) {
+    const allowed = OPTIONAL_COLUMNS[table]
+    if (!allowed) return
+    for (const name of columns) {
+      const migration = allowed[name]
+      if (!migration || !mentionsColumn(message, name)) continue
+      const set = this.missing.get(migration) ?? new Set<string>()
+      set.add(name)
+      this.missing.set(migration, set)
+    }
+  }
+
+  text(): string {
+    const parts: string[] = []
+    for (const [migration, columns] of [...this.missing.entries()].sort()) {
+      parts.push(
+        columns.size > 0
+          ? `baza eski: ${migration} migratsiyasi qo‘llanmagan (${[...columns].sort().join(', ')} ustunlari yo‘q)`
+          : `baza eski: jadval yo‘q — ${migration} migratsiyasi qo‘llanmagan`,
+      )
+    }
+    return parts.join('; ')
+  }
+
+  get empty(): boolean {
+    return this.missing.size === 0
+  }
+}
+
+/** Xatoda aytilgan ixtiyoriy ustunlarni so'rovdan chiqarib tashlash. */
+function degradedPayload(table: string, payload: Record<string, unknown>, message: string | undefined) {
+  const allowed = OPTIONAL_COLUMNS[table]
+  if (!allowed) return { payload: null as Record<string, unknown> | null, dropped: [] as string[] }
+  const dropped = Object.keys(allowed).filter((name) => name in payload && mentionsColumn(message, name))
+  if (dropped.length === 0) return { payload: null, dropped }
+  const next = { ...payload }
+  for (const name of dropped) delete next[name]
+  return { payload: next, dropped }
+}
+
+/**
+ * PostgREST/Postgres "jadval yoki ustun topilmadi" xatolari.
+ * O'lchangan (2026-11-08, jonli baza): jadval yo'q → 404 PGRST205;
+ * so'rovdagi ustun yo'q → 400 PGRST204; SELECT ustuni yo'q → 400 42703.
+ */
+function isSchemaMissing(code: string | undefined): boolean {
+  return code === 'PGRST204' || code === 'PGRST205' || code === '42703' || code === '42P01'
+}
+
 /** Yozuvlarni jadval bo'yicha guruhlab, bulk so'rovlarga bo'lish (jadval ichidagi tartib saqlanadi). */
 function chunkForBulk(items: readonly QueueItem[]): QueueItem[][] {
   const groups = new Map<string, QueueItem[]>()
@@ -369,16 +470,32 @@ export async function syncNow(userId: string, opts: { maxItems?: number } = {}):
   let rejected = 0
   let stopped = false
   const failures: QueueItem[] = []
+  const notes = new SchemaNotes()
 
-  const markDone = (item: QueueItem) => {
+  /**
+   * Yozuv serverga yetdi. `sent` — HAQIQIY yuborilgan qator: bazaga eski
+   * sxemaga moslashtirib (ustun tushirib) yuborsak izi SHU qator bo'yicha
+   * qo'yiladi. Shunda migratsiya qo'llanilgandan keyin `queueAllData` izning
+   * mahalliy holat bilan mos kelmasligini ko'radi va sozlamalarni o'zi
+   * qayta yuboradi (tushirilgan ustunlar endi to'ldiriladi).
+   */
+  const markDone = (item: QueueItem, sent?: Record<string, unknown>) => {
     done++
     const k = fingerprintKey(item.table, item.payload)
-    if (k) synced[k] = fingerprint(item.payload)
+    if (k) synced[k] = fingerprint(sent ?? item.payload)
   }
   const fail = (item: QueueItem, code: string | undefined) => {
     if (stopsRun(code)) stopped = true
     if (isPermanent(code)) rejected++
     else failures.push({ ...item, tries: item.tries + 1 })
+  }
+  const attempt = async (table: string, payload: Record<string, unknown> | Record<string, unknown>[], bulk = false) => {
+    try {
+      const { error } = await sb.from(table).upsert(payload, bulk ? { defaultToNull: false } : undefined)
+      return { ok: !error, code: error?.code, message: errorMessage(error) }
+    } catch (err) {
+      return { ok: false, code: (err as { code?: string }).code, message: errorMessage(err) }
+    }
   }
   const sendOne = async (item: QueueItem) => {
     // Tarmoq/sessiya yiqilgan bo'lsa urinib o'tirmaymiz — keyingi sinxronda.
@@ -386,17 +503,56 @@ export async function syncNow(userId: string, opts: { maxItems?: number } = {}):
       failures.push({ ...item, tries: item.tries + 1 })
       return
     }
-    try {
-      const table = sb.from(item.table)
-      const { error } =
-        item.op === 'delete'
-          ? await table.delete().eq('user_id', userId).eq('id', (item.payload as { id?: string })?.id)
-          : await table.upsert(item.payload as Record<string, unknown>)
-      if (error) fail(item, error.code)
-      else markDone(item)
-    } catch (err) {
-      fail(item, (err as { code?: string }).code)
+    if (item.op === 'delete') {
+      try {
+        const { error } = await sb
+          .from(item.table)
+          .delete()
+          .eq('user_id', userId)
+          .eq('id', (item.payload as { id?: string })?.id)
+        if (error) fail(item, error.code)
+        else markDone(item)
+      } catch (err) {
+        fail(item, (err as { code?: string }).code)
+      }
+      return
     }
+
+    const optional = OPTIONAL_COLUMNS[item.table]
+    let payload = item.payload as Record<string, unknown>
+    let res = await attempt(item.table, payload, false)
+    let degraded = false
+
+    // Baza eski: xatoda aytilgan ustunni tushirib qayta uriramiz. Har urinishda
+    // PostgREST BITTA ustunni aytadi, shuning uchun sikl ustunlar soniga
+    // chegaralanadi (cheksiz takrorlanmasin).
+    if (optional) {
+      let guard = 0
+      while (!res.ok && isSchemaMissing(res.code) && guard < Object.keys(optional).length) {
+        const step = degradedPayload(item.table, payload, res.message)
+        if (!step.payload) break
+        notes.noteColumnsDropped(item.table, step.dropped, res.message)
+        payload = step.payload!
+        degraded = true
+        res = await attempt(item.table, payload, false)
+        guard++
+      }
+    }
+
+    if (res.ok) {
+      // `sent` FAQAT ustun tushirilgan bo'lsa: aks holda iz asl payload bo'yicha
+      // qo'yiladi (bo'sh joyna izi har sinxronda qatorni qayta yuborardi).
+      markDone(item, degraded ? payload : undefined)
+      return
+    }
+    // Jadval butunlay yo'q (`weekly_xp` → PGRST205): qator NAVBATDA qoladi —
+    // izi yozilmagani uchun migratsiya qo'llanilgach avtomatik qayta yuboriladi.
+    if (isSchemaMissing(res.code) && TABLE_REQUIRES_MIGRATION[item.table]) {
+      notes.noteTable(item.table)
+      failures.push({ ...item, tries: item.tries + 1 })
+      return
+    }
+    fail(item, res.code)
   }
 
   for (const chunk of chunkForBulk(batch)) {
@@ -404,22 +560,35 @@ export async function syncNow(userId: string, opts: { maxItems?: number } = {}):
       for (const it of chunk) await sendOne(it)
       continue
     }
-    let code: string | undefined
-    let ok = false
-    try {
-      const { error } = await sb
-        .from(chunk[0]!.table)
-        .upsert(chunk.map((it) => it.payload as Record<string, unknown>), { defaultToNull: false })
-      ok = !error
-      code = error?.code
-    } catch (err) {
-      code = (err as { code?: string }).code
+    const table = chunk[0]!.table
+    let rows: Record<string, unknown>[] = chunk.map((it) => it.payload as Record<string, unknown>)
+    let res = await attempt(table, rows, true)
+    let degraded = false
+
+    // Baza eskiligi butun bo'lakka tegishli (bir jadval), shuning uchun
+    // tushirilgan ustunlar bir marta HAMMA qatorga qo'llanadi.
+    if (OPTIONAL_COLUMNS[table]) {
+      let guard = 0
+      while (!res.ok && isSchemaMissing(res.code) && guard < Object.keys(OPTIONAL_COLUMNS[table]!).length) {
+        const step = degradedPayload(table, rows[0]!, res.message)
+        if (!step.payload) break
+        notes.noteColumnsDropped(table, step.dropped, res.message)
+        rows = rows.map((r) => degradedPayload(table, r, res.message).payload ?? r)
+        degraded = true
+        res = await attempt(table, rows, true)
+        guard++
+      }
     }
-    if (ok) {
-      chunk.forEach(markDone)
-    } else if (stopsRun(code)) {
+
+    if (res.ok) {
+      chunk.forEach((it, i) => markDone(it, degraded ? rows[i] : undefined))
+    } else if (stopsRun(res.code)) {
       // Tarmoq yoki sessiya xatosi: bu va qolgan bo'laklar keyingi sinxronda.
       stopped = true
+      for (const it of chunk) failures.push({ ...it, tries: it.tries + 1 })
+    } else if (isSchemaMissing(res.code) && TABLE_REQUIRES_MIGRATION[table]) {
+      // Jadval butunlay yo'q — butun bo'lak navbatda qoladi (izi yozilmaydi).
+      notes.noteTable(table)
       for (const it of chunk) failures.push({ ...it, tries: it.tries + 1 })
     } else {
       // Bo'lakda bitta yaroqsiz qator butun so'rovni yiqitadi — qatorlarni
@@ -436,6 +605,9 @@ export async function syncNow(userId: string, opts: { maxItems?: number } = {}):
   const reasons: string[] = []
   if (failed) reasons.push(`${failed} ta yozuv yuborilmadi — keyingi sinxronda qayta uriladi.`)
   if (rejected) reasons.push(`${rejected} ta yozuvni server qabul qilmadi (ma’lumot yoki ruxsat xatosi).`)
+  // Sabab ochiq aytiladi: "qabul qilinmadi" yetarli emas — foydalanuvchi
+  // nimani qilishi kerakligini bilishi kerak (SQL Editor'da migratsiya).
+  if (!notes.empty) reasons.push(`Baza eski sxemada — ${notes.text()}. Supabase SQL Editor’ida shu skriptni bir marta bajaring.`)
   return { ok: failed === 0 && rejected === 0, attempted: batch.length, done, failed, rejected, reasonUz: reasons.length ? reasons.join(' ') : null }
 }
 
@@ -494,15 +666,35 @@ export async function deleteRemoteData(userId: string): Promise<{ ok: boolean; r
   if (authErr || !sess.session || sess.session.user.id !== userId) {
     return { ok: false, reasonUz: 'Tizimga kirilmagan — serverdagi ma’lumot o‘chirilmadi.' }
   }
+  // 2026-11-08: `weekly_xp` jadvali bazada bo'lmasa (0004 qo'llanmagan) DELETE
+  // 404 PGRST205 beradi — chaqiruvchi buni "o'chirib bo'lmadi" deb Butun
+  // amalni to'xtatardi va foydalanuvchi ma'lumotini O'CHIRA OLMASDI. Jadval
+  // yo'q bo'lsa o'chiriladigan yozuv ham yo'q: unday jadval o'tkazib
+  // yuboriladi, sababi esa halol aytiladi.
+  const notes = new SchemaNotes()
   for (const table of PERSONAL_TABLES) {
     try {
       const { error } = await sb.from(table).delete().eq('user_id', userId)
-      if (error) return { ok: false, reasonUz: 'Serverdagi ma’lumotni o‘chirib bo‘lmadi. Keyinroq qayta urinib ko‘ring.' }
-    } catch {
+      if (!error) continue
+      if (isSchemaMissing(error.code) && TABLE_REQUIRES_MIGRATION[table]) {
+        notes.noteTable(table)
+        continue
+      }
+      return { ok: false, reasonUz: 'Serverdagi ma’lumotni o‘chirib bo‘lmadi. Keyinroq qayta urinib ko‘ring.' }
+    } catch (err) {
+      const code = (err as { code?: string }).code
+      if (isSchemaMissing(code) && TABLE_REQUIRES_MIGRATION[table]) {
+        notes.noteTable(table)
+        continue
+      }
       return { ok: false, reasonUz: 'Serverdagi ma’lumotni o‘chirib bo‘lmadi. Internetni tekshiring.' }
     }
   }
-  return { ok: true, reasonUz: null }
+  if (notes.empty) return { ok: true, reasonUz: null }
+  return {
+    ok: true,
+    reasonUz: `Ma’lumot o‘chirildi, lekin baza eski sxemada — ${notes.text()}. O‘chiriladigan yozuv bu jadvalda yo‘q edi.`,
+  }
 }
 
 /* ------------------------------- o'qish ------------------------------- */

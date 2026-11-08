@@ -178,6 +178,119 @@ describe('pullRemote — serverdagi progress qayta tiklanadi', () => {
   })
 })
 
+/* ------------------- baza ESKI sxemada (2026-11-08 holati) -------------------
+ * `scripts/check_supabase_schema.py` jonli bazada o'lchadi: `0003_motion.sql` va
+ * `0004_weekly_xp.sql` qo'llanmagan edi — `weekly_xp` → 404 PGRST205,
+ * `user_settings.motion_enabled / xp_goal_xp / hearts_enabled` → yo'q ustun.
+ * Bu testlar xuddi shu javoblarni soxtalashtiradi (`server.missingColumns` /
+ * `server.missingTables`) va talab qiladi: ma'lumot yetib boradi, sabab ochiq
+ * aytiladi, migratsiyadan keyin hamma o'zi tuzatiladi.
+ */
+describe('syncNow — baza eski sxemada (0003 / 0004 migratsiyalari qo‘llanmagan)', () => {
+  it('sozlamalar eski bazaga ham yoziladi: rad etilgan ustunlar tushiriladi, sabab ochiq', async () => {
+    server.missingColumns = { user_settings: ['motion_enabled', 'xp_goal_xp', 'hearts_enabled'] }
+    const data = withAttempts(emptyData(UID), 1)
+    const total = toQueueItems(data).length
+    await queueAllData(data)
+    const res = await syncNow(UID)
+    // Yozuv RAD ETILMADI — yetib bordi, faqat 3 ustun tushib qoldi.
+    expect(res).toMatchObject({ ok: true, done: total, failed: 0, rejected: 0 })
+    const row = server.rows('user_settings')[0]!
+    expect(row.daily_minutes).toBe(data.settings.dailyMinutes)
+    for (const col of ['motion_enabled', 'xp_goal_xp', 'hearts_enabled']) expect(row, col).not.toHaveProperty(col)
+    // Sabab konkret aytiladi — migratsiya fayli va ustun nomlari.
+    expect(res.reasonUz).toContain('0003_motion.sql')
+    expect(res.reasonUz).toContain('0004_weekly_xp.sql')
+    expect(res.reasonUz).toContain('motion_enabled')
+    expect(res.reasonUz).toContain('SQL Editor')
+  })
+
+  it('migratsiya qo‘llanilsa tushirilgan ustunlar o‘zi qayta yuboriladi (iz — yuborilgan qator bo‘yicha)', async () => {
+    server.missingColumns = { user_settings: ['motion_enabled', 'xp_goal_xp', 'hearts_enabled'] }
+    const data = withAttempts(emptyData(UID), 1)
+    await queueAllData(data)
+    await syncNow(UID)
+    // Iz HAQIQIY yuborilgan (qisqartirilgan) qator bo'yicha — shuning uchun
+    // holat o'zgarmasa ham qator qayta navbatga tushadi.
+    expect(await queueAllData(data)).toBe(1)
+    server.missingColumns = {} // migratsiya bajarildi
+    expect(await syncNow(UID)).toMatchObject({ ok: true, done: 1, failed: 0 })
+    const row = server.rows('user_settings')[0]!
+    expect(row).toHaveProperty('motion_enabled', data.settings.motionEnabled)
+    expect(row).toHaveProperty('xp_goal_xp')
+    expect(row).toHaveProperty('hearts_enabled', data.settings.heartsEnabled)
+  })
+
+  it('weekly_xp jadvali bo‘lmasa yozuv navbatda qoladi va migratsiyadan keyin o‘zi yetib boradi', async () => {
+    server.missingTables = ['weekly_xp']
+    const data = withAttempts(emptyData(UID), 1)
+    const total = toQueueItems(data).length
+    await queueAllData(data)
+    const res = await syncNow(UID)
+    expect(res).toMatchObject({ ok: false, done: total - 1, failed: 1, rejected: 0 })
+    expect(res.reasonUz).toContain('weekly_xp')
+    expect(res.reasonUz).toContain('0004_weekly_xp.sql')
+    // Qator NAVBATDA — izi yozilmagani uchun keyingi sinxron uni qayta yuboradi.
+    expect((await loadQueue(UID)).map((x) => x.table)).toEqual(['weekly_xp'])
+    // Boshqa yozuvlar (sozlamalar, reja, urinish) to'liq yetdi.
+    expect(await loadQueue(UID)).toHaveLength(1)
+    expect(server.rows('weekly_xp')).toHaveLength(0)
+
+    server.missingTables = [] // migratsiya bajarildi
+    const again = await syncNow(UID)
+    expect(again).toMatchObject({ ok: true, done: 1, failed: 0 })
+    expect(await loadQueue(UID)).toHaveLength(0)
+    expect(server.rows('weekly_xp')).toHaveLength(1)
+  })
+
+  it('boshqa jadvaldagi nomlanmagan ustun xatosi yozuvni jimgina yo‘qotmaydi (rad etiladi)', async () => {
+    // PostgREST matni BIZNI ustunni aytmaydi → mijoz hech narsani tushirmaydi,
+    // yozuv rad etilgan deb ochiq sanaladi (silqitib yuborish YO'Q).
+    server.failRow = (table) =>
+      table === 'user_settings'
+        ? { code: 'PGRST204', message: "Could not find the 'quantum_mode' column of 'public.user_settings' in the schema cache" }
+        : null
+    const data = withAttempts(emptyData(UID), 1)
+    await queueAllData(data)
+    const res = await syncNow(UID)
+    expect(res).toMatchObject({ ok: false, rejected: 1, failed: 0 })
+    expect(res.reasonUz).toContain('qabul qilmadi')
+    expect(res.reasonUz).not.toContain('migratsiya')
+    expect(server.rows('user_settings')).toHaveLength(0)
+  })
+})
+
+describe('pullRemote — eski bazada liga o‘qilmasa ham progress qaytadi', () => {
+  it('weekly_xp yo‘q bo‘lsa ham ok: true — liga snapshoti eski holatida qoladi', async () => {
+    const rich = { ...richData(UID), profileName: 'Aziz' }
+    await queueAllData(rich)
+    expect((await syncNow(UID)).ok).toBe(true)
+    server.missingTables = ['weekly_xp']
+    const res = await pullRemote(UID)
+    expect(res.ok).toBe(true)
+    const fresh = mergeRemote(emptyData(UID), res.snapshot!)
+    expect(fresh.attempts).toEqual(rich.attempts)
+    expect(fresh.settings).toEqual(rich.settings)
+    // Liga: o‘qib bo‘lmadi → snapshotda yo‘q, son ixtir QILINMAYDI.
+    expect(res.snapshot?.league).toBeNull()
+    // Eski qurilmaning ligasi (oldin o‘qilgan) aralashmaydi va yo‘qolmaydi.
+    const withLeague = {
+      ...rich,
+      game: { ...rich.game, league: { weekStart: '2026-11-02', leagueId: 'bronze', rank: 4, boardSize: 2, at: Date.UTC(2026, 10, 4), entries: [{ userId: 'a', name: 'A', xp: 10 }], prizeClaimed: true } },
+    }
+    expect(mergeRemote(withLeague, res.snapshot!).game.league).toEqual(withLeague.game.league)
+  })
+
+  it('profiles qatori bo‘lmasa ham o‘qish yiqilmaydi (ism ixtir qilinmaydi)', async () => {
+    await queueAllData(richData(UID))
+    await syncNow(UID)
+    server.missingTables = ['profiles']
+    const res = await pullRemote(UID)
+    expect(res.ok).toBe(true)
+    expect(res.snapshot?.profileName).toBe('')
+  })
+})
+
 describe('deleteRemoteData — serverdagi shaxsiy yozuvlar o‘chiriladi', () => {
   it('barcha shaxsiy jadvallar tozalanadi, boshqa foydalanuvchiniki qoladi', async () => {
     await queueAllData(richData(UID))
@@ -193,6 +306,24 @@ describe('deleteRemoteData — serverdagi shaxsiy yozuvlar o‘chiriladi', () =>
     // Keyingi kirishda tiklanadigan narsa qolmaydi
     const pulled = await pullRemote(UID)
     expect(pulled.snapshot?.attempts).toEqual([])
+  })
+
+  it('weekly_xp jadvali bazada bo‘lmasa ham o‘chirish bajariladi (eski: tugma butunlay ishlamasdi)', async () => {
+    // ESKI BUG: `weekly_xp` yo'q bazada DELETE 404 PGRST205 berardi va
+    // "Barcha ma'lumotni o'chirish" AMALNI TO'XTATARDI — foydalanuvchi
+    // ma'lumotini o'chira olmasdi. Jadval yo'q bo'lsa o'chiriladigan yozuv
+    // ham yo'q: o'tkazib yuboriladi, sababi halol aytiladi.
+    await queueAllData(richData(UID))
+    await syncNow(UID)
+    expect(server.rows('writing_submissions')).toHaveLength(1)
+    server.missingTables = ['weekly_xp']
+    const res = await deleteRemoteData(UID)
+    expect(res.ok).toBe(true)
+    expect(res.reasonUz).toContain('0004_weekly_xp.sql')
+    expect(res.reasonUz).toContain('o‘chirildi')
+    for (const t of ['exercise_attempts', 'user_settings', 'writing_submissions']) {
+      expect(server.rows(t).filter((r) => r.user_id === UID), t).toHaveLength(0)
+    }
   })
 
   it('tarmoq xatosida ok: false — chaqiruvchi qurilmadagi ma’lumotni o‘chirmasligi uchun', async () => {
