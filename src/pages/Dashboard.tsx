@@ -1,21 +1,28 @@
 /**
- * Dashboard — umumiy holat ekrani.
+ * Dashboard — "Learn" bosh sahifasi, Duolingo'ning uch ustunli joylashuvi
+ * (chap navigatsiya — `Layout.tsx`da, markaz — yo'l xaritasi + kunlik reja,
+ * o'ng — Liga/Questlar/Streak paneli `LeaguePanel`). Katta ekranda uch
+ * ustun yonma-yon, tor ekranda bitta ustunga tushadi (markaz birinchi).
  *
- * Ko'rsatiladi: daraja va maqsad, bugungi moslashgan 90 daqiqalik reja
- * (nega o'zgargani izohi bilan), bugungi mashg'ulotlar holati, streak/XP,
- * ko'nikma natijalari (ishonchsizlar "noaniq" deb belgilangan), haftalik
- * faollik, oxirgi xatolar va keyingi tavsiya. Barcha havolalar haqiqiy.
+ * Ko'rsatiladi: daraja va maqsad, qisqa yo'l xaritasi (joriy bosqich
+ * atrofida), bugungi moslashgan 90 daqiqalik reja (nega o'zgargani izohi
+ * bilan), bugungi mashg'ulotlar holati, streak/XP, ko'nikma natijalari
+ * (ishonchsizlar "noaniq" deb belgilangan), haftalik faollik, oxirgi
+ * xatolar va keyingi tavsiya. Barcha havolalar haqiqiy.
  */
 
 import { useMemo } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { BarChart, Button, Card, Chip, EmptyState, InfoBanner, LoadingBlock, StatTile } from '../components/ui'
+import DuoPathMap from '../components/DuoPathMap'
 import InstallAppCard from '../components/InstallAppCard'
-import { GameIcon } from '../components/icons'
+import LeaguePanel from '../components/LeaguePanel'
 import { MascotFigure } from '../components/Mascot'
-import { findExercise, getBundle } from '../content'
-import type { Skill } from '../content/types'
+import { findExercise, getBundle, vocabQuizExercise } from '../content'
+import type { Skill, VocabularyItem } from '../content/types'
+import { buildChain, exerciseIdsForSection } from '../lib/lessonChain'
 import { buildDayTasks, nextDayId, skillLabelUz } from '../lib/planning'
+import { buildPathLayout, focalNode } from '../lib/pathMap'
 import { levelLabel } from '../lib/skillScoring'
 import { lastNDays, useStore } from '../lib/store'
 import { todayKey } from '../lib/types'
@@ -51,8 +58,7 @@ function weekdayShortUz(dateKey: string): string {
 }
 
 export default function Dashboard() {
-  const { data, ready, allocation, evidence, promotion, streak, learnedCount, dueCount, timerLabel, actions, hearts, goal, quests } =
-    useStore()
+  const { data, ready, allocation, evidence, promotion, streak, learnedCount, dueCount, timerLabel, actions } = useStore()
   const nav = useNavigate()
 
   // --- Hisoblab olinadigan ma'lumotlar (hook'lar katta return oldidan) ---
@@ -91,6 +97,48 @@ export default function Dashboard() {
   const doneCount = tasks.filter((t) => t.done).length
   const remainingTask = tasks.find((t) => !t.done)
 
+  // ---------- Qisqa yo'l xaritasi (Duolingo "Learn" markaziy ustuni) ----------
+  // To'liq audit/bo'laklab chizish mantig'i `/path` sahifasida; bu yerda
+  // FAQAT joriy bosqich atrofidagi xarita ko'rsatiladi — tugun bosilsa
+  // "O'quv yo'li" sahifasiga o'tiladi (to'liq tafsilot va test shu yerda).
+  const currentDayIdx = useMemo(() => {
+    const i = bundle.days.findIndex((d) => d.id === data.path.currentDayId)
+    if (i >= 0) return i
+    const open = bundle.days.findIndex((d) => !data.path.completedDays.includes(d.id))
+    return open >= 0 ? open : bundle.days.length - 1
+  }, [bundle.days, data.path.currentDayId, data.path.completedDays])
+
+  const pathChains = useMemo(
+    () =>
+      bundle.days.map((day, i) =>
+        buildChain(
+          day,
+          Object.fromEntries(
+            day.sections.map((s) => [
+              s.skill,
+              exerciseIdsForSection(s, {
+                vocabQuizIds: (ids) =>
+                  ids
+                    .map((id) => bundle.vocab.find((v) => v.id === id))
+                    .filter((v): v is VocabularyItem => v !== undefined)
+                    .map((v) => vocabQuizExercise(v).id),
+                grammarExercises: (id) => bundle.grammar.find((g) => g.id === id)?.exercises ?? [],
+                readingExercises: (id) => bundle.reading.find((r) => r.id === id)?.exercises ?? [],
+                listeningExercises: (id) => bundle.listening.find((l) => l.id === id)?.exercises ?? [],
+                findExercise,
+              }),
+            ]),
+          ),
+          i,
+          i === currentDayIdx,
+          data.path.completedDays.includes(day.id),
+        ),
+      ),
+    [bundle, currentDayIdx, data.path.completedDays],
+  )
+  const pathLayout = useMemo(() => buildPathLayout(pathChains, 320), [pathChains])
+  const pathFocus = useMemo(() => focalNode(pathLayout), [pathLayout])
+
   if (!ready) return <LoadingBlock label="Ma'lumotlaringiz yuklanmoqda…" />
 
   const curLevel = data.settings.currentLevel
@@ -104,7 +152,7 @@ export default function Dashboard() {
       {/* ---------- Mobil ilova (PWA o'rnatish) — sahifa yuqorisida ---------- */}
       <InstallAppCard />
 
-      {/* ---------- Sarlavha va Qahramon kutib olishi ---------- */}
+      {/* ---------- Sarlavha va Qahramon kutib olishi (to'liq kenglik) ---------- */}
       <Card as="section" className="relative overflow-hidden p-4 sm:p-6 bg-gradient-to-br from-indigo-50/70 via-[var(--panel)] to-sky-50/50 dark:from-slate-900/60 dark:via-[var(--panel)] dark:to-indigo-950/30">
         <div className="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-4">
           <div className="grid gap-2.5 flex-1 text-center sm:text-left">
@@ -168,6 +216,32 @@ export default function Dashboard() {
         </InfoBanner>
       )}
 
+      {/* ---------- Uch ustunli joylashuv (Duolingo "Learn"): markaz + o'ng panel ----------
+          Chap navigatsiya `Layout.tsx`da. Tor ekranda bitta ustunga tushadi —
+          markaziy kontent birinchi, `LeaguePanel` pastda davom etadi. */}
+      <div className="grid lg:grid-cols-[1fr_320px] gap-4 sm:gap-5 items-start">
+        <div className="grid gap-4 sm:gap-5 min-w-0">
+      {/* ---------- Yo'l xaritasi (qisqa, joriy bosqich atrofida) ---------- */}
+      {pathLayout.nodes.length > 0 && (
+        <Card as="section" className="grid gap-3">
+          <div className="flex flex-wrap items-center gap-2">
+            <h2 className="font-bold">Darslar xaritasi</h2>
+            <Chip tone="brand">{bundle.days[currentDayIdx]?.titleUz ?? ''}</Chip>
+          </div>
+          <DuoPathMap
+            layout={pathLayout}
+            selectedId={pathFocus?.id ?? null}
+            focusId={pathFocus?.id ?? null}
+            onSelect={() => nav('/path')}
+          />
+          <div className="flex justify-end">
+            <Link to="/path" className={linkSecondary}>
+              To'liq xaritani ochish →
+            </Link>
+          </div>
+        </Card>
+      )}
+
       {/* ---------- Statistika qatori ---------- */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <StatTile label="Ketma-ket kun" value={streak} hint="Har kuni mashq qilish zanjiri" tone={streak > 0 ? 'ok' : 'default'} />
@@ -181,74 +255,8 @@ export default function Dashboard() {
         />
       </div>
 
-      {/* ---------- O‘yin qatlami ko‘rsatkichlari (yurak / kunlik XP / gem) ----------
-          Sonlar `game.ts` (`heartsView`, `goalView`) va `data.game`dan — ixtir yo‘q.
-          Yuraklar sozlamada o‘chirilgan bo‘lsa plitka halol "o‘chiq" deyadi.
-          Mobil `DashboardFragment` ham shu uch plitkani chizadi (klon). */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <StatTile
-          label="Yuraklar"
-          value={hearts.enabled ? `${hearts.count}/${hearts.max}` : 'o‘chiq'}
-          hint={
-            !hearts.enabled
-              ? 'Sozlamada o‘chirilgan — jarima darvozasi yo‘q'
-              : hearts.blocked
-                ? `Tugadi — ${hearts.practiceNeeded} ta takror bilan qaytariladi`
-                : hearts.minutesLeft > 0
-                  ? `Keyingi yurak: ${hearts.minutesLeft} daqiqa`
-                  : 'To‘la'
-          }
-          tone={hearts.enabled && hearts.blocked ? 'bad' : 'default'}
-        />
-        <StatTile
-          label="Kunlik XP maqsadi"
-          value={`${goal.value}/${goal.target}`}
-          hint={goal.reached ? `Maqsadga yetildi (+gem)` : `Yana ${goal.left} XP kerak`}
-          tone={goal.reached ? 'ok' : 'default'}
-        />
-        <StatTile label="Gem" value={data.game.gems} hint={`${quests.filter((q) => q.done).length}/${quests.length} bugungi quest bajarildi`} />
-        <StatTile
-          label="Qalqonlar"
-          value={data.game.freezes}
-          hint="Uzilgan kunni qoplaydi (do‘kondan)"
-          tone={data.game.freezes > 0 ? 'ok' : 'default'}
-        />
-      </div>
-
-      {/* ---------- Bugungi questlar (kun sayin 3 tasi — kun kaliti bilan) ----------
-          Ro'yxat va mezonlar `gameConfig.QUEST_POOL`dan, holat `game.ts::questView`dan
-          olinadi; telefon ilovasi ham shu 3 tasini chizadi (kun kaliti bir xil). */}
-      <Card className="grid gap-2.5">
-        <div className="flex flex-wrap items-center gap-2">
-          <h2 className="font-bold">Bugungi questlar</h2>
-          <Chip tone={quests.every((q) => q.done) ? 'ok' : 'default'}>
-            {quests.filter((q) => q.done).length}/{quests.length} bajarildi
-          </Chip>
-          <Chip>
-            <GameIcon name="gem" size={12} /> {data.game.questsTotal} ta quest jami
-          </Chip>
-        </div>
-        <div className="grid sm:grid-cols-3 gap-2">
-          {quests.map((q) => (
-            <div key={q.quest.id} className="rounded-xl border p-2.5 grid gap-1">
-              <div className="flex items-center gap-2">
-                <GameIcon name={q.done ? 'check' : 'flame'} size={16} className={q.done ? 'text-[var(--ok)]' : 'text-[var(--accent)]'} />
-                <span className="text-sm font-semibold">{q.quest.titleUz}</span>
-              </div>
-              <div className="h-2 rounded-full bg-[var(--border)] overflow-hidden">
-                <div
-                  className="h-full bg-navy-600 dark:bg-navy-400 transition-[width] duration-500"
-                  style={{ width: `${Math.min(100, Math.round((q.value / Math.max(1, q.target)) * 100))}%` }}
-                />
-              </div>
-              <p className="text-[11px] muted tabular-nums">
-                {q.value} / {q.target}
-                {q.claimed ? ' · gem olindi' : q.done ? ' · gem beriladi' : ''}
-              </p>
-            </div>
-          ))}
-        </div>
-      </Card>
+      {/* O‘yin qatlami ko‘rsatkichlari (yurak / kunlik XP / gem / questlar) —
+          o'ng paneldagi `LeaguePanel`da ko'rsatiladi, bu yerda takrorlanmaydi. */}
 
       {/* ---------- Bugungi reja (taqsimot + nega o'zgargani) ---------- */}
       <Card className="grid gap-3.5">
@@ -482,6 +490,11 @@ export default function Dashboard() {
           </Link>
         </div>
       </Card>
+        </div>
+
+        {/* ---------- O'ng panel: Liga / Questlar / Streak-Gem-Qalqon / Kunlik maqsad ---------- */}
+        <LeaguePanel />
+      </div>
     </div>
   )
 }

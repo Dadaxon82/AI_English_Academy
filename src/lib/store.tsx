@@ -18,6 +18,7 @@ import {
   buy as buyItem,
   goalView,
   heartsView,
+  leagueWeek,
   lessonComplete,
   placeBet,
   questView,
@@ -396,6 +397,8 @@ export interface StoreValue {
   quests: ReturnType<typeof questView>
   /** Yutuqlar (daraja, mezon qiymati, keyingi bosqich). */
   achievements: AchievementView[]
+  /** Joriy liga haftasi (hafta boshi, XP, liga id) — `leagueWeek()`dan, ixtir yo'q. */
+  league: ReturnType<typeof leagueWeek>
   /** Do'kon ro'yxati (narxlar bilan) — xarid qilish mumkinmi, gem yetadimi. */
   shop: typeof SHOP_ITEMS
   actions: {
@@ -791,6 +794,7 @@ export function StoreProvider({
       goal: goalView(data),
       quests: questView(data),
       achievements: achievementViews(data, streakProtected),
+      league: leagueWeek(data),
     }
     // `data` o'zgarganda qayta hisoblanadi; daqiqada bir marta — minuteTick.
   }, [data, minuteTick, streakProtected])
@@ -814,6 +818,7 @@ export function StoreProvider({
     goal: gameViews.goal,
     quests: gameViews.quests,
     achievements: gameViews.achievements,
+    league: gameViews.league,
     shop: SHOP_ITEMS,
     actions: {
       setSettings,

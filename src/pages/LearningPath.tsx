@@ -1,22 +1,29 @@
 /**
- * Shaxsiy o'quv yo'li — vertikal xronologik kunlar ro'yxati.
+ * Shaxsiy o'quv yo'li — Duolingo uslubidagi yilonsimon YO'L XARITASI
+ * (`DuoPathMap`) + tanlangan bo'lim/kun uchun pastda ochiladigan tafsilot
+ * paneli. Xaritadagi har tugun — bitta bo'lim (yoki bo'lim yakuniy testi);
+ * tugun rangi/qulfi `lessonChain.ts::buildChain` natijasidan to'g'ridan-to'g'ri
+ * olinadi — qulf qoidasi IKKI MARTA YOZILMAYDI.
  *
  * Ketma-ketlik halol ko'rsatiladi: oldingi kunni yakunlamascha keyingi kun
- * yopiq ko'rinadi va "Ochish" tugmasi disabled (+ izoh). Har kun ichida
- * bo'limlar, ularning haqiqiy kontenti va bo'lim yakuniy testi
- * ExerciseRunner orqali. Kun taymeri store.ga bog'langan (sessionId = dayId).
+ * yopiq ko'rinadi va tugun bosilmaydi (qulf belgisi bilan). Tugun bosilganda
+ * pastda shu KUN kartasi ochiladi — bo'limlar, ularning haqiqiy kontenti va
+ * bo'lim yakuniy testi ExerciseRunner orqali (avvalgi vertikal ro'yxatdagi
+ * `DayCard`/`SectionDetail` mantiqi saqlanadi, faqat kirish nuqtasi xarita).
+ * Kun taymeri store.ga bog'langan (sessionId = dayId).
  */
 
 import { useMemo, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import DuoPathMap from '../components/DuoPathMap'
 import ExerciseRunner from '../components/ExerciseRunner'
 import { Button, Card, Chip, EmptyState, InfoBanner, LoadingBlock, ProgressRing, SpeakButton, SuccessBanner } from '../components/ui'
 import { findExercise, getBundle, vocabQuizExercise } from '../content'
 import type { LevelBundle } from '../content'
 import type { DailyPlanDay, DaySection, Skill, VocabularyItem } from '../content/types'
 import type { CheckResult } from '../lib/check'
-import { buildChain, chainAudit, ChainState, exerciseIdsForSection } from '../lib/lessonChain'
-import { MOTION } from '../lib/motionManifest'
+import { buildChain, chainAudit, exerciseIdsForSection } from '../lib/lessonChain'
+import { buildPathLayout, focalNode } from '../lib/pathMap'
 import { skillLabelUz } from '../lib/planning'
 import { useStore } from '../lib/store'
 import { currentElapsed, formatDuration } from '../lib/timer'
@@ -63,7 +70,7 @@ export default function LearningPath() {
   }, [days, data.path.currentDayId, completed])
 
   // Ochiq kun: yuklangandan keyin joriy kun avtomatik ochiladi; foydalanuvchi
-  // boshqa kunni ochsa/yopsa shu tanlov hurmat qilinadi.
+  // xaritada boshqa tugunni bossa shu tanlov hurmat qilinadi.
   const [openOverride, setOpenOverride] = useState<string | null>(null)
   const defaultOpenId = days[currentIdx]?.id ?? null
   const openDayId = openOverride !== null ? openOverride : defaultOpenId
@@ -73,6 +80,50 @@ export default function LearningPath() {
     if (idx <= currentIdx) return 'current'
     return 'locked'
   }
+
+  // ---------- Xarita joylash (DuoPathMap) ----------
+  // `buildChain` — mavjud HALOL manba (`ChainOverview` ham aynan shu yerdan
+  // oladi), shuning uchun qulf/holat qoidasi IKKI MARTA YOZILMAYDI.
+  const chains = useMemo(
+    () =>
+      days.map((day, i) =>
+        buildChain(
+          day,
+          Object.fromEntries(
+            day.sections.map((s) => [
+              s.skill,
+              exerciseIdsForSection(s, {
+                vocabQuizIds: (ids) =>
+                  ids
+                    .map((id) => bundle.vocab.find((v) => v.id === id))
+                    .filter((v): v is VocabularyItem => v !== undefined)
+                    .map((v) => vocabQuizExercise(v).id),
+                grammarExercises: (id) => bundle.grammar.find((g) => g.id === id)?.exercises ?? [],
+                readingExercises: (id) => bundle.reading.find((r) => r.id === id)?.exercises ?? [],
+                listeningExercises: (id) => bundle.listening.find((l) => l.id === id)?.exercises ?? [],
+                findExercise,
+              }),
+            ]),
+          ),
+          i,
+          day.id === (days[currentIdx]?.id ?? ''),
+          completed.includes(day.id),
+        ),
+      ),
+    [days, completed, currentIdx, bundle],
+  )
+
+  const layout = useMemo(() => buildPathLayout(chains, 360), [chains])
+  const focus = useMemo(() => focalNode(layout), [layout])
+  // Xaritada tanlangan tugun — bosilganda shu KUN kartasi pastda ochiladi
+  // (bitta bo'lim emas, butun kun: ExerciseRunner/test mantiqi kun darajasida).
+  const selectedNodeId = openDayId
+    ? layout.nodes.find((n) => n.dayId === openDayId)?.id ?? focus?.id ?? null
+    : focus?.id ?? null
+
+  const stepsTotal = chains.reduce((a, c) => a + c.steps.length, 0)
+  const kindsOf = (id: string) => findExercise(id)?.kind
+  const audit = chainAudit(chains, kindsOf)
 
   if (!ready) return <LoadingBlock label="O‘quv yo‘li yuklanmoqda…" />
 
@@ -115,44 +166,46 @@ export default function LearningPath() {
         </div>
       </Card>
 
-      {/* ---------- Zanjir (ketma-ketlik xaritasi) ---------- */}
-      <ChainOverview
-        days={days}
-        completed={completed}
-        currentDayId={days[currentIdx]?.id ?? ''}
-        bundle={bundle}
-      />
+      {/* ---------- Yo'l xaritasi (Duolingo uslubida, yilonsimon) ---------- */}
+      <Card as="section" className="grid gap-3">
+        <div className="flex flex-wrap items-center gap-2">
+          <h2 className="font-bold">Darslar xaritasi</h2>
+          <Chip>{stepsTotal} qadam</Chip>
+          <Chip>{chains.length} kun</Chip>
+        </div>
+        <p className="text-xs muted">
+          Har doira — bitta bo'lim (yoki bo'lim testi). Yashil — tugatilgan, ko'k — joriy va bosish mumkin, kulrang —
+          qulflangan. Qahramon joriy qadamda turadi.
+        </p>
+        <DuoPathMap
+          layout={layout}
+          selectedId={selectedNodeId}
+          focusId={focus?.id ?? null}
+          onSelect={(node) => setOpenOverride(node.dayId)}
+        />
+        <p className="text-[11px] muted">
+          Zanjir bo'yicha: {audit.rotationSteps} mashq qadami (+{audit.reinforcement} takrorlash) · bir xil tur
+          qo‘shni: {audit.sameNeighbours} (majburiy: {audit.unavoidable}) · eng qisqa tur masofasi: {audit.minGap}
+        </p>
+      </Card>
 
-      {/* ---------- Vertikal xronologik ro'yxat ---------- */}
-      <div className="relative grid gap-4 pl-5 sm:pl-7">
-        <span aria-hidden className="absolute left-[7px] sm:left-[11px] top-2 bottom-2 w-0.5 bg-[var(--border)]" />
-        {days.map((day, idx) => {
-          const status = statusOf(day, idx)
-          const open = openDayId === day.id
-          return (
-            <div key={day.id} className="relative">
-              <span
-                aria-hidden
-                className={`absolute -left-5 sm:-left-7 top-5 w-4 h-4 rounded-full border-2 ${
-                  status === 'completed'
-                    ? 'bg-[var(--ok)] border-[var(--ok)]'
-                    : status === 'current'
-                      ? 'bg-navy-700 dark:bg-navy-400 border-navy-700 dark:border-navy-400'
-                      : 'bg-[var(--panel)] border-[var(--border)]'
-                }`}
-              />
-              <DayCard
-                day={day}
-                status={status}
-                open={open}
-                onOpen={() => setOpenOverride(day.id)}
-                onClose={() => setOpenOverride('')}
-                bundle={bundle}
-              />
-            </div>
-          )
-        })}
-      </div>
+      {/* ---------- Tanlangan kun kartasi ---------- */}
+      {days.map((day, idx) => {
+        const status = statusOf(day, idx)
+        const open = openDayId === day.id
+        if (!open) return null
+        return (
+          <DayCard
+            key={day.id}
+            day={day}
+            status={status}
+            open={open}
+            onOpen={() => setOpenOverride(day.id)}
+            onClose={() => setOpenOverride('')}
+            bundle={bundle}
+          />
+        )
+      })}
     </div>
   )
 }
@@ -488,136 +541,6 @@ function DayCard({
   )
 }
 
-// --------------------------- Zanjir xaritasi ---------------------------
-
-/**
- * Kunlar va bo'limlar ZANJIRI — mobildagi
- * `LearningPathFragment.addChainCard()/chainCard()` ning vebdagi ko'rinishi.
- *
- * Katak = bitta bo'lim (yoki bo'lim testi). To'ldirilgan katak ochiq bo'lim,
- * rang holatni bildiradi. Katakchalar `--animate-chain` bilan birma-bir
- * yonadi — DULO'ning "o'quv yo'li kataklari birma-bir yonadi" xulqining
- * bizdagi ko'rinishi (harakat o'chirilgan bo'lsa kataklar darhol to'la
- * chiziladi: `html.no-motion` klassi animatsiyani o'chiradi).
- *
- * BYUDJET: A1 — 7 kun × 7 qadam = 49 katak (o'lchangan kontent hajmi),
- * `UI_KONTRAKTI.md`dagi "bo'laklab chizish" chegarasi buzilmaydi.
- */
-function ChainOverview({
-  days,
-  completed,
-  currentDayId,
-  bundle,
-}: {
-  days: DailyPlanDay[]
-  completed: string[]
-  currentDayId: string
-  bundle: LevelBundle
-}) {
-  const chains = useMemo(
-    () =>
-      days.map((day, i) =>
-        buildChain(
-          day,
-          Object.fromEntries(
-            day.sections.map((s) => [
-              s.skill,
-              exerciseIdsForSection(s, {
-                // Lug'at bo'limi test savollariga aylanadi (mobil bilan bir xil
-                // id: `vocab-quiz-<vocabId>`), shuning uchun audit haqiqiy
-                // mashq turlari bilan ishlaydi.
-                vocabQuizIds: (ids) =>
-                  ids
-                    .map((id) => bundle.vocab.find((v) => v.id === id))
-                    .filter((v): v is VocabularyItem => v !== undefined)
-                    .map((v) => vocabQuizExercise(v).id),
-                grammarExercises: (id) => bundle.grammar.find((g) => g.id === id)?.exercises ?? [],
-                readingExercises: (id) => bundle.reading.find((r) => r.id === id)?.exercises ?? [],
-                listeningExercises: (id) => bundle.listening.find((l) => l.id === id)?.exercises ?? [],
-                findExercise,
-              }),
-            ]),
-          ),
-          i,
-          day.id === currentDayId,
-          completed.includes(day.id),
-        ),
-      ),
-    [days, completed, currentDayId, bundle],
-  )
-
-  const stepsTotal = chains.reduce((a, c) => a + c.steps.length, 0)
-  const kindsOf = (id: string) => findExercise(id)?.kind
-  // Halol audit — mobildagi `LearningPathFragment.addChainCard` + `chainAudit`
-  // bilan BIR XIL sonlar. Bo'limlar ALOHIDA hisoblanadi va yagona turli bo'lim
-  // (lug'at testi) majburiy qo'shnilari alohida sanaladi.
-  const audit = chainAudit(chains, kindsOf)
-
-  return (
-    <Card as="section" className="grid gap-3">
-      <div className="flex flex-wrap items-center gap-2">
-        <h2 className="font-bold">Darslar zanjiri</h2>
-        <Chip>{stepsTotal} qadam</Chip>
-        <Chip>{chains.length} kun</Chip>
-      </div>
-      <p className="text-xs muted">
-        Har katak — bitta bo'lim; katak rangi holatni ko'rsatadi (yashil — tugatilgan, ko'k — joriy, kulrang — qulflangan).
-        Bo'lim ichida mashqlar ketma-ketligi qayta tartiblanadi: aralash turlarda bir xil tur qo'shni kelmaydi
-        (yagona turli bo'limda ajratishning iloji yo'q) — `src/lib/lessonChain.ts`, mobilda `domain/LessonChain.kt`.
-      </p>
-
-      {chains.map((chain) => (
-        <div key={chain.day.id} className="rounded-xl border p-3 grid gap-2">
-          <div className="flex flex-wrap items-center gap-2">
-            <h3 className="font-bold text-sm">
-              Kun {chain.day.dayNumber} — {chain.day.titleUz}
-            </h3>
-            <Chip>{chain.steps.length} qadam</Chip>
-            <Chip tone={chain.state === ChainState.DONE ? 'ok' : chain.state === ChainState.CURRENT ? 'brand' : undefined}>
-              {chain.state === ChainState.DONE ? 'tugatilgan' : chain.state === ChainState.CURRENT ? 'joriy' : 'qulflangan'}
-            </Chip>
-          </div>
-          <div className="flex flex-wrap gap-1.5" role="img" aria-label={`Kun ${chain.day.dayNumber} zanjiri: ${chain.steps.length} qadam`}>
-            {chain.steps.map((s, i) => (
-              <span
-                key={`${chain.day.id}-${s.skill}`}
-                title={s.titleUz}
-                style={{ animationDelay: `calc(${Math.min(i, MOTION.staggerMaxItems)} * var(--aea-stagger))` }}
-                className={
-                  'w-[18px] h-[18px] rounded-md border animate-[var(--animate-chain)] ' +
-                  (chain.state === ChainState.DONE
-                    ? 'bg-[var(--ok)] border-[var(--ok)]'
-                    : chain.state === ChainState.CURRENT
-                      ? 'bg-navy-700 dark:bg-navy-400 border-navy-700 dark:border-navy-400'
-                      : 'bg-[var(--panel-2)] border-[var(--border)]')
-                }
-              />
-            ))}
-          </div>
-          <ul className="grid gap-0.5">
-            {chain.steps.map((s, i) => (
-              <li key={`${chain.day.id}-lbl-${s.skill}`} className="text-xs muted">
-                {i + 1}. {s.titleUz}
-                {s.minutes > 0 && <> · {s.minutes}′</>}
-                {s.isTest && <> · test ({s.exerciseIds.length} savol)</>}
-                {!s.isTest && s.exerciseIds.length > 0 && <> · {s.exerciseIds.length} mashq</>}
-              </li>
-            ))}
-          </ul>
-        </div>
-      ))}
-
-      {/* Ketma-ketlik auditi — raqamlar ixtira EMAS, kontentdan hisoblanadi.
-          DULO aralash darslarida qo'shni bir xilligi 31.1% (o'lchangan),
-          yagona turli darslarida esa 100% — shuning uchun "majburiy" soni
-          alohida ko'rsatiladi. Mobil tomonda ham xuddi shu son chiziladi. */}
-      <p className="text-[11px] muted">
-        Zanjir bo'yicha: {audit.rotationSteps} mashq qadami (+{audit.reinforcement} takrorlash) · bir xil tur qo‘shni:{' '}
-        {audit.sameNeighbours} (majburiy: {audit.unavoidable}) · eng qisqa tur masofasi: {audit.minGap}
-      </p>
-    </Card>
-  )
-}
 
 // --------------------------- Bo'lim kontenti ---------------------------
 
