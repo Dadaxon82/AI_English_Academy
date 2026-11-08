@@ -39,9 +39,9 @@ Tahlil qilingan asosiy fayllar (mantiq bu yerdan olindi):
 
 | Veb fayl | Mazmun | Mobil mosligi |
 |---|---|---|
-| `src/content/index.ts:170` | `getBundle(level)` — A1 to'plami (7 kun, 84 so'z, 211 mashq) | `ContentRepository` (assets'dan JSON) |
+| `src/content/index.ts` | `getBundle(level)` — A1 to'plami (7 kun, 84 so'z; PR #6 dan keyin **238 core + 8 Mock Exam = 246 eksport** — `assets/content/manifest.json` 2026-11-08) | `ContentRepository` (assets'dan JSON) |
 | `src/lib/srs.ts` | SM-2 asosida takrorlash (`review`, `isDue`, `sortForReview`) | `Srs.kt` |
-| `src/lib/check.ts` | 6 mashq turini tekshirish + `normalize`/`looseEquals` + `nextExerciseIndex` | `AnswerChecker.kt` |
+| `src/lib/check.ts` | 11 mashq turini tekshirish (PR #6 dan keyin; avval 6) + `normalize`/`looseEquals` + `nextExerciseIndex` | `AnswerChecker.kt` |
 | `src/lib/planning.ts` | 90 daq. taqsimot, zaif ko'nikmaga +5, imtihonga yaqinlashtirish | `Planning.kt` |
 | `src/lib/skillScoring.ts` | `weightedScore`, `confidenceFor`, `evaluateLevelPromotion` | `SkillScoring.kt` |
 | `src/lib/merge.ts` | server ⇄ qurilma birlashtirish qoidalari | `Merge.kt` |

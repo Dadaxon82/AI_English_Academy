@@ -15,7 +15,7 @@ Loyiha talabnomasi (`AI English Academy_v2.docx`) to'liq bajarilgan:
 - ✅ **Jonli taymer** — sahifa yangilansa ham vaqt yo'qolmaydi (IndexedDB'da saqlanadi)
 - ✅ **Offline / PWA**: sync navbati, Service Worker; logout'da avval sinxronlanadi (yuborilmagan narsa qolsa tasdiq so'raladi), so'ng kesh tozalanadi
 - ✅ **Mobil ilova**: Dashboard yuqorisidagi blok PWA'ni bosh ekranga o'rnatadi (Android/kompyuter — "Ilovani o'rnatish" tugmasi, iPhone — yo'riqnoma); APK fayl shart emas
-- ✅ **Native Android ilovasi** (`mobile/` — Kotlin + XML Views, `com.dadaxon.aienglishacademy`): bitta baza va bitta auth, **349 unit test**, qahramon har ekranda; DULO_mod.apk dan o'lchangan **darslar ketma-ketligi va harakat byudjeti** ikkala platformada — quyida 5b-bo'lim va
+- ✅ **Native Android ilovasi** (`mobile/` — Kotlin + XML Views, `com.dadaxon.aienglishacademy`): bitta baza va bitta auth, **377 unit test**, qahramon har ekranda; DULO_mod.apk dan o'lchangan **darslar ketma-ketligi va harakat byudjeti** ikkala platformada — quyida 5b-bo'lim va
 `mobile/MOBIL_ARXITEKTURA.md` 8-bo'limi
 - ✅ **Server bilan ikki tomonlama**: hisobga kirganda progress serverdan tiklanadi va qurilmadagisi bilan birlashtiriladi
 - ✅ **Baza eski sxemada ham sinxron islaydi** (2026-11-08): `0003/0004` migratsiyalari qo'llanmagan bazada sozlamalar
@@ -25,7 +25,7 @@ Loyiha talabnomasi (`AI English Academy_v2.docx`) to'liq bajarilgan:
 - ✅ AI "ulangan" deb ko'rsatilmaydi — AI bo'lmasa **qoidaviy dvigatel** (`engine: 'rule-based'`) ishlatiladi
 - ✅ **7+ kun A1 kontenti** alohida (`src/content/day-01…07.ts`)
 - ✅ **13 ta jadval** (`supabase/migrations/0001_init.sql`), ID'lar, `created_at`, FK va indexlar bilan; keyin `0002_fix_content_fk.sql` (FK), `0003_motion.sql` (harakat sozlamasi — `motion_enabled`) va `0004_weekly_xp.sql` (haftalik XP — real ligalar)
-- ✅ Testlar: `tsc` tip tekshiruvi, ESLint, `vitest` (**314 test / 26 fayl**), production build, smoke + render tekshiruvi
+- ✅ Testlar: `tsc` tip tekshiruvi, ESLint, `vitest` (**347 test / 29 fayl**), production build, smoke + render tekshiruvi
 - ✅ JSON/CSV **eksport** va **ma'lumotlarni o'chirish**
 - ✅ **HECH QANDAY TUGMA DEKORATSIYA EMAS** — har bir tugma haqiqiy harakat bajaradi
 
@@ -203,7 +203,7 @@ npm run icons:build   # PWA ikonalaria (0 bog'liqlik, sof Node)
 ```bash
 npm run typecheck     # tsc — 0 xato
 npm run lint          # eslint — 0 xato
-npm test              # vitest — 314 test, 26 fayl (SRS, taymer/vaqt hisobi, tekshiruv, kontent auditi, audio yaxlitligi, rejalashtirish, daraja, sync, server birlashmasi, sahifalar, darslar zanjiri + HAQIQIY A1 kontentida zanjir auditi, harakat manifesti (mobil res/raw bilan solishtiradi), O‘YIN QATLAMI: yurak/quest/gem/liga + o‘yin manifesti (mobil GameConfig.kt bilan solishtiradi), MASHQ JARAYONI: progress chizig‘i + combo + bosish (store hisoblari va mobil manba bilan solishtiriladi), BO'LIMLAR: A1.1…C1.2 rejalari + sakrash testi, LUG'AT O'YINI: zanjir qoidalari)
+npm test              # vitest — 347 test, 29 fayl (SRS, taymer/vaqt hisobi, tekshiruv, kontent auditi (yangi 5 tur uchun 6 qoida), audio yaxlitligi, rejalashtirish, daraja, sync, server birlashmasi (+selfAssessment), sahifalar, darslar zanjiri + HAQIQIY A1 kontentida zanjir auditi, harakat manifesti (mobil res/raw bilan solishtiradi), O‘YIN QATLAMI: yurak/quest/gem/liga + o‘yin manifesti (mobil GameConfig.kt bilan solishtiradi), MASHQ JARAYONI: progress chizig‘i + combo + bosish (store hisoblari va mobil manba bilan solishtiriladi), BO'LIMLAR: A1.1…C1.2 rejalari + sakrash testi, LUG'AT O'YINI: zanjir qoidalari, YANGI TURLAR: 5 tekshiruvchi + qisman ball, DARS REJIMI (lessons.ts), o'z-o'zini baholash)
 npm run build         # production build + Service Worker
 npm run smoke         # dist'ni serverda ochib tekshirish + 375/1280 skrinshot
 npm run render:check  # 16 marshrut CDP orqali: DOM + konsol xatolari + 375px telefonda yonga surilmasligi
@@ -245,11 +245,14 @@ gradle --offline :app:assembleRelease      # 2026-11-08: lint-gradle kechada bo'
                                            # uchun `:app:lintVitalRelease` alohida tarmoqda bajarildi
 ```
 
-Tekshirilgan holat (2026-11-09): **349 unit test o'tdi** (28 klass — 2026-11-06
-dagi 268 taga o'yin qatlami qo'shilgach 68 ta, mashq jarayoni ikki klassi
-(`ui/ExerciseProgressTest`, `ui/ExerciseFeedbackTest`) bilan 7 ta, liga sovg'asi
-sana bo'yicha regressiyasi (`GameLogicTest::leaguePrizeUsesTheGivenDayNotTheWallClock`)
-bilan 1 ta qo'shildi; `GameOpsTest` 15 ta —
+Tekshirilgan holat (2026-11-09): **377 unit test o'tdi** (33 klass, 0 fail /
+0 error / 0 skip — `:app:testDebugUnitTest` XML laridan sanalgan). Zanjir:
+2026-11-06 dagi 268 → o'yin qatlami va mashq jarayoni qo'shilgach **349**
+(9/30/2026 §5d–§5e) → §5f Bo'limlar ikki klassi (`domain/SectionsTest` 12 ta,
+`domain/SectionJumpLogicTest` 7 ta) bilan **368 / 30 klass** → PR #6 ning mobil
+ klasslari (`domain/NewKindsCheckerTest` 7, `domain/ExportedContentParityTest` 1,
+`domain/SelfAssessmentMergeTest` 1) rebase'dan keyin **377 / 33 klass**.
+`store/GameOpsTest` 15 ta —
 jonli do'kon `AppStore.reduceLocal` o'yin qatlamini HAQIQATAN qo'llashini
 tekshiradi), API 26+
 emulatorda barcha ekranlar ochiladi, ANR yo'q (`/data/anr/` bo'sh; Lug'at 117
@@ -283,8 +286,9 @@ tuzatildi. Foydalanuvchi ko'radigan xulq O'ZGARMADI — prod'da `today` har doim
 `todayKey()` (`store.tsx:101`, `GameOps.settle(...)`), ya'ni chiqarilgan APK
 ham BIR XIL natija beradi. Shu sababli APK qayta yig'ilmadi (hash o'zgardida
 tekshirilgan qiymatlar buzilardi); tuzatish keyingi release kodiga kiradi,
-sinovlar soni shu paytdan boshlab mobil 349; veb tomon parallel PR #2–#4 dan
-keyin **314** (26 fayl) — qayta o'lchangan, §5f.
+sinovlar soni shu paytdan boshlab mobil 349; veb PR #2–#4 dan keyin 314, PR #6
+dan keyin esa **347 test / 29 fayl** — qayta o'lchangan, §5f/§5g. Bo'limlar qismi
+mobilda ham qurildi (2026-11-09, §5f): mobil **377 test / 33 klass**.
 
 Oldingi release — [`v1.1.0-mobile`](https://github.com/Dadaxon82/AI_English_Academy/releases/tag/v1.1.0-mobile)
 (2026-11-08, 1.1.0 / versionCode 2 — o'yin qatlami, mashq jarayonisisiz): `app-release.apk`,
@@ -436,7 +440,7 @@ masshtab/uzamlik tengligi `src/test/motion.test.ts` va
   alohida sozlama yangi DB ustuni + migratsiya + parallel ish degani (sabab
   kodda yozilgan); `prefers-reduced-motion` ovozni o'chirmaydi — u harakat so'rovi.
 
-## 5f. Bo'limlar, yo'l xaritasi, dars rejimi va lug'at o'yini — hoziroch FAQAT VEB (2026-11-09)
+## 5f. Bo'limlar, yo'l xaritasi, dars rejimi va lug'at o'yini (2026-11-09)
 
 PR #2/#3/#4 (commitlar `c5ad6d6`, `a612a41`, `22857df`, `387b5f7`; merelar
 `4c3ded1`, `a3a3051`) qo'shdi:
@@ -452,31 +456,86 @@ PR #2/#3/#4 (commitlar `c5ad6d6`, `a612a41`, `22857df`, `387b5f7`; merelar
 | Tahlil hujjati | `docs/DUOLINGO_SECTIONS_TAHLIL.md` | har bir da'vo `[M]` (o'lchangan) yoki `[X]` (taxmin) deb belgilangan |
 | Testlar | `src/test/sections.test.ts`, `src/test/word-game.test.ts` | veb testlari soni 297 → **314** (26 fayl) |
 
-**Halol holat — veb ↔ mobil farqi:** `git diff --stat ee3d0f9 a3a3051 -- mobile`
-BO'SH — ya'ni yuqidagilarning mobilda hamdardi yo'q (`.kt` nusxalari yaratilmagan;
-`mobile/.../ui/` da `WordGame`/`Sections`/`DuoPathMap` ga teng fayl yo'qligi
-ro'yxatdan tekshirildi). Loyiha qoidasi «veb va mobil parallel» bo'lgani uchun bu
-**keyingi mobil ish** bo'lib ro'yxatda turibdi; hozircha mobil APK (1.2.0)
-§5d/§5e qatlamigacha. Mobil tomonda hozircha yagona o'zgarish — §5d dagi liga
-sovg'asi tuzatilishi (`da6f327`).
+**Halol holat — veb ↔ mobil farqi (2026-11-09, yangilandi):** PR #2–#4 mobilda
+hamdardisiz qoldi (`git diff --stat ee3d0f9 a3a3051 -- mobile` BO'SH edi).
+**BO'LIMLAR qismi endi mobilda ham bor** (`3d8dd32` + ushbu commit, `claude/mobile-parity-boimlar`):
+
+| Mobil qism | Fayl(lar) | Paritet dalili |
+|---|---|---|
+| Bo'limlar mantig'i | `domain/Sections.kt` | `src/lib/sections.ts` qoidalari 1:1; testlar `src/test/sections.test.ts` da'volari bilan moslama (12 ta), HAQIQIY `assets/content/a1.json` ustida |
+| Sakrash testi mantig'i | `domain/SectionJumpLogic.kt` | `jumpPlan` (to'plam ochilishda qotiriladi), `jumpScore` (hissa = to'g'ri ? 1 : `partial`, bo'luvchi — savollar soni, mashq id'i bo'yicha), `jumpPassed` — 7 ta test; `chegaralarVebBilanBirXil` `src/lib/sections.ts`ni O'QIB `JUMP_PASS_SCORE`/`JUMP_ITEMS_PER_DAY` tengligini tekshiradi |
+| Holat yozuvi | `store/AppStore.kt` → `StoreAction.SectionJump` | veb `store.tsx::section-jump` (`completedDays`, `passedTests['jump:<id>']`, daraja o'zgarmaydi) |
+| Bo'limlar ekrani | `ui/SectionsFragment.kt` + `nav_graph` (`sectionsFragment`) | kartalar, progress chizig'i, to'rt holat, akkordeon, kontentdan namunaviy ibora, uch haqiqiy tugma; kontenti yo'q bo'limda tugma YO'Q |
+| Joriy bo'lim banneri | `Rows.sectionBanner`, `ui/SectionBannerUi.kt`, `fragment_shell.xml` (`bannerBox`) | veb `SectionBanner.tsx` BILAN BIR XIL joyda — Dashboard va O'quv yo'li; rang mavzudagi `ok` = veb `bg-emerald-600` (#059669), yangi rang qo'shilmadi |
+| Sakrash oqimi pleyerda | `ui/runner/ExerciseFragment.kt` (`ARG_SECTION_ID`, `jumpOutcomes`, `finishJump`, `restartJump`) + `jumpResultCard` | yuraklar sarflanmaydi (`HEART_FREE_SOURCES` — ikkala tomonda), dars bonusi beriladi (veb `completeLesson`), natija kartasi faqat sakrashda ko'rinadi |
+
+Mobil testlar: 349 → 361 (`SectionsTest`) → 368 (`SectionJumpLogicTest`) →
+PR #6 uch klassi rebase'dan keyin **377 test / 33 klass, 0 fail/skip**
+(`:app:testDebugUnitTest`). Emulatorda (Pixel 3a API 34, debug APK) JONLI
+tasdiqlangan: Boshqaruv tepasida «A1.1-bo'lim · 1-kun — Salomlashish va sinf
+tanishuvi» banneri va «BO'LIMLAR» tugmasi; Bo'limlar ekranida A1.1 Joriy
+(0 / 4 kun), A1.2 Qulflangan (0 / 3 kun) + «A1.2 ga sakrash testi», A2.1 va
+qolganlari «Tayyorlanmoqda» (tugmasiz), namunaviy iboralar kontentdan
+(«Hello, my name is Samir.»); sakrash dialogi «12 ta savol, oldingi 4 ta kunning
+yakuniy testlaridan… 80% kerak»; 12 savolli testni 1 to'g'ri javob bilan
+tugatganda umumiy hisob «1/1 to'g'ri · 100%» (javob berilganlarga) va sakrash
+natijasi **8%** (`round(1/12·100)`) — «Natija: 8% < 80% — sakrash uchun yetarli
+emas» + «Qayta urinish»/«Yopish» tugmalari. Bo'sh javobda halol «0%».
+
+**Hali mobilda YO'Q** (vebda bor, keyingi mobil ish): zigzag yo'l xaritasi
+(`pathMap.ts`/`DuoPathMap.tsx`), `LeaguePanel`, dars rejimi (bitta oqim) va
+lug'at o'yini (`wordGame.ts`/`WordGame.tsx`) — `mobile/` da bu nomlarda fayl
+yo'qligi qayta ro'yxatdan tekshirildi. Mobil APK (1.2.0) §5d/§5e qatlamigacha;
+yuqoridagi Bo'limlar qismi keyingi release kodiga kiradi.
+
+## 5g. PR #6 — 5 yangi mashq turi, o'z-o'zini baholash (2026-11-08, main)
+
+PR #6 (`0a5634c`, merge `4ef3c38`) veb va mobilni BIRGA o'zgartirdi:
+
+| Qism | Veb | Mobil |
+|---|---|---|
+| Yangi mashq turlari (5 ta): `multi-select`, `dropdown-cloze`, `sequence`, `categorize`, `short-answer` | `src/lib/check.ts` (+ qisman ball), `src/components/ExerciseRunner.tsx` | `domain/AnswerChecker.kt` (5 tekshiruvchi — veb bilan bir xil), `ui/runner/ExerciseFragment.kt` |
+| A1 kontenti: har turdan 7 tadan (35 mashq) | `src/content/a1/new-types.ts` | `assets/content/a1.json` qayta eksport qilingdi (`manifest`: 211 → **246** eksport, core 203 → **238**, mock 8 o'zgarishsiz) |
+| O'z-o'zini baholash (CEFR «Men … qila olaman», 1–5 Likert) — darajaga va XP'ga TA'SIR QILMAYDI | `src/components/SelfAssessment.tsx`, `src/content/canDo.ts`, `plan.selfAssessment` orqali sinxron | `Models/Merge/SyncEngine/SyncProtocol` — o'qiladi, birlashtiriladi (veb baholari o'chmaydi), qayta yuboriladi |
+| Kontent auditi: yangi 6 qoida | `src/test/content-audit.test.ts` | `domain/ExportedContentParityTest.kt` (haqiqiy `a1.json` Gson bilan o'qilib 35 mashq yechiladi) |
+| Dars rejimi / testlar | `src/lib/lessons.ts`, `LessonPlayer.tsx`, `SectionLessons.tsx`, `src/test/lessons.test.ts` | `domain/NewKindsCheckerTest.kt`, `SelfAssessmentMergeTest.kt` |
+| Tahlil hujjati | `docs/TOPSHIRIQ_TURLARI_TAHLIL.md` («16 xil topshiriq» PDF bo'yicha 14 tur + loyihadagilar bilan solishtirish) | — |
+
+Eslatma: PR #6 eksportni yangilagan, ammo `ContentRepositoryTest.kt` dagi A1
+kuchalarini (211 / 203 / tur jadvali) yangilmagan — CI mobil testni ishga
+tushirmagani uchun uzilish sezilmagan (`deploy.yml` mobil gradle bosqichi
+yo'q). Ushbu commitda (`claude/mobile-parity-boimlar`) bu kuchalar fayldan
+qayta o'lchangan qiymatlarga
+kelitirildi (246 / 238 + 5 yangi tur soni), ya'ni test endi HAQIQIY eksportni
+kuzatadi, eski sonni emas.
+
+Mobil testlar to'plami qayta o'lchandi (rebase'dan keyin, `:app:testDebugUnitTest`):
+**377 test / 33 klass, 0 fail / 0 skip**. Veb: `tsc` 0 xato, ESLint 0 xato
+(27 ogohlantirish — bazaviy), `vitest` **347 test / 29 fayl**, build, smoke,
+`render:check` 16 marshrut (375 px yonga surilmasligi bilan) — hammasi OK.
 
 ## 6. Arxitektura qisqacha
 
 ```
 src/
   content/         # 7+ kun A1 kontenti (UI koddan alohida), A2+ zaxira bundle,
-                   # vocabEmoji.ts (lug'at o'yini rasmlari — tizim emoji)
+                   # vocabEmoji.ts (lug'at o'yini rasmlari — tizim emoji),
+                   # a1/new-types.ts (5 yangi tur — 35 mashq, §5g), canDo.ts
+                   # (o'z-o'zini baholash da'volari)
   lib/             # store (reducer + IndexedDB + sync navbati), SRS, taymer,
                    # tekshiruv dvigateli, rejalashtirish, daraja isboti, eksport,
                    # motionManifest (harakat byudjeti), feedbackSound (Web Audio),
                    # sections.ts (A1.1…C1.2 bo'lim rejalari + sakrash testi),
                    # pathMap.ts (zigzag yo'l xaritasi ma'lumotlari),
-                   # wordGame.ts (lug'at o'yini zanjiri — sof funksiya)
+                   # wordGame.ts (lug'at o'yini zanjiri — sof funksiya),
+                   # lessons.ts (dars rejimi — bitta oqim)
   pages/           # 15 sahifa (/sections bilan)
-  components/      # UI, ExerciseRunner (6 tur mashq + jarayon chizig'i/combo/bosish +
-                   # dars rejimi), Shell navigatsiya, Mascot (qahramon — bizniki),
+  components/      # UI, ExerciseRunner (11 tur mashq + jarayon chizig'i/combo/bosish +
+                   # dars rejimi), LessonPlayer / SectionLessons (dars oqimi),
+                   # Shell navigatsiya, Mascot (qahramon — bizniki),
                    # DuoPathMap (zigzag yo'l), SectionBanner, LeaguePanel,
-                   # WordGame (lug'at o'yini — ExerciseRunner ustida)
+                   # WordGame (lug'at o'yini — ExerciseRunner ustida),
+                   # SelfAssessment (Likert baholash — darajaga ta'sir qilmaydi)
 supabase/
   migrations/0001_init.sql           # 13 jadval + RLS + triggerlar
   migrations/0002_fix_content_fk.sql # FK'larni olish + kontent yozish policylari
