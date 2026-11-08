@@ -189,3 +189,24 @@ solishtirib tasdiqlayman.
 - **Joriy bo'lim banneri** (`src/components/SectionBanner.tsx`) — Dashboard va O'quv yo'li tepasida:
   "A1.1-BO'LIM · 1-KUN" + kun nomi va "Bo'limlar" tugmasi (Duolingo Learn sahifasidagi bo'lim/unit banneriga o'xshash).
 - Sayt (`dadaxon82.github.io`) faqat `main` branchdan deploy qilinadi — o'zgarishlar PR merge qilingach ko'rinadi.
+
+## 7. Mashqlar "dars rejimi"da (2026-11-08)
+
+Duolingo dars ekrani (`/lesson/section/2/test`) skrinshotlari asosida `src/components/ExerciseRunner.tsx`
+qayta yozildi — u BARCHA sahifalardagi mashqlarni chizadi (Grammatika, O'qish, Tinglash, kun testi,
+sakrash testi, mock imtihon, diagnostika). Mantiq (tekshiruv, XP, yuraklar, combo, progress) o'zgarmadi.
+
+- Tepada: "×" (berilsa — `onExit`), qalin **yashil** progress bar, yuraklar.
+- Topshiriq turi yorlig'i + katta sarlavha; **qahramon + gap pufagi** (savol / da'vo / tarjima manbasi),
+  inglizcha matnda **karnay** (brauzer TTS — audio fayl yo'q).
+- Variantlar — raqamli kartalar (**1–9** tugmalari bilan tanlash).
+- So'z tartibi va **tarjima — so'z plitkalari** (chiziqlar ustiga yig'iladi; ishlatilgan plitka o'rnida soya).
+  Tarjima banki = birinchi qabul qilinadigan javob so'zlari + shu daraja lug'atidan 3 chalg'ituvchi so'z;
+  "Klaviatura bilan yozish" — erkin matn (boshqa to'g'ri variantlar uchun).
+- Juftlik — ikki ustun plitkalar (chapdan bosing, so'ng o'ngdan jufti).
+- Bo'shliq — gap ichida chiziqli maydonlar + plitkalar banki.
+- Pastda panel: «TEKSHIRISH» (javob bo'lmaguncha kulrang) → javobdan keyin yashil/qizil panel, qahramon
+  izohi, XP va «KEYINGI MASHQ».
+
+Skrinshotlar: `lesson-choice.png`, `lesson-correct.png`, `lesson-wrong.png`, `lesson-translation-tiles.png`,
+`lesson-matching.png`, `lesson-mobile-translation.png`, `lesson-mobile-choice.png`.

@@ -237,7 +237,7 @@ html.no-motion *, html.no-motion *::before, html.no-motion *::after {
      birdan joyiga o'tadi (sakraydi), ma'lumot yo'qolmaydi. */
   .aea-step-bar {
     position: relative;
-    height: 10px;
+    height: 16px;
     border-radius: 999px;
     background: var(--panel-2);
     border: 1px solid var(--border);
@@ -249,7 +249,9 @@ html.no-motion *, html.no-motion *::before, html.no-motion *::after {
     top: 0;
     bottom: 0;
     border-radius: 999px;
-    background: var(--accent);
+    /* Dars rejimi: yashil to'lish (yorug' chiziq bilan) — rang bizniki. */
+    background: #22c55e;
+    box-shadow: inset 0 3px 0 rgb(255 255 255 / 0.35);
     transition: width var(--aea-step) cubic-bezier(0.16, 1, 0.3, 1);
   }
 
