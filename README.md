@@ -527,6 +527,22 @@ Mobil testlar to'plami qayta o'lchandi (rebase'dan keyin, `:app:testDebugUnitTes
 (27 ogohlantirish — bazaviy), `vitest` **347 test / 29 fayl**, build, smoke,
 `render:check` 16 marshrut (375 px yonga surilmasligi bilan) — hammasi OK.
 
+Bo'limlar qo'shilgan branchda **release** yo'li ham tekshirildi (2026-11-09):
+`:app:assembleRelease` BUILD SUCCESSFUL (1 m 14 s) va `:app:lintVitalRelease`
+BUILD SUCCESSFUL (52 s) — `app-release.apk` 20 376 206 B, SHA256
+`e74c2accdca14aa044956632cd6be8cb2c9605491b2334d1e40c09dc16441228`, imzo
+`apksigner verify` OK (sertifikat SHA-256 `d59a899f…87e55` — 1.0.0/1.1.0/1.2.0
+bilan BIR XIL kalit); `aapt2 dump badging` — `versionCode='3' versionName='1.2.0'`,
+`resources.arsc`da yangi bo'lim matnlari bor («sakrash testi», «Yakunlangan»,
+«Joriy bo'lim», «O'quv yo'liga», «Barcha %1$d kun»). **Shu APK emulatorda
+jonli quvildi** (uninstall → install, chunki imzo kaliti rasm bilan farq qiladi):
+onboarding → Bo'limlar → sakrash testi 12/12 → «Sakrash testi topshirildi:
+100% ≥ 80% — A1.2 ochildi», Bo'limlarda A1.1 ✓ Yakunlangan / A1.2 Joriy;
+`logcat`da `FATAL EXCEPTION` soni **0**. **Lekin yangi release chop
+qilinmadi:** branch hozircha PR #8 ko'rinishida ochiq, `versionCode` hamon 3.
+Release faqat PR birlashtirilgach va versiya ko'tarilgach chiqariladi (2 → 3 da
+«ilova o'rnatilmadi» xatosi o'rganilgan).
+
 ## 6. Arxitektura qisqacha
 
 ```
