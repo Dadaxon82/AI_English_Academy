@@ -458,7 +458,7 @@ PR #2/#3/#4 (commitlar `c5ad6d6`, `a612a41`, `22857df`, `387b5f7`; merelar
 
 **Halol holat — veb ↔ mobil farqi (2026-11-09, yangilandi):** PR #2–#4 mobilda
 hamdardisiz qoldi (`git diff --stat ee3d0f9 a3a3051 -- mobile` BO'SH edi).
-**BO'LIMLAR qismi endi mobilda ham bor** (`3d8dd32` + ushbu commit, `claude/mobile-parity-boimlar`):
+**BO'LIMLAR qismi endi mobilda ham bor** (`3d8dd32` + `13ae16d`, `claude/mobile-parity-boimlar` — PR #8):
 
 | Mobil qism | Fayl(lar) | Paritet dalili |
 |---|---|---|
@@ -481,6 +481,19 @@ yakuniy testlaridan… 80% kerak»; 12 savolli testni 1 to'g'ri javob bilan
 tugatganda umumiy hisob «1/1 to'g'ri · 100%» (javob berilganlarga) va sakrash
 natijasi **8%** (`round(1/12·100)`) — «Natija: 8% < 80% — sakrash uchun yetarli
 emas» + «Qayta urinish»/«Yopish» tugmalari. Bo'sh javobda halol «0%».
+**O'TISH YO'LI ham jonli tasdiqlangan:** `tools/jump_drive3.py` (emulator
+yordamchisi, repoga kiritilmagan) testni HAQIQIY kontent javoblari bilan 12/12 tugatdi —
+natija kartasi «Sakrash testi topshirildi: 100% ≥ 80% — A1.2 ochildi» +
+«O‘quv yo‘liga o‘tish»/«Yopish» («Qayta urinish» yashirin, vebdagidek); keyin
+Bo'limlar qayta chizilganda **A1.1 ✓ Yakunlangan — «Barcha 4 kun yakunlangan»**,
+**A1.2 Joriy bo'lim · 0 / 3 kun** (+ «Davom etish»), A2.1 «Tayyorlanmoqda»;
+Boshqaruv banneri «A1.2-bo'lim · 1-kun — Ovqat va ichimliklar…» ga o'zgardi.
+Yuraklar sarflanmadi, xulosa satri o'zgarmadi: «Daraja oshirish uchun kamida 4
+ko'nikma bo'yicha dalil kerak… XP va kunlar soni darajani o'zgartirmaydi».
+Pleyer xulqi (o'lchangan, yordamchi shunga mos yozildi): matchingda «Tekshirish»
+tugmasi YO'Q — juftliklar yopilganda avtomatik tekshiriladi; `wordBank` li
+gap-fill-da chip bosilsa NAVBATDAGI bo'shliq to'ladi (`fillFirstEmptyGap`);
+oxirgi savolda tugma «Yakunlash» (`ex_finish`).
 
 **Hali mobilda YO'Q** (vebda bor, keyingi mobil ish): zigzag yo'l xaritasi
 (`pathMap.ts`/`DuoPathMap.tsx`), `LeaguePanel`, dars rejimi (bitta oqim) va
@@ -504,9 +517,9 @@ PR #6 (`0a5634c`, merge `4ef3c38`) veb va mobilni BIRGA o'zgartirdi:
 Eslatma: PR #6 eksportni yangilagan, ammo `ContentRepositoryTest.kt` dagi A1
 kuchalarini (211 / 203 / tur jadvali) yangilmagan — CI mobil testni ishga
 tushirmagani uchun uzilish sezilmagan (`deploy.yml` mobil gradle bosqichi
-yo'q). Ushbu commitda (`claude/mobile-parity-boimlar`) bu kuchalar fayldan
+yo'q). `13ae16d` da (`claude/mobile-parity-boimlar`) bu kuchalar fayldan
 qayta o'lchangan qiymatlarga
-kelitirildi (246 / 238 + 5 yangi tur soni), ya'ni test endi HAQIQIY eksportni
+keltirildi (246 / 238 + 5 yangi tur soni), ya'ni test endi HAQIQIY eksportni
 kuzatadi, eski sonni emas.
 
 Mobil testlar to'plami qayta o'lchandi (rebase'dan keyin, `:app:testDebugUnitTest`):
