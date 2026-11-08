@@ -124,9 +124,25 @@ python -I scripts/check_supabase_schema.py --url https://xxxx.supabase.co --key 
 ```
 
 Chiqish kodi: **1** — migratsiya yetishmayapti, **0** — hamma qator BOR,
-**2** — manzil/kalit topilmadi. Migratsiyani biz o'zimiz bajara olmaymiz (bu
-SQL Editor amali), shuning uchun yechim qo'lda: `0003_motion.sql` va
-`0004_weekly_xp.sql` ni ketma-ket Run qilib, skriptni qayta ishga tushirish.
+**2** — manzil/kalit topilmadi.
+
+DDL (`alter table` / `create table`) anon kalit bilan **bajarilmaydi** —
+PostgREST ixtiyoriy SQL qabul qilmaydi. Shuning uchun ikki yo'l:
+
+1. **SQL Editor** (kalit talab qilmaydi): `0003_motion.sql` va
+   `0004_weekly_xp.sql` ni ketma-ket Run qilib, skriptni qayta ishga tushirish.
+2. **`scripts/apply_migrations.py`** — Supabase **Management API** orqali
+   (shaxsiy access token: https://supabase.com/dashboard/account/tokens):
+
+```bash
+python -I scripts/apply_migrations.py --dry-run              # reja, tarmoq yo'q
+python -I scripts/apply_migrations.py --token-file pat.txt --from 3
+```
+
+Skript tartibni saqlaydi, har faylni BUTUN holda yuboradi, birinchi xatoda
+to'xtaydi, token matni hech qayerga chiqmaydi va oxirida avtomatik qayta
+tekshiradi. Token bizda yo'q (repoda `.env` yo'q, Credential Manager'da
+Supabase yozuvi yo'q) — shu sababli hozircha 1-yo'l bilan yugurilgan.
 
 **Ilova bunday holatda nima qiladi (veb `src/lib/sync.ts` va mobil
 `SyncEngine.kt` — ikkalasi BIR XIL siyosat):**
