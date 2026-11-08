@@ -21,6 +21,8 @@ import type { Exercise, GrammarTopic } from '../content/types'
 import { nextExerciseIndex, type CheckResult } from '../lib/check'
 import { lessonSequence } from '../lib/lessonChain'
 import { useStore } from '../lib/store'
+import { GrammarLesson, LessonStartCard } from '../components/SectionLessons'
+import { grammarLesson } from '../lib/lessons'
 
 /* --------------------------- progress hisobi --------------------------- */
 
@@ -61,6 +63,7 @@ function agoLabel(at: number): string {
 export default function Grammar() {
   const { data, ready, actions } = useStore()
   const [openId, setOpenId] = useState<string | null>(null)
+  const [lessonId, setLessonId] = useState<string | null>(null)
 
   const bundle = getBundle(data.settings.currentLevel)
   const topics = bundle.grammar
@@ -68,6 +71,10 @@ export default function Grammar() {
   if (!ready) return <LoadingBlock label="Grammatika materiallari yuklanmoqda…" />
 
   const opened = openId ? topics.find((t) => t.id === openId) ?? null : null
+  const lessonTopic = lessonId ? topics.find((t) => t.id === lessonId) ?? null : null
+  if (lessonTopic) return <GrammarLesson topic={lessonTopic} onClose={() => setLessonId(null)} />
+  // Tavsiya: hali to'liq bajarilmagan birinchi mavzu (yo'q bo'lsa — birinchisi).
+  const nextTopic = topics.find((t) => topicProgress(t, data.attempts).ratio < 1) ?? topics[0]
 
   if (!opened) {
     return (
@@ -79,6 +86,16 @@ export default function Grammar() {
             mashqlar. Izohlar lokal qoidalar bilan tekshiriladi.
           </p>
         </header>
+
+        {nextTopic && (
+          <LessonStartCard
+            kicker="Grammatika darsi"
+            title={nextTopic.titleUz}
+            body="Qoida kartasi, mashqlar va misol gaplarni plitkalardan yig‘ish"
+            steps={grammarLesson(nextTopic)}
+            onStart={() => setLessonId(nextTopic.id)}
+          />
+        )}
 
         {topics.length === 0 ? (
           <EmptyState
@@ -133,8 +150,11 @@ export default function Grammar() {
                     </p>
                   </div>
 
-                  <div className="flex gap-2">
-                    <Button onClick={() => setOpenId(t.id)}>{p.attempted > 0 ? 'Davom etish' : 'Mavzuni ochish'}</Button>
+                  <div className="flex flex-wrap gap-2">
+                    <Button variant="success" onClick={() => setLessonId(t.id)}>
+                      Darsni boshlash
+                    </Button>
+                    <Button variant="secondary" onClick={() => setOpenId(t.id)}>{p.attempted > 0 ? 'Davom etish' : 'Mavzuni ochish'}</Button>
                     <Button variant="ghost" size="sm" onClick={() => setOpenId(t.id)} title="Faqat izohni o'qish">
                       Izohni o‘qish
                     </Button>

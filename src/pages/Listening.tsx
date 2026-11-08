@@ -20,6 +20,8 @@ import type { AudioAsset, ListeningTask } from '../content/types'
 import { assetUrl } from '../lib/audio'
 import type { CheckResult } from '../lib/check'
 import { useStore } from '../lib/store'
+import { ListeningLesson, LessonStartCard } from '../components/SectionLessons'
+import { listeningLesson } from '../lib/lessons'
 
 /* ----------------------- manifest (bir marta, kesh) ----------------------- */
 
@@ -108,12 +110,20 @@ async function audioIsCached(src: string): Promise<boolean> {
 export default function Listening() {
   const { data, ready } = useStore()
   const [openId, setOpenId] = useState<string | null>(null)
+  const [lessonId, setLessonId] = useState<string | null>(null)
 
   const tasks = getBundle(data.settings.currentLevel).listening
 
   if (!ready) return <LoadingBlock label="Tinglash materiallari yuklanmoqda…" />
 
   const opened = openId ? tasks.find((t) => t.id === openId) ?? null : null
+  const lessonTask = lessonId ? tasks.find((t) => t.id === lessonId) ?? null : null
+  if (lessonTask) return <ListeningLesson task={lessonTask} onClose={() => setLessonId(null)} />
+  const nextTask =
+    tasks.find((t) => {
+      const ids = new Set(t.exercises.map((e) => e.id))
+      return new Set(data.attempts.filter((a) => ids.has(a.exerciseId)).map((a) => a.exerciseId)).size < t.exercises.length
+    }) ?? tasks[0]
 
   if (!opened) {
     return (
@@ -125,6 +135,16 @@ export default function Listening() {
             <code className="mx-1">/audio/manifest.json</code> orqali tekshiriladi.
           </p>
         </header>
+
+        {nextTask && (
+          <LessonStartCard
+            kicker="Tinglash darsi"
+            title={nextTask.title}
+            body="Audioni tinglang, so‘ng savollarga javob bering"
+            steps={listeningLesson(nextTask)}
+            onStart={() => setLessonId(nextTask.id)}
+          />
+        )}
 
         {tasks.length === 0 ? (
           <EmptyState
@@ -154,7 +174,12 @@ export default function Listening() {
                     <Chip>{t.audio.source === 'original' ? 'original audio' : t.audio.source}</Chip>
                     {done > 0 && <Chip tone="ok">mashqlar: {done}/{t.exercises.length}</Chip>}
                   </div>
-                  <Button onClick={() => setOpenId(t.id)}>{done > 0 ? 'Davom etish' : 'Topshiriqni ochish'}</Button>
+                  <div className="flex flex-wrap gap-2">
+                    <Button variant="success" onClick={() => setLessonId(t.id)}>
+                      Darsni boshlash
+                    </Button>
+                    <Button variant="secondary" onClick={() => setOpenId(t.id)}>{done > 0 ? 'Davom etish' : 'Topshiriqni ochish'}</Button>
+                  </div>
                 </Card>
               )
             })}

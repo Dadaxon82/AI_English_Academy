@@ -23,6 +23,8 @@ import type { ReadingPassage, VocabularyItem } from '../content/types'
 import { formatDuration } from '../lib/timer'
 import type { CheckResult } from '../lib/check'
 import { useStore } from '../lib/store'
+import { LessonStartCard, ReadingLesson } from '../components/SectionLessons'
+import { readingLesson } from '../lib/lessons'
 
 /**
  * Kalit va SRS idsi LUG'AT sahifasi bilan BIR XIL manbadan (content/index) —
@@ -46,12 +48,21 @@ interface Saver {
 export default function Reading() {
   const { data, ready, timerLabel } = useStore()
   const [openId, setOpenId] = useState<string | null>(null)
+  const [lessonId, setLessonId] = useState<string | null>(null)
 
   const passages = getBundle(data.settings.currentLevel).reading
 
   if (!ready) return <LoadingBlock label={'O\'qish matnlari yuklanmoqda…'} />
 
   const opened = openId ? passages.find((p) => p.id === openId) ?? null : null
+  const lessonPassage = lessonId ? passages.find((p) => p.id === lessonId) ?? null : null
+  if (lessonPassage) return <ReadingLesson passage={lessonPassage} onClose={() => setLessonId(null)} />
+  // Tavsiya: mashqlari hali tugallanmagan birinchi matn.
+  const nextPassage =
+    passages.find((p) => {
+      const ids = new Set(p.exercises.map((e) => e.id))
+      return new Set(data.attempts.filter((a) => ids.has(a.exerciseId)).map((a) => a.exerciseId)).size < p.exercises.length
+    }) ?? passages[0]
 
   if (!opened) {
     return (
@@ -63,6 +74,16 @@ export default function Reading() {
             o'lchanadi, mashqlar matn asosida.
           </p>
         </header>
+
+        {nextPassage && (
+          <LessonStartCard
+            kicker="O‘qish darsi"
+            title={nextPassage.title}
+            body="Matnni o‘qing, so‘ng savollarga javob bering"
+            steps={readingLesson(nextPassage)}
+            onStart={() => setLessonId(nextPassage.id)}
+          />
+        )}
 
         {passages.length === 0 ? (
           <EmptyState
@@ -96,8 +117,11 @@ export default function Reading() {
                     {done > 0 && <Chip tone="ok">mashqlar: {done}/{p.exercises.length}</Chip>}
                     {readTime && <Chip tone="brand">taymer: {readTime}</Chip>}
                   </div>
-                  <div className="flex gap-2">
-                    <Button onClick={() => setOpenId(p.id)}>{done > 0 ? 'Davom etish' : 'Matnni ochish'}</Button>
+                  <div className="flex flex-wrap gap-2">
+                    <Button variant="success" onClick={() => setLessonId(p.id)}>
+                      Darsni boshlash
+                    </Button>
+                    <Button variant="secondary" onClick={() => setOpenId(p.id)}>{done > 0 ? 'Davom etish' : 'Matnni ochish'}</Button>
                     {data.timer.sessionId === p.id && (
                       <Button variant="secondary" size="sm" onClick={() => setOpenId(p.id)}>
                         Taymer bu matnda yurmoqda

@@ -17,6 +17,7 @@ import type {
   SpeakingTask,
   TranslationExercise,
   VocabularyItem,
+  WordOrderExercise,
   WritingTask,
 } from './types'
 
@@ -285,7 +286,146 @@ export function vocabMatchExercise(vs: readonly VocabularyItem[]): MatchingExerc
   }
 }
 
+/* -------- Bo'lim DARSLARI (o'yin) uchun yasalgan topshiriqlar (id'dan tiklanadi) -------- */
+
+export const LESSON_GRAMMAR_PREFIX = 'lesson-gtr-'
+export const LESSON_WRITING_PREFIX = 'lesson-wwo-'
+export const LESSON_SPEAK_PREFIX = 'lesson-spk-'
+
+/** Plitkalar uchun gap uzunligi chegarasi (so'z). */
+export const LESSON_SENTENCE_MAX = 12
+
+function wordsOf(s: string): string[] {
+  return s.trim().split(/\s+/).filter(Boolean)
+}
+
+/** Deterministik aralashtirish (id bo'yicha — har qurilmada bir xil). */
+function seededShuffle<T>(arr: readonly T[], seed: string): T[] {
+  const out = [...arr]
+  let h = 2166136261
+  for (const ch of seed) h = Math.imul(h ^ ch.charCodeAt(0), 16777619) >>> 0
+  for (let i = out.length - 1; i > 0; i--) {
+    h = (Math.imul(h, 1103515245) + 12345) >>> 0
+    const j = h % (i + 1)
+    const t = out[i]!
+    out[i] = out[j]!
+    out[j] = t
+  }
+  // Aralash natija javobning o'zi bo'lib qolmasin (2+ so'zda).
+  if (out.length > 1 && out.every((x, i) => x === arr[i])) out.push(out.shift()!)
+  return out
+}
+
+/** Grammatika misolini o'zbekchadan inglizchaga yig'ish (plitkalar). */
+export function grammarExampleExercise(topic: GrammarTopic, i: number): TranslationExercise | undefined {
+  const ex = topic.examples[i]
+  if (!ex) return undefined
+  return {
+    id: `${LESSON_GRAMMAR_PREFIX}${topic.id}-${i}`,
+    kind: 'translation',
+    instructionUz: 'Inglizchaga tarjima qiling',
+    level: topic.level,
+    skill: 'grammar',
+    explanationUz: `${ex.uz} — ${ex.en}`,
+    difficulty: 2,
+    tags: ['lesson', topic.id],
+    source: ex.uz,
+    sourceLang: 'uz',
+    accepted: [ex.en],
+  }
+}
+
+/** Matnni gaplarga bo'lish (plitkalar uchun qisqalari). */
+export function shortSentences(text: string, max = 4): string[] {
+  return text
+    .split(/(?<=[.!?])\s+/)
+    .map((x) => x.trim())
+    .filter((x) => {
+      const n = wordsOf(x).length
+      return n >= 3 && n <= LESSON_SENTENCE_MAX
+    })
+    .slice(0, max)
+}
+
+function wordOrder(id: string, sentence: string, level: CefrLevel, skill: 'writing' | 'speaking', instructionUz: string, note: string): WordOrderExercise {
+  const answer = wordsOf(sentence)
+  return {
+    id,
+    kind: 'word-order',
+    instructionUz,
+    level,
+    skill,
+    explanationUz: note,
+    difficulty: 2,
+    tags: ['lesson'],
+    answer,
+    bank: seededShuffle(answer, id),
+  }
+}
+
+/** Yozish darsi: namuna javob gaplarini plitkalardan tuzish. */
+export function writingSentenceExercise(task: WritingTask, i: number): WordOrderExercise | undefined {
+  const s = shortSentences(task.modelAnswerEn ?? '')[i]
+  if (!s) return undefined
+  return wordOrder(`${LESSON_WRITING_PREFIX}${task.id}-${i}`, s, task.level, 'writing', 'Gapni to‘g‘ri tartibda tuzing', `Namuna javobdan: “${s}”`)
+}
+
+/** Gapirish darsi gaplari: savol va qo'shimcha savollar (qisqalari). */
+export function speakingSentences(task: SpeakingTask): string[] {
+  return [task.questionEn, ...(task.followUpsEn ?? [])].filter((x) => {
+    const n = wordsOf(x).length
+    return n >= 2 && n <= LESSON_SENTENCE_MAX + 2
+  })
+}
+
+/** Gapirish darsi: gapni takrorlash (mikrofonsiz — plitkalar bilan). */
+export function speakingRepeatExercise(task: SpeakingTask, i: number): WordOrderExercise | undefined {
+  const s = speakingSentences(task)[i]
+  if (!s) return undefined
+  return wordOrder(`${LESSON_SPEAK_PREFIX}${task.id}-${i}`, s, task.level, 'speaking', 'Gapni tinglang va takrorlang', `Savol: “${s}”`)
+}
+
+function allWritingTasks(): WritingTask[] {
+  return LOADED_LEVELS.flatMap((l) => {
+    const b = getBundle(l)
+    return [...b.writing, ...(b.mockExam?.sections.flatMap((s) => (s.writingTask ? [s.writingTask] : [])) ?? [])]
+  })
+}
+
+function allSpeakingTasks(): SpeakingTask[] {
+  return LOADED_LEVELS.flatMap((l) => {
+    const b = getBundle(l)
+    return [...b.speaking, ...(b.mockExam?.sections.flatMap((s) => (s.speakingTask ? [s.speakingTask] : [])) ?? [])]
+  })
+}
+
+/** `<prefix><ownerId>-<index>` id'ni ajratish (owner id'da ham "-" bo'ladi). */
+function splitIndexed(rest: string): [string, number] | null {
+  const m = /^(.*)-(\d+)$/.exec(rest)
+  return m ? [m[1]!, Number(m[2])] : null
+}
+
+function lessonExercise(id: string): Exercise | undefined {
+  if (id.startsWith(LESSON_GRAMMAR_PREFIX)) {
+    const p = splitIndexed(id.slice(LESSON_GRAMMAR_PREFIX.length))
+    const topic = p && LOADED_LEVELS.flatMap((l) => getBundle(l).grammar).find((t) => t.id === p[0])
+    return topic && p ? grammarExampleExercise(topic, p[1]) : undefined
+  }
+  if (id.startsWith(LESSON_WRITING_PREFIX)) {
+    const p = splitIndexed(id.slice(LESSON_WRITING_PREFIX.length))
+    const task = p && allWritingTasks().find((t) => t.id === p[0])
+    return task && p ? writingSentenceExercise(task, p[1]) : undefined
+  }
+  if (id.startsWith(LESSON_SPEAK_PREFIX)) {
+    const p = splitIndexed(id.slice(LESSON_SPEAK_PREFIX.length))
+    const task = p && allSpeakingTasks().find((t) => t.id === p[0])
+    return task && p ? speakingRepeatExercise(task, p[1]) : undefined
+  }
+  return undefined
+}
+
 export function findExercise(id: string): Exercise | undefined {
+  if (id.startsWith('lesson-')) return lessonExercise(id)
   const vocabById = (vid: string) => [...allVocab(), ...allGlossaryVocab()].find((x) => x.id === vid)
   if (id.startsWith(VOCAB_PIC_PREFIX)) {
     const v = vocabById(id.slice(VOCAB_PIC_PREFIX.length))

@@ -9,6 +9,8 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { Button, Card, Chip, EmptyState, InfoBanner, LoadingBlock, SuccessBanner } from '../components/ui'
 import { useStore } from '../lib/store'
+import { LessonStartCard, WritingLesson } from '../components/SectionLessons'
+import { writingLesson } from '../lib/lessons'
 import { getBundle } from '../content'
 import { aiRuntimeEnabled } from '../lib/ai'
 import { criterionLabelUz } from '../lib/analyze'
@@ -36,6 +38,7 @@ export default function Writing() {
     }
   })
   const [submitted, setSubmitted] = useState<WritingSubmission[]>([])
+  const [lesson, setLesson] = useState(false)
   const [showCompare, setShowCompare] = useState(false)
   const [saveNote, setSaveNote] = useState<string | null>(null)
 
@@ -101,6 +104,8 @@ export default function Writing() {
   const previous = prior.length >= 2 ? prior[prior.length - 2]! : null
   const compareTarget = showCompare ? previous : null
 
+  if (lesson && task) return <WritingLesson task={task} onClose={() => setLesson(false)} />
+
   return (
     <div className="grid gap-4">
       <Card className="grid gap-3">
@@ -123,6 +128,16 @@ export default function Writing() {
           ))}
         </div>
       </Card>
+
+      {task && (
+        <LessonStartCard
+          kicker="Yozish darsi"
+          title={`${genreLabelUz(task.genre)}: tayyorgarlik`}
+          body="Namuna javob gaplarini plitkalardan tuzing, so‘ng o‘zingiz yozing"
+          steps={writingLesson(task)}
+          onStart={() => setLesson(true)}
+        />
+      )}
 
       {task && (
         <Card className="grid gap-3.5">
