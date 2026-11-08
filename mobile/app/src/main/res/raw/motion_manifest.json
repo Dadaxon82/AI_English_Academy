@@ -7,5 +7,6 @@
   "staggerMs": 40,
   "staggerMaxItems": 8,
   "xpMs": 620,
-  "chainMs": 240
+  "chainMs": 240,
+  "pressMs": 120
 }

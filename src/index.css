@@ -41,6 +41,7 @@
   --aea-xp: 620ms;
   --aea-chain: 240ms;
   --aea-stagger: 40ms;
+  --aea-press: 120ms;
 
   --animate-fade-in: fade-in var(--aea-step) ease-out both;
   --animate-slide-up: slide-up var(--aea-outcome) cubic-bezier(0.16, 1, 0.3, 1) both;
@@ -50,6 +51,12 @@
   --animate-chain: chain-fill var(--aea-chain) ease-out both;
   /* XP sonining ko'tarilishi. */
   --animate-xp: xp-rise var(--aea-xp) cubic-bezier(0.16, 1, 0.3, 1) both;
+  /* NOTO'G'RI javob — silkitish (DULO'da xato javobda blok silkinadi; bizda
+     ham shu mantiq). Uzamlik — MAVJOQ `outcomeMs` (320 ms): yangi son yo'q. */
+  --animate-shake: shake var(--aea-outcome) ease-in-out both;
+  /* TO'G'RI javob — qahramon atrofidagi "zarba" halqasi (`duo_perfect_*.riv`
+     o'rniga oddiy halqa). Uzamlik — MAVJOQ `popMs` (380 ms). */
+  --animate-impact: impact-ring var(--aea-pop) ease-out both;
 }
 
 @keyframes fade-in {
@@ -76,6 +83,33 @@
   0% { transform: translateY(6px) scale(0.9); opacity: 0; }
   25% { transform: translateY(-2px) scale(1); opacity: 1; }
   100% { transform: translateY(-22px) scale(1); opacity: 0; }
+}
+@keyframes shake {
+  /* Noto'g'ri javob — gorizontal silkitish. Mobilda `Motion.shake()` shu
+     bosqichlarni `translationX` bilan qiladi (bir xil manba: `outcomeMs`). */
+  0% { transform: translateX(0); }
+  20% { transform: translateX(-7px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(2px); }
+  100% { transform: translateX(0); }
+}
+@keyframes impact-ring {
+  /* To'g'ri javob — qahramon atrofidan kengayib yo'qoluvchi halqa.
+     `::after` orqali chiziladi (qo'shimcha DOM tugmasi kerak emas). */
+  0% { transform: scale(0.7); opacity: 0.85; }
+  100% { transform: scale(1.9); opacity: 0; }
+}
+@keyframes bump {
+  /* Tanlov belgilanganda tugmaning kichik "tupichi" — bosilishni ko'rinadigan
+     qiladi. Vaqt bitta manbadan: `--aea-press` (`motionManifest.ts` dagi
+     `pressMs`). Kenglik (0.97 → 1.03 → 1) ixtir emas: u mobil
+     `Motion.press()`dagiy BIR XIL qiymat (`Motion.kt`) — bu yerdagi masshtab
+     raqamlari KOTLINDAGI bilan bir xil bo'lishi shart (tekshiriladi:
+     `src/test/motion.test.ts`). */
+  0% { transform: scale(0.97); }
+  60% { transform: scale(1.03); }
+  100% { transform: scale(1); }
 }
 
 /* Foydalanuvchi Sozlamalarda harakatni O'CHIRSA — `Layout.tsx` klassni
@@ -190,4 +224,84 @@ html.no-motion *, html.no-motion *::before, html.no-motion *::after {
     color: var(--muted);
   }
   .kbd-hint { font-size: 0.7rem; color: var(--muted); }
+
+  /* Mashq jarayonining progress chizig'i (ExerciseRunner) — DULO'dagi
+     "tepadagi chiziq har javobdan keyin siljiydi" xulqining bizdagi
+     ko'rinishi: FAQAT mantiq olindi, rang/brand bizniki (`--accent`).
+     To'ldish uzamligi `--aea-step` (260 ms — yagona manba
+     `src/lib/motionManifest.ts`, mobilda `res/raw/motion_manifest.json`):
+     YANGI SON IXTIR QILINMAGAN.
+     Nega `transition` va `animation` emas: `html.no-motion` va
+     `prefers-reduced-motion` bloklari `transition-duration`ni 0,01 ms ga
+     tushiradi — shuning uchun harakat o'chirilganda chiziq siljimaydi,
+     birdan joyiga o'tadi (sakraydi), ma'lumot yo'qolmaydi. */
+  .aea-step-bar {
+    position: relative;
+    height: 10px;
+    border-radius: 999px;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+  .aea-step-bar > span {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    border-radius: 999px;
+    background: var(--accent);
+    transition: width var(--aea-step) cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* ---------------------------------------------------------------------
+     Javob varianti tugmasi — bosish tajribasi (DULO mantig'i).
+     Eski holat: faqat rang o'zgarardi (`transition-colors`) — tugma "o'lik"
+     tuyulardi. Endi: bosilganda bosiladi, qo'yib yuborilganda o'sib joyiga
+     qaytadi (`pressMs` = 120 ms — yagona manba `motionManifest.ts`).
+     `:active` — bosilgan holat; `transition` esa qaytish siljishi.
+     Ranglar BIZNIK (`--accent`), DULO brendi emas.
+     --------------------------------------------------------------------- */
+  .aea-choice {
+    transition:
+      background-color var(--aea-step) ease-out,
+      border-color var(--aea-step) ease-out,
+      transform var(--aea-press) cubic-bezier(0.34, 1.56, 0.64, 1),
+      box-shadow var(--aea-press) ease-out;
+  }
+  .aea-choice:not(:disabled):hover {
+    transform: translateY(-1px);
+  }
+  .aea-choice:not(:disabled):active {
+    transform: scale(0.97);
+  }
+  .aea-choice[aria-checked='true'] {
+    animation: bump var(--aea-press) ease-out;
+  }
+  /* Tanlangan juftlik tasdiqlanishi (matching) — o'q "o'sib" qaytadi.
+     `key` bilan qayta chiziladi, shuning uchun animatsiya HAR TANLOVDAGI
+     qaytariladi (select o'zi focus'ni yo'qotmasligi uchun animatsiya
+     yonidagi belgiga qo'yilgan). */
+  .aea-bump {
+    display: inline-block;
+    animation: bump var(--aea-press) ease-out;
+  }
+
+  /* Natija banneri: to'g'ri — halqali zarba, noto'g'ri — silkitish.
+     Ikkalasi ham `role="status"` blokka qo'yiladi (ekranni o'qiydigan
+     dasturga matn ta'sir qilmaydi — animatsiya `aria-hidden` bezak). */
+  .aea-outcome-correct {
+    position: relative;
+  }
+  .aea-outcome-correct::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: inherit;
+    border: 2px solid var(--ok);
+    pointer-events: none;
+    animation: var(--animate-impact);
+  }
+  .aea-outcome-wrong {
+    animation: var(--animate-shake);
+  }
 }

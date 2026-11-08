@@ -42,6 +42,10 @@ class MotionManifestTest {
         assertTrue(raw.has("_comment"))
         assertEquals(260L, raw.get("stepMs").asLong)
         assertEquals(620L, raw.get("xpMs").asLong)
+        // Bosish micro-interaction'i — veb tomonida ham AYNAN shu son
+        // (`src/lib/motionManifest.ts` → `--aea-press`; test:
+        // `src/test/motion.test.ts`).
+        assertEquals(120L, raw.get("pressMs").asLong)
     }
 
     @Test

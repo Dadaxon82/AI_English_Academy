@@ -15,7 +15,7 @@ Loyiha talabnomasi (`AI English Academy_v2.docx`) to'liq bajarilgan:
 - ✅ **Jonli taymer** — sahifa yangilansa ham vaqt yo'qolmaydi (IndexedDB'da saqlanadi)
 - ✅ **Offline / PWA**: sync navbati, Service Worker; logout'da avval sinxronlanadi (yuborilmagan narsa qolsa tasdiq so'raladi), so'ng kesh tozalanadi
 - ✅ **Mobil ilova**: Dashboard yuqorisidagi blok PWA'ni bosh ekranga o'rnatadi (Android/kompyuter — "Ilovani o'rnatish" tugmasi, iPhone — yo'riqnoma); APK fayl shart emas
-- ✅ **Native Android ilovasi** (`mobile/` — Kotlin + XML Views, `com.dadaxon.aienglishacademy`): bitta baza va bitta auth, **341 unit test**, qahramon har ekranda; DULO_mod.apk dan o'lchangan **darslar ketma-ketligi va harakat byudjeti** ikkala platformada — quyida 5b-bo'lim va
+- ✅ **Native Android ilovasi** (`mobile/` — Kotlin + XML Views, `com.dadaxon.aienglishacademy`): bitta baza va bitta auth, **348 unit test**, qahramon har ekranda; DULO_mod.apk dan o'lchangan **darslar ketma-ketligi va harakat byudjeti** ikkala platformada — quyida 5b-bo'lim va
 `mobile/MOBIL_ARXITEKTURA.md` 8-bo'limi
 - ✅ **Server bilan ikki tomonlama**: hisobga kirganda progress serverdan tiklanadi va qurilmadagisi bilan birlashtiriladi
 - ✅ **Baza eski sxemada ham sinxron islaydi** (2026-11-08): `0003/0004` migratsiyalari qo'llanmagan bazada sozlamalar
@@ -167,7 +167,7 @@ npm run icons:build   # PWA ikonalaria (0 bog'liqlik, sof Node)
 ```bash
 npm run typecheck     # tsc — 0 xato
 npm run lint          # eslint — 0 xato
-npm test              # vitest — 274 test (SRS, taymer/vaqt hisobi, tekshiruv, kontent auditi, audio yaxlitligi, rejalashtirish, daraja, sync, server birlashmasi, sahifalar, darslar zanjiri + HAQIQIY A1 kontentida zanjir auditi, harakat manifesti (mobil res/raw bilan solishtiradi), O'YIN QATLAMI: yurak/quest/gem/liga + o'yin manifesti (mobil GameConfig.kt bilan solishtiradi))
+npm test              # vitest — 296 test (SRS, taymer/vaqt hisobi, tekshiruv, kontent auditi, audio yaxlitligi, rejalashtirish, daraja, sync, server birlashmasi, sahifalar, darslar zanjiri + HAQIQIY A1 kontentida zanjir auditi, harakat manifesti (mobil res/raw bilan solishtiradi), O‘YIN QATLAMI: yurak/quest/gem/liga + o‘yin manifesti (mobil GameConfig.kt bilan solishtiradi), MASHQ JARAYONI: progress chizig‘i + combo + bosish (store hisoblari va mobil manba bilan solishtiriladi))
 npm run build         # production build + Service Worker
 npm run smoke         # dist'ni serverda ochib tekshirish + 375/1280 skrinshot
 npm run render:check  # 15 marshrut CDP orqali: DOM + konsol xatolari + 375px telefonda yonga surilmasligi
@@ -209,8 +209,9 @@ gradle --offline :app:assembleRelease      # 2026-11-08: lint-gradle kechada bo'
                                            # uchun `:app:lintVitalRelease` alohida tarmoqda bajarildi
 ```
 
-Tekshirilgan holat (2026-11-08): **341 unit test o'tdi** (26 klass — 2026-11-06
-dagi 268 taga o'yin qatlami qo'shilgach 68 ta qo'shildi; `GameOpsTest` 15 ta —
+Tekshirilgan holat (2026-11-08): **348 unit test o'tdi** (28 klass — 2026-11-06
+dagi 268 taga o'yin qatlami qo'shilgach 68 ta, mashq jarayoni ikki klassi
+(`ui/ExerciseProgressTest`, `ui/ExerciseFeedbackTest`) bilan 7 ta qo'shildi; `GameOpsTest` 15 ta —
 jonli do'kon `AppStore.reduceLocal` o'yin qatlamini HAQIQATAN qo'llashini
 tekshiradi), API 26+
 emulatorda barcha ekranlar ochiladi, ANR yo'q (`/data/anr/` bo'sh; Lug'at 117
@@ -275,7 +276,7 @@ Bizda (klon):
 | Nima | mobil | veb |
 |---|---|---|
 | Harakat byudjeyti — fayl `res/raw`da (DULO usuli) | `res/raw/motion_manifest.json` + `data/MotionManifest.kt` | `src/lib/motionManifest.ts` + `src/index.css` `--aea-*` |
-| Harakat mexanizmlari | `ui/Motion.kt` (stepIn, pop, stagger, fillChainCell, flyXp, tap) | `Layout.useMotion()`, `animate-[var(--animate-*)]`, XP ko'rsatmasi |
+| Harakat mexanizmlari | `ui/Motion.kt` (stepIn, pop, stagger, fillChainCell, flyXp, tap, shake, press, playFeedback) | `Layout.useMotion()`, `animate-[var(--animate-*)]`, XP ko'rsatmasi, `lib/feedbackSound.ts` (Web Audio) |
 | Darslar zanjiri va tur almashinuvi | `domain/LessonChain.kt` | `src/lib/lessonChain.ts` |
 | Zanjir ko'rinishi | `LearningPathFragment.addChainCard()` | `LearningPath.tsx::ChainOverview` |
 | Sozlama (harakat yoqilsin/yo'q) | `settings.motionEnabled` + `animator_duration_scale` | `settings.motionEnabled` + `prefers-reduced-motion` |
@@ -332,15 +333,52 @@ vebda `src/test/pages.test.tsx`da tekshiriladi: gem yetarli bo'lsa gem yechiladi
 va ochiq garov ko'rsatiladi, yetmasa SABAB chiqadi, shartlar matni esa `gameConfig`
 sonlari bilan bir xil ekanini solishtiradi.
 
+## 5e. Mashq JARAYONI — jonli feedback (veb ↔ mobil, 2026-11-08)
+
+Duolingo'dagi "jarayon hissi" **mexanikasi** olindi (brend/rang/maskot emas —
+bosh qahramon bizniki: `Mascot.tsx` / `MascotView.kt`).
+
+| Qism | Veb | Mobil | Son manbasi |
+|---|---|---|---|
+| Tepadagi siljiydigan jarayon chizig'i (eski `1/5` matni o'rniga; son `aria-valuetext`/`contentDescription`da qoldi) | `ExerciseRunner.tsx` `.aea-step-bar` | `fragment_exercise.xml` → `exBar` (`LinearProgressIndicator`) | mavjud `stepMs` (260 ms) — YANGI SON YO'Q |
+| To'g'ri javob — zarba halqasi + qahramon "cheer" + XP otilishi | `@keyframes impact-ring`, `--animate-pop`, `--animate-xp` | `Motion.pop()`, `Motion.flyXp()` | `popMs` / `xpMs` |
+| Noto'g'ri javob — silkinish, qahramon "encourage" (masxaralama YO'Q) | `@keyframes shake` (−7/+6/−4/+2 px), `.aea-outcome-wrong` | `Motion.shake()` (dp(7), `outcomeMs/5`) | `outcomeMs` (320 ms) |
+| Javob ovozi — **fayl emas, sintez** (660+880 / 300 Gs) | `src/lib/feedbackSound.ts` (Web Audio) | `Motion.playFeedback()` (`AudioTrack` PCM) | `popMs/2` va `outcomeMs` |
+| Combo chipi — `game.combo` HAQIQIY soni, `comboTracked` bo'lsa | `ExerciseRunner.tsx` | `exCombo` + `showCombo()` | `gameConfig.ts` ↔ `GameConfig.kt` (`HEART_COMBO_STREAK=5`) |
+| Variant tugmasining bosilishi (o'sib joyiga tushadi) | `.aea-choice`, `@keyframes bump` (0.97→1.03→1) | `Motion.press()` + `pressOnTouch` (5 tugma turi) | **yangi maydon `pressMs` = 120 ms** |
+
+**`pressMs` ixtira emas:** u byudjetdagi mavjud ikki sondan chiqadi —
+√(`staggerMs` × `outcomeMs`) = √(40×320) ≈ 107 → 120 ms. Uchala manba bir xil:
+`src/lib/motionManifest.ts` ↔ `data/MotionManifest.kt` ↔ `res/raw/motion_manifest.json`;
+masshtab/uzamlik tengligi `src/test/motion.test.ts` va
+`mobile/.../ui/ExerciseFeedbackTest.kt`da tekshiriladi.
+
+**Halol qoidalar (testlar bilan qo'yilgan):**
+- progress chizig'ida **faqat javob berilgan** mashqlar sanaladi (`index` + `checked`),
+  `results` sanog'idan emas — ikkala tomonda bir xil;
+- harakat o'chirilsa (`settings.motionEnabled`, `prefers-reduced-motion`,
+  `animator_duration_scale`) chiziq **siljimaydi, joyiga o'tadi** — bar
+  `transition` bilan ishlaydi, mavjud `html.no-motion` qoidasi uni o'chiradi;
+- combo chipi `recordAttempt` chaqirmaydigan sahifalarda (`MockExam`, `Onboarding`)
+  **chizilmaydi** — `game.combo` o'tgan darsdan qolgan son bo'lgani uchun;
+  yurak allaqachon qaytgan bo'lsa "yana N — yurak qaytadi" deb aldashmaydi;
+- ovoz uchun audio **fayl qo'shilmadi** (`public/audio/manifest.json` 8 yozuvda
+  qoldi, `res/raw` da audio yo'q) — shu qoidaga zid soxta audio yo'q;
+  ovoz bitta mavjud tugmadan boshqariladi (`settings.motionEnabled`), chunki
+  alohida sozlama yangi DB ustuni + migratsiya + parallel ish degani (sabab
+  kodda yozilgan); `prefers-reduced-motion` ovozni o'chirmaydi — u harakat so'rovi.
+
 ## 6. Arxitektura qisqacha
 
 ```
 src/
   content/         # 7+ kun A1 kontenti (UI koddan alohida), A2+ zaxira bundle
   lib/             # store (reducer + IndexedDB + sync navbati), SRS, taymer,
-                   # tekshiruv dvigateli, rejalashtirish, daraja isboti, eksport
+                   # tekshiruv dvigateli, rejalashtirish, daraja isboti, eksport,
+                   # motionManifest (harakat byudjeti), feedbackSound (Web Audio)
   pages/           # 14 sahifa
-  components/      # UI, ExerciseRunner (6 tur mashq), Shell navigatsiya
+  components/      # UI, ExerciseRunner (6 tur mashq + jarayon chizig'i/combo/bosish),
+                   # Shell navigatsiya, Mascot (qahramon — bizniki)
 supabase/
   migrations/0001_init.sql           # 13 jadval + RLS + triggerlar
   migrations/0002_fix_content_fk.sql # FK'larni olish + kontent yozish policylari

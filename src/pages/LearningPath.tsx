@@ -399,6 +399,14 @@ function DayCard({
                   onNext={onNext}
                   prevResult={lastResult && !lastResult.correct ? lastResult : null}
                   heartFree
+                  /* Combo chizig'i HAQQONIY: `onChecked` har javobni
+                     `actions.recordAttempt(..., source:'section_test')` bilan
+                     yozadi — combo shu yerda o'sadi. `heartFree` bo'lsa-chi?
+                     Bo'lim testi yurak sarflamaydi, lekin combo baribir
+                     hisoblanadi (`afterAttempt`), shuning uchun son ko'rsatiladi;
+                     chipdagi "yana N — yurak qaytadi" qismi `heartFree` bilan
+                     o'zi yashiriladi. */
+                  comboTracked
                 />
               )}
 

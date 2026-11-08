@@ -431,6 +431,13 @@ function TopicDetail({ topic, onBack }: { topic: GrammarTopic; onBack: () => voi
               index={currentIdx}
               total={total}
               prevResult={prevResult}
+              /* Combo chizig'i HAQQONIY: bu sahifa har javobni
+                 `actions.recordAttempt(...)` bilan yozadi (pastdagi `checked`)
+                 — shuning uchun `data.game.combo` shu yerda o'sadi va uni
+                 ko'rsatish mumkin. Mobilda `ExerciseFragment` ham har javobni
+                 yozadi (`StoreAction.Attempt`) — u yerda qo'shimcha belgi
+                 shart emas. */
+              comboTracked
               checked={(r, secondsSpent) => {
                 onChecked(r, currentIdx)
                 actions.recordAttempt({

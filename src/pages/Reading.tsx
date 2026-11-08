@@ -486,6 +486,9 @@ function PassageDetail({ passage, onBack }: { passage: ReadingPassage; onBack: (
               total={total}
               checked={(r, secondsSpent) => record(pos, r, secondsSpent)}
               onNext={onNext}
+              /* `record()` har javobni `actions.recordAttempt(...)` bilan yozadi
+                 — combo store'da o'sadi, shuning uchun chiziq haqiqiy. */
+              comboTracked
             />
             <InfoBanner tone="muted">
               Bu mashqlar <b>matn asosida</b> — javoblarni yuqoridagi matndan topish mumkin. True / False / Not Given

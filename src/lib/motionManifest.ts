@@ -38,6 +38,19 @@ export interface MotionSpec {
   xpMs: number
   /** Zanjir kataklari to'lishi — ms. */
   chainMs: number
+  /**
+   * Tugma bosilganda "o'sib, joyiga qaytishi" (micro-interaction) — ms.
+   *
+   * Nega bu son kerak: javob variantlarini bosish tajribasi DULO'da sezilarli
+   * (tugma bosilganda bosilib, tanlangan rang bilan qaytadi). Bizning eski
+   * variant tugmalarida FAQAT rang o'zgarardi — "o'lik" tuyulardi.
+   *
+   * Son QAYERDAN: bu byudjetdagi eng kichik oldinga-qadam — `staggerMs` (40 ms)
+   * bilan Material'ning standart "short task" oralig'i (200—450 ms) orasidagi
+   * geometrik o'rtaliq ≈ 107 → 120 ms. Ya'ni yangi son IXTIR EMAS, mavjud
+   * byudjetdan KELIB CHIQADI (`√(40 × 320) ≈ 107`, yaxlitlangan).
+   */
+  pressMs: number
 }
 
 export const MOTION_MIN_MS = 0
@@ -54,6 +67,7 @@ export function defaultMotionSpec(): MotionSpec {
     staggerMaxItems: 8,
     xpMs: 620,
     chainMs: 240,
+    pressMs: 120,
   }
 }
 
@@ -94,7 +108,8 @@ export function parseMotionSpec(text: string): MotionSpec | null {
   const staggerMs = ms('staggerMs', d.staggerMs)
   const xpMs = ms('xpMs', d.xpMs)
   const chainMs = ms('chainMs', d.chainMs)
-  if (stepMs === null || outcomeMs === null || popMs === null || staggerMs === null || xpMs === null || chainMs === null)
+  const pressMs = ms('pressMs', d.pressMs)
+  if (stepMs === null || outcomeMs === null || popMs === null || staggerMs === null || xpMs === null || chainMs === null || pressMs === null)
     return null
 
   let popScale: number | null
@@ -111,7 +126,7 @@ export function parseMotionSpec(text: string): MotionSpec | null {
   else staggerMaxItems = null
   if (staggerMaxItems === null) return null
 
-  return { stepMs, outcomeMs, popMs, popScale, staggerMs, staggerMaxItems, xpMs, chainMs }
+  return { stepMs, outcomeMs, popMs, popScale, staggerMs, staggerMaxItems, xpMs, chainMs, pressMs }
 }
 
 /** Manifestni JSON ga qaytarish (test va hisobot uchun). */
@@ -141,6 +156,7 @@ export const MOTION_USAGE: { key: keyof MotionSpec; whereUz: string }[] = [
   { key: 'staggerMaxItems', whereUz: 'kechiktiriladigan elementlar chegarasi' },
   { key: 'xpMs', whereUz: 'XP sonining ko‘tarilishi (--aea-xp)' },
   { key: 'chainMs', whereUz: 'zanjir katakchalarining to‘lishi (--aea-chain)' },
+  { key: 'pressMs', whereUz: 'javob tugmasining bosilishi (--aea-press)' },
 ]
 
 /**
@@ -157,6 +173,7 @@ export function motionVars(s: MotionSpec): Record<string, string> {
     '--aea-stagger': `${s.staggerMs}ms`,
     '--aea-xp': `${s.xpMs}ms`,
     '--aea-chain': `${s.chainMs}ms`,
+    '--aea-press': `${s.pressMs}ms`,
   }
 }
 

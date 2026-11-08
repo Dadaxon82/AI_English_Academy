@@ -41,6 +41,18 @@ data class MotionSpec(
     val xpMs: Long,
     /** Zanjir kataklari to'lishi — ms. */
     val chainMs: Long,
+    /**
+     * Tugma bosilganda "o'sib, joyiga qaytishi" (micro-interaction) — ms.
+     *
+     * Nega bu son kerak: DULO'da javob variantini bosish SEZILADI (tugma
+     * bosilib, tanlangan rang bilan joyiga qaytadi). Bizning eski variant
+     * tugmalarida faqat rang o'zgarardi — "o'lik" tuyulardi.
+     *
+     * Son QAYERDAN (ixtir emas): shu byudjetdagi eng kichik qadam `staggerMs`
+     * (40 ms) bilan Material standart oralig'i (≈320 ms) orasidagi geometrik
+     * o'rtaliq: √(40 × 320) = 113 → 120 ms ga yaxlitlangan.
+     */
+    val pressMs: Long,
 ) {
     companion object {
         /** Manifest bo'lmasa yoki buzilsa ishlatiladigan qiymatlar. */
@@ -53,6 +65,7 @@ data class MotionSpec(
             staggerMaxItems = 8,
             xpMs = 620L,
             chainMs = 240L,
+            pressMs = 120L,
         )
 
         /** Chegaralar — manifestda bundan tashqarisi yozilmasligi kerak. */
@@ -89,6 +102,7 @@ data class MotionSpec(
             val stagger = ms("staggerMs", d.staggerMs) ?: return null
             val xp = ms("xpMs", d.xpMs) ?: return null
             val chain = ms("chainMs", d.chainMs) ?: return null
+            val press = ms("pressMs", d.pressMs) ?: return null
 
             val scaleE = o.get("popScale")
             val scale = when {
@@ -115,6 +129,7 @@ data class MotionSpec(
                 staggerMaxItems = maxItems,
                 xpMs = xp,
                 chainMs = chain,
+                pressMs = press,
             )
         }
 
@@ -129,6 +144,7 @@ data class MotionSpec(
             o.addProperty("staggerMaxItems", s.staggerMaxItems)
             o.addProperty("xpMs", s.xpMs)
             o.addProperty("chainMs", s.chainMs)
+            o.addProperty("pressMs", s.pressMs)
             return o
         }
     }

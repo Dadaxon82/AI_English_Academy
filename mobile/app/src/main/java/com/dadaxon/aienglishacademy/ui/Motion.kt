@@ -4,6 +4,9 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.content.Context
 import android.graphics.Color
+import android.media.AudioAttributes
+import android.media.AudioFormat
+import android.media.AudioTrack
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
@@ -18,6 +21,9 @@ import com.dadaxon.aienglishacademy.AeaApp
 import com.dadaxon.aienglishacademy.R
 import com.dadaxon.aienglishacademy.data.KEY_MOTION
 import com.dadaxon.aienglishacademy.data.MotionSpec
+import kotlin.math.PI
+import kotlin.math.max
+import kotlin.math.sin
 
 /**
  * Harakat (animatsiya) qatlami — mashq pleyeri va o'quv yo'lida ishlatiladi.
@@ -47,6 +53,17 @@ object Motion {
 
     /** Manifest bir marta o'qiladi (har ekran qayta ochganda emas). */
     private var cached: MotionSpec? = null
+
+    /**
+     * Javob ovozi chastotalari (Gerts) — vebdagi `src/lib/feedbackSound.ts`
+     * BILAN BIR XIL (test: `MotionManifestTest`). Musiqiy tanlov, o'lchov
+     * emas: DULO o'z `.mp3`larida qaysi chastotalarni ishlatishi noma'lum
+     * (fayllar ko'chirilmagan). To'g'ri — ko'tarilib ikki nota, noto'g'ri —
+     * pastga tushadigan bitta nota (masxaralama ovazi yo'q).
+     */
+    const val NOTE_UP_1 = 660
+    const val NOTE_UP_2 = 880
+    const val NOTE_DOWN = 300
 
     /** Kontekstdan konteynerni olish (Activity/Fragment emas — `View.context`). */
     private fun containerOf(ctx: Context): com.dadaxon.aienglishacademy.AppContainer? =
@@ -297,6 +314,160 @@ object Motion {
         } catch (err: Exception) {
             // Tebranish rad etilsa ham ilova ishlashda davom etadi.
         }
+    }
+
+    /**
+     * NOTO'G'RI javob — gorizontal silkitish (DULO xato javobda blokning
+     * silkinishi kabi). Uzamlik: mavjud `outcomeMs` (320 ms) — YANGI SON
+     * IXTIR QILINMAGAN; vebda ham shu byudjet (`--animate-shake`).
+     *
+     * Ohang ohangdor: silkitish qisqa, keyin view o'z joyiga qaytadi
+     * (masxaralama harakati yo'q — loihaning "har doim qo'llab-quvvatlash"
+     * ohangi).
+     */
+    fun shake(v: View) {
+        val ctx = v.context
+        val sp = spec(ctx)
+        if (!enabled(ctx) || sp.outcomeMs <= 0) {
+            v.translationX = 0f
+            return
+        }
+        v.animate().cancel()
+        val d = dp(ctx, 7).toFloat()
+        // Bosqichlar veb CSS'dagi `@keyframes shake` bilan BIR XIL nisbatda
+        // (-7, +6, -4, +2, 0 px) — ikkala tomonda bir xil his.
+        val step = sp.outcomeMs / 5
+        v.animate().translationX(-d).setDuration(step).withEndAction {
+            v.animate().translationX(d * 6 / 7f).setDuration(step).withEndAction {
+                v.animate().translationX(-d * 4 / 7f).setDuration(step).withEndAction {
+                    v.animate().translationX(d * 2 / 7f).setDuration(step).withEndAction {
+                        v.animate().translationX(0f).setDuration(step).start()
+                    }.start()
+                }.start()
+            }.start()
+        }.start()
+    }
+
+    /**
+     * JAVOB VARIANTI bosilganda — "o'sib, joyiga qaytish" (micro-interaction).
+     *
+     * Nega kerak: DULO'da variant tugmasi bosilganda SEZILADI (bosiladi va
+     * tanlangan rang bilan qaytadi). Bizning eski `RadioButton`larimizda
+     * faqat rang o'zgarardi — "o'lik" tuyulardi.
+     *
+     * Uzamlik: `pressMs` (120 ms) — `res/raw/motion_manifest.json`dan, vebda
+     * `--aea-press`. Masshtablar ham veb bilan bir xil (0.97 → 1.03 → 1).
+     */
+    fun press(v: View) {
+        val ctx = v.context
+        val sp = spec(ctx)
+        if (!enabled(ctx) || sp.pressMs <= 0) {
+            v.scaleX = 1f
+            v.scaleY = 1f
+            return
+        }
+        v.animate().cancel()
+        v.pivotX = v.width / 2f
+        v.pivotY = v.height / 2f
+        v.scaleX = 0.97f
+        v.scaleY = 0.97f
+        v.animate()
+            .scaleX(1.03f)
+            .scaleY(1.03f)
+            .setDuration(sp.pressMs * 6 / 10)
+            .withEndAction {
+                v.animate()
+                    .scaleX(1f)
+                    .scaleY(1f)
+                    .setDuration(sp.pressMs * 4 / 10)
+                    .start()
+            }
+            .start()
+    }
+
+    /**
+     * Ovoz so'rovi — HARAKAT SO'ROVI BILAN BIR TUGMA (`settings.motionEnabled`),
+     * lekin tizim `animator_duration_scale`iga QARAMAYDI: u vizual animatsiya
+     * ko'rsatkichi, eshitish emas. Vebda ham shu qoida
+     * (`feedbackSound.ts` — `motionEnabled`, `prefers-reduced-motion` ovozni
+     * o'chirmaydi).
+     */
+    fun soundEnabled(ctx: Context): Boolean =
+        containerOf(ctx)?.store?.settings()?.motionEnabled ?: false
+
+    /**
+     * Javob ovozi — fayl IO'Q, Tovush `AudioTrack`ga generatsiya qilingan
+     * sinus to'lqin sifatida yoziladi (qo'shimcha bog'liqlik va audio fayl
+     * yo'q — `public/audio/manifest.json` qoidasining mobil ekvivalenti:
+     * "fayl bo'lmasa pleyer ko'rsatilmaydi", bizda fayl kerak emas).
+     *
+     * Chastotalar VEB BILAN BIR XIL (`src/lib/feedbackSound.ts`): to'g'ri —
+     * 660 + 880 Gs, noto'g'ri — 300 Gs. Uzamlik ham bir xil byudjetdan:
+     * to'g'ri — `popMs` ikki notaga bo'linadi, noto'g'ri — `outcomeMs`.
+     *
+     * Xavfsiz: generatsiya va yozish alohida oqimda (main thread bloklanmaydi),
+     * audio chizig'i band bo'lsa yoki xato bo'lsa JIM o'tamiz.
+     */
+    fun playFeedback(ctx: Context, correct: Boolean) {
+        if (!soundEnabled(ctx)) return
+        val sp = spec(ctx)
+        val notes = if (correct) intArrayOf(NOTE_UP_1, NOTE_UP_2) else intArrayOf(NOTE_DOWN)
+        val eachMs = if (correct) sp.popMs / notes.size else sp.outcomeMs
+        if (eachMs <= 0) return
+        val rate = 44_100L
+        // Umumiy uzunlik — to'liq byudjetdan (ixtir emas) + 60 ms tutqich.
+        val frames = (rate * (notes.size * eachMs + 60) / 1000L).toInt()
+        Thread {
+            var track: AudioTrack? = null
+            try {
+                @Suppress("DEPRECATION")
+                val format = AudioFormat.Builder()
+                    .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
+                    .setSampleRate(rate.toInt())
+                    .setChannelMask(AudioFormat.CHANNEL_OUT_MONO)
+                    .build()
+                val attrs = AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_MEDIA)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                    .build()
+                track = AudioTrack.Builder()
+                    .setAudioAttributes(attrs)
+                    .setAudioFormat(format)
+                    .setBufferSizeInBytes(frames * 2)
+                    .setTransferMode(AudioTrack.MODE_STATIC)
+                    .build()
+                val buf = ShortArray(frames)
+                for (i in buf.indices) {
+                    val tMs = i * 1000.0 / rate
+                    val idx = (tMs / eachMs).toInt()
+                    if (idx >= notes.size) { buf[i] = 0; continue }
+                    val local = tMs - idx * eachMs
+                    // Yumshoq envelope (klip bo'lmasligi uchun) — vebdagidek.
+                    val edgeMs = minOf(20.0, eachMs / 4.0)
+                    val env = when {
+                        local < edgeMs -> local / edgeMs
+                        local > eachMs - edgeMs -> max(0.0, (eachMs - local) / edgeMs)
+                        else -> 1.0
+                    }
+                    val s = sin(2.0 * PI * notes[idx] * local / 1000.0) * env * 0.12
+                    buf[i] = (s * Short.MAX_VALUE).toInt().toShort()
+                }
+                // `MODE_STATIC` — butun bufer oldindan yoziladi, keyin chalinedi.
+                // `write(ShortArray)` overloadingi YO'Q (faqat ByteBuffer varianti
+                // API 31+); shuning uchun son- massivli variant ishlatiladi va u
+                // API 31'dan beri eskirgan deb belgilangan — xavfsiz, hali ishlaydi.
+                @Suppress("DEPRECATION")
+                track.write(buf, 0, buf.size)
+                track.play()
+                Thread.sleep((notes.size * eachMs + 80).coerceAtLeast(60))
+            } catch (err: Exception) {
+                // Audio chizig'i band bo'lsa — jimlik (javob matn va rang
+                // bilan allaqachon berilgan, signal ixtir qilinmaydi).
+            } finally {
+                runCatching { track?.stop() }
+                runCatching { track?.release() }
+            }
+        }.start()
     }
 
     private fun dp(ctx: Context, v: Int): Int = (v * ctx.resources.displayMetrics.density).toInt()

@@ -201,6 +201,16 @@ Biz ilovani **kutdirmaymiz**: byudjet `motion_manifest.json`da, har bir son ≤ 
 | `staggerMs` / `staggerMaxItems` | 40 ms / 8 | ro'yxat va zanjir kataklarining kechiktirilgan chizilishi |
 | `xpMs` | 620 ms | XP uchib chiqishi (`Motion.flyXp`, veb `--animate-xp`) |
 | `chainMs` | 240 ms | zanjir katakining to'lishi (`Motion.fillChainCell`, `--animate-chain`) |
+| `pressMs` | 120 ms | variant tugmasining bosilishi (`Motion.press`, veb `@keyframes bump`) |
+
+`pressMs` **ixtira emas**: u mavjud ikki sondan chiqadi —
+√(`staggerMs` × `outcomeMs`) = √(40 × 320) ≈ 107 → 120 ms (gevashit o'rtaligi).
+Qoida `src/test/motion.test.ts` va `ui/ExerciseFeedbackTest` da tekshiriladi:
+yangi uzamlik faqat mavjud maydonlardan keladi, masshtablar (0.97 → 1.03 → 1)
+va silkinish bosqichlari (-7, +6, -4, +2 dp) veb CSS bilan bir xil.
+Javob ovozi fayl EMAS: `AudioTrack`da toza PCM (`Motion.playFeedback`, notalar
+660/880 va 300 Hz) — vebda Web Audio (`src/lib/feedbackSound.ts`). `res/raw`
+ga audio qo'shilmaydi (DULO 297 mp3 + 135 ogg qiladi — biz shovqinni olib kirmaymiz).
 
 `.hla` (`Duration` + `Amplitudes`) bizda `Motion.tap(ctx, durationMs, amplitude)` —
 `VibratorManager`; amplitude faqat API 31+ da qo'llanadi (pastda oddiy titrating,

@@ -42,6 +42,8 @@ describe('Harakat manifesti (sonlar hujjatlangan, ixtira EMAS)', () => {
     expect(raw._comment, 'manifestda izoh bo‘lishi kerak').toBeTruthy()
     expect(raw.stepMs).toBe(260)
     expect(raw.xpMs).toBe(620)
+    // Bosish micro-interaction'i — mobil JSON'da ham AYNAN shu son.
+    expect(raw.pressMs).toBe(defaultMotionSpec().pressMs)
   })
 
   it('CSS o‘zgaruvchilari manifest sonlaridan yasaladi (byudjet haqiqatan ishlatiladi)', () => {
@@ -102,6 +104,38 @@ describe('parseMotionSpec — halol o‘qish', () => {
       expect(ms).toBeGreaterThan(0)
     }
     expect(d.popScale).toBeLessThanOrEqual(1.3)
+  })
+
+  it('bosish “bump” bosqichlari mobil `Motion.press()` bilan BIR XIL', () => {
+    // Vebda `@keyframes bump`, mobil `Motion.kt`da `press()` — masshtablar
+    // (0.97 → 1.03 → 1) va bosish vaqti (`pressMs`) ikkala tomonda bir xil
+    // bo'lishi shart. Matn formati farq qilishi mumkin — shuning uchun
+    // raqamlar alohida qidiriladi.
+    const css = readFileSync(indexCss, 'utf8')
+    const bump = css.match(/@keyframes\s+bump\s*\{([\s\S]*?)\n\}/)
+    expect(bump, 'src/index.css da @keyframes bump bo‘lishi kerak').not.toBeNull()
+    const scales = [...(bump![1].matchAll(/scale\(([\d.]+)\)/g))].map((m) => Number(m[1]))
+    expect(scales, 'bump bosqichlari 0.97 → 1.03 → 1 bo‘lishi kerak').toEqual([0.97, 1.03, 1])
+    // Mobil tomonda aynan shu sonlar yozilgan (vaqt esa `pressMs`dan).
+    const kt = readFileSync(
+      path.join(ROOT, 'mobile/app/src/main/java/com/dadaxon/aienglishacademy/ui/Motion.kt'),
+      'utf8',
+    )
+    for (const literal of ['0.97f', '1.03f', 'sp.pressMs']) {
+      expect(kt.includes(literal), `Motion.kt da ${literal} bo'lishi kerak`).toBe(true)
+    }
+    // CSS ham vaqtni manifestdan oladi — yangi son yo‘q.
+    expect(css.replace(/\s+/g, ''), 'bump --aea-press dan olishi kerak').toContain('animation:bumpvar(--aea-press)')
+  })
+
+  it('pressMs IXTIR EMAS — byudjetdagi mavjud ikki sondan kelib chiqadi', () => {
+    // Izohda aytilgan formula: √(staggerMs × outcomeMs) → 120 ms ga yaxlitlanadi.
+    const d = defaultMotionSpec()
+    const geo = Math.sqrt(d.staggerMs * d.outcomeMs)
+    expect(Math.abs(d.pressMs - geo), `pressMs ${d.pressMs} ≠ √(${d.staggerMs}×${d.outcomeMs})`).toBeLessThanOrEqual(10)
+    // Bosish qadami eng kichik qadamdan uzun, lekin eng katta qadamdan qisqa.
+    expect(d.pressMs).toBeGreaterThan(d.staggerMs)
+    expect(d.pressMs).toBeLessThan(d.xpMs)
   })
 })
 

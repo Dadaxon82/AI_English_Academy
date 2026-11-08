@@ -152,7 +152,9 @@ pairs, text/answers/wordBank, bank, source/accepted`).
 
 - Harakat sonlari **kodda yo'q** — yagona manba `res/raw/motion_manifest.json`
   (`stepMs 260, outcomeMs 320, popMs 380, popScale 1.14, staggerMs 40,
-  staggerMaxItems 8, xpMs 620, chainMs 240`). O'qiysiz: `ui/Motion.kt::spec(ctx)`
+  staggerMaxItems 8, xpMs 620, chainMs 240, pressMs 120` — `pressMs` ixtira
+  emas: √(`staggerMs` × `outcomeMs`) ≈ 107 → 120 ms, testda tekshiriladi).
+  O'qiysiz: `ui/Motion.kt::spec(ctx)`
   (bir marta keshlanadi; `Motion.reset()` test/sozlama uchun). Byudjet chegarasi
   0…1500 ms (`data/MotionManifest.kt`). Veb tomoni: `src/lib/motionManifest.ts`
   + `src/index.css` `--aea-*`; ikkala tomonning tengligi
@@ -166,7 +168,14 @@ pairs, text/answers/wordBank, bank, source/accepted`).
     "pop"i (javobdan keyin); `Motion.stagger(host, from)` — ro'yxat elementlari
     (≤ `staggerMaxItems` ta kechiktirish, qolgani darhol);
     `Motion.fillChainCell(cell, filled, order)` — zanjir kataki;
-    `Motion.flyXp(anchor, text)` — XP yozuvi ko'tarilib yo'qoladi (overlay).
+    `Motion.flyXp(anchor, text, colorRes)` — XP yozuvi ko'tarilib yo'qoladi (overlay);
+    `Motion.shake(v)` — noto'g'ri javobda kartani silkitish (uzamlik
+    `outcomeMs / 5`, yangi SON yo'q; vebda `.aea-outcome-wrong`);
+    `Motion.press(v)` — variant tugmasi bosilganda 0.97 → 1.03 → 1 (vebda
+    `@keyframes bump`; har bir javob tugmasiga `pressOnTouch(this)` qo'yiladi,
+    Android'ning o'z klik ovozi `isSoundEffectsEnabled = false` bilan o'chiriladi);
+    `Motion.playFeedback(ctx, correct)` — javob ovozi, `AudioTrack`da sintez
+    qilinadi (FAYL YO'Q), `Motion.soundEnabled(ctx)` orqali sozlamaga bog'langan.
   - `Motion.tap(ctx, ms, amplitude)` — haptik. `VIBRATE` ruxsati manifesda bor;
     amplitude faqat API 31+ da qo'llanadi (undan pastda oddiy titrating —
     ixtiro EMAS, Android shunday).
@@ -193,6 +202,12 @@ pairs, text/answers/wordBank, bank, source/accepted`).
   notgiven javoblari jim yo'qolardi. Bunday xato vizual ham ko'rinmaydi —
   `ExerciseAnswerKeyWiringTest` kodning shakli + round-trip bilan ushlaydi.
   `firstOrNull` natijasini View'ga `as?` bilan kastemaq.
+- **Combo satiri (`exCombo`) FAQAT haqiqiy holatni ko'rsatadi.** Son `Store`dan
+  olinadi (`data.game.combo` — `StoreAction.Attempt` dispatchidan KEYIN o'qiladi,
+  `AppStore.dispatch` sinxron), `combo < 2` bo'lsa satir `gone`. Yurak qaytish
+  soni `GameConfig.HEART_COMBO_STREAK` dan olinadi, allaqachon qaytarilgan bo'lsa
+  "yana N ta" deb yozilmaydi (`toHeart`). Maydon layout'da `visibility="gone"`
+  boshlanadi — soxta son ko'rinmasin (tekshiradi: `ui/ExerciseFeedbackTest`).
 - Yangi string kalitlari (allaqachon `strings_extra.xml` da, IXTIRO QILMANG):
   `settings_motion_title|on|off|hint|scale_off`,
   `path_chain_title|hint|steps|minutes|state_done|state_current|state_locked|test|audit`.

@@ -6,6 +6,7 @@
 -->
 <androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/exScroll"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -29,11 +30,41 @@
                 android:layout_weight="1"
                 android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/exCounter"
-                    style="@style/Text.Aea.Section"
+                <!-- Mashq jarayonining chizig'i — ESKI `exCounter` MATNI
+                        (`%1$d / %2$d`) shu bilan ALMASHDI (veb tomonida ham
+                        xuddi shu: `ExerciseRunner.tsx` dagi `.aea-step-bar`).
+                        Har javobdan keyin to'ladi; son matni yo'qolmagan —
+                        `ExerciseFragment` code'ida `contentDescription`
+                        sifatida `R.string.ex_index` qo'yiladi (ekrangni
+                        o'qiydigan dastur shu sonni o'qiydi). Rang
+                        `colorPrimary` (bizniki), DULO brendi emas.
+                        Qalinlik — MAVJOQ o'lchov `skillbar_height` (10dp),
+                        YANGI SON IXTIR QILINMAGAN. -->
+                <com.google.android.material.progressindicator.LinearProgressIndicator
+                    android:id="@+id/exBar"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:max="100"
+                    app:trackThickness="@dimen/skillbar_height" />
+
+                <!-- Combo — `GameLogic.afterAttempt`dag HAQIQIY ketma-ket
+                        to'g'ri javoblar (`data.game.combo`). Son ixtir
+                        qilinmaydi: 2 dan kamda Butun satr ko'rinmaydi.
+                        Yurak qaytishigacha nechta qolgani ham `GameConfig.
+                        HEART_COMBO_STREAK`dan hisoblanadi (veb: `ExerciseRunner
+                        .tsx`dagi combo chipi). -->
+                <TextView
+                    android:id="@+id/exCombo"
+                    style="@style/Text.Aea.Small"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:drawablePadding="4dp"
+                    android:gravity="center_vertical"
+                    android:textColor="@color/streak"
+                    android:textStyle="bold"
+                    android:visibility="gone"
+                    app:drawableStartCompat="@drawable/ic_flame" />
 
                 <TextView
                     android:id="@+id/exTimer"

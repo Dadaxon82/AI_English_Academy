@@ -387,6 +387,10 @@
     <string name="ex_result_xp">+ %1$d XP</string>
     <string name="ex_result_again">Yana mashq qilish</string>
     <string name="ex_result_back">Ekranga qaytish</string>
+    <!-- Combo — `data.game.combo` HAQIQIY soni (2 dan kamda satr ko‘rinmaydi).
+         Matn vebdagi combo chipi bilan bir xil (`ExerciseRunner.tsx`). -->
+    <string name="ex_combo">%1$d ketma-ket to‘g‘ri</string>
+    <string name="ex_combo_heart"> · yana %1$d — yurak qaytadi</string>
     <string name="ex_match_left">Chap tomon</string>
     <string name="ex_match_right">O‘ng tomon</string>
     <string name="ex_match_hint">Avval chap, keyin o‘ng elementni bosing — juftlik tuziladi.</string>

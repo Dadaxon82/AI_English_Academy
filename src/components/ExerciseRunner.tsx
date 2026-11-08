@@ -11,6 +11,7 @@ import type { Exercise } from '../content/types'
 import { checkAnswer, type CheckResult } from '../lib/check'
 import { xpGain } from '../lib/game'
 import { HEART_COMBO_STREAK } from '../lib/gameConfig'
+import { playFeedback } from '../lib/feedbackSound'
 import { useStore } from '../lib/store'
 import { Button, Chip, InfoBanner, inputCls } from './ui'
 import { GameIcon } from './icons'
@@ -29,9 +30,30 @@ export interface ExerciseRunProps {
    * o'quvchi yuraklari tugagan bo'lsa ham imtihonni topshira oladi.
    */
   heartFree?: boolean
+  /**
+   * `true` — sahifa har javobni `actions.recordAttempt(...)` bilan store'ga
+   * yozadi, ya'ni o'yin holati (`game.combo`) SHU MASHQLAR hisobidan
+   * yangilanadi. Combo chipi faqat shunday holda ko'rsatiladi.
+   *
+   * Nega prop kerak (SOXTA SONGA QARSHI): `MockExam.tsx` va `Onboarding.tsx`
+   * mashq natijasini o'z hisoblariga yozadi, lekin `recordAttempt`
+   * CHAQIRMAYDI — demak `data.game.combo` u yerda o'smaydi. Comboni u
+   * yerda ko'rsatish o'tgan darsning eski sonini ko'rsatish bo'lardi.
+   * Standart `false` — himoyaviy: yangi sahifa qo'shilsa chip chiqmaydi.
+   */
+  comboTracked?: boolean
 }
 
-export default function ExerciseRunner({ exercise, checked, index, total, onNext, prevResult, heartFree = false }: ExerciseRunProps) {
+export default function ExerciseRunner({
+  exercise,
+  checked,
+  index,
+  total,
+  onNext,
+  prevResult,
+  heartFree = false,
+  comboTracked = false,
+}: ExerciseRunProps) {
   const { hearts, data } = useStore()
   const game = data.game
   const [answer, setAnswer] = useState<unknown>(initialAnswer(exercise))
@@ -69,6 +91,14 @@ export default function ExerciseRunner({ exercise, checked, index, total, onNext
     setResult(r)
     setState('answered')
     checked(r, Math.round((Date.now() - startedAt) / 1000))
+    // Javob ovozi — Web Audio API bilan sintez qilinadi (`feedbackSound.ts`):
+    // fayl yo'q, shuning uchun `public/audio/manifest.json` qoidasi
+    // ("fayl bo'lmasa pleyer ko'rsatilmaydi") buzilmaydi. Ovoz sozlamadagi
+    // bitta tugma bilan boshqariladi (`settings.motionEnabled` — "jonli
+    // feedback"). Brauzer `AudioContext`ni bermasa JIM o'tamiz.
+    // `prefers-reduced-motion` ovozni O'CHIRMAYDI: u harakat (vestibulyar)
+    // so'rovi, eshitish emas — shuning uchun shu yerda tekshirilmaydi.
+    playFeedback(r.correct ? 'correct' : 'wrong', data.settings.motionEnabled)
   }
 
   /**
@@ -78,6 +108,31 @@ export default function ExerciseRunner({ exercise, checked, index, total, onNext
    * chaqiriladi, shuning uchun ekrandagi son haqiqatan qo'shiladi.
    */
   const xpShown = result ? xpGain(game, result.correct, exercise.difficulty, Date.now()) : undefined
+
+  /**
+   * Progress chizig'i — necha mashq JAVOB BERILGAN. Son ixtir qilinmagan:
+   * tekshirilgan payog`idan boshlab (`state === 'answered'`) chiziq
+   * `(index + 1) / total` gacha siljiydi, keyingi mashqqa o'tganda joyida
+   * qoladi. Ya'ni har to'g'ri/noto'g'ri javobdan keyin jonli to'ladi —
+   * DULO jarayonining mantiqi (rang/brand bizniki).
+   */
+  const answeredCount = state === 'answered' ? index + 1 : index
+  const progressPct = total > 0 ? Math.min(100, (answeredCount / total) * 100) : 0
+
+  /**
+   * Combo chipi — `game.combo` HAQIQIY soni (store'dan o'qiladi, bu komponent
+   * o'zi sanamaydi). `HEART_COMBO_STREAK` ga yetganda yurak qaytadi — shu
+   * sababli chegara yaqinlashganda chip boshqacha ko'rinadi.
+   *
+   * SOXTA SON YO'Q: chip FAQAT `comboTracked` bo'lsa chiziladi — sahifa
+   * javobni `recordAttempt` bilan store'ga yozsa. Mock imtihon va
+   * diagnostikada (`heartFree`) `recordAttempt` chaqirilmaydi, u yerda
+   * `game.combo` o'tgan darsdan qolgan son — ko'rsatish aldash bo'lardi.
+   */
+  const combo = game.combo
+  const showCombo = comboTracked && combo >= 2
+  const toHeart = combo > 0 && combo % HEART_COMBO_STREAK === 0
+  const comboNeeded = HEART_COMBO_STREAK - (combo % HEART_COMBO_STREAK)
 
   // Klaviatura: Enter — tekshirish / davom etish. Paydo bo'lgan matn
   // maydonida Enter hech narsa qilmasdi — endi shu hodisa o'zi ishlaydi.
@@ -97,11 +152,42 @@ export default function ExerciseRunner({ exercise, checked, index, total, onNext
 
   return (
     <div className="grid gap-4">
-      <div className="flex items-center justify-between gap-2">
-        <span className="text-xs font-semibold muted tabular-nums">
-          {index + 1} / {total}
-        </span>
+      {/* Progress chizigi — eski `{index + 1} / {total}` MATNI SHU BILAN
+          ALMASHDI (DULO jarayoni: tepadagi chiziq har javobdan keyin siljiydi).
+          Son matni yo'qolmadi: `aria-valuetext`da haqiqiy navbat yozilgan —
+          ekranni o'qiydigan dastur shu sonni o'qiydi, vizual son ixtir emas.
+          Mobilda ham xuddi shu: `exBar`ning `contentDescription`i
+          `R.string.ex_index` (`strings.xml`) — ikkala tomonda BIR xil matn.
+          `aria-valuenow` — JAVOB BERILGAN mashqlar soni (soxta emas: tekshirish
+          bosilgandagina ortadi). */}
+      <div
+        className="aea-step-bar"
+        role="progressbar"
+        aria-label="Mashq jarayoni"
+        aria-valuemin={0}
+        aria-valuemax={total}
+        aria-valuenow={answeredCount}
+        aria-valuetext={`${answeredCount} / ${total} mashq yakunlandi`}
+      >
+        <span style={{ width: `${progressPct}%` }} />
+      </div>
+
+      <div className="flex items-center justify-end gap-2">
         <div className="flex items-center gap-1.5">
+          {/* Combo — store'dagi haqiqiy ketma-ket to'g'ri javoblar.
+              Yurak qaytishiga nechta qolgani ham haqiqiy hisobdan
+              (`HEART_COMBO_STREAK` — `gameConfig.ts`). */}
+          {showCombo && (
+            <Chip tone="brand">
+              <GameIcon name="flame" size={12} />
+              {combo} ketma-ket to‘g‘ri
+              {hearts.enabled && !heartFree && hearts.count < hearts.max && !toHeart && (
+                // `toHeart` bo'lsa — yurak allaqachon qaytdi (chipning o'zi
+                // sonni ko'rsatadi), "yana N" deb aldash kerak emas.
+                <> · yana {comboNeeded} — yurak qaytadi</>
+              )}
+            </Chip>
+          )}
           <Chip>{kindLabel(exercise.kind)}</Chip>
           <Chip>{'Qiyinlik ' + exercise.difficulty}</Chip>
           {/* Yuraklar holati (sinov/sanovda jarima qilinmaydi — shu yerda ochiq
@@ -171,12 +257,14 @@ export default function ExerciseRunner({ exercise, checked, index, total, onNext
       <AnswerInput exercise={exercise} answer={answer} onChange={setAnswer} locked={state === 'answered'} rights={rights} />
 
       {state === 'answered' && result && (
-        <MascotExerciseFeedback
-          correct={result.correct}
-          expected={result.expected}
-          whyUz={result.whyUz}
-          xp={xpShown}
-        />
+        <div className={result.correct ? 'aea-outcome-correct' : 'aea-outcome-wrong'}>
+          <MascotExerciseFeedback
+            correct={result.correct}
+            expected={result.expected}
+            whyUz={result.whyUz}
+            xp={xpShown}
+          />
+        </div>
       )}
 
       <div className="flex flex-wrap items-center gap-2">
@@ -228,7 +316,7 @@ function AnswerInput({
               aria-checked={chosen === i}
               disabled={locked}
               onClick={() => onChange(i)}
-              className={`text-left px-3.5 py-2.5 rounded-xl border text-sm transition-colors ${
+              className={`aea-choice text-left px-3.5 py-2.5 rounded-xl border text-sm ${
                 chosen === i
                   ? 'border-[var(--accent)] bg-navy-50 dark:bg-navy-900/40 font-semibold'
                   : 'hover:bg-[var(--panel-2)]'
@@ -262,7 +350,7 @@ function AnswerInput({
                 aria-checked={chosen === o.v}
                 disabled={locked}
                 onClick={() => onChange(o.v)}
-                className={`px-3.5 py-2 rounded-xl border text-sm ${
+                className={`aea-choice px-3.5 py-2 rounded-xl border text-sm ${
                   chosen === o.v ? 'border-[var(--accent)] bg-navy-50 dark:bg-navy-900/40 font-semibold' : 'hover:bg-[var(--panel-2)]'
                 }`}
               >
@@ -334,7 +422,16 @@ function AnswerInput({
           {exercise.pairs.map((p) => (
             <div key={p.left} className="flex items-center gap-2 text-sm">
               <span className="flex-1 min-w-0 font-medium truncate">{p.left}</span>
-              <span aria-hidden>→</span>
+              {/* Juftlik tanlanganda o'q "o'sib" qaytadi — bosish tajribasi.
+                  `key` tanlangan qiymat bilan o'zgaradi: React qayta
+                  chizganda animatsiya qayta ishga tushadi (yoksa bir marta
+                  o'ynab, keyingi tanlovda jim qolardi).
+                  Matching vebda `<select>` bilan ishlaydi — tugma maxfiy
+                  emas, shuning uchun mikrota'sir o'qqa qo'yilgan (mobil
+                  tomonda esa tugmalar bor: `markLeftSelection`). */}
+              <span aria-hidden className={map[p.left] ? 'aea-bump' : ''} key={map[p.left] ?? ''}>
+                →
+              </span>
               <select
                 className={`${inputCls} w-44`}
                 value={map[p.left] ?? ''}

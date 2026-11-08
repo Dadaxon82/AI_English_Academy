@@ -439,6 +439,9 @@ function TaskDetail({ task, onBack }: { task: ListeningTask; onBack: () => void 
               total={total}
               checked={(r, secondsSpent) => record(pos, r, secondsSpent)}
               onNext={onNext}
+              /* `record()` har javobni `actions.recordAttempt(...)` bilan yozadi
+                 — combo store'da o'sadi, shuning uchun chiziq haqiqiy. */
+              comboTracked
             />
             <InfoBanner tone="muted">
               Javoblarni audioyidan topish kerak{audioAvailable ? '' : ' (audio bo‘lmagani uchun transkriptdan)'}. Ba'zi

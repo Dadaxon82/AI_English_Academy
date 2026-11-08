@@ -140,7 +140,9 @@ class ExerciseFragment : Fragment() {
             b.exCheck.visibility = View.GONE
             b.exSkip.visibility = View.GONE
             b.exFinish.visibility = View.GONE
-            b.exCounter.text = getString(R.string.ex_index, 0, 0)
+            // Mashq yo'q — jarayon chizig'i ham yo'q (soxta to'ldirilgan bar
+            // ko'rsatilmaydi; vebda shu holatda runner umuman chizilmaydi).
+            b.exBar.visibility = View.GONE
             return
         }
         showExercise(index)
@@ -173,6 +175,75 @@ class ExerciseFragment : Fragment() {
         return blocked
     }
 
+    /* ------------------------------ combo ------------------------------ */
+
+    /**
+     * Combo satiri (`R.id.exCombo`) — vebdagi combo chipining moslamasi
+     * (`ExerciseRunner.tsx`: `showCombo = comboTracked && combo >= 2`).
+     *
+     * FAQAT HAQIQIY HOLAT: son `data.game.combo`dan olinadi — bu fayl
+     * `GameLogic.afterAttempt` (`val combo = if (correct) base.combo + 1 else 0`)
+     * tomonidan yoziladi va bizning har tekshiruvimiz `StoreAction.Attempt`
+     * bilan shu yo'ldan o'tadi. Kombozorni o'zim sanamayman.
+     *
+     * Mobilda `comboTracked` doim true: ExerciseFragment HAR javobni
+     * `StoreAction.Attempt` bilan yozadi. Onboarding'dagi diagnostika esa
+     * alohida pleyerdan foydalanadi (`OnboardingFragment`) — u yerda
+     * `recordAttempt` yo'q, shuning uchun combo satiri ham yo'q.
+     *
+     * Yurak qaytishigacha nechta qolgani — `GameConfig.HEART_COMBO_STREAK`
+     * (5) dan hisoblanadi. `combo % 5 == 0` bo'lsa yurak ALLAQACHON qaytgan
+     * (afterAttempt qoidasi) — "yana N" deb aldash kerak emas.
+     */
+    private fun showCombo() {
+        val data = container().store.state.value.data
+        val combo = data.game.combo
+        if (combo < 2) {
+            b.exCombo.visibility = View.GONE
+            b.exCombo.text = ""
+            return
+        }
+        val hearts = GameLogic.heartsView(data, System.currentTimeMillis())
+        val free = GameLogic.heartFreeSource(source)
+        val toHeart = combo % GameConfig.HEART_COMBO_STREAK == 0
+        val sb = StringBuilder(getString(R.string.ex_combo, combo))
+        if (hearts.enabled && !free && hearts.count < GameConfig.HEARTS_MAX && !toHeart) {
+            sb.append(getString(R.string.ex_combo_heart, GameConfig.HEART_COMBO_STREAK - combo % GameConfig.HEART_COMBO_STREAK))
+        }
+        b.exCombo.text = sb
+        b.exCombo.visibility = View.VISIBLE
+    }
+
+    /* ------------------------ jarayon chizig'i -------------------------- */
+
+    /**
+     * Mashq jarayonining chizig'i (`R.id.exBar`) — DULO tepadagi siljiydigan
+     * chiziqning bizdagi ko'rinishi. Vebdagi moslash: `ExerciseRunner.tsx`
+     * dagi `answeredCount` / `progressPct` / `.aea-step-bar`.
+     *
+     * HALOLLIK: son ixtir qilinmaydi. Qoida vebdagi `answeredCount`
+     * (`ExerciseRunner.tsx`: `state === 'answered' ? index + 1 : index`)
+     * BILAN BIR XIL — tekshirilgunga qadar `index` ta, tekshirilgach
+     * `index + 1` ta. Mashq o'tkazib yuborilsa ham joyi almashadi (navbat
+     * oldinga suriladi), shuning uchun bar ham suriladi.
+     * Eski `exCounter` matni (`R.string.ex_index`) yo'qolmadi: u
+     * `contentDescription` bo'lib qoldi, ekranni o'qiydigan dastur shu
+     * sonni o'qiydi.
+     *
+     * `animate` — harakat byudjeti ichida siljiydi (`LinearProgressIndicator`
+     * Material'ning o'z animatsiyasi; yangi ms soni kiritilmagan). Harakat
+     * o'chirilganda (`Motion.enabled` false) birdan joyiga o'tadi — vebdagi
+     * `html.no-motion` qoidasi bilan BIR xil xulq.
+     */
+    private fun showProgress(animate: Boolean) {
+        val total = pool.size
+        val done = if (checked) index + 1 else index
+        b.exBar.visibility = View.VISIBLE
+        val pct = if (total > 0) (done.coerceIn(0, total) * 100 / total) else 0
+        b.exBar.setProgressCompat(pct, animate && Motion.enabled(requireContext()))
+        b.exBar.contentDescription = getString(R.string.ex_index, done, total)
+    }
+
     /* --------------------------- mashqni ochish ------------------------- */
 
     private fun showExercise(i: Int) {
@@ -188,7 +259,8 @@ class ExerciseFragment : Fragment() {
         val gateBlocked = heartsGateBlocked()
         b.summaryCard.visibility = View.GONE
         b.exEmpty.visibility = View.GONE
-        b.exCounter.text = getString(R.string.ex_index, i + 1, pool.size)
+        showProgress(animate = false)
+        showCombo()
         b.exTimer.text = ""
         b.exSkill.text = Rows.skillName(ctx, e.skill) + " · " + e.level
         b.exInstruction.text = e.instructionUz
@@ -270,6 +342,7 @@ class ExerciseFragment : Fragment() {
                 text = opt
                 id = View.generateViewId()
                 setPadding(0, Rows.dp(ctx, 6), 0, Rows.dp(ctx, 6))
+                pressOnTouch(this)
             }
             b.choiceGroup.addView(rb)
         }
@@ -279,6 +352,29 @@ class ExerciseFragment : Fragment() {
         }
         b.choiceCard.visibility = View.VISIBLE
         return true
+    }
+
+    /**
+     * Bosish mikrota'siri — DULO'dagidek: tugma bosilganda seziladi.
+     * Uzamlik `pressMs` (`res/raw/motion_manifest.json` = 120 ms), vebda
+     * `.aea-choice` sinfi (`src/index.css`) oranq bir xil bajariladi.
+     *
+     * Nega `ACTION_DOWN`da emas, bosish BOSHLANGANDA: `Motion.press` masshtabni
+     * 0,97 dan 1,03 orqali 1 ga qaytaradi — ya'ni "bosilib, o'sib joyiga
+     * tushadi". ACTION_UPni kutish tugmani sekinlashtirardi.
+     *
+     * `soundEffectsEnabled = false`: Android'ning o'z "klik" ovozi O'CHiriladi
+     * — u tizim ovozi (boshqa studiyaning audiosiga o'xshash noise), bizning
+     * javob ovozi esa `Motion.playFeedback` orqali javob BILAN bog'langan.
+     */
+    private fun pressOnTouch(v: View) {
+        // Kotlin'da Java `setSoundEffectsEnabled(boolean)` — `isSoundEffectsEnabled`
+        // (Java-getter nomining `is` bilan qaytarilishi).
+        v.isSoundEffectsEnabled = false
+        v.setOnTouchListener { view, ev ->
+            if (ev.actionMasked == android.view.MotionEvent.ACTION_DOWN) Motion.press(view)
+            false
+        }
     }
 
     /** true-false-notgiven — IELTS uslubidagi uch javob (kalit so'zlar). */
@@ -297,6 +393,7 @@ class ExerciseFragment : Fragment() {
                 id = View.generateViewId()
                 tag = key
                 setPadding(0, Rows.dp(ctx, 6), 0, Rows.dp(ctx, 6))
+                pressOnTouch(this)
             }
             b.choiceGroup.addView(rb)
         }
@@ -363,6 +460,7 @@ class ExerciseFragment : Fragment() {
             layoutParams = LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT,
             ).apply { topMargin = Rows.dp(ctx, 6) }
+            pressOnTouch(this)
         }
     }
 
@@ -421,6 +519,7 @@ class ExerciseFragment : Fragment() {
                     text = w
                     isClickable = true
                     isCheckable = false
+                    pressOnTouch(this)
                 }
                 chip.setOnClickListener { fillFirstEmptyGap(w) }
                 b.wordBank.addView(chip)
@@ -460,6 +559,7 @@ class ExerciseFragment : Fragment() {
             isClickable = true
             isCheckable = false
             textSize = 13f
+            pressOnTouch(this)
         }
     }
 
@@ -539,6 +639,9 @@ class ExerciseFragment : Fragment() {
         val out = checkAnswer(e, buildAnswer(e))
         checked = true
         results.add(out)
+        // Jarayon chizig'i javob bilan BIRGA siljiydi (to'g'ri/noto'g'ri farqi
+        // yo'q — vebdagi kabi: `answeredCount = index + 1` har tekshiruvda).
+        showProgress(animate = true)
 
         val seconds = ((SystemClock.elapsedRealtime() - exerciseStart) / 1000L).toInt().coerceAtLeast(0)
         val firstTry = tried.add(e.id)
@@ -562,6 +665,11 @@ class ExerciseFragment : Fragment() {
                 ),
             ),
         )
+
+        // Combo satiri DISPATCHDAN KEYIN o'qiladi: `AppStore.dispatch` sinxron
+        // (`_state.value = reduceLocal(...)`), shuning uchun hozirgi qadamning
+        // natijasi allaqachon hisoblangan — eski ekrandagi son qaytarilmaydi.
+        showCombo()
 
         b.exTimer.text = AppStore.formatDuration(seconds)
         showOutcome(out, gain)
@@ -601,7 +709,20 @@ class ExerciseFragment : Fragment() {
             Motion.tap(ctx, durationMs = 30L, amplitude = 127)
         } else {
             Motion.flyXp(b.exMascot, getString(R.string.path_xp_fly, xp), R.color.err)
+            /* Noto'g'ri — karta silkitiladi (`Motion.shake`). Vebda bu
+               `.aea-outcome-wrong` sinfi (`src/index.css` dagi `@keyframes shake`):
+               bosqichlar (-7, +6, -4, +2 dp) ikkala tomonda BIR XIL, vaqt esa
+               mavjud `outcomeMs`dan (`res/raw/motion_manifest.json`) — YANGI SON
+               YO'Q. Qahramon esa "umidlanish" kayfiyatida (`moodFromCorrect`) —
+               masxaralama harakati qasddan yo'q. */
+            Motion.shake(b.resultCard)
         }
+        /* Javob ovozi — fayl YUKLAB OLINMAGAN: vebda Web Audio (`src/lib/feedbackSound.ts`),
+           mobilda `Motion.playFeedback` toza PCM (`AudioTrack`) sintez qilinadi.
+           Shuning uchun `public/audio/manifest.json`dagi "fayl bo'lmasa pleyer
+           ko'rsatilmaydi" qoidasi buzilmaydi (soxta audio yo'q). Note chastotalari
+           va uzamliklar (`popMs / 2`, `outcomeMs`) mavjud byudjetdan. */
+        Motion.playFeedback(ctx, out.correct)
     }
 
     /* --------------------------- harakatlar ----------------------------- */
@@ -629,6 +750,9 @@ class ExerciseFragment : Fragment() {
         b.exSkip.visibility = View.GONE
         b.exFinish.visibility = View.GONE
         b.resultCard.visibility = View.GONE
+        // Jarayon yakunlanadi: chiziq JAVOB BERILGAN mashqlar hisobiga to'ladi
+        // (o'tkazib yuborilganlar hisobga kirmaydi — son ixtir qilinmaydi).
+        showProgress(animate = true)
 
         val total = results.size
         val correct = results.count { it.correct }
