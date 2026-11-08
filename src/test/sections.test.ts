@@ -6,6 +6,7 @@ import {
   JUMP_PASS_SCORE,
   SECTION_PLAN,
   buildSections,
+  currentSectionInfo,
   jumpKey,
   jumpTestExercises,
   skippedDaysFor,
@@ -84,5 +85,30 @@ describe('Sakrash testi', () => {
   it('noma’lum bo‘lim e’tiborsiz qoldiriladi', () => {
     const s = emptyData('u')
     expect(reducer(s, { type: 'section-jump', sectionId: 'zz-9', score: 100 })).toBe(s)
+  })
+})
+
+describe('currentSectionInfo — banner', () => {
+  it('yangi foydalanuvchi: A1.1, 1-kun', () => {
+    const info = currentSectionInfo(emptyData('u'))!
+    expect(info.section.label).toBe('A1.1')
+    expect(info.unitNumber).toBe(1)
+    expect(info.day.dayNumber).toBe(1)
+  })
+
+  it('A1.2 ga sakragandan keyin: A1.2, 1-kun (5-kun)', () => {
+    const s = reducer(emptyData('u'), { type: 'section-jump', sectionId: 'a1-2', score: 100 })
+    const info = currentSectionInfo(s)!
+    expect(info.section.label).toBe('A1.2')
+    expect(info.unitNumber).toBe(1)
+    expect(info.day.dayNumber).toBe(5)
+  })
+
+  it('hamma kun tugasa: oxirgi bo‘limning oxirgi kuni', () => {
+    const d = emptyData('u')
+    d.path.completedDays = a1Days.map((x) => x.id)
+    const info = currentSectionInfo(d)!
+    expect(info.section.label).toBe('A1.2')
+    expect(info.day.dayNumber).toBe(7)
   })
 })

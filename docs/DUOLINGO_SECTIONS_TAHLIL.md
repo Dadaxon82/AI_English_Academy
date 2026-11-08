@@ -175,7 +175,17 @@ Bular **bizning** `/sections` sahifamiz (Playwright, build qilingan ilova):
 | `sections-jump-test.png` | A1.2 ga sakrash testi jarayonda |
 | `sections-mobile.png` | 375px telefon (gorizontal scroll yo'q) |
 | `sections-dark.png` | Tungi rejim |
+| `dashboard-section-banner.png` | Dashboard'dagi joriy bo'lim banneri (→ Bo'limlar) |
 
 **Duolingo sahifasining skrinshotlari qo'shilmadi**: sessiya tarmog'i `duolingo.com`ni bloklaydi va sahifa
 login talab qiladi. Ularni o'zingiz `docs/screenshots/duolingo/` ga yuklasangiz, **[X]** belgili joylarni
 solishtirib tasdiqlayman.
+
+### 2-iteratsiya: dizayn Duolingo bo'limlar sahifasiga yaqinlashtirildi
+- Karta: ikki ustun — chapda daraja yorlig'i, katta sarlavha, ichida "X / Y kun" yozuvli progress bar,
+  "Batafsil"; o'ngda qahramon va gap pufagi (namuna ibora). Pastda to'liq kenglikdagi katta "3D" tugma
+  (Davom etish — yashil, Sakrash testi — ko'k, Takrorlash — oq). Qulflangan kartada "A1.2 ga sakrab o'tasizmi?".
+- Sahifa sarlavhasi: orqaga strelka, markazda "Bo'limlar", o'ngda yakunlanganlar soni.
+- **Joriy bo'lim banneri** (`src/components/SectionBanner.tsx`) — Dashboard va O'quv yo'li tepasida:
+  "A1.1-BO'LIM · 1-KUN" + kun nomi va "Bo'limlar" tugmasi (Duolingo Learn sahifasidagi bo'lim/unit banneriga o'xshash).
+- Sayt (`dadaxon82.github.io`) faqat `main` branchdan deploy qilinadi — o'zgarishlar PR merge qilingach ko'rinadi.

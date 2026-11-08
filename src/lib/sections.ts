@@ -167,3 +167,27 @@ export function applySectionJump(state: AppData, sectionId: string, score: numbe
   const currentDayId = levelDays.find((d) => !completedDays.includes(d.id))?.id ?? state.path.currentDayId
   return { ...state, path: { completedDays, passedTests, currentDayId } }
 }
+
+/** Joriy bo'lim va undagi joriy kun — Dashboard/O'quv yo'li banneri uchun. */
+export interface CurrentSectionInfo {
+  section: SectionCard
+  /** Bo'lim ichidagi kun tartibi (1 dan). */
+  unitNumber: number
+  day: DailyPlanDay
+}
+
+/**
+ * Banner ma'lumoti: joriy (`current`) bo'lim va `path.currentDayId` kuni.
+ * Hamma bo'lim tugagan bo'lsa — oxirgi kontentli bo'lim, oxirgi kuni.
+ * Kontent umuman yo'q bo'lsa — null (banner ko'rsatilmaydi).
+ */
+export function currentSectionInfo(data: Pick<AppData, 'path'>): CurrentSectionInfo | null {
+  const cards = buildSections(data)
+  const section = cards.find((c) => c.status === 'current') ?? [...cards].reverse().find((c) => c.status === 'done')
+  if (!section || section.days.length === 0) return null
+  const done = new Set(data.path.completedDays)
+  let idx = section.days.findIndex((d) => d.id === data.path.currentDayId)
+  if (idx < 0) idx = section.days.findIndex((d) => !done.has(d.id))
+  if (idx < 0) idx = section.days.length - 1
+  return { section, unitNumber: idx + 1, day: section.days[idx]! }
+}

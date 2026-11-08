@@ -15,6 +15,7 @@ import { useMemo } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { BarChart, Button, Card, Chip, EmptyState, InfoBanner, LoadingBlock, StatTile } from '../components/ui'
 import DuoPathMap from '../components/DuoPathMap'
+import SectionBanner from '../components/SectionBanner'
 import InstallAppCard from '../components/InstallAppCard'
 import LeaguePanel from '../components/LeaguePanel'
 import { MascotFigure } from '../components/Mascot'
@@ -221,6 +222,9 @@ export default function Dashboard() {
           markaziy kontent birinchi, `LeaguePanel` pastda davom etadi. */}
       <div className="grid lg:grid-cols-[1fr_320px] gap-4 sm:gap-5 items-start">
         <div className="grid gap-4 sm:gap-5 min-w-0">
+      {/* ---------- Joriy bo'lim banneri (→ /sections) ---------- */}
+      <SectionBanner />
+
       {/* ---------- Yo'l xaritasi (qisqa, joriy bosqich atrofida) ---------- */}
       {pathLayout.nodes.length > 0 && (
         <Card as="section" className="grid gap-3">
