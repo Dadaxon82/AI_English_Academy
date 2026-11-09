@@ -24,7 +24,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import ExerciseRunner from '../components/ExerciseRunner'
 import { HEART_COMBO_STREAK } from '../lib/gameConfig'
 import { playFeedback } from '../lib/feedbackSound'
-import { StoreProvider, useStore } from '../lib/store'
+import { StoreProvider } from '../lib/store'
+import { useStore } from '../lib/storeContext'
 import type { Exercise } from '../content/types'
 
 const ROOT = process.cwd()

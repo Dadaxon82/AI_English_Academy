@@ -12,7 +12,7 @@ import { Link } from 'react-router-dom'
 import { GameIcon } from './icons'
 import { Card, Chip } from './ui'
 import { leagueById } from '../lib/gameConfig'
-import { useStore } from '../lib/store'
+import { useStore } from '../lib/storeContext'
 
 export default function LeaguePanel() {
   const { data, streak, hearts, goal, quests, league } = useStore()

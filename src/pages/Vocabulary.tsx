@@ -18,9 +18,10 @@ import { CEFR_LEVELS, type CefrLevel, type MultipleChoiceExercise, type PartOfSp
 import { checkAnswer, type CheckResult } from '../lib/check'
 import { initialSrsState, isDue, review } from '../lib/srs'
 import type { SrsGrade, SrsState } from '../lib/srs'
-import { useStore } from '../lib/store'
+import { useStore } from '../lib/storeContext'
 import WordGame from '../components/WordGame'
 import { Button, Card, Chip, EmptyState, InfoBanner, Kbd, LoadingBlock, SpeakButton, StatTile, SuccessBanner, inputCls } from '../components/ui'
+import { nowMs, secondsSince, useNow } from '../lib/clock'
 
 type Mode = 'game' | 'browse' | 'flash' | 'test'
 
@@ -119,9 +120,11 @@ export default function Vocabulary() {
 
   const levelsPresent = useMemo(() => CEFR_LEVELS.filter((l) => pool.some((v) => v.level === l)), [pool])
 
+  // Render sof: joriy vaqt holat sifatida (daqiqada yangilanadi — "muddati
+  // yetgan" so'zlar sahifa ochiq turganda ham o'zi qo'shiladi).
+  const now = useNow()
   const filtered = useMemo(() => {
     const needle = flat(query)
-    const now = Date.now()
     return pool
       .filter((v) => (topic === null || v.topic === topic) && (levelF === null || v.level === levelF))
       .filter((v) => {
@@ -134,19 +137,18 @@ export default function Vocabulary() {
         return st ? isDue(st, now) : false
       })
       .sort((a, b) => a.word.localeCompare(b.word))
-  }, [pool, query, topic, levelF, dueOnly, data.srs])
+  }, [pool, query, topic, levelF, dueOnly, data.srs, now])
 
   // Eski bug: bu yerda SRS holati BO'LMAGAN so'zlar ham `initialSrsState()`
   // orqali "due" deb sanalar edi (dueAt = now), tugma masalan "100" ko'rsatardi,
   // lekin filtr ro'yxati ularni chiqarmasdi → bosilganda bo'sh sahifa.
   // Endi hisob filtr bilan BIR XIL: faqat boshlangan va muddati yetgan so'zlar.
   const poolDue = useMemo(() => {
-    const now = Date.now()
     return pool.filter((v) => {
       const st = srsOf(data.srs, v.id)
       return st ? isDue(st, now) : false
     }).length
-  }, [pool, data.srs])
+  }, [pool, data.srs, now])
 
   const resetFilters = () => {
     setQuery('')
@@ -269,6 +271,7 @@ export default function Vocabulary() {
                   key={v.id}
                   item={v}
                   state={srsOf(data.srs, v.id)}
+                  now={now}
                   onGrade={(id, g) => actions.gradeVocab(id, g)}
                   onSave={(id) => actions.saveVocab(id)}
                 />
@@ -307,20 +310,23 @@ export default function Vocabulary() {
 function WordCard({
   item,
   state,
+  now,
   onGrade,
   onSave,
 }: {
   item: VocabularyItem
   state: SrsState | undefined
+  /** Joriy vaqt (ota komponentning `useNow()` holati) — render sof qoladi. */
+  now: number
   onGrade: (id: string, grade: SrsGrade) => void
   onSave: (id: string) => void
 }) {
-  const [preview, setPreview] = useState<{ grade: SrsGrade; next: SrsState } | null>(null)
-  const now = Date.now()
+  const [preview, setPreview] = useState<{ grade: SrsGrade; next: SrsState; at: number } | null>(null)
 
   const grade = (g: SrsGrade) => {
-    const base = state ?? initialSrsState(now)
-    setPreview({ grade: g, next: review(base, g, now) })
+    const at = nowMs()
+    const base = state ?? initialSrsState(at)
+    setPreview({ grade: g, next: review(base, g, at), at })
     onGrade(item.id, g)
   }
 
@@ -401,7 +407,7 @@ function WordCard({
       {preview && (
         <p className="text-[11px] muted">
           {GRADE_LABELS.find((g) => g.grade === preview.grade)?.label} deb belgilandi → keyingi takror{' '}
-          <b>{gapLabel(preview.next, Date.now())}</b>dan so'ng (interval {preview.next.intervalDays} kun).
+          <b>{gapLabel(preview.next, preview.at)}</b>dan so'ng (interval {preview.next.intervalDays} kun).
         </p>
       )}
     </Card>
@@ -654,7 +660,7 @@ function TestMode({
   // ESKI BUG: `startedAt` butun viktorinaga nisbatan edi — 10-savolda
   // oxirgi savolga ~10 daqiqa "sarflangan" deb yozilardi va Dashboard
   // "Bajarildi" belgisini asossiz yoqardi. Endi har savol uchun alohida.
-  const [qStart, setQStart] = useState(() => Date.now())
+  const [qStart, setQStart] = useState(nowMs)
 
   const start = () => {
     setQuiz(buildQuiz(pool, srs, 10))
@@ -662,7 +668,7 @@ function TestMode({
     setChosen(null)
     setResult(null)
     setScore({ correct: 0, total: 0 })
-    setQStart(Date.now())
+    setQStart(nowMs())
   }
 
   if (!quiz) {
@@ -716,14 +722,14 @@ function TestMode({
     setChosen(i)
     setResult(r)
     setScore((s) => ({ correct: s.correct + (r.correct ? 1 : 0), total: s.total + 1 }))
-    onRecord(q.exercise, r, Math.max(1, Math.round((Date.now() - qStart) / 1000)))
+    onRecord(q.exercise, r, secondsSince(qStart, 1))
   }
 
   const next = () => {
     setIdx((n) => n + 1)
     setChosen(null)
     setResult(null)
-    setQStart(Date.now())
+    setQStart(nowMs())
   }
 
   return (

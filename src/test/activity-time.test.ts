@@ -5,7 +5,7 @@
  */
 
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { reducer } from '../lib/store'
+import { reducer } from '../lib/reducer'
 import { emptyData, todayKey, type AppData } from '../lib/types'
 import type { Skill } from '../content/types'
 

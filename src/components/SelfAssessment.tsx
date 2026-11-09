@@ -9,7 +9,7 @@ import { useState } from 'react'
 import { CEFR_LEVELS, type CefrLevel } from '../content/types'
 import { LIKERT_LABELS, canDoFor } from '../content/canDo'
 import { skillLabelUz } from '../lib/planning'
-import { useStore } from '../lib/store'
+import { useStore } from '../lib/storeContext'
 import { Card, Chip } from './ui'
 
 const TONES = [

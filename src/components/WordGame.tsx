@@ -11,7 +11,7 @@
 import { useMemo, useState } from 'react'
 import type { VocabularyItem } from '../content/types'
 import type { LessonStep } from '../lib/lessons'
-import { useStore } from '../lib/store'
+import { useStore } from '../lib/storeContext'
 import { buildWordGame } from '../lib/wordGame'
 import LessonPlayer, { chunkyGreen } from './LessonPlayer'
 import { MascotFigure } from './Mascot'

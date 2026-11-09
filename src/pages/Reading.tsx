@@ -22,7 +22,7 @@ import { allVocab, getBundle, glossaryVocabId, wordKeyOf } from '../content'
 import type { ReadingPassage, VocabularyItem } from '../content/types'
 import { formatDuration } from '../lib/timer'
 import type { CheckResult } from '../lib/check'
-import { useStore } from '../lib/store'
+import { useStore } from '../lib/storeContext'
 import { LessonStartCard, ReadingLesson } from '../components/SectionLessons'
 import { readingLesson } from '../lib/lessons'
 

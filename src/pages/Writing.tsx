@@ -5,17 +5,17 @@
  * AI "ulangan" deb ko'rsatilmaydi va mavjud bo'lmagan natija yasalmaydi.
  */
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { Button, Card, Chip, EmptyState, InfoBanner, LoadingBlock, SuccessBanner } from '../components/ui'
-import { useStore } from '../lib/store'
+import { useStore } from '../lib/storeContext'
 import { LessonStartCard, WritingLesson } from '../components/SectionLessons'
 import { writingLesson } from '../lib/lessons'
 import { getBundle } from '../content'
 import { aiRuntimeEnabled } from '../lib/ai'
 import { criterionLabelUz } from '../lib/analyze'
 import { formatDuration } from '../lib/timer'
-import type { CoreCriterionKey, WritingSubmission } from '../lib/types'
+import type { CoreCriterionKey } from '../lib/types'
 import type { WritingTask } from '../content/types'
 
 export default function Writing() {
@@ -37,15 +37,13 @@ export default function Writing() {
       return {}
     }
   })
-  const [submitted, setSubmitted] = useState<WritingSubmission[]>([])
   const [lesson, setLesson] = useState(false)
   const [showCompare, setShowCompare] = useState(false)
   const [saveNote, setSaveNote] = useState<string | null>(null)
 
-  // saqlangan javoblarni yuklash
-  useEffect(() => {
-    setSubmitted(data.writing.filter((w) => w.taskId === (params.get('task') ?? tasks[0]?.id)))
-  }, [data.writing, params, tasks])
+  // Saqlangan javoblar — store'dan hosila (yangi tahlil ham o'zi qo'shiladi).
+  const submittedTaskId = params.get('task') ?? tasks[0]?.id
+  const submitted = useMemo(() => data.writing.filter((w) => w.taskId === submittedTaskId), [data.writing, submittedTaskId])
 
   // Taymer: faqat foydalanuvchi haqiqatan YOZISHNI BOSHLAGANDA ishga tushadi.
   // Oldin sahifa ochilishi bilan avtomatik yurardi — sahifada hech narsa
@@ -69,22 +67,18 @@ export default function Writing() {
   // BUG: localStorage'ga yopiq (closure) `drafts` yozilardi — birinchi
   // yozuvdan keyin boshqa topshiriq qoralamalari xotiradan o'chib qolardi.
   // Endi saqlash state o'zgarishi ortidan effect orqali (har doim to'liq).
+  // Saqlash yozish ishlovchisida: joriy render'dagi TO'LIQ `drafts` + yangi
+  // qiymat yoziladi (boshqa topshiriqlar qoralamasi o'chmaydi).
   const setDraft = (v: string) => {
-    setDrafts((d) => ({ ...d, [selectedId]: v }))
-  }
-  const firstDraftRun = useRef(true)
-  useEffect(() => {
-    if (firstDraftRun.current) {
-      firstDraftRun.current = false
-      return
-    }
+    const next = { ...drafts, [selectedId]: v }
+    setDrafts(next)
     try {
-      localStorage.setItem(`aea-drafts:${data.userId}`, JSON.stringify(drafts))
+      localStorage.setItem(`aea-drafts:${data.userId}`, JSON.stringify(next))
       setSaveNote('Qoralama saqlandi')
     } catch {
       setSaveNote(null)
     }
-  }, [drafts, data.userId])
+  }
 
   // BUG: ma'lumotlar yuklanmasa sahifa "topshiriq topilmadi" deb yalgan
   // bo'sh holat ko'rsatardi. Avval yuklanish holati ko'rsatiladi.
@@ -172,8 +166,7 @@ export default function Writing() {
               disabled={words === 0}
               onClick={() => {
                 // Qayta yozish oxirgi javobga bog'lanadi (eski: doim birinchisiga).
-                const sub = actions.addWriting(task.id, draft, seconds, newest?.id ?? null)
-                setSubmitted((s) => [...s, sub])
+                actions.addWriting(task.id, draft, seconds, newest?.id ?? null)
               }}
             >
               Tahlil qilish

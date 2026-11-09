@@ -12,7 +12,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Button, Card, Chip, EmptyState, InfoBanner, LoadingBlock, Modal, ProgressRing, Spinner } from '../components/ui'
 import ExerciseRunner from '../components/ExerciseRunner'
-import { useStore } from '../lib/store'
+import { useStore } from '../lib/storeContext'
 import { getBundle } from '../content'
 import { checkAnswer } from '../lib/check'
 import { audioItem, loadAudioManifest, hasAudio } from '../lib/audio'
@@ -88,9 +88,14 @@ export default function MockExam() {
   }, [])
 
   // Saqlangan jarayon borimi? (sahifani yangilasak imtihon yo'qolmasin)
-  useEffect(() => {
-    if (exam) setSaved(loadSavedSession(exam.id))
-  }, [exam])
+  // Imtihon (daraja) almashsa render paytida qayta o'qiladi — React'ning
+  // "prop o'zgarsa holatni moslash" namuni, effect'siz.
+  const examId = exam?.id ?? null
+  const [savedFor, setSavedFor] = useState<string | null>(null)
+  if (examId !== savedFor) {
+    setSavedFor(examId)
+    setSaved(examId ? loadSavedSession(examId) : null)
+  }
 
   // Bo'lim taymeri — vaqt tugasa bo'lim avtomatik yakunlanadi
   const [left, setLeft] = useState(0)
@@ -112,30 +117,10 @@ export default function MockExam() {
   const section = sections[sectionIdx]
   const prog = progress.find((p) => p.sectionId === section?.id)
 
-  useEffect(() => {
-    if (!running || !section || !prog || prog.finishedAt) return
-    const update = () => {
-      const l = Math.max(0, section.minutes * 60 - usedSeconds(prog))
-      setLeft(l)
-      if (l === 0) finishSection()
-    }
-    update()
-    tickRef.current = window.setInterval(update, 1000)
-    return () => {
-      if (tickRef.current) window.clearInterval(tickRef.current)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [running, sectionIdx, progress])
 
-  // Ma'lumot yuklanayotganda "topilmadi" ko'rsatmaslik kerak — aks holda
-  // sahifa ochilganda bir lahza soxta bo'sholat ko'rinadi.
-  if (!ready) return <LoadingBlock label="Mock Exam ma'lumotlari yuklanmoqda…" />
-  if (!exam) {
-    return <EmptyState title="Mock Exam topilmadi" body="Ushbu daraja uchun namunaviy imtihon hali mavjud emas." />
-  }
 
   const start = () => {
-    const now = Date.now()
+    const now = nowMs()
     try {
       localStorage.removeItem(SESSION_KEY)
     } catch {
@@ -174,7 +159,7 @@ export default function MockExam() {
     }
     const idx = Math.max(0, Math.min(sections.length - 1, s.sectionIdx))
     const currentId = sections[idx]?.id
-    const now = Date.now()
+    const now = nowMs()
     setProgress(
       s.progress.map((p) => {
         // Sahifa yopiq turgan vaqt hisoblanmaydi: oxirgi saqlashgacha ochiq
@@ -195,7 +180,7 @@ export default function MockExam() {
   const gotoSection = (i: number) => {
     const target = sections[i]
     if (!target || i === sectionIdx) return
-    const now = Date.now()
+    const now = nowMs()
     setProgress((ps) =>
       ps.map((p) => {
         if (p.sectionId === target.id) return p.finishedAt ? p : { ...p, activeSince: now }
@@ -221,7 +206,7 @@ export default function MockExam() {
 
   const finishSection = () => {
     if (!section || !prog || prog.finishedAt) return
-    const now = Date.now()
+    const now = nowMs()
     const nextIdx = sections.findIndex((s, i) => i > sectionIdx && !progress.some((p) => p.sectionId === s.id && p.finishedAt))
     // Keyingi bo'lim shu paytdan ochiq: uning taymeri o'z vaqtidan yuradi.
     const nextId = nextIdx > -1 ? sections[nextIdx]!.id : null
@@ -264,7 +249,7 @@ export default function MockExam() {
     const scored = secs.filter((s) => s.score !== null)
     const totalScore = scored.length ? Math.round(scored.reduce((a, s) => a + (s.score ?? 0), 0) / scored.length) : null
     return {
-      examId: exam.id,
+      examId: exam?.id ?? '',
       sections: secs,
       totalScore,
       speakingAdvisory:
@@ -273,7 +258,7 @@ export default function MockExam() {
   }
 
   const submit = () => {
-    const now = Date.now()
+    const now = nowMs()
     const completed = buildAttempt(
       progress.map((p) => pauseSection(p, now)),
       now,
@@ -297,6 +282,28 @@ export default function MockExam() {
   }
 
   // ---------- Yakuniy natijalar ----------
+  useEffect(() => {
+    if (!running || !section || !prog || prog.finishedAt) return
+    const update = () => {
+      const l = Math.max(0, section.minutes * 60 - usedSeconds(prog))
+      setLeft(l)
+      if (l === 0) finishSection()
+    }
+    update()
+    tickRef.current = window.setInterval(update, 1000)
+    return () => {
+      if (tickRef.current) window.clearInterval(tickRef.current)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [running, sectionIdx, progress])
+
+  // Ma'lumot yuklanayotganda "topilmadi" ko'rsatmaslik kerak — aks holda
+  // sahifa ochilganda bir lahza soxta bo'sholat ko'rinadi.
+  if (!ready) return <LoadingBlock label="Mock Exam ma'lumotlari yuklanmoqda…" />
+  if (!exam) {
+    return <EmptyState title="Mock Exam topilmadi" body="Ushbu daraja uchun namunaviy imtihon hali mavjud emas." />
+  }
+
   if (finished) {
     const attempt = data.mockAttempts.find((a) => a.id === finished)
     if (!attempt) return <EmptyState title="Natija topilmadi" body="Imtihon natijasi yuklanmadi. Qaytadan urinib ko'ring." />
@@ -694,6 +701,7 @@ function Results({ exam, attempt, onRetry }: { exam: NonNullable<ReturnType<type
 }
 
 import { findExercise } from '../content'
+import { nowMs } from '../lib/clock'
 function findEx(id: string) {
   return findExercise(id)
 }

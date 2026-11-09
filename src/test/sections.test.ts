@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { getBundle } from '../content'
-import { reducer } from '../lib/store'
+import { reducer } from '../lib/reducer'
 import {
   JUMP_ITEMS_PER_DAY,
   JUMP_PASS_SCORE,

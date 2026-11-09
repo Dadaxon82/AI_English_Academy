@@ -8,7 +8,7 @@
 import { useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Button, Card, Chip, EmptyState, Field, InfoBanner, inputCls } from '../components/ui'
-import { useStore } from '../lib/store'
+import { useStore } from '../lib/storeContext'
 import { findExercise } from '../content'
 import LessonPlayer from '../components/LessonPlayer'
 import MistakeGames from '../components/MistakeGames'
@@ -18,6 +18,7 @@ import { checkAnswer } from '../lib/check'
 import { skillLabelUz } from '../lib/planning'
 import type { AttemptRecord, AttemptSource } from '../lib/types'
 import type { Skill } from '../content/types'
+import { useNow } from '../lib/clock'
 
 type Range = 'all' | '7' | '30'
 
@@ -35,8 +36,9 @@ export default function ErrorLog() {
   /** Tuzatilmagan xatolar (oxirgi urinish noto'g'ri) — o'yinlar uchun. */
   const mistakes = useMemo(() => unresolvedMistakes(data.attempts, findExercise), [data.attempts])
 
+  const now = useNow()
   const errors = useMemo(() => {
-    const cutoff = range === 'all' ? 0 : Date.now() - (range === '7' ? 7 : 30) * 86_400_000
+    const cutoff = range === 'all' ? 0 : now - (range === '7' ? 7 : 30) * 86_400_000
     return data.attempts
       .filter((a) => !a.correct)
       .filter((a) => (skill === 'all' ? true : a.skill === skill))
@@ -44,7 +46,7 @@ export default function ErrorLog() {
       .filter((a) => a.at >= cutoff)
       .filter((a) => (q.trim() ? a.exerciseId.toLowerCase().includes(q.trim().toLowerCase()) : true))
       .sort((a, b) => b.at - a.at)
-  }, [data.attempts, skill, source, range, q])
+  }, [data.attempts, skill, source, range, q, now])
 
   /** Takrorlanadigan xatolar: bir xil mashqda 2+ marta xato. */
   const repeated = useMemo(() => {

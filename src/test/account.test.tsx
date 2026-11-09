@@ -18,7 +18,8 @@ vi.mock('../lib/supabase', async (importOriginal) => {
 
 import { server } from './fakeSupabase'
 import { AuthContext } from '../lib/authContext'
-import { StoreProvider, useStore } from '../lib/store'
+import { StoreProvider } from '../lib/store'
+import { useStore } from '../lib/storeContext'
 import { emptyData, type AppData } from '../lib/types'
 import Settings from '../pages/Settings'
 

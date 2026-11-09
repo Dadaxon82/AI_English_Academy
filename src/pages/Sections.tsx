@@ -15,7 +15,7 @@ import { Button, Chip, InfoBanner, LoadingBlock, SuccessBanner } from '../compon
 import type { CheckResult } from '../lib/check'
 import { JUMP_PASS_SCORE, buildSections, jumpTestExercises, skippedDaysFor, type SectionCard } from '../lib/sections'
 import { levelLabel } from '../lib/skillScoring'
-import { useStore } from '../lib/store'
+import { useStore } from '../lib/storeContext'
 
 const STATUS_CHIP: Record<SectionCard['status'], { text: string; tone: 'ok' | 'brand' | 'warn' | 'default' }> = {
   done: { text: '✓ Yakunlangan', tone: 'ok' },

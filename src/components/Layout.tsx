@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
-import { useStore } from '../lib/store'
+import { useStore } from '../lib/storeContext'
 import { MOTION, motionVars } from '../lib/motionManifest'
 import { Button, Chip } from './ui'
 import { MascotAvatar } from './Mascot'
@@ -68,9 +68,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const { data, netOnline, streak, allocation, dayProgress, actions } = useStore()
   const theme = useTheme(data.settings.theme)
   useMotion(data.settings.motionEnabled)
-  const [menuOpen, setMenuOpen] = useState(false)
   const loc = useLocation()
-  useEffect(() => setMenuOpen(false), [loc.pathname])
+  // Menyu QAYSI sahifada ochilgan — sahifa almashsa o'zi yopiladi
+  // (effect orqali setState kerak emas).
+  const [menuOpenAt, setMenuOpenAt] = useState<string | null>(null)
+  const menuOpen = menuOpenAt === loc.pathname
 
   const plannedMinutes = useMemo(() => allocation.total, [allocation])
   const doneMin = dayProgress.doneMin
@@ -129,7 +131,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             variant="ghost"
             size="sm"
             className="lg:hidden"
-            onClick={() => setMenuOpen((v) => !v)}
+            onClick={() => setMenuOpenAt(menuOpen ? null : loc.pathname)}
             aria-expanded={menuOpen}
             aria-label="Menyu"
           >

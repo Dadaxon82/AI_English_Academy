@@ -27,7 +27,7 @@ import { buildChain, chainAudit, exerciseIdsForSection } from '../lib/lessonChai
 import { buildPathLayout, focalNode } from '../lib/pathMap'
 import { pathMilestoneSpecs } from '../lib/sections'
 import { skillLabelUz } from '../lib/planning'
-import { useStore } from '../lib/store'
+import { useStore } from '../lib/storeContext'
 import { currentElapsed, formatDuration } from '../lib/timer'
 import { todayKey } from '../lib/types'
 import type { AppData } from '../lib/types'

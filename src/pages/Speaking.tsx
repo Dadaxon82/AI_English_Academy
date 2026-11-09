@@ -11,7 +11,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { Button, Card, Chip, EmptyState, InfoBanner, LoadingBlock, SuccessBanner } from '../components/ui'
-import { useStore } from '../lib/store'
+import { useStore } from '../lib/storeContext'
 import { LessonStartCard, SpeakingLesson } from '../components/SectionLessons'
 import { speakingLesson } from '../lib/lessons'
 import { getBundle } from '../content'

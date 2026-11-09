@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom'
 import { Button, Card, Field, InfoBanner, inputCls } from '../components/ui'
 import { MascotAvatar } from '../components/Mascot'
 import { getSupabase, localGuestId, safeErrorMessage, supabaseConfigured, type AuthState } from '../lib/supabase'
-import { purgeUserData } from '../lib/storage'
 
 export default function Login({ onAuth, authState }: { onAuth: (s: AuthState) => void; authState: AuthState }) {
   const nav = useNavigate()
@@ -144,20 +143,4 @@ export default function Login({ onAuth, authState }: { onAuth: (s: AuthState) =>
       </div>
     </div>
   )
-}
-
-export async function signOutCurrent(userId: string) {
-  const sb = getSupabase()
-  if (sb) await sb.auth.signOut()
-  await purgeUserData(userId)
-  // Service Worker keshlari (Supabase GET javoblari, audio, rasm) — logout'da
-  // to'zalanadi, keyingi foydalanuvchi oldingisining ma'lumotINI ko'masin.
-  try {
-    if (typeof caches !== 'undefined') {
-      const names = await caches.keys()
-      await Promise.all(names.filter((n) => n.startsWith('aea-')).map((n) => caches.delete(n)))
-    }
-  } catch {
-    /* kesh o'chirilmasa ham xavfsizlik RLS'da — davom etamiz */
-  }
 }

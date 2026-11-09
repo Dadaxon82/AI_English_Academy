@@ -12,15 +12,16 @@
  * qizil bo'lib, natija va "KEYINGI" tugmasini ko'rsatadi.
  */
 
-import { useEffect, useMemo, useState, type ReactNode } from 'react'
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { getBundle } from '../content'
 import type { Exercise } from '../content/types'
 import { checkAnswer, type CheckResult } from '../lib/check'
+import { nowMs, secondsSince } from '../lib/clock'
 import { xpGain } from '../lib/game'
 import { HEART_COMBO_STREAK } from '../lib/gameConfig'
 import { playFeedback } from '../lib/feedbackSound'
-import { useStore } from '../lib/store'
+import { useStore } from '../lib/storeContext'
 import { Chip, InfoBanner, inputCls } from './ui'
 import { GameIcon } from './icons'
 import { MascotExerciseFeedback, MascotFigure } from './Mascot'
@@ -91,8 +92,15 @@ export default function ExerciseRunner({
   const [answer, setAnswer] = useState<unknown>(initialAnswer(exercise))
   const [state, setState] = useState<'idle' | 'answered'>('idle')
   const [result, setResult] = useState<CheckResult | null>(null)
-  const startedAt = useMemo(() => Date.now(), [exercise.id])
+  // Mashq ko'ringan vaqt — effect'da yoziladi (render sof qoladi), faqat
+  // tekshirish ishlovchisida o'qiladi.
+  const startedAt = useRef(0)
+  useEffect(() => {
+    startedAt.current = nowMs()
+  }, [exercise.id])
   const [lastExerciseId, setLastExerciseId] = useState(exercise.id)
+  /** Bu javob uchun XP — tekshirish paytida hisoblanadi (pastga qarang). */
+  const [xpShown, setXpShown] = useState<number | undefined>(undefined)
 
   // Mashq o'zgarsa holat tozalanadi (React rasmiy "state reset during render"
   // namuni — effect'dan ko'ra bir qadam tezroq va izchil).
@@ -100,6 +108,7 @@ export default function ExerciseRunner({
     setLastExerciseId(exercise.id)
     setState('idle')
     setResult(null)
+    setXpShown(undefined)
     setAnswer(initialAnswer(exercise))
   }
 
@@ -117,7 +126,10 @@ export default function ExerciseRunner({
     const r = checkAnswer(exercise, skip ? initialAnswer(exercise) : answer)
     setResult(r)
     setState('answered')
-    checked(r, Math.round((Date.now() - startedAt) / 1000))
+    // XP — store'dagi hisob BILAN BIR XIL (`xpGain(game, correct, difficulty, now)`),
+    // javob yozilishidan OLDINGI o'yin holati bilan (reducer ham shuni ishlatadi).
+    setXpShown(xpGain(game, r.correct, exercise.difficulty, nowMs()))
+    checked(r, secondsSince(startedAt.current))
     // Javob ovozi — Web Audio API bilan sintez qilinadi (`feedbackSound.ts`):
     // fayl yo'q, shuning uchun `public/audio/manifest.json` qoidasi
     // ("fayl bo'lmasa pleyer ko'rsatilmaydi") buzilmaydi. Ovoz sozlamadagi
@@ -126,11 +138,6 @@ export default function ExerciseRunner({
     playFeedback(r.correct ? 'correct' : 'wrong', data.settings.motionEnabled)
   }
 
-  /**
-   * Bu javob uchun beriladigan XP — store'dagi hisob BILAN BIR XIL
-   * (`xpGain(game, correct, difficulty, now)`), son ixtir qilinmaydi.
-   */
-  const xpShown = result ? xpGain(game, result.correct, exercise.difficulty, Date.now()) : undefined
 
   /**
    * Progress chizig'i — necha mashq JAVOB BERILGAN. Tekshirilgan paytdan

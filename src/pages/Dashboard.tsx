@@ -26,7 +26,8 @@ import { buildDayTasks, nextDayId, skillLabelUz } from '../lib/planning'
 import { buildPathLayout, focalNode } from '../lib/pathMap'
 import { pathMilestoneSpecs } from '../lib/sections'
 import { levelLabel } from '../lib/skillScoring'
-import { lastNDays, useStore } from '../lib/store'
+import { useStore } from '../lib/storeContext'
+import { lastNDays } from '../lib/selectors'
 import { todayKey } from '../lib/types'
 
 const SKILL_SEQ: Skill[] = ['vocabulary', 'grammar', 'reading', 'listening', 'writing', 'speaking']

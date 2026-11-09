@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { CAN_DO, canDoFor } from '../content/canDo'
 import { CEFR_LEVELS } from '../content/types'
 import { mergeSelfAssessment } from '../lib/merge'
-import { reducer } from '../lib/store'
+import { reducer } from '../lib/reducer'
 import { rowsToSnapshot, toQueueItems } from '../lib/sync'
 import { emptyData } from '../lib/types'
 

@@ -6,7 +6,7 @@
 
 import { Link } from 'react-router-dom'
 import { currentSectionInfo } from '../lib/sections'
-import { useStore } from '../lib/store'
+import { useStore } from '../lib/storeContext'
 
 export default function SectionBanner() {
   const { data } = useStore()
