@@ -337,4 +337,62 @@ object Rows {
 
     /** Ichki scroll — uzoq kontentli ekranlar uchun (fragmentlarda XML orqali). */
     fun newScroll(ctx: Context): NestedScrollView = NestedScrollView(ctx)
+
+    /**
+     * Joriy bo'lim banneri — veb `src/components/SectionBanner.tsx` ning
+     * mobildagi ko'rinishi: "A1.1-BO'LIM · 2-KUN" + kun nomi + "Bo'limlar"
+     * tugmasi. MA'LUMOT `domain/currentSectionInfo()`dan — son ixtir EMAS.
+     *
+     * RANG: mavzudagi `ok` (#059669) — veb'dagi `bg-emerald-600` BILAN BIR
+     * XIL son (ikkalasi ham #059669); yangi rang qo'shilmadi. Vebdagi qalin
+     * pastki chegara (4dp) shu yerda ham saqlanadi.
+     */
+    fun sectionBanner(
+        ctx: Context,
+        info: com.dadaxon.aienglishacademy.domain.CurrentSectionInfo,
+        onOpen: () -> Unit,
+    ): View {
+        val box = LinearLayout(ctx).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            setPadding(dp(ctx, 16), dp(ctx, 12), dp(ctx, 12), dp(ctx, 12))
+            background = GradientDrawable().apply {
+                setColor(ctx.getColor(R.color.ok))
+                cornerRadius = dp(ctx, 14).toFloat()
+            }
+            contentDescription = ctx.getString(R.string.sec_banner_alt)
+            layoutParams = LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+            ).apply { topMargin = dp(ctx, 8) }
+        }
+        val texts = LinearLayout(ctx).apply {
+            orientation = LinearLayout.VERTICAL
+            layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
+        }
+        texts.addView(TextView(ctx).apply {
+            setTextAppearance(R.style.Text_Aea_Small)
+            setTypeface(typeface, Typeface.BOLD)
+            setTextColor(ctx.getColor(R.color.white))
+            text = ctx.getString(R.string.sec_banner_current, info.section.label, info.unitNumber)
+        })
+        texts.addView(TextView(ctx).apply {
+            setTextAppearance(R.style.Text_Aea_Body)
+            setTypeface(typeface, Typeface.BOLD)
+            setTextColor(ctx.getColor(R.color.white))
+            maxLines = 1
+            text = info.day.titleUz
+        })
+        box.addView(texts)
+        box.addView(
+            MaterialButton(ctx, null, com.google.android.material.R.attr.materialButtonOutlinedStyle).apply {
+                text = ctx.getString(R.string.nav_sections)
+                setTextColor(ctx.getColor(R.color.white))
+                strokeColor = android.content.res.ColorStateList.valueOf(ctx.getColor(R.color.white))
+                isAllCaps = true
+                setOnClickListener { onOpen() }
+            },
+        )
+        return box
+    }
 }

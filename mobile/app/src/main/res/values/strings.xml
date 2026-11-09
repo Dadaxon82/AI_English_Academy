@@ -423,6 +423,48 @@
     <string name="skill_writing">Yozish</string>
     <string name="skill_speaking">Gapirish</string>
 
+    <!-- ============ BO'LIMLAR (veb `src/pages/Sections.tsx`) ============
+         Matnlar veb sahifadagi bilan BIR XIL ma'noda: holat belgilari,
+         sakrash testi tushuntirishi va natija xabarlari. Sonlar
+         (`%1$d`) — kontentdan hisoblanadi, ixtir qilinmaydi. -->
+    <string name="nav_sections">Bo‘limlar</string>
+    <string name="sec_title">Bo‘limlar</string>
+    <string name="sec_subtitle">Har CEFR darajasida ikki bo‘lim. Bilsangiz — sakrash testi bilan oldinga o‘ting (darajangiz o‘zgarmaydi: u faqat bir nechta ko‘nikma bo‘yicha dalil bilan ko‘tariladi).</string>
+    <string name="sec_done_count">%1$d/%2$d ✓</string>
+    <string name="sec_status_done">✓ Yakunlangan</string>
+    <string name="sec_status_current">Joriy bo‘lim</string>
+    <string name="sec_status_locked">Qulflangan</string>
+    <string name="sec_status_empty">Tayyorlanmoqda</string>
+    <string name="sec_card_title">%1$s-bo‘lim</string>
+    <string name="sec_level_line">%1$s · %2$s</string>
+    <string name="sec_done_line">✓ Barcha %1$d kun yakunlangan</string>
+    <string name="sec_done_jump_line">✓ Barcha %1$d kun yakunlangan · sakrash testi %2$d%%</string>
+    <string name="sec_progress">%1$d / %2$d kun</string>
+    <string name="sec_jump_question">%1$s ga sakrab o‘tasizmi?</string>
+    <string name="sec_jump_last">Oxirgi urinish: %1$d%%.</string>
+    <string name="sec_empty_line">Bu bo‘lim darslari hali tayyorlanmoqda — hozircha ochib bo‘lmaydi.</string>
+    <string name="sec_details">Batafsil ▾</string>
+    <string name="sec_details_close">Yopish ▴</string>
+    <string name="sec_sample_alt">Bo‘limdan namunaviy ibora</string>
+    <string name="sec_btn_continue">Davom etish</string>
+    <string name="sec_btn_revise">Takrorlash</string>
+    <string name="sec_btn_jump">%1$s ga sakrash testi</string>
+    <string name="sec_days_line">%1$d-kun · %2$s</string>
+    <string name="sec_jump_title">%1$s ga sakrash testi</string>
+    <string name="sec_jump_intro">%1$d ta savol, oldingi %2$d ta kunning yakuniy testlaridan. O‘tish uchun %3$d%% kerak. O‘tsangiz, o‘tkazib yuborilgan kunlar yakunlangan deb belgilanadi va %4$s ochiladi. Yuraklar sarflanmaydi, darajangiz o‘zgarmaydi.</string>
+    <string name="sec_jump_no_items">O‘tkazib yuboriladigan kunlarda test savollari topilmadi — sakrash mumkin emas.</string>
+    <string name="sec_jump_start">Testni boshlash</string>
+    <string name="sec_jump_pass">Sakrash testi topshirildi: %1$d%% ≥ %2$d%% — %3$s ochildi.</string>
+    <string name="sec_jump_fail">Natija: %1$d%% &lt; %2$d%% — sakrash uchun yetarli emas. Joriy bo‘limni davom ettiring yoki keyinroq qayta urining.</string>
+    <string name="sec_jump_retry">Qayta urinish</string>
+    <string name="sec_jump_go_path">O‘quv yo‘liga o‘tish</string>
+    <string name="sec_jump_close">Yopish</string>
+    <!-- Joriy bo'lim banneri (veb `src/components/SectionBanner.tsx`) -->
+    <string name="sec_banner_current">%1$s-bo‘lim · %2$d-kun</string>
+    <string name="sec_banner_alt">Joriy bo‘lim</string>
+    <string name="sec_banner_link">Bo‘limlar (A1.1 … C1.2)</string>
+    <string name="sec_link_all">Barcha bo‘limlar (A1.1 … C1.2) →</string>
+
     <!-- ============ Hafta kunlari (qisqa) ============ -->
     <string name="wd_yak">Yak</string>
     <string name="wd_du">Du</string>

@@ -546,6 +546,63 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
+        <!-- Sakrash testi natijasi — FAQAT bo'lim SAKRASH testida ko'rinadi
+             (`ExerciseFragment.finishJump`), boshqa rejimda yashirin. Veb
+             `src/pages/Sections.tsx::JumpTest` natija bloki bilan bir xil
+             ma'noda (o'tish/yetarli emas xabari + haqiqiy tugmalar). -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/jumpResultCard"
+            style="@style/Widget.Aea.Card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_m"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/jumpSummary"
+                    style="@style/Text.Aea.Body"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/gap_s"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/jumpGoPath"
+                        style="@style/Widget.Aea.Button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/gap_s"
+                        android:text="@string/sec_jump_go_path"
+                        android:visibility="gone" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/jumpRetry"
+                        style="@style/Widget.Aea.Button.Outlined"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/gap_s"
+                        android:text="@string/sec_jump_retry"
+                        android:visibility="gone" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/jumpClose"
+                        style="@style/Widget.Aea.Button.Text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/sec_jump_close" />
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
         <TextView
             android:id="@+id/exEmpty"
             style="@style/Text.Aea.Small"

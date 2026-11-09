@@ -172,6 +172,10 @@ Har turdan 7 tadan, kunlarning grammatika mavzusi va O'qish matniga bog'langan:
   to'g'ri yechiladi) va `SelfAssessmentMergeTest`.
 - `ExerciseFragment.kt` (Android UI) **kompyuteringizda yig'ib tekshirilishi kerak** (`./gradlew assembleDebug`).
   U faqat faylda allaqachon ishlatilgan API'lardan foydalanadi. Mobil Progress ekranida baholash UI'si hali yo'q.
+- **Keyinchalik bajarildi (2026-11-09, SDK bilan mashinada):** `:app:testDebugUnitTest` — **377 test / 33 klass,
+  0 fail**; `:app:assembleRelease` va `:app:lintVitalRelease` BUILD SUCCESSFUL. Yuqoridagi 214 — o'sha paytdagi
+  alohida JVM loyihasining sanog'i (eski holat). A1 eksport kuchalari (`ContentRepositoryTest`) PR #6 dan keyin
+  qayta o'lchandi: 246 eksport = 238 core + 8 Mock Exam, 5 yangi turdan 7 tadan — README §5g.
 
 Skrinshotlar: `type-multi-select.png`, `type-dropdown-cloze.png`, `type-sequence.png`, `type-categorize.png`,
 `type-short-answer-result.png`, `self-assessment.png`, `type-mobile-categorize.png`, `type-mobile-dropdown.png`.

@@ -24,10 +24,14 @@ import com.dadaxon.aienglishacademy.data.Kinds
 import com.dadaxon.aienglishacademy.data.Source
 import com.dadaxon.aienglishacademy.databinding.FragmentExerciseBinding
 import com.dadaxon.aienglishacademy.domain.CheckOutcome
+import com.dadaxon.aienglishacademy.domain.JUMP_PASS_SCORE
 import com.dadaxon.aienglishacademy.domain.checkAnswer
 import com.dadaxon.aienglishacademy.domain.GameLogic
 import com.dadaxon.aienglishacademy.domain.evaluateLevelPromotion
+import com.dadaxon.aienglishacademy.domain.jumpPassed
+import com.dadaxon.aienglishacademy.domain.jumpScore
 import com.dadaxon.aienglishacademy.domain.nextExerciseIndex
+import com.dadaxon.aienglishacademy.domain.sectionLabelForId
 import com.dadaxon.aienglishacademy.domain.skillEvidence
 import com.dadaxon.aienglishacademy.domain.xpForAttempt
 import com.dadaxon.aienglishacademy.store.AppStore
@@ -95,6 +99,20 @@ class ExerciseFragment : Fragment() {
     private var dayId: String? = null
     private var source: String = Source.PRACTICE
 
+    /**
+     * Bo'lim SAKRASH testi bo'lsa — bo'lim id'si (`Nav.ARG_SECTION_ID`).
+     * Kun testi (`dayId`) bilan aralashmasligi uchun alohida: sakrashda
+     * KUN ochiq berilmaydi, natija `applySectionJump`ga yoziladi.
+     */
+    private var jumpSectionId: String? = null
+
+    /**
+     * Sakrash testida har mashqning natijasi — veb `acc.current[ex.id]`
+     * moslamasi. Pleyer `nextExerciseIndex` bilan mashqni qayta ko'rsatsa,
+     * shu xarita takrorni sanamaydi (ball savol SONiga bo'linadi).
+     */
+    private val jumpOutcomes = LinkedHashMap<String, CheckOutcome>()
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, saved: Bundle?): View {
         _b = FragmentExerciseBinding.inflate(inflater, container, false)
         return b.root
@@ -104,6 +122,7 @@ class ExerciseFragment : Fragment() {
         contentId = Nav.stringArg(this, Nav.ARG_CONTENT_ID)
         dayId = Nav.stringArg(this, Nav.ARG_DAY_ID)
         source = Nav.stringArg(this, Nav.ARG_SOURCE) ?: Source.PRACTICE
+        jumpSectionId = Nav.stringArg(this, Nav.ARG_SECTION_ID)
 
         val ids = Nav.stringListArg(this, Nav.ARG_EXERCISE_IDS)
         val cr = container().content
@@ -797,6 +816,11 @@ class ExerciseFragment : Fragment() {
         val out = checkAnswer(e, buildAnswer(e))
         checked = true
         results.add(out)
+        // Sakrash testi: natija MASHQ ID'I bo'yicha saqlanadi (veb
+        // `acc.current[ex.id]`). `nextExerciseIndex` xatoni mustahkamlash uchun
+        // bir mashqni qayta ko'rsatsa, oxirgi natija yoziladi va takror
+        // ballni bo'lmaydi — bo'luvchi savollar soni.
+        if (jumpSectionId != null) jumpOutcomes[e.id] = out
         // Jarayon chizig'i javob bilan BIRGA siljiydi (to'g'ri/noto'g'ri farqi
         // yo'q — vebdagi kabi: `answeredCount = index + 1` har tekshiruvda).
         showProgress(animate = true)
@@ -946,7 +970,11 @@ class ExerciseFragment : Fragment() {
             Motion.tap(requireContext(), durationMs = 40L, amplitude = 127)
         }
 
-        if (total > 0 && dayId != null) {
+        // SAKRASH TESTI (dayId YO'Q — kun testi emas): kun belgilanmaydi,
+        // natija `applySectionJump`ga yoziladi (`StoreAction.SectionJump`).
+        // DARS bonusi esa beriladi — veb `JumpTest::onNext` ham
+        // `actions.completeLesson(...)` chaqiradi (qoida parity).
+        if (jumpSectionId == null && total > 0 && dayId != null) {
             // Dars yakuni — o'yin qatlami: bonus XP va (0 xato bo'lsa) "xatosiz
             // dars" hisobi (`GameLogic.lessonComplete`, veb:
             // `actions.completeLesson(...)` — Grammar/Listening/Reading).
@@ -962,7 +990,57 @@ class ExerciseFragment : Fragment() {
                 offerDayComplete()
             }
         }
+        if (jumpSectionId != null) finishJump()
         b.exScroll.scrollTo(0, b.summaryCard.top)
+    }
+
+    /**
+     * Sakrash testini yakunlash (veb `JumpTest` natija bloki).
+     *
+     * BALL — `domain/jumpScore`: har savolga hissa (to'g'ri = 1, aks holda
+     * `partial`), bo'luvchi — savollar soni. Pleyer mashqni qayta ko'rsatsa
+     * takror sanalmaydi (`jumpOutcomes` — mashq id'i bo'yicha).
+     */
+    private fun finishJump() {
+        val id = jumpSectionId ?: return
+        // Yorliq REJADAN olinadi (`sectionLabelForId`) — ekranga o'tkazilgan
+        // sarlavha ixtir bo'lib qolmasin; noma'lum id bo'lsa ochiq so'z.
+        val label = sectionLabelForId(id) ?: getString(R.string.sec_title)
+        val score = jumpScore(pool, jumpOutcomes)
+        /* DARS bonusi (veb `JumpTest::onNext` ham `completeLesson` chaqiradi):
+           sonlar — JAVOB BERILGAN mashqlar (takrorlar sanalmagan) va ulardan
+           noto'g'rilari. Holat `jumpOutcomes`dan, ixtir son yo'q. */
+        val answered = jumpOutcomes.size
+        val wrong = jumpOutcomes.values.count { !it.correct }
+        if (answered > 0) container().store.dispatch(StoreAction.LessonComplete(answered, wrong))
+        b.jumpResultCard.visibility = View.VISIBLE
+        b.jumpSummary.text = if (jumpPassed(score)) {
+            getString(R.string.sec_jump_pass, score, JUMP_PASS_SCORE, label)
+        } else {
+            getString(R.string.sec_jump_fail, score, JUMP_PASS_SCORE)
+        }
+        b.jumpGoPath.visibility = if (jumpPassed(score)) View.VISIBLE else View.GONE
+        b.jumpRetry.visibility = if (jumpPassed(score)) View.GONE else View.VISIBLE
+        // Ikki tugma ham haqiqiy: "yo'lga o'tish" — O'quv yo'li ekrani,
+        // "qayta urinish" — testni boshidan ochadi (veb `start()`).
+        b.jumpGoPath.setOnClickListener { findNavController().navigate(R.id.learningPathFragment) }
+        b.jumpRetry.setOnClickListener { restartJump() }
+        b.jumpClose.setOnClickListener { findNavController().popBackStack() }
+        container().store.dispatch(StoreAction.SectionJump(id, score))
+        if (Motion.enabled(requireContext())) Motion.stepIn(b.jumpResultCard, enter = true)
+    }
+
+    /** Sakrash testini boshidan boshlash (veb `JumpTest::start`). */
+    private fun restartJump() {
+        results.clear()
+        jumpOutcomes.clear()
+        tried.clear()
+        xpGained = 0
+        b.jumpResultCard.visibility = View.GONE
+        // Tugmalar holatini `showExercise` o'zi belgilaydi (310–313-satrlar) —
+        // burada qayta yozilmaydi: bitta manba, ikki xil xulq bo'lmasligi uchun.
+        showExercise(0)
+        b.exScroll.scrollTo(0, 0)
     }
 
     /** Kun yakunlandi deb belgilash — foydalanuvchi roziligi bilan. */

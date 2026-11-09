@@ -28,13 +28,15 @@ class ContentRepositoryTest {
     private fun repo(): ContentRepository = ContentRepository(FsAssetSource(assetsDir()))
 
     @Test
-    fun `manifest haqiqiy sonlarni beradi A1 da 7 kun 84 so'z 211 mashq`() {
+    fun `manifest haqiqiy sonlarni beradi A1 da 7 kun 84 so'z 246 mashq`() {
         val r = repo()
         val info = r.levelInfo(Levels.A1)
         assertNotNull(info)
         assertEquals(7, info!!.days)
         assertEquals(84, info.vocab)
-        assertEquals(211, info.exercises)
+        // 246 — PR #6 dan keyingi eksport (`manifest.json` 2026-11-08:
+        // 5 YANGI mashq turi qo'shildi, 211 → 246). Son fayldan oladi.
+        assertEquals(246, info.exercises)
         assertTrue(info.bytes > 0)
         assertEquals(listOf(Levels.A1), r.levels())
     }
@@ -48,12 +50,13 @@ class ContentRepositoryTest {
         assertEquals(84, b.vocab.size)
         // `allExercises` vebdagidek Mock Examni OZ ICHIGA OLMAYDI
         // (`src/content/index.ts::allExercises` — grammar/reading/listening/tests).
-        // manifest 211 eksport skripti sanagan yig'indi (core + mockExam).
+        // manifest 246 eksport skripti sanagan yig'indi (core + mockExam) —
+        // PR #6 dan keyin (5 yangi tur: 203 → 238 core, mock 8 o'sgarisiz).
         val core = r.allExercises(Levels.A1).size
         val mock = r.mockExamExercises(Levels.A1).size
-        assertEquals("core mashqlar", 203, core)
+        assertEquals("core mashqlar", 238, core)
         assertEquals("Mock Exam mashqlari", 8, mock)
-        assertEquals("manifest = core + mock", 211, core + mock)
+        assertEquals("manifest = core + mock", 246, core + mock)
     }
 
     @Test
@@ -89,7 +92,8 @@ class ContentRepositoryTest {
     @Test
     fun `mashq turlari soni (A1)`() {
         // `allExercises` — Mock Examdan tashqari (veb bilan bir). Mock sanog'i
-        // alohida tekshiriladi: 203 + 8 = 211 (manifest).
+        // alohida tekshiriladi: 238 + 8 = 246 (manifest).
+        // PR #6 (2026-11-08) 5 YANGI tur qo'shdi — sonlar `a1.json`dan olindi.
         val byKind = repo().allExercises(Levels.A1).groupingBy { it.kind }.eachCount()
         assertEquals(mapOf(
             Kinds.MULTIPLE_CHOICE to 62,
@@ -98,6 +102,11 @@ class ContentRepositoryTest {
             Kinds.TRANSLATION to 22,
             Kinds.MATCHING to 18,
             Kinds.WORD_ORDER to 15,
+            Kinds.MULTI_SELECT to 7,
+            Kinds.DROPDOWN_CLOZE to 7,
+            Kinds.CATEGORIZE to 7,
+            Kinds.SEQUENCE to 7,
+            Kinds.SHORT_ANSWER to 7,
         ), byKind)
         val mockKind = repo().mockExamExercises(Levels.A1).groupingBy { it.kind }.eachCount()
         assertEquals(mapOf(

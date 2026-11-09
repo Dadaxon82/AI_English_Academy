@@ -51,6 +51,17 @@
                 android:contentDescription="@string/mascot_alt" />
         </LinearLayout>
 
+        <!-- Joriy bo'lim banneri (veb `src/components/SectionBanner.tsx`).
+             Kodda `Rows.sectionBanner(...)` bilan to'ldiriladi va FAQAT
+             Boshqaruv hamda O'quv yo'li ekranlari chaqiradi (vebda ham
+             shu ikki sahifada). Bo'sh bo'lsa ko'rinmaydi. -->
+        <LinearLayout
+            android:id="@+id/bannerBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone" />
+
         <LinearLayout
             android:id="@+id/rows"
             android:layout_width="match_parent"

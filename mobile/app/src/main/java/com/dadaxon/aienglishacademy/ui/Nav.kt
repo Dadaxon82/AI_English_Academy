@@ -35,6 +35,14 @@ object Nav {
     /** Batafsil ekranlar: kontent id'si. */
     const val ARG_ID = "id"
 
+    /**
+     * Bo'lim SAKRASH testi: bo'lim id'si (`a1-2`). Alohida — chunki kun testi
+     * (`ARG_DAY_ID`) natijasini `passedTests[<test id>]`ga yozadi, sakrash
+     * testini esa `passedTests["jump:<bo'lim>"]`ga va kunlarni ochadi
+     * (`domain/Sections.kt::applySectionJump`, veb `store.tsx::section-jump`).
+     */
+    const val ARG_SECTION_ID = "sectionId"
+
     /** Barcha batafsil manzillar (orqaga qaytishda ro'yxat holati saqlanadi). */
     val DETAIL_DESTINATIONS = setOf(
         R.id.exerciseFragment,
@@ -101,6 +109,32 @@ object Nav {
 
     fun open(f: Fragment, destId: Int, id: String, title: String) =
         f.findNavController().navigate(destId, args(ARG_ID to id, ARG_TITLE to title))
+
+    /**
+     * Bo'lim SAKRASH testini ochish (veb `Sections.tsx::JumpTest`).
+     *
+     * `ids` — test ochilganda HISOBLANGAN to'plam (`jumpPlan`); pleyerga
+     * tayyor ro'yxat beriladi va tartib O'ZGARMAYDI (manba `section_test` —
+     * baholash testi, mashq zanjiri emas). `dayId` BERILMAYDI: sakrashda kun
+     * testi emas, bo'lim o'tish yozuvi qilinadi (`ARG_SECTION_ID`).
+     */
+    fun openJumpTest(
+        f: Fragment,
+        ids: List<String>,
+        sectionId: String,
+        title: String,
+    ) {
+        f.findNavController().navigate(
+            R.id.exerciseFragment,
+            args(
+                ARG_EXERCISE_IDS to ArrayList(ids),
+                ARG_CONTENT_ID to sectionId,
+                ARG_SOURCE to com.dadaxon.aienglishacademy.data.Source.SECTION_TEST,
+                ARG_TITLE to title,
+                ARG_SECTION_ID to sectionId,
+            ),
+        )
+    }
 
     /** Bundledagi bo'sh bo'lishi mumkin bo'lmagan kalit; yo'q bo'lsa null. */
     fun idArg(f: Fragment): String? = f.arguments?.getString(ARG_ID)?.takeIf { it.isNotBlank() }

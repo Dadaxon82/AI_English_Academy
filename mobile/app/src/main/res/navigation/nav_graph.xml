@@ -29,6 +29,14 @@
         android:name="com.dadaxon.aienglishacademy.ui.LearningPathFragment"
         android:label="@string/nav_path" />
 
+    <!-- Bo'limlar (veb `/sections`, `src/pages/Sections.tsx`) — A1.1 … C1.2
+         kartalari va sakrash testi. Pastki panelda Yo'l yonida (veb chap
+         menyusi bilan bir xil tartib). -->
+    <fragment
+        android:id="@+id/sectionsFragment"
+        android:name="com.dadaxon.aienglishacademy.ui.SectionsFragment"
+        android:label="@string/nav_sections" />
+
     <fragment
         android:id="@+id/vocabularyFragment"
         android:name="com.dadaxon.aienglishacademy.ui.VocabularyFragment"

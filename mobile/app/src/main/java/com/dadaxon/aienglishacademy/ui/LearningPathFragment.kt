@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.dadaxon.aienglishacademy.R
 import com.dadaxon.aienglishacademy.container
 import com.dadaxon.aienglishacademy.data.DailyPlanDay
@@ -76,6 +77,10 @@ class LearningPathFragment : Fragment() {
         val bundleSafe = bundle ?: return
         val currentDayId = nextDayId(level, days.map { it.id }, d.path.completedDays)
 
+        // Joriy bo'lim banneri — veb `LearningPath.tsx` tepasidagi
+        // `SectionBanner` bilan bir xil joy (`currentSectionInfo` ma'lumoti).
+        SectionBannerUi.show(this, b.bannerBox)
+
         /* Umumiy xo'r: nechta kun yakunlangan. */
         b.rows.addView(
             Rows.statRow(
@@ -89,6 +94,14 @@ class LearningPathFragment : Fragment() {
                 Rows.statTile(ctx, level, getString(R.string.settings_level_current)),
                 Rows.statTile(ctx, d.settings.targetLevel, getString(R.string.settings_level_target)),
             ),
+        )
+
+        // "Barcha bo'limlar (A1.1 … C1.2)" — veb'dagi havola bilan bir xil
+        // joy (statistika plitkalari ostida).
+        b.rows.addView(
+            Rows.button(ctx, getString(R.string.sec_link_all)).apply {
+                setOnClickListener { findNavController().navigate(R.id.sectionsFragment) }
+            },
         )
 
         /* ---- darslar KETMA-KETLIGI (zanjir kartasi) ----
