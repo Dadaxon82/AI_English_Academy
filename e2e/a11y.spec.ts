@@ -8,7 +8,7 @@ import { disableHearts, skipThroughLesson } from './helpers'
  */
 const ROUTES = [
   'dashboard', 'path', 'sections', 'vocabulary', 'grammar', 'reading', 'listening',
-  'writing', 'speaking', 'mock-exam', 'progress', 'errors', 'settings', 'onboarding',
+  'writing', 'speaking', 'mock-exam', 'progress', 'errors', 'settings', 'onboarding', 'quick',
 ]
 
 for (const scheme of ['light', 'dark'] as const) {
@@ -53,6 +53,19 @@ for (const scheme of ['light', 'dark'] as const) {
     found.push(...(await seriousViolations(page)))
     await lesson.getByRole('button', { name: /Keyingi mashq|Yakunlash/ }).click()
     await skipThroughLesson(page)
+    found.push(...(await seriousViolations(page)))
+    expect([...new Set(found)], 'serious/critical axe buzilishlari').toEqual([])
+  })
+}
+
+for (const scheme of ['light', 'dark'] as const) {
+  test(`a11y ${scheme}: «5 daqiqa» sessiyasi ichida`, async ({ page }) => {
+    await page.emulateMedia({ colorScheme: scheme })
+    await page.goto('quick')
+    await page.getByRole('button', { name: /Boshlash/ }).click()
+    await expect(page.getByRole('button', { name: 'Bilaman →' })).toBeVisible()
+    const found = await seriousViolations(page)
+    await page.getByRole('button', { name: /tarjimani ko‘rish/ }).click()
     found.push(...(await seriousViolations(page)))
     expect([...new Set(found)], 'serious/critical axe buzilishlari').toEqual([])
   })

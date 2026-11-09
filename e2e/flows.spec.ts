@@ -124,3 +124,25 @@ test('xarita: tugun bosilsa bo‘lim darsi ochiladi, yakunlangach ball tugun ust
   await expect(page.getByRole('button', { name: /^Grammatika: .* — natija \d+%/ }).first()).toBeVisible()
   await expectClean(page, errors)
 })
+
+test('«5 daqiqa»: dashboard → sessiya, surish va tugmalar bilan baholash', async ({ page }) => {
+  const errors = watchErrors(page)
+  await page.goto('dashboard')
+  await page.getByRole('link', { name: '5 daqiqa boshlash' }).click()
+  await expect(page).toHaveURL(/\/quick$/)
+  await page.getByRole('button', { name: /Boshlash/ }).click()
+  const card = page.getByRole('button', { name: /tarjimani ko‘rish/ })
+  await expect(card).toBeVisible()
+  const counter = page.getByText(/^1 \/ \d+$/)
+  await expect(counter).toBeVisible()
+  // O'ngga surish — «Bilaman» (sichqoncha/barmoq bilan bir xil Pointer hodisalari).
+  const box = (await card.boundingBox())!
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2)
+  await page.mouse.down()
+  await page.mouse.move(box.x + box.width / 2 + box.width * 0.4, box.y + box.height / 2, { steps: 8 })
+  await page.mouse.up()
+  await expect(page.getByText(/^2 \/ \d+$/)).toBeVisible()
+  await page.getByRole('button', { name: '← Yana' }).click()
+  await expect(page.getByText(/^3 \/ \d+$/)).toBeVisible()
+  await expectClean(page, errors)
+})

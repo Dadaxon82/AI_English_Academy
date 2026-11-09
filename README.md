@@ -7,6 +7,7 @@ Loyiha talabnomasi (`AI English Academy_v2.docx`) to'liq bajarilgan:
 - ✅ To'liq **o'zbek tilli interfeys**
 - ✅ **A1, A2, B1, B2, C1** darajalar; daraja faqat **ko'p ko'nikma dalili** bilan ko'tariladi (XP yoki kunlar emas), mock imtihon esa doim **"mashq uchun yaratilgan namuna"** deb yozilgan
 - ✅ **90 daqiqalik** asosiy kunlik reja (Vocab 10 / Grammar 15 / Reading 15 / Listening 15 / Writing 20 / Speaking 15) — zaif ko'nikma va imtihon sanasiga qarab qayta taqsimlanadi
+- ✅ **«5 daqiqa» tezkor sessiya** (`/quick`) — takror + bitta mavzudan yangi so'zlar, surish bilan baholash (5j-bo'lim)
 - ✅ **14 sahifa**: Dashboard, Learning Path, Vocabulary, Grammar, Reading, Listening, Writing, Speaking, Mock Exam, Progress, Error Log, Settings, Login, 404
 - ✅ Premium **dark/light** mavzu, to'liq **responsiv**; har joyda **loading / empty / success / error** holatlari
 - ✅ **SRS lug'at** (SM-2): har so'z statistikasida tekshiruvlar ikki marta sanalmaydi; Reading matnidan saqlangan glossariy so'zlari ham Lug'at bo'limida qayta ko'rinadi va takrorlanadi
@@ -32,7 +33,7 @@ Loyiha talabnomasi (`AI English Academy_v2.docx`) to'liq bajarilgan:
 <!-- STATS:START -->
 _Avtomatik o‘lchandi (`npm run stats`, 2026-11-09). Qo‘lda tahrirlamang._
 
-**Testlar:** vitest **383/383** (34 fayl) · **Kod:** veb 134 fayl / 36713 qator (TS/TSX), mobil 93 fayl / 25583 qator (Kotlin)
+**Testlar:** vitest **396/396** (36 fayl) · **Kod:** veb 139 fayl / 37799 qator (TS/TSX), mobil 93 fayl / 25583 qator (Kotlin)
 
 | Daraja | Kun | Lug‘at | Mashq | Turlar | Audio fayl / tinglash | Mock |
 |---|---|---|---|---|---|---|
@@ -621,6 +622,36 @@ smoke, `render:check` 16 marshrut.
 
 **Mobilda hali YO'Q** — xarita (`DuoPathMap`/`pathMap`) mobil tomonda yo'q (§5f
 ro'yxatidagidek); PR #9 shu paritetni ochiq qoldiradi.
+
+## 5j. «5 daqiqa» tezkor sessiya — Drops g'oyasi, 1-bosqich (2026-11-09)
+
+`docs/TIL_PLATFORMALARI_TAHLIL_VA_PROMPT.md` dagi rejaning 1-bosqichi. G'oya Drops'dan
+olingan (qisqa kunlik odat + vizual karta + surish), nom, dizayn va kontent bizniki.
+**Faqat veb**: `mobile/` ga tegilmagan, mobil ilovaga keyingi PR'da qo'shiladi.
+
+| Nima | Qayerda |
+|---|---|
+| Karta navbati: avval muddati kelgan SRS so'zlari (xato qilinganlar birinchi, ko'pi bilan 12 ta), keyin **bitta mavzudan** 5 ta yangi so'z (faqat asosiy lug'atdan, chunki glossariy so'zlarida misol gap yo'q) | `src/lib/quickSession.ts::buildQuickDeck` |
+| Surish: o'ngga «Bilaman» (`good`), chapga «Yana» (`again`). Chegara 80 px yoki karta enining 25 % i (qaysi biri katta bo'lsa) | `swipeGrade` |
+| Sahifa `/quick`: rasm (`vocabEmoji.ts`, faqat aniq tasvirlanadigan so'zlarda), talaffuz, ← / → / Space, har harakatning tugma muqobili | `src/pages/QuickSession.tsx` |
+| Dashboard kartasi «5 daqiqa boshlash» | `src/pages/Dashboard.tsx` |
+
+**Halol qoidalar:**
+- Vaqt mavjud devor-soat taymeri bilan o'lchanadi (`timer.ts`, sessiya kaliti `quick-<kun>`).
+  Sahifa yangilansa qolgan vaqt saqlanadi. Sahifadan chiqilsa taymer **pauza** qilinadi,
+  ko'rilmagan vaqt sanalmaydi.
+- Vaqt yoki kartalar tugasa taymer to'xtaydi va haqiqatan o'tgan sekundlar kunlik faollikka
+  (`activity[kun].skills.vocabulary`) yoziladi.
+- Zanjir (streak) uchun yangi qoida yo'q. Mavjud `gameCore.ts::activeDayKeys` qoidasi
+  (kunda ≥ 60 s faollik) 5 daqiqalik sessiyani o'zi qamraydi, bu testda tekshirilgan.
+- 90 daqiqalik kunlik reja (`planning.ts`) o'zgarmaydi, «5 daqiqa» qo'shimcha «minimal kun».
+- Karta yo'q bo'lsa (navbat bo'sh, hamma so'z o'rganilgan) «Boshlash» tugmasi ko'rsatilmaydi,
+  o'rniga sababi va Lug'at bo'limiga havola chiqadi.
+
+**Testlar:** `src/test/quick-session.test.ts` (navbat tartibi, chegaralar, surish, zanjir),
+`src/test/quick-session-page.test.tsx` (boshlash, klaviatura/tugma baholash, vaqt tugashi,
+pauza va qayta ochilganda davom etish), e2e `flows.spec.ts` (Dashboard → sessiya → surish),
+`a11y.spec.ts` (`/quick` va sessiya ichida, light/dark, kompyuter va 375 px).
 
 ## 6. Arxitektura qisqacha
 
