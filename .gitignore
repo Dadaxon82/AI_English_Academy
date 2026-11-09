@@ -52,3 +52,7 @@ supabase/.temp
 screenshots
 # hujjat skrinshotlari (qo'lda olingan) — repoga kiradi
 !docs/screenshots
+
+# Playwright e2e natijalari
+test-results
+playwright-report
