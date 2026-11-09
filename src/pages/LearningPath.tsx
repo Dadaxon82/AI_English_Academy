@@ -26,6 +26,7 @@ import type { CheckResult } from '../lib/check'
 import { buildChain, chainAudit, exerciseIdsForSection } from '../lib/lessonChain'
 import { buildPathLayout, focalNode } from '../lib/pathMap'
 import { pathMilestoneSpecs, pathLevel } from '../lib/sections'
+import { stepDoneChecker } from '../lib/stepProgress'
 import { skillLabelUz } from '../lib/planning'
 import { useStore } from '../lib/storeContext'
 import { currentElapsed, formatDuration } from '../lib/timer'
@@ -64,6 +65,7 @@ export default function LearningPath() {
   // Baholangan daraja (`settings.currentLevel`) bundan o'zgarmaydi.
   const pLevel = pathLevel(data)
   const bundle = useMemo(() => getBundle(pLevel), [pLevel])
+  const stepDone = useMemo(() => stepDoneChecker(data), [data])
   const days = bundle.days
   const completed = data.path.completedDays
 
@@ -119,8 +121,8 @@ export default function LearningPath() {
   )
 
   const layout = useMemo(
-    () => buildPathLayout(chains, 360, pathMilestoneSpecs(pLevel)),
-    [chains, pLevel],
+    () => buildPathLayout(chains, 360, pathMilestoneSpecs(pLevel), stepDone),
+    [chains, pLevel, stepDone],
   )
   const focus = useMemo(() => focalNode(layout), [layout])
   // Xaritada tanlangan tugun — bosilganda shu KUN kartasi pastda ochiladi

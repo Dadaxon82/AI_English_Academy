@@ -229,6 +229,11 @@ describe('Gapirish — mikrofonsiz matnli javob ham tahlil qilinadi', () => {
     expect(screen.getByText('Hajm')).toBeInTheDocument()
     expect(screen.getByText('Ravonlik').nextElementSibling).toHaveTextContent('—')
   })
+  it('SpeechRecognition yo‘q brauzerda (jsdom ~ Safari/Firefox) oldindan ochiq aytiladi', async () => {
+    renderPage(<Speaking />)
+    await advance()
+    expect(screen.getByText(/Bu brauzer nutqni matnga aylantirmaydi/)).toBeInTheDocument()
+  })
 })
 
 /* Garov ("Double or Nothing") — telefon `SettingsFragment`i bilan BIR XIL

@@ -159,6 +159,8 @@ export default function Speaking() {
 
   const history = data.speaking.filter((s) => s.taskId === selectedId)
   const canRecordButDenied = recState === 'denied' || recState === 'unsupported'
+  // Brauzer imkoniyati (ma'lumot emas) — render paytida o'qish xavfsiz.
+  const transcribeSupported = getRecognizer() !== null
 
   if (lesson && task) return <SpeakingLesson task={task} onClose={() => setLesson(false)} />
 
@@ -234,6 +236,14 @@ export default function Speaking() {
               </div>
             )}
 
+            {/* Safari / Firefox: SpeechRecognition yo'q — oldindan ochiq aytiladi (yozib bo'lgandan keyin emas). */}
+            {!transcribeSupported && recState !== 'unsupported' && recState !== 'denied' && (
+              <InfoBanner tone="muted">
+                Bu brauzer nutqni matnga aylantirmaydi (masalan, Safari yoki Firefox). Ovozingizni yozib, qayta tinglashingiz
+                mumkin, lekin baho uchun javobingizni pastdagi matn maydoniga ham yozing. Chrome yoki Edge’da transkript
+                avtomatik bo‘ladi.
+              </InfoBanner>
+            )}
             {recError && <InfoBanner tone="warn">{recError}</InfoBanner>}
             {canRecordButDenied && <InfoBanner tone="warn">Mikrofon mavjud emas — quyidagi matnli maydondan foydalaning.</InfoBanner>}
 
