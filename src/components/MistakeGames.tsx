@@ -4,7 +4,7 @@
  */
 
 import { TIMED_SECONDS, modeCount, type Mistake, type MistakeMode } from '../lib/mistakes'
-import { chunkyGreen } from './LessonPlayer'
+import { chunkyGreen } from './chunky'
 import { MascotFigure } from './Mascot'
 import { Card } from './ui'
 

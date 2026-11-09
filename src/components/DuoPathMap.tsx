@@ -26,14 +26,14 @@ const NODE_R = 30
 const DEPTH = 7
 
 const TOP: Record<PathNode['status'], string> = {
-  done: '#f5b301',
-  current: '#22c55e',
-  locked: '#e2e8f0',
+  done: 'var(--map-done)',
+  current: 'var(--map-current)',
+  locked: 'var(--map-locked)',
 }
 const BOTTOM: Record<PathNode['status'], string> = {
-  done: '#c98f00',
-  current: '#15803d',
-  locked: '#b8c2d0',
+  done: 'var(--map-done-edge)',
+  current: 'var(--map-current-edge)',
+  locked: 'var(--map-locked-edge)',
 }
 
 function skillGlyphPath(skill: PathNode['skill'], isTest: boolean): string {
@@ -160,25 +160,25 @@ export default function DuoPathMap({ layout, selectedId, onSelect, focusId }: Du
             <g key={`chest-${c.dayId}`} transform={`translate(${c.x} ${c.y})`} aria-hidden>
               <title>{c.open ? 'Kun yakunlandi' : 'Kun yarmi — davom eting!'}</title>
               <ellipse cx={0} cy={26} rx={30} ry={6} fill="var(--border)" opacity={0.5} />
-              <rect x={-26} y={-6} width={52} height={30} rx={6} fill={c.open ? '#b7791f' : '#e2e8f0'} stroke={c.open ? '#7c4a03' : '#b8c2d0'} strokeWidth={2.5} />
-              <path d="M-28 -6 Q0 -30 28 -6 Z" fill={c.open ? '#d69e2e' : '#e2e8f0'} stroke={c.open ? '#7c4a03' : '#b8c2d0'} strokeWidth={2.5} />
-              <rect x={-6} y={-2} width={12} height={12} rx={2} fill={c.open ? '#f5b301' : '#b8c2d0'} />
+              <rect x={-26} y={-6} width={52} height={30} rx={6} fill={c.open ? 'var(--map-chest)' : 'var(--map-locked)'} stroke={c.open ? 'var(--map-chest-edge)' : 'var(--map-locked-edge)'} strokeWidth={2.5} />
+              <path d="M-28 -6 Q0 -30 28 -6 Z" fill={c.open ? 'var(--map-chest-lid)' : 'var(--map-locked)'} stroke={c.open ? 'var(--map-chest-edge)' : 'var(--map-locked-edge)'} strokeWidth={2.5} />
+              <rect x={-6} y={-2} width={12} height={12} rx={2} fill={c.open ? 'var(--map-chest-lock)' : 'var(--map-locked-edge)'} />
             </g>
           ))}
 
           {/* ---- Bo'lim chegarasi: sovrin tuguni ---- */}
           {layout.milestones.map((m) => (
             <g key={`ms-${m.afterDayId}`} transform={`translate(${m.x} ${m.y})`} role="img" aria-label={`${m.label}: ${m.remaining > 0 ? `${m.remaining} ta vazifa qoldi` : 'ochildi'}`}>
-              <circle r={40} cy={DEPTH} fill={m.reached ? '#c98f00' : '#b8c2d0'} />
-              <circle r={40} fill={m.reached ? '#f5b301' : '#e2e8f0'} stroke={m.reached ? '#c98f00' : '#8a96a8'} strokeWidth={3} strokeDasharray={m.reached ? undefined : '7 5'} />
+              <circle r={40} cy={DEPTH} fill={m.reached ? 'var(--map-done-edge)' : 'var(--map-locked-edge)'} />
+              <circle r={40} fill={m.reached ? 'var(--map-done)' : 'var(--map-locked)'} stroke={m.reached ? 'var(--map-done-edge)' : 'var(--map-locked-ink)'} strokeWidth={3} strokeDasharray={m.reached ? undefined : '7 5'} />
               <text y={13} textAnchor="middle" fontSize="38" opacity={m.reached ? 1 : 0.55}>
                 🏆
               </text>
-              <rect x={-110} y={56} width={220} height={46} rx={14} fill={m.reached ? '#f5b301' : 'var(--panel)'} stroke={m.reached ? '#c98f00' : 'var(--border)'} strokeWidth={2} />
-              <text y={75} textAnchor="middle" fontSize="13" fontWeight="800" fill={m.reached ? '#fff' : 'var(--text)'}>
+              <rect x={-110} y={56} width={220} height={46} rx={14} fill={m.reached ? 'var(--map-done)' : 'var(--panel)'} stroke={m.reached ? 'var(--map-done-edge)' : 'var(--border)'} strokeWidth={2} />
+              <text y={75} textAnchor="middle" fontSize="13" fontWeight="800" fill={m.reached ? 'var(--map-done-ink)' : 'var(--text)'}>
                 {m.label}
               </text>
-              <text y={93} textAnchor="middle" fontSize="11.5" fontWeight="700" fill={m.reached ? '#fff' : 'var(--muted)'}>
+              <text y={93} textAnchor="middle" fontSize="11.5" fontWeight="700" fill={m.reached ? 'var(--map-done-ink)' : 'var(--muted)'}>
                 {m.reached ? 'Ochildi!' : `${m.remaining} ta vazifa qoldi`}
               </text>
             </g>
@@ -203,7 +203,7 @@ export default function DuoPathMap({ layout, selectedId, onSelect, focusId }: Du
                   {isFocus && (
                     <>
                       <circle r={NODE_R + 12} cy={DEPTH / 2} fill="none" stroke="var(--panel-2)" strokeWidth={8} />
-                      <circle r={NODE_R + 12} cy={DEPTH / 2} fill="none" stroke="#22c55e" strokeWidth={8} opacity={0.35} />
+                      <circle r={NODE_R + 12} cy={DEPTH / 2} fill="none" stroke="var(--map-current)" strokeWidth={8} opacity={0.35} />
                     </>
                   )}
                   {isSelected && <circle r={NODE_R + 10} cy={DEPTH / 2} fill="none" stroke="var(--accent)" strokeWidth={3} opacity={0.6} />}
@@ -226,7 +226,7 @@ export default function DuoPathMap({ layout, selectedId, onSelect, focusId }: Du
                   <path
                     d={skillGlyphPath(node.skill, node.isTest)}
                     fill="none"
-                    stroke={locked ? '#8a96a8' : '#fff'}
+                    stroke={locked ? 'var(--map-locked-ink)' : '#fff'}
                     strokeWidth={2.4}
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -243,7 +243,7 @@ export default function DuoPathMap({ layout, selectedId, onSelect, focusId }: Du
                     <rect x={-50} y={-16} width={100} height={30} rx={10} fill="var(--panel)" stroke="var(--border)" strokeWidth={2} />
                     <path d="M-7 13 L0 21 L7 13 Z" fill="var(--panel)" stroke="var(--border)" strokeWidth={2} />
                     <rect x={-8} y={10} width={16} height={5} fill="var(--panel)" />
-                    <text y={4} textAnchor="middle" fontSize="12" fontWeight="900" fill="#16a34a" letterSpacing="0.5">
+                    <text y={4} textAnchor="middle" fontSize="12" fontWeight="900" fill="var(--map-current-ink)" letterSpacing="0.5">
                       BOSHLASH
                     </text>
                     </g>

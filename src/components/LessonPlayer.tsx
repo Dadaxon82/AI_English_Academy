@@ -21,12 +21,8 @@ import ExerciseRunner from './ExerciseRunner'
 import { GameIcon } from './icons'
 import { MascotExerciseFeedback, MascotFigure } from './Mascot'
 import { InfoBanner } from './ui'
+import { CHUNKY, CHUNKY_NO, chunkyGreen, chunkyPlain } from './chunky'
 
-const chunky =
-  'inline-flex items-center justify-center rounded-2xl px-6 py-3 text-sm font-extrabold uppercase tracking-wide border-b-4 ' +
-  'transition-all active:translate-y-0.5 active:border-b-2 disabled:opacity-50 disabled:cursor-not-allowed'
-export const chunkyGreen = `${chunky} bg-emerald-700 hover:bg-emerald-800 text-white border-emerald-900`
-export const chunkyPlain = `${chunky} bg-[var(--panel)] border-2 border-b-4 hover:bg-[var(--panel-2)]`
 
 interface QueueItem {
   step: LessonStep
@@ -424,7 +420,7 @@ function SpeakStep({
             <span />
           )}
           {result && (
-            <button type="button" onClick={onNext} className={result.correct ? chunkyGreen : `${chunky} bg-rose-500 hover:bg-rose-400 text-white border-rose-700`}>
+            <button type="button" onClick={onNext} className={result.correct ? chunkyGreen : `${CHUNKY} px-6 py-3 ${CHUNKY_NO}`}>
               Keyingi mashq
             </button>
           )}
