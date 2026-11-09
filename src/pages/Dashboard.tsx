@@ -24,6 +24,7 @@ import type { Skill, VocabularyItem } from '../content/types'
 import { buildChain, exerciseIdsForSection } from '../lib/lessonChain'
 import { buildDayTasks, nextDayId, skillLabelUz } from '../lib/planning'
 import { buildPathLayout, focalNode } from '../lib/pathMap'
+import { pathMilestoneSpecs } from '../lib/sections'
 import { levelLabel } from '../lib/skillScoring'
 import { lastNDays, useStore } from '../lib/store'
 import { todayKey } from '../lib/types'
@@ -137,7 +138,10 @@ export default function Dashboard() {
       ),
     [bundle, currentDayIdx, data.path.completedDays],
   )
-  const pathLayout = useMemo(() => buildPathLayout(pathChains, 320), [pathChains])
+  const pathLayout = useMemo(
+    () => buildPathLayout(pathChains, 340, pathMilestoneSpecs(data.settings.currentLevel)),
+    [pathChains, data.settings.currentLevel],
+  )
   const pathFocus = useMemo(() => focalNode(pathLayout), [pathLayout])
 
   if (!ready) return <LoadingBlock label="Ma'lumotlaringiz yuklanmoqda…" />

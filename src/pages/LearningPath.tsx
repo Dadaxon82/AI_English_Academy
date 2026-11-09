@@ -25,6 +25,7 @@ import type { DailyPlanDay, DaySection, Skill, VocabularyItem } from '../content
 import type { CheckResult } from '../lib/check'
 import { buildChain, chainAudit, exerciseIdsForSection } from '../lib/lessonChain'
 import { buildPathLayout, focalNode } from '../lib/pathMap'
+import { pathMilestoneSpecs } from '../lib/sections'
 import { skillLabelUz } from '../lib/planning'
 import { useStore } from '../lib/store'
 import { currentElapsed, formatDuration } from '../lib/timer'
@@ -114,7 +115,10 @@ export default function LearningPath() {
     [days, completed, currentIdx, bundle],
   )
 
-  const layout = useMemo(() => buildPathLayout(chains, 360), [chains])
+  const layout = useMemo(
+    () => buildPathLayout(chains, 360, pathMilestoneSpecs(data.settings.currentLevel)),
+    [chains, data.settings.currentLevel],
+  )
   const focus = useMemo(() => focalNode(layout), [layout])
   // Xaritada tanlangan tugun — bosilganda shu KUN kartasi pastda ochiladi
   // (bitta bo'lim emas, butun kun: ExerciseRunner/test mantiqi kun darajasida).
@@ -181,8 +185,8 @@ export default function LearningPath() {
           <Chip>{chains.length} kun</Chip>
         </div>
         <p className="text-xs muted">
-          Har doira — bitta bo'lim (yoki bo'lim testi). Yashil — tugatilgan, ko'k — joriy va bosish mumkin, kulrang —
-          qulflangan. Qahramon joriy qadamda turadi.
+          Har tanga — bitta bo‘lim, 🏆 — kun yakuniy testi. Oltin — tugatilgan, yashil — joriy (bosing), kulrang —
+          qulflangan. Sandiq — kun yarmi, katta kubok — keyingi bo‘lim ochiladigan joy. Qahramon joriy qadamda turadi.
         </p>
         <DuoPathMap
           layout={layout}

@@ -4,9 +4,9 @@
  * zanjiri) EKRAN KOORDINATALARIGA aylantiradi — hisob-kitob (qulf holati,
  * qadamlar tartibi) o'zgarmaydi, faqat chizish uchun (x, y) qo'shiladi.
  *
- * Zigzag qoidasi: tugunlar ustunlar bo'ylab chapdan o'ngga, so'ng o'ngdan
- * chapga (DULO'ning asosiy o'quv yo'li xaritasidagi vizual naqsh) siljiydi.
- * `COLS` — bir "qatorda" nechta tugun (bosqichlar ko'p bo'lsa qator almashadi).
+ * Joylashuv: tugunlar markaz atrofida YUMSHOQ TO'LQIN bo'ylab (`WAVE`)
+ * pastga tushadi; kun yarmida sandiq belgisi, har kun oldidan ajratgich,
+ * bo'lim oxirida sovrin (keyingi bo'lim) tuguni.
  */
 
 import type { DayChain } from './lessonChain'
@@ -41,22 +41,66 @@ export interface PathUnit {
   status: NodeStatus
   /** Shu bosqichning birinchi tuguni — unit banner shu node'dan boshlanadi. */
   firstNodeOrder: number
+  /** Banner yuqori chetining y koordinatasi (tugunlar bilan ustma-ust tushmaydi). */
+  bannerY: number
+  /** Kun qadamlari: jami va tugatilgan (banner ustidagi "3/7"). */
+  steps: number
+  stepsDone: number
+}
+
+/**
+ * Bo'lim oxiridagi "sovrin" tugun: keyingi bo'lim shu yerda ochiladi.
+ * `remaining` — bo'lim kunlaridagi hali tugatilmagan qadamlar (vazifalar) soni.
+ */
+export interface PathMilestone {
+  afterDayId: string
+  /** Ochiladigan bo'lim nomi, masalan "A1.2-bo‘lim" */
+  label: string
+  x: number
+  y: number
+  total: number
+  remaining: number
+  reached: boolean
+}
+
+/** Chaqiruvchi beradigan bo'lim chegarasi (qaysi kunlardan keyin, qaysi kunlar hisoblanadi). */
+export interface MilestoneSpec {
+  afterDayId: string
+  sectionDayIds: string[]
+  label: string
+}
+
+/** Kun yarmidagi sandiq belgisi (bosilmaydi — "yarim yo'l" belgisi). */
+export interface PathChest {
+  dayId: string
+  x: number
+  y: number
+  /** Kun tugatilganmi (ochiq sandiq) */
+  open: boolean
 }
 
 export interface PathLayout {
   nodes: PathNode[]
   units: PathUnit[]
+  milestones: PathMilestone[]
+  chests: PathChest[]
   width: number
   height: number
 }
 
-/** Bir qatorda nechta tugun — undan keyin yo'l teskari tomonga buriladi. */
-const COLS = 3
-/** Tugunlar orasidagi vertikal masofa (px). */
-const ROW_GAP = 104
 /** Chekka bo'shlig'i (px). */
-const PAD_X = 48
 const PAD_TOP = 56
+/** Bosqich banneri balandligi va undan birinchi tugun markazigacha masofa. */
+export const BANNER_H = 28
+const BANNER_TO_NODE = 96
+/** Oxirgi tugundan keyingi bosqich ajratgichiga qadar bo'shliq. */
+const AFTER_UNIT = 58
+/** Tugunlar orasidagi vertikal qadam (yo'l bo'ylab). */
+const STEP_GAP = 92
+/** Yumshoq to'lqin: markazdan gorizontal siljish (kenglik ulushi). */
+const WAVE = [0, -0.17, -0.25, -0.17, 0, 0.17, 0.25, 0.17]
+/** Sovrin tuguni uchun ajratilgan vertikal joy (doira + yorliq). */
+const MILESTONE_SPACE = 170
 
 function statusOf(chainState: (typeof ChainState)[keyof typeof ChainState]): NodeStatus {
   if (chainState === ChainState.DONE) return 'done'
@@ -64,16 +108,6 @@ function statusOf(chainState: (typeof ChainState)[keyof typeof ChainState]): Nod
   return 'locked'
 }
 
-/**
- * Bitta ustundagi x-pozitsiya (0..COLS-1 ustun indeksi, qator juft/toq bo'lsa
- * yo'nalish teskari). Markazga nisbatan kenglik `width` bo'yicha hisoblanadi.
- */
-function colX(col: number, width: number): number {
-  const cols: number = COLS
-  if (cols === 1) return width / 2
-  const usable = width - PAD_X * 2
-  return PAD_X + (usable * col) / (cols - 1)
-}
 
 /**
  * Kunlar zanjiridan (`buildChain` natijasi) butun yo'l xaritasini quradi.
@@ -83,15 +117,22 @@ function colX(col: number, width: number): number {
  * `width` — chizish maydoni kengligi (responsive: chaqiruvchi tomonidan
  * beriladi, masalan konteyner kengligi yoki standart 360).
  */
-export function buildPathLayout(chains: readonly DayChain[], width = 360): PathLayout {
+export function buildPathLayout(chains: readonly DayChain[], width = 360, milestoneSpecs: readonly MilestoneSpec[] = []): PathLayout {
   const nodes: PathNode[] = []
   const units: PathUnit[] = []
+  const milestones: PathMilestone[] = []
+  const chests: PathChest[] = []
   let order = 0
   let row = 0
+  // Vertikal kursor: har bosqich OLDIDAN banner uchun joy ajratiladi —
+  // banner hech qachon tugun yoki qahramon ustiga tushmaydi.
+  let y = 12
 
   for (const chain of chains) {
     const status = statusOf(chain.state)
     const firstNodeOrder = order
+    const bannerY = y
+    y += BANNER_H + BANNER_TO_NODE
     units.push({
       dayId: chain.day.id,
       dayNumber: chain.day.dayNumber,
@@ -99,18 +140,27 @@ export function buildPathLayout(chains: readonly DayChain[], width = 360): PathL
       goalUz: chain.day.goalUz,
       status,
       firstNodeOrder,
+      bannerY,
+      steps: chain.steps.length,
+      stepsDone: status === 'done' ? chain.steps.length : 0,
     })
 
+    // Kun ichidagi tartib: qadamlar, o'rtasida (4+ qadamda) sandiq belgisi.
+    const chestAt = chain.steps.length >= 4 ? Math.floor(chain.steps.length / 2) : -1
+    let slot = 0
+    const place = () => {
+      const x = width / 2 + WAVE[row % WAVE.length]! * width
+      if (slot > 0) y += STEP_GAP
+      slot++
+      row++
+      return x
+    }
     chain.steps.forEach((step, stepIndex) => {
-      const col = row % COLS
-      // Juft "qatorlar bloki"da yo'nalish teskari (zigzag): har COLS tugundan
-      // keyin qator oshadi, lekin ketma-ket ikki blokning yo'nalishi teskari
-      // bo'lishi uchun `block` juft/toqligi tekshiriladi.
-      const block = Math.floor(row / COLS)
-      const effectiveCol = block % 2 === 0 ? col : COLS - 1 - col
-      const x = colX(effectiveCol, width)
-      const y = PAD_TOP + row * ROW_GAP
-
+      if (stepIndex === chestAt) {
+        const cx = place()
+        chests.push({ dayId: chain.day.id, x: cx, y, open: status === 'done' })
+      }
+      const x = place()
       nodes.push({
         id: `${chain.day.id}:${step.skill}`,
         dayId: chain.day.id,
@@ -126,12 +176,29 @@ export function buildPathLayout(chains: readonly DayChain[], width = 360): PathL
         y,
       })
       order++
-      row++
     })
+    y += AFTER_UNIT
+
+    // Bo'lim chegarasi — sovrin tuguni.
+    const spec = milestoneSpecs.find((m) => m.afterDayId === chain.day.id)
+    if (spec) {
+      const mine = nodes.filter((n) => spec.sectionDayIds.includes(n.dayId))
+      const remaining = mine.filter((n) => n.status !== 'done').length
+      milestones.push({
+        afterDayId: spec.afterDayId,
+        label: spec.label,
+        x: width / 2,
+        y: y + 40,
+        total: mine.length,
+        remaining,
+        reached: mine.length > 0 && remaining === 0,
+      })
+      y += MILESTONE_SPACE
+    }
   }
 
-  const height = row === 0 ? PAD_TOP * 2 : PAD_TOP + (row - 1) * ROW_GAP + PAD_TOP
-  return { nodes, units, width, height }
+  const height = row === 0 ? PAD_TOP * 2 : y + 12
+  return { nodes, units, milestones, chests, width, height }
 }
 
 /** Xaritada e'tibor markazida bo'lishi kerak bo'lgan tugun — birinchi
