@@ -19,13 +19,14 @@ function Shell({ children }: { children: ReactNode }) {
 
 /* ------------------------------ Grammatika ------------------------------ */
 
-export function GrammarLesson({ topic, onClose }: { topic: GrammarTopic; onClose: () => void }) {
+export function GrammarLesson({ topic, onClose, onFinish }: { topic: GrammarTopic; onClose: () => void; onFinish?: (pct: number) => void }) {
   const steps = useMemo(() => grammarLesson(topic), [topic])
   return (
     <Shell>
       <LessonPlayer
         steps={steps}
         onClose={onClose}
+        onFinish={onFinish}
         renderInfo={() => (
           <>
             {topic.explanationUz.slice(0, 2).map((p, i) => (
@@ -78,13 +79,14 @@ function PassageText({ passage }: { passage: ReadingPassage }) {
   )
 }
 
-export function ReadingLesson({ passage, onClose }: { passage: ReadingPassage; onClose: () => void }) {
+export function ReadingLesson({ passage, onClose, onFinish }: { passage: ReadingPassage; onClose: () => void; onFinish?: (pct: number) => void }) {
   const steps = useMemo(() => readingLesson(passage), [passage])
   return (
     <Shell>
       <LessonPlayer
         steps={steps}
         onClose={onClose}
+        onFinish={onFinish}
         renderInfo={() => (
           <>
             <p className="text-sm muted">Matnni diqqat bilan o‘qing — keyingi savollar shu matn bo‘yicha. Savol paytida matnni qayta ochish mumkin.</p>
@@ -153,13 +155,14 @@ function LessonAudio({ task }: { task: ListeningTask }) {
   )
 }
 
-export function ListeningLesson({ task, onClose }: { task: ListeningTask; onClose: () => void }) {
+export function ListeningLesson({ task, onClose, onFinish }: { task: ListeningTask; onClose: () => void; onFinish?: (pct: number) => void }) {
   const steps = useMemo(() => listeningLesson(task), [task])
   return (
     <Shell>
       <LessonPlayer
         steps={steps}
         onClose={onClose}
+        onFinish={onFinish}
         renderInfo={() => (
           <>
             <p className="text-sm muted">
@@ -178,13 +181,14 @@ export function ListeningLesson({ task, onClose }: { task: ListeningTask; onClos
 
 /* ------------------------------ Yozish / Gapirish ------------------------------ */
 
-export function WritingLesson({ task, onClose }: { task: WritingTask; onClose: () => void }) {
+export function WritingLesson({ task, onClose, onFinish }: { task: WritingTask; onClose: () => void; onFinish?: (pct: number) => void }) {
   const steps = useMemo(() => writingLesson(task), [task])
   return (
     <Shell>
       <LessonPlayer
         steps={steps}
         onClose={onClose}
+        onFinish={onFinish}
         renderInfo={() => (
           <>
             <p className="text-sm">{task.instructionUz}</p>
@@ -201,13 +205,14 @@ export function WritingLesson({ task, onClose }: { task: WritingTask; onClose: (
   )
 }
 
-export function SpeakingLesson({ task, onClose }: { task: SpeakingTask; onClose: () => void }) {
+export function SpeakingLesson({ task, onClose, onFinish }: { task: SpeakingTask; onClose: () => void; onFinish?: (pct: number) => void }) {
   const steps = useMemo(() => speakingLesson(task), [task])
   return (
     <Shell>
       <LessonPlayer
         steps={steps}
         onClose={onClose}
+        onFinish={onFinish}
         renderInfo={() => (
           <>
             <blockquote className="rounded-2xl border-2 bg-[var(--panel-2)] p-3.5 font-medium flex items-center gap-2" lang="en">

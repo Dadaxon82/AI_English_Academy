@@ -37,6 +37,8 @@ export type Action =
   | { type: 'section-jump'; sectionId: string; score: number }
   /** O'z-o'zini baholash (Likert 1–5). */
   | { type: 'self-assess'; id: string; score: number; at: number }
+  /** Xaritadan ochilgan bo'lim darsi natijasi (`passedTests['step:<kun>:<bo'lim>']`, eng yaxshisi). */
+  | { type: 'step-score'; key: string; score: number }
   | { type: 'diagnostic'; at: number; level: CefrLevel | null; labelUz: string; confidence: number }
   | { type: 'onboarded'; at: number }
   | { type: 'level-set'; level: CefrLevel }
@@ -267,6 +269,13 @@ export function reducer(state: AppData, action: Action): AppData {
     }
     case 'section-jump':
       return applySectionJump(state, action.sectionId, action.score)
+    case 'step-score': {
+      if (!action.key.startsWith('step:') || !Number.isFinite(action.score)) return state
+      const s = Math.max(0, Math.min(100, Math.round(action.score)))
+      const prev = state.path.passedTests[action.key]
+      if (prev !== undefined && prev >= s) return state
+      return { ...state, path: { ...state.path, passedTests: { ...state.path.passedTests, [action.key]: s } } }
+    }
     case 'self-assess': {
       if (!Number.isInteger(action.score) || action.score < 1 || action.score > 5) return state
       return { ...state, selfAssessment: { ...state.selfAssessment, [action.id]: { score: action.score, at: action.at } } }

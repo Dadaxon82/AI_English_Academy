@@ -222,7 +222,7 @@ export default function Progress() {
             <div className="text-sm muted">
               {pathDone === 0
                 ? 'Hali birorta kun tugatilmagan.'
-                : `${pathDone} kun tugatildi. Bo‘lim testlari: ${Object.keys(data.path.passedTests).length} ta.`}
+                : `${pathDone} kun tugatildi. Kun testlari: ${Object.keys(data.path.passedTests).filter((k) => !k.includes(":")).length} ta.`}
             </div>
           </div>
         </Card>

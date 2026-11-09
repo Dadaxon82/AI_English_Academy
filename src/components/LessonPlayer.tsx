@@ -39,6 +39,8 @@ export interface LessonPlayerProps {
   steps: LessonStep[]
   /** "×" yoki yakuniy "Davom etish" — darsdan chiqish. */
   onClose: () => void
+  /** Dars yakunida bir marta: aniqlik (0–100, birinchi urinishlar bo'yicha). */
+  onFinish?: (pct: number) => void
   /** Info qadam tanasi (qoida, matn, audio, chaqiriq). */
   renderInfo?: (step: Extract<LessonStep, { type: 'info' }>) => ReactNode
   /** Savol paytida qayta ochiladigan kontekst (matn / audio). */
@@ -55,7 +57,7 @@ function exerciseOf(step: LessonStep): Exercise | null {
   return null
 }
 
-export default function LessonPlayer({ steps, onClose, renderInfo, renderContext, onAnswer, timeLimitSec }: LessonPlayerProps) {
+export default function LessonPlayer({ steps, onClose, renderInfo, renderContext, onAnswer, timeLimitSec, onFinish }: LessonPlayerProps) {
   const { data, actions } = useStore()
   const [queue, setQueue] = useState<QueueItem[]>(() => steps.map((step) => ({ step, retry: false })))
   const [pos, setPos] = useState(0)
@@ -78,8 +80,9 @@ export default function LessonPlayer({ steps, onClose, renderInfo, renderContext
     if (!timedOut || finishedOnce.current) return
     finishedOnce.current = true
     actions.completeLesson(results.length, results.filter((x) => !x.correct).length)
+    onFinish?.(lessonAccuracy(results))
     setEnded(true)
-  }, [timedOut, actions, results])
+  }, [timedOut, actions, results, onFinish])
 
   const item = queue[pos]
   const wrap = (node: ReactNode) =>
@@ -112,6 +115,7 @@ export default function LessonPlayer({ steps, onClose, renderInfo, renderContext
     finishedOnce.current = true
     const graded = results.length
     actions.completeLesson(graded, results.filter((x) => !x.correct).length)
+    onFinish?.(lessonAccuracy(results))
     setEnded(true)
   }
 
@@ -486,12 +490,15 @@ function TimerPill({ msLeft, totalMs, solved }: { msLeft: number; totalMs: numbe
   )
 }
 
+/** Aniqlik — faqat BIRINCHI urinishlar; hech narsa yechilmagan bo'lsa 0% ("100%" emas). */
+function lessonAccuracy(results: readonly ResultRow[]): number {
+  const first = results.filter((r) => !r.retry && isGraded(r.step))
+  return first.length === 0 ? 0 : Math.round((first.filter((r) => r.correct).length / first.length) * 100)
+}
+
 function LessonEnd({ results, xp, onClose, timedOut = false }: { results: ResultRow[]; xp: number; onClose: () => void; timedOut?: boolean }) {
   const [review, setReview] = useState(false)
-  const first = results.filter((r) => !r.retry && isGraded(r.step))
-  const right = first.filter((r) => r.correct).length
-  // Hech narsa yechilmagan bo'lsa (masalan, vaqt tugadi) — 0%, "100%" emas.
-  const pct = first.length === 0 ? 0 : Math.round((right / first.length) * 100)
+  const pct = lessonAccuracy(results)
   const praise = pct >= 90 ? 'Zo‘r!' : pct >= 70 ? 'Yaxshi!' : 'Aniqlik'
   return (
     <div className="grid gap-5 py-2 sm:py-4 text-center justify-items-center animate-[var(--animate-pop)]">

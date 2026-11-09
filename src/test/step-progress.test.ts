@@ -54,3 +54,32 @@ describe('xarita — qadam darajasidagi progress', () => {
     expect(l.nodes.filter((n) => n.dayId === days[1]!.id).every((n) => n.status === 'locked')).toBe(true)
   })
 })
+
+describe('bo‘lim darsi natijasi (xaritadagi ball)', () => {
+  it('reducer: faqat step: kaliti, 0–100 ga qisiladi, eng yaxshisi saqlanadi', async () => {
+    const { reducer } = await import('../lib/reducer')
+    const { stepScoreKey } = await import('../lib/stepProgress')
+    const k = stepScoreKey(day1.id, 'grammar')
+    let s = reducer(emptyData('u'), { type: 'step-score', key: k, score: 72.4 })
+    expect(s.path.passedTests[k]).toBe(72)
+    s = reducer(s, { type: 'step-score', key: k, score: 50 })
+    expect(s.path.passedTests[k]).toBe(72)
+    s = reducer(s, { type: 'step-score', key: k, score: 140 })
+    expect(s.path.passedTests[k]).toBe(100)
+    const same = reducer(s, { type: 'step-score', key: 'a1-t1-day1-test', score: 90 })
+    expect(same).toBe(s)
+    expect(s.settings.currentLevel).toBe('A1')
+  })
+
+  it('tugunda ball ko‘rinadi va qadam bajarilgan hisoblanadi; qulflangan kunda ko‘rsatilmaydi', async () => {
+    const { stepScoreKey, stepScoreReader } = await import('../lib/stepProgress')
+    const d = emptyData('u')
+    d.path.passedTests[stepScoreKey(day1.id, 'grammar')] = 85
+    d.path.passedTests[stepScoreKey(days[1]!.id, 'grammar')] = 90
+    const l = buildPathLayout(chains(), 360, [], stepDoneChecker(d), stepScoreReader(d))
+    const g = l.nodes.find((n) => n.dayId === day1.id && n.skill === 'grammar')!
+    expect(g.score).toBe(85)
+    expect(g.status).toBe('done')
+    expect(l.nodes.find((n) => n.dayId === days[1]!.id && n.skill === 'grammar')!.score).toBeNull()
+  })
+})
