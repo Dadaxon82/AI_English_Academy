@@ -22,7 +22,8 @@
     "icons:build": "node scripts/make-icons.mjs",
     "audio:build": "node scripts/build-audio.mjs",
     "lint:ci": "eslint src scripts e2e --max-warnings 0",
-    "e2e": "playwright test"
+    "e2e": "playwright test",
+    "bundle:check": "node scripts/check-bundle.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "2.118.0",

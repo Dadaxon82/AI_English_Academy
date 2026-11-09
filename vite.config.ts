@@ -97,6 +97,20 @@ export default defineConfig({
     target: 'es2022',
     sourcemap: false,
     reportCompressedSize: false,
+    rollupOptions: {
+      output: {
+        // Kutubxonalar alohida, kam o'zgaradigan chunk'larda — ilova kodi
+        // yangilanganda brauzer/SW keshidagi vendor fayllar qayta yuklanmaydi.
+        // Supabase dinamik import qilinadi (`lib/supabase.ts`) — mehmon
+        // rejimida umuman yuklanmaydi.
+        manualChunks(id) {
+          if (!id.includes('node_modules')) return undefined
+          if (/node_modules\/(react|react-dom|scheduler|react-router|react-router-dom|cookie|set-cookie-parser)\//.test(id)) return 'react'
+          if (id.includes('@supabase')) return 'supabase'
+          return 'vendor'
+        },
+      },
+    },
   },
   server: {
     port: 5173,
