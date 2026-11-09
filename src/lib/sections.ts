@@ -191,3 +191,24 @@ export function currentSectionInfo(data: Pick<AppData, 'path'>): CurrentSectionI
   if (idx < 0) idx = section.days.length - 1
   return { section, unitNumber: idx + 1, day: section.days[idx]! }
 }
+
+/**
+ * Xarita uchun bo'lim chegaralari: har kontentli bo'limning oxirgi kunidan
+ * keyin "keyingi bo'lim" sovrin tuguni (`pathMap.ts::MilestoneSpec`).
+ */
+export function pathMilestoneSpecs(level: CefrLevel): { afterDayId: string; sectionDayIds: string[]; label: string }[] {
+  const out: { afterDayId: string; sectionDayIds: string[]; label: string }[] = []
+  SECTION_PLAN.forEach((entry, i) => {
+    if (entry.level !== level) return
+    const days = daysOf(entry)
+    const last = days[days.length - 1]
+    if (!last) return
+    const next = SECTION_PLAN[i + 1]
+    out.push({
+      afterDayId: last.id,
+      sectionDayIds: days.map((d) => d.id),
+      label: next ? `${sectionLabel(next)}-bo‘lim` : 'Kurs yakuni',
+    })
+  })
+  return out
+}
