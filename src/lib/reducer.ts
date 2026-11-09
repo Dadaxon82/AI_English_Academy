@@ -11,7 +11,7 @@ import { afterAttempt, afterReview, buy as buyItem, lessonComplete, placeBet, se
 import type { ShopItemId } from './gameConfig'
 import { mergeRemote, type RemoteSnapshot } from './merge'
 import { applySectionJump } from './sections'
-import type { AppData, AttemptRecord, MockExamAttempt, SpeakingSession, UserSettings, WritingSubmission } from './types'
+import type { AppData, AttemptRecord, MockExamAttempt, SpeakingAnalysis, SpeakingSession, UserSettings, WritingAnalysis, WritingSubmission } from './types'
 import { HISTORY_LIMITS, emptyData, nearestXpGoal, todayKey } from './types'
 
 // ---------- Actions ----------
@@ -26,6 +26,9 @@ export type Action =
   | { type: 'timer-stop' }
   | { type: 'writing-add'; sub: WritingSubmission }
   | { type: 'speaking-add'; session: SpeakingSession }
+  /** AI javobi keldi — o'sha yozuvning tahlili almashtiriladi (qoidaviy → ai). */
+  | { type: 'writing-analysis'; id: string; analysis: WritingAnalysis }
+  | { type: 'speaking-analysis'; id: string; analysis: SpeakingAnalysis }
   | { type: 'mock-add'; attempt: MockExamAttempt }
   | { type: 'mock-time'; entries: { skill: CoreSkill; seconds: number }[] }
   | { type: 'merge-remote'; userId: string; remote: RemoteSnapshot }
@@ -219,6 +222,12 @@ export function reducer(state: AppData, action: Action): AppData {
       return { ...state, writing: [...state.writing, action.sub].slice(-HISTORY_LIMITS.writing) }
     case 'speaking-add':
       return { ...state, speaking: [...state.speaking, action.session].slice(-HISTORY_LIMITS.speaking) }
+    case 'writing-analysis':
+      if (!state.writing.some((w) => w.id === action.id)) return state
+      return { ...state, writing: state.writing.map((w) => (w.id === action.id ? { ...w, analysis: action.analysis } : w)) }
+    case 'speaking-analysis':
+      if (!state.speaking.some((s) => s.id === action.id)) return state
+      return { ...state, speaking: state.speaking.map((s) => (s.id === action.id ? { ...s, analysis: action.analysis } : s)) }
     case 'mock-add':
       return { ...state, mockAttempts: [...state.mockAttempts, action.attempt].slice(-HISTORY_LIMITS.mockAttempts) }
     case 'mock-time': {
