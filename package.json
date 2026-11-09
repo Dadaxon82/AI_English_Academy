@@ -20,7 +20,9 @@
     "smoke": "node scripts/smoke.mjs",
     "render:check": "node scripts/render-check.mjs",
     "icons:build": "node scripts/make-icons.mjs",
-    "audio:build": "node scripts/build-audio.mjs"
+    "audio:build": "node scripts/build-audio.mjs",
+    "lint:ci": "eslint src scripts e2e",
+    "e2e": "playwright test"
   },
   "dependencies": {
     "@supabase/supabase-js": "2.118.0",
@@ -32,6 +34,7 @@
   },
   "devDependencies": {
     "@eslint/js": "9.39.5",
+    "@playwright/test": "^1.63.0",
     "@tailwindcss/vite": "4.3.3",
     "@testing-library/jest-dom": "6.9.1",
     "@testing-library/react": "16.3.3",
