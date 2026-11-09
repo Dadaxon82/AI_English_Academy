@@ -18,8 +18,10 @@ android {
         // o'rnatishi uchun versionCode kattalashishi kerak (Release'da 3 qolsa
         // yangilanish o'rniga "ilova o'rnatilmadi" xatosi chiqadi — 2 -> 3 da
         // o'sha xato o'rganilgan edi).
-        versionCode 4
-        versionName "1.3.0"
+        // 2026-11-09: «5 daqiqa» tezkor sessiya ekrani mobilda (README §5j) —
+        // versionCode 4 -> 5 (yangilanish o'rnatilishi uchun kattalashishi shart).
+        versionCode 5
+        versionName "1.4.0"
         resourceConfigurations += ['uz', 'en']
 
         // Veb-loomihadagi VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY ning

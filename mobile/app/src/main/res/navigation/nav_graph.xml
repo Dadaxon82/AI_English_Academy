@@ -58,6 +58,12 @@
         android:name="com.dadaxon.aienglishacademy.ui.runner.ExerciseFragment"
         android:label="@string/ex_title" />
 
+    <!-- «5 daqiqa» tezkor sessiya (veb `/quick`, `src/pages/QuickSession.tsx`). -->
+    <fragment
+        android:id="@+id/quickSessionFragment"
+        android:name="com.dadaxon.aienglishacademy.ui.QuickSessionFragment"
+        android:label="@string/quick_dash_start" />
+
     <fragment
         android:id="@+id/vocabReviewFragment"
         android:name="com.dadaxon.aienglishacademy.ui.VocabReviewFragment"

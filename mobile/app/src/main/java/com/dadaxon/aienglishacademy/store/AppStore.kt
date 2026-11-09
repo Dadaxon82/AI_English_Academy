@@ -298,6 +298,15 @@ class AppStore(private val context: Context, private val container: AppContainer
                 val t = s.timer
                 val sameSession = t.sessionId == a.sessionId && t.skill == a.skill && t.startedAtRealtime != null
                 if (sameSession) return s
+                // Pauzadagi XUDDI SHU sessiya + ko'nikma — hisob ustiga DAVOM etadi
+                // (veb `timer.ts::startTimer` va `reducer.ts` `timer-start`:
+                // "Pauzadan «Davom etish» hisob ustiga qo'shiladi"). ESKI FARQ:
+                // mobil bu holatda yig'ilgan sekundlarni yozib, hisobni 0 dan
+                // boshlardi — vaqt yo'qolmasdi, lekin «5 daqiqa» kabi sessiya
+                // pauzadan keyin qolgan vaqtni yo'qotardi.
+                if (t.sessionId == a.sessionId && t.skill == a.skill && t.startedAtRealtime == null) {
+                    return s.copy(timer = t.copy(startedAtRealtime = SystemClock.elapsedRealtime()))
+                }
                 // Boshqa mashg'ulotga o'tishda yig'ilgan vaqt eski ko'nikmaga
                 // yoziladi (aks holda "yo'qolgan daqiqalar" bo'lardi).
                 val acc = timerSeconds(t)

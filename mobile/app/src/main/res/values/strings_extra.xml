@@ -105,4 +105,36 @@
     <string name="hearts_blocked_hint">Mashqni davom ettirish uchun yurak kerak. %1$d ta so‘zni takrorlab bittasini qaytarib oling (ketma-ket %2$d ta to‘g‘ri javob ham bitta yurak qaytaradi). Mock imtihon, diagnostika va bo‘lim testlarida yurak talab qilinmaydi.</string>
     <string name="hearts_blocked_practice">Takrorlash darsini ochish</string>
     <string name="hearts_blocked_settings">Yuraklarni sozlamada o‘chirish</string>
+    <!-- «5 daqiqa» tezkor sessiya — veb `src/pages/QuickSession.tsx` va
+         Dashboard kartasi bilan BIR XIL matnlar. Sonlar format argumenti
+         (`domain/QuickSession.kt`, store) — ixtira yo‘q. -->
+    <string name="quick_title">⚡ 5 daqiqa — tezkor takror</string>
+    <string name="quick_intro">Qisqa, har kungi odat: avval takrorlash navbatidagi so‘zlar, keyin bitta mavzudan yangi so‘zlar. Kartani o‘ngga suring — «Bilaman», chapga — «Yana».</string>
+    <string name="quick_counts">%1$d ta takror · %2$d ta yangi so‘z · Daraja: %3$s</string>
+    <string name="quick_topic">Mavzu: %1$s</string>
+    <string name="quick_note">Bu kunlik %1$d daqiqalik rejaning o‘rnini bosmaydi — band kunlar uchun «minimal kun». Sarflangan vaqt bugungi faollikka yoziladi va ketma-ket kun zanjirini saqlaydi.</string>
+    <string name="quick_empty">Hozir kartalar yo‘q: takrorlash navbati bo‘sh va bu darajaning barcha so‘zlari allaqachon lug‘atingizda. Lug‘at bo‘limida boshqa mashqlarni sinab ko‘ring.</string>
+    <string name="quick_start">Boshlash (%1$s)</string>
+    <string name="quick_resume_title">⚡ Bugungi 5 daqiqa davom etmoqda</string>
+    <string name="quick_resume_body">Qolgan vaqt: %1$s. Takror navbati hozirgi holatdan qayta tuziladi.</string>
+    <string name="quick_resume">Davom etish</string>
+    <string name="quick_finish">Sessiyani yakunlash</string>
+    <string name="quick_paused">Sessiya pauzada — qolgan vaqt saqlangan.</string>
+    <string name="quick_badge_new">Yangi so‘z</string>
+    <string name="quick_badge_review">Takror</string>
+    <string name="quick_flip">Ma’nosi uchun bosing</string>
+    <string name="quick_again">← Yana</string>
+    <string name="quick_good">Bilaman →</string>
+    <string name="quick_swipe_hint">O‘ngga suring — Bilaman, chapga — Yana. Bosilsa — ma’nosi.</string>
+    <string name="quick_time_left">Qolgan vaqt %1$s</string>
+    <string name="quick_done_title">Sessiya yakunlandi</string>
+    <string name="quick_done_summary">%1$d ta karta: %2$d tasini bildingiz, %3$d tasi qayta takrorlanadi. Yangi o‘rganilgan: %4$d ta so‘z.</string>
+    <string name="quick_done_none">Bu safar birorta karta baholanmadi.</string>
+    <string name="quick_streak">Ketma-ket kun: %1$d</string>
+    <string name="quick_more">Yana 5 daqiqa</string>
+    <string name="quick_home">Bosh sahifa</string>
+    <string name="quick_dash_title">Vaqtingiz kammi? 5 daqiqa yetadi</string>
+    <string name="quick_dash_body">%1$d ta takror + bitta mavzudan yangi so‘zlar. Kunlik zanjir saqlanadi.</string>
+    <string name="quick_dash_body_empty">Takror navbati bo‘sh + bitta mavzudan yangi so‘zlar. Kunlik zanjir saqlanadi.</string>
+    <string name="quick_dash_start">5 daqiqa boshlash</string>
 </resources>

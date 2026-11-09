@@ -47,6 +47,7 @@ object Nav {
     val DETAIL_DESTINATIONS = setOf(
         R.id.exerciseFragment,
         R.id.vocabReviewFragment,
+        R.id.quickSessionFragment,
         R.id.grammarTopicFragment,
         R.id.readingFragment,
         R.id.listeningFragment,

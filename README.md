@@ -16,7 +16,7 @@ Loyiha talabnomasi (`AI English Academy_v2.docx`) to'liq bajarilgan:
 - ✅ **Jonli taymer** — sahifa yangilansa ham vaqt yo'qolmaydi (IndexedDB'da saqlanadi)
 - ✅ **Offline / PWA**: sync navbati, Service Worker; logout'da avval sinxronlanadi (yuborilmagan narsa qolsa tasdiq so'raladi), so'ng kesh tozalanadi
 - ✅ **Mobil ilova**: Dashboard yuqorisidagi blok PWA'ni bosh ekranga o'rnatadi (Android/kompyuter — "Ilovani o'rnatish" tugmasi, iPhone — yo'riqnoma); APK fayl shart emas
-- ✅ **Native Android ilovasi** (`mobile/` — Kotlin + XML Views, `com.dadaxon.aienglishacademy`): bitta baza va bitta auth, **377 unit test**, qahramon har ekranda; DULO_mod.apk dan o'lchangan **darslar ketma-ketligi va harakat byudjeti** ikkala platformada — quyida 5b-bo'lim va
+- ✅ **Native Android ilovasi** (`mobile/` — Kotlin + XML Views, `com.dadaxon.aienglishacademy`): bitta baza va bitta auth, **397 unit test**, qahramon har ekranda; DULO_mod.apk dan o'lchangan **darslar ketma-ketligi va harakat byudjeti** ikkala platformada — quyida 5b-bo'lim va
 `mobile/MOBIL_ARXITEKTURA.md` 8-bo'limi
 - ✅ **Server bilan ikki tomonlama**: hisobga kirganda progress serverdan tiklanadi va qurilmadagisi bilan birlashtiriladi
 - ✅ **Baza eski sxemada ham sinxron islaydi** (2026-11-08): `0003/0004` migratsiyalari qo'llanmagan bazada sozlamalar
@@ -263,13 +263,15 @@ gradle --offline :app:assembleRelease      # 2026-11-08: lint-gradle kechada bo'
                                            # uchun `:app:lintVitalRelease` alohida tarmoqda bajarildi
 ```
 
-Tekshirilgan holat (2026-11-09): **377 unit test o'tdi** (33 klass, 0 fail /
+Tekshirilgan holat (2026-11-09): **397 unit test o'tdi** (36 klass, 0 fail /
 0 error / 0 skip — `:app:testDebugUnitTest` XML laridan sanalgan). Son zanjiri
 halol yozib qo'yiladi: 2026-11-06 dagi 268 → o'yin qatlami va mashq jarayoni
 qo'shilgach **349** (§5d–§5e) → §5f Bo'limlar ikki klassi (`domain/SectionsTest`
 12 ta, `domain/SectionJumpLogicTest` 7 ta) bilan **368 / 30 klass** → PR #6 ning
 mobil klasslari (`domain/NewKindsCheckerTest` 7, `domain/ExportedContentParityTest` 1,
-`domain/SelfAssessmentMergeTest` 1) rebase'dan keyin **377 / 33 klass**.
+`domain/SelfAssessmentMergeTest` 1) rebase'dan keyin **377 / 33 klass**. → keyingi PR'larda (A2 pariteti va boshqalar) **387**; 2026-11-09 o'lchovida
+ulardan bittasi eskirgan edi (`ContentRepositoryTest` — A2 qo'shilgach `[A1]` kutardi) →
+tuzatildi; §5j «5 daqiqa» (`domain/QuickSessionTest` 10 ta) bilan **397 / 36 klass, 0 fail**.
 `store/GameOpsTest` 15 ta — jonli do'kon `AppStore.reduceLocal` o'yin qatlamini
 HAQIQATAN qo'llashini tekshiradi. API 26+
 emulatorda barcha ekranlar ochiladi, ANR yo'q (`/data/anr/` bo'sh; Lug'at 117
@@ -627,7 +629,7 @@ ro'yxatidagidek); PR #9 shu paritetni ochiq qoldiradi.
 
 `docs/TIL_PLATFORMALARI_TAHLIL_VA_PROMPT.md` dagi rejaning 1-bosqichi. G'oya Drops'dan
 olingan (qisqa kunlik odat + vizual karta + surish), nom, dizayn va kontent bizniki.
-**Faqat veb**: `mobile/` ga tegilmagan, mobil ilovaga keyingi PR'da qo'shiladi.
+Veb va mobil ilovada bir xil ishlaydi (mobil: 1.4.0 / versionCode 5).
 
 | Nima | Qayerda |
 |---|---|
@@ -648,10 +650,29 @@ olingan (qisqa kunlik odat + vizual karta + surish), nom, dizayn va kontent bizn
 - Karta yo'q bo'lsa (navbat bo'sh, hamma so'z o'rganilgan) «Boshlash» tugmasi ko'rsatilmaydi,
   o'rniga sababi va Lug'at bo'limiga havola chiqadi.
 
+**Mobil (`mobile/`)** — bir xil qoidalar:
+
+| Nima | Qayerda |
+|---|---|
+| Navbat, surish, qolgan vaqt (veb `quickSession.ts` ning nusxasi) | `domain/QuickSession.kt` |
+| So'z rasmlari (veb `vocabEmoji.ts` bilan juftma-juft bir xil) | `data/VocabEmoji.kt` |
+| Ekran: kirish / davom etish / ish / natija; barmoq bilan surish, «← Yana» / «Bilaman →» tugmalari, TTS talaffuz | `ui/QuickSessionFragment.kt` (`R.id.quickSessionFragment`) |
+| Dashboard kartasi «5 daqiqa boshlash» | `ui/DashboardFragment.kt::addQuickCard` |
+| Matnlar (`quick_*`) | `res/values/strings_extra.xml` |
+
+Ekran ko'rinmay qolsa (`onPause`) taymer pauza qilinadi, qaytganda «Davom etish» chiqadi.
+**Taymer pariteti tuzatildi:** mobil `TimerStart` pauzadagi XUDDI SHU sessiyani endi davom
+ettiradi (veb `timer.ts::startTimer` bilan bir xil). Oldin yig'ilgan sekundlarni yozib, hisobni
+noldan boshlardi: vaqt yo'qolmasdi, lekin sessiyaning qolgan vaqti tiklanmasdi.
+
 **Testlar:** `src/test/quick-session.test.ts` (navbat tartibi, chegaralar, surish, zanjir),
 `src/test/quick-session-page.test.tsx` (boshlash, klaviatura/tugma baholash, vaqt tugashi,
 pauza va qayta ochilganda davom etish), e2e `flows.spec.ts` (Dashboard → sessiya → surish),
-`a11y.spec.ts` (`/quick` va sessiya ichida, light/dark, kompyuter va 375 px).
+`a11y.spec.ts` (`/quick` va sessiya ichida, light/dark, kompyuter va 375 px). Mobil:
+`QuickSessionTest.kt` (10 test: veb bilan bir xil holatlar, veb fayllaridan o'qib sonlar va
+89 ta so'z rasmi pariteti, zanjir qoidasi). `gradle testDebugUnitTest`: **397/397**
+(2026-11-09). Shu o'lchovda eskirgan bitta test ham tuzatildi:
+`ContentRepositoryTest` manifestda faqat `[A1]` kutardi, A2 esa `7df8def` da qo'shilgan edi.
 
 ## 6. Arxitektura qisqacha
 
