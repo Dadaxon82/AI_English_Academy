@@ -150,7 +150,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 to={n.to}
                 className={({ isActive }) =>
                   `flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-medium transition-colors ${
-                    isActive ? 'bg-navy-700 text-white dark:bg-navy-500 dark:text-navy-950' : 'hover:bg-[var(--panel-2)] muted'
+                    isActive ? 'bg-navy-700 text-white dark:bg-navy-300 dark:text-navy-950' : 'hover:bg-[var(--panel-2)] muted'
                   }`
                 }
               >
@@ -173,7 +173,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   to={n.to}
                   className={({ isActive }) =>
                     `px-3.5 py-3 rounded-xl text-sm font-semibold border ${
-                      isActive ? 'bg-navy-700 text-white dark:bg-navy-500 dark:text-navy-950 border-transparent' : 'panel !rounded-xl'
+                      isActive ? 'bg-navy-700 text-white dark:bg-navy-300 dark:text-navy-950 border-transparent' : 'panel !rounded-xl'
                     }`
                   }
                 >

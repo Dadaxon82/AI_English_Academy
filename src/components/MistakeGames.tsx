@@ -65,7 +65,7 @@ export default function MistakeGames({
         {MODES.map((m) => {
           const n = modeCount(m.mode, mistakes)
           return (
-            <div key={m.mode} className={`rounded-2xl border-2 border-b-4 p-4 grid gap-2 content-between ${m.tone} ${n === 0 ? 'opacity-60' : ''}`}>
+            <div key={m.mode} className={`rounded-2xl border-2 border-b-4 p-4 grid gap-2 content-between ${m.tone} ${n === 0 ? 'border-dashed' : ''}`}>
               <div className="grid gap-1">
                 <p className="font-extrabold">
                   <span aria-hidden className="mr-1.5">

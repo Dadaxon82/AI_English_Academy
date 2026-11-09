@@ -54,7 +54,7 @@ export default function Onboarding() {
           <p className="muted text-sm">3 ta savol — so‘ng boshlaymiz. Bularning barchasini keyin sozlamalardan o‘zgartirasiz.</p>
           <ol className="flex justify-center gap-2 mt-2">
             {steps.map((s, i) => (
-              <li key={s} className={`text-[11px] font-semibold px-2.5 py-1 rounded-full ${i === step ? 'bg-navy-700 text-white dark:bg-navy-500 dark:text-navy-950' : i < step ? 'text-[var(--ok)]' : 'muted'}`}>
+              <li key={s} className={`text-[11px] font-semibold px-2.5 py-1 rounded-full ${i === step ? 'bg-navy-700 text-white dark:bg-navy-300 dark:text-navy-950' : i < step ? 'text-[var(--ok)]' : 'muted'}`}>
                 {i + 1}. {s}
               </li>
             ))}

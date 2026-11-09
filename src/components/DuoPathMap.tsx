@@ -73,15 +73,15 @@ function NextGoal({ m }: { m: PathMilestone }) {
     <div className="rounded-2xl border-2 border-b-4 border-amber-300 dark:border-amber-600 bg-amber-50/60 dark:bg-amber-950/20 px-3.5 py-3 grid gap-2">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <p className="text-sm font-extrabold">
-          <span aria-hidden>🏁 </span>Keyingi maqsad: <span className="text-amber-600 dark:text-amber-400">{m.label}</span>
+          <span aria-hidden>🏁 </span>Keyingi maqsad: <span className="text-amber-700 dark:text-amber-400">{m.label}</span>
         </p>
         <p className="text-xs font-extrabold tabular-nums text-amber-700 dark:text-amber-300">
           {m.remaining > 0 ? `${m.remaining} ta vazifa qoldi` : 'Ochildi!'}
         </p>
       </div>
-      <div className="flex items-center gap-2" aria-label={`${m.label}gacha: ${done}/${m.total} vazifa`}>
+      <div className="flex items-center gap-2">
         <span aria-hidden className="text-lg">🚩</span>
-        <div className="relative flex-1 h-4 rounded-full bg-[var(--panel-2)] border overflow-hidden" role="progressbar" aria-valuemin={0} aria-valuemax={m.total} aria-valuenow={done}>
+        <div className="relative flex-1 h-4 rounded-full bg-[var(--panel-2)] border overflow-hidden" role="progressbar" aria-label={`${m.label}gacha bajarilgan vazifalar`} aria-valuemin={0} aria-valuemax={m.total} aria-valuenow={done} aria-valuetext={`${done} / ${m.total} vazifa`}>
           <div className="h-full rounded-full bg-amber-400 transition-[width] duration-500" style={{ width: `${pct}%` }} />
           <span className="absolute inset-0 flex items-center justify-center text-[10px] font-extrabold tabular-nums">
             {done} / {m.total}
@@ -136,7 +136,7 @@ export default function DuoPathMap({ layout, selectedId, onSelect, focusId }: Du
           width="100%"
           className="block mx-auto"
           style={{ maxWidth: Math.round(layout.width * 1.25) }}
-          role="img"
+          role="group"
           aria-label="O'quv yo'li xaritasi"
         >
           {/* ---- Kun ajratgichlari: "——— 2-kun · Oila va egalik ———" ---- */}
@@ -145,7 +145,7 @@ export default function DuoPathMap({ layout, selectedId, onSelect, focusId }: Du
             const active = u.status === 'current'
             const color = active ? 'var(--accent)' : 'var(--muted)'
             return (
-              <g key={`unit-${u.dayId}`} aria-label={`${u.dayNumber}-kun: ${u.titleUz}`}>
+              <g key={`unit-${u.dayId}`} role="group" aria-label={`${u.dayNumber}-kun: ${u.titleUz}`}>
                 <line x1={12} x2={layout.width - 12} y1={cy} y2={cy} stroke="var(--border)" strokeWidth={1.5} />
                 <rect x={layout.width / 2 - 130} y={u.bannerY} width={260} height={BANNER_H} rx={BANNER_H / 2} fill="var(--panel)" />
                 <text x={layout.width / 2} y={cy + 4.5} textAnchor="middle" fontSize="12.5" fontWeight="800" fill={color}>
@@ -168,7 +168,7 @@ export default function DuoPathMap({ layout, selectedId, onSelect, focusId }: Du
 
           {/* ---- Bo'lim chegarasi: sovrin tuguni ---- */}
           {layout.milestones.map((m) => (
-            <g key={`ms-${m.afterDayId}`} transform={`translate(${m.x} ${m.y})`} aria-label={`${m.label}: ${m.remaining > 0 ? `${m.remaining} ta vazifa qoldi` : 'ochildi'}`}>
+            <g key={`ms-${m.afterDayId}`} transform={`translate(${m.x} ${m.y})`} role="img" aria-label={`${m.label}: ${m.remaining > 0 ? `${m.remaining} ta vazifa qoldi` : 'ochildi'}`}>
               <circle r={40} cy={DEPTH} fill={m.reached ? '#c98f00' : '#b8c2d0'} />
               <circle r={40} fill={m.reached ? '#f5b301' : '#e2e8f0'} stroke={m.reached ? '#c98f00' : '#8a96a8'} strokeWidth={3} strokeDasharray={m.reached ? undefined : '7 5'} />
               <text y={13} textAnchor="middle" fontSize="38" opacity={m.reached ? 1 : 0.55}>

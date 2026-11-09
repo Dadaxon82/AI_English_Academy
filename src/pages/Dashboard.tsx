@@ -42,7 +42,7 @@ const SKILL_ROUTE: Record<Skill, string> = {
 
 const linkPrimary =
   'inline-flex items-center justify-center gap-2 font-semibold rounded-xl text-sm px-4 py-2.5 transition-all ' +
-  'bg-navy-700 text-white hover:bg-navy-600 dark:bg-navy-500 dark:hover:bg-navy-400 dark:text-navy-950'
+  'bg-navy-700 text-white hover:bg-navy-600 dark:bg-navy-300 dark:hover:bg-navy-200 dark:text-navy-950'
 const linkSecondary =
   'inline-flex items-center justify-center gap-2 font-semibold rounded-xl text-sm px-4 py-2.5 transition-all border ' +
   'bg-white text-navy-900 hover:bg-slate-50 dark:bg-[var(--panel)] dark:text-[var(--text)] dark:hover:bg-[var(--panel-2)]'
@@ -181,7 +181,7 @@ export default function Dashboard() {
               {dueCount > 0 && (
                 <>
                   <span>·</span>
-                  <span className="text-amber-600 dark:text-amber-400 font-semibold">{dueCount} ta so‘z takrorlash navbatida</span>
+                  <span className="text-amber-700 dark:text-amber-400 font-semibold">{dueCount} ta so‘z takrorlash navbatida</span>
                 </>
               )}
             </div>

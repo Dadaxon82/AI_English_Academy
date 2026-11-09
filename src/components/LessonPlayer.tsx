@@ -25,7 +25,7 @@ import { InfoBanner } from './ui'
 const chunky =
   'inline-flex items-center justify-center rounded-2xl px-6 py-3 text-sm font-extrabold uppercase tracking-wide border-b-4 ' +
   'transition-all active:translate-y-0.5 active:border-b-2 disabled:opacity-50 disabled:cursor-not-allowed'
-export const chunkyGreen = `${chunky} bg-emerald-500 hover:bg-emerald-400 text-white border-emerald-700`
+export const chunkyGreen = `${chunky} bg-emerald-700 hover:bg-emerald-800 text-white border-emerald-900`
 export const chunkyPlain = `${chunky} bg-[var(--panel)] border-2 border-b-4 hover:bg-[var(--panel-2)]`
 
 interface QueueItem {
@@ -196,7 +196,7 @@ function LessonFrame({
   return (
     <div className="aea-lesson grid gap-5">
       {streak >= 3 && (
-        <p className="-mb-3 text-center text-[11px] font-extrabold uppercase tracking-wider text-amber-500">
+        <p className="-mb-3 text-center text-[11px] font-extrabold uppercase tracking-wider text-amber-700 dark:text-amber-400">
           {streak} ta ketma-ket to‘g‘ri javob
         </p>
       )}
@@ -369,7 +369,7 @@ function SpeakStep({
   return (
     <LessonFrame pos={result ? pos + 1 : pos} total={total} streak={streak} onExit={onExit}>
       <div className="grid gap-1">
-        <p className={`text-[11px] font-extrabold uppercase tracking-wider ${badge ? 'text-orange-500' : 'text-violet-600 dark:text-violet-400'}`}>
+        <p className={`text-[11px] font-extrabold uppercase tracking-wider ${badge ? 'text-orange-700 dark:text-orange-400' : 'text-violet-600 dark:text-violet-400'}`}>
           {badge ?? 'Gapirish'}
         </p>
         <h2 className="text-xl sm:text-2xl font-extrabold leading-tight">Ovoz chiqarib ayting</h2>
@@ -449,7 +449,7 @@ function SentenceBubble({ sentence, hidden = false }: { sentence: string; hidden
           type="button"
           onClick={() => speak(sentence)}
           aria-label={`Tinglash: ${sentence}`}
-          className="shrink-0 inline-grid place-items-center w-8 h-8 rounded-lg text-sky-500 hover:bg-sky-50 dark:hover:bg-sky-950/40"
+          className="shrink-0 inline-grid place-items-center w-8 h-8 rounded-lg text-sky-700 dark:text-sky-400 hover:bg-sky-50 dark:hover:bg-sky-950/40"
         >
           <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
             <path d="M11 5 6 9H3v6h3l5 4V5Z" />
@@ -479,13 +479,13 @@ function TimerPill({ msLeft, totalMs, solved }: { msLeft: number; totalMs: numbe
   const low = sec <= 15
   return (
     <div className="flex items-center gap-3 rounded-2xl border-2 px-3 py-2" role="timer" aria-label={`Qolgan vaqt: ${sec} soniya`}>
-      <span className={`font-extrabold tabular-nums text-lg ${low ? 'text-rose-500 animate-pulse' : 'text-sky-600 dark:text-sky-400'}`}>
+      <span className={`font-extrabold tabular-nums text-lg ${low ? 'text-rose-700 dark:text-rose-400 animate-pulse' : 'text-sky-700 dark:text-sky-400'}`}>
         ⏱ {Math.floor(sec / 60)}:{String(sec % 60).padStart(2, '0')}
       </span>
       <div className="flex-1 h-2.5 rounded-full bg-[var(--panel-2)] overflow-hidden">
         <div className={`h-full rounded-full transition-[width] duration-300 ${low ? 'bg-rose-500' : 'bg-sky-500'}`} style={{ width: `${pct}%` }} />
       </div>
-      <span className="text-sm font-extrabold text-emerald-600 tabular-nums">✓ {solved}</span>
+      <span className="text-sm font-extrabold text-emerald-700 dark:text-emerald-400 tabular-nums">✓ {solved}</span>
     </div>
   )
 }
@@ -500,7 +500,7 @@ function LessonEnd({ results, xp, onClose, timedOut = false }: { results: Result
   return (
     <div className="grid gap-5 py-2 sm:py-4 text-center justify-items-center animate-[var(--animate-pop)]">
       <MascotFigure maxHeight="max-h-36" alt="" />
-      <h2 className="text-2xl sm:text-3xl font-extrabold text-amber-500">{timedOut ? 'Vaqt tugadi!' : 'Dars tugadi!'}</h2>
+      <h2 className="text-2xl sm:text-3xl font-extrabold text-amber-700 dark:text-amber-400">{timedOut ? 'Vaqt tugadi!' : 'Dars tugadi!'}</h2>
       {timedOut && (
         <p className="text-sm font-bold muted">
           {results.filter((r) => r.correct).length} ta mashq to‘g‘ri yechildi — keyingi safar ko‘prog‘iga harakat qiling!
@@ -508,12 +508,12 @@ function LessonEnd({ results, xp, onClose, timedOut = false }: { results: Result
       )}
       <div className="grid grid-cols-2 gap-3 w-full max-w-sm">
         <div className="rounded-2xl border-2 border-amber-400 overflow-hidden">
-          <p className="bg-amber-400 text-white text-[11px] font-extrabold uppercase py-1">Tajriba ochkolari</p>
-          <p className="py-3 text-2xl font-extrabold text-amber-500 tabular-nums">⚡ {xp}</p>
+          <p className="bg-amber-400 text-amber-950 text-[11px] font-extrabold uppercase py-1">Tajriba ochkolari</p>
+          <p className="py-3 text-2xl font-extrabold text-amber-700 dark:text-amber-400 tabular-nums">⚡ {xp}</p>
         </div>
         <div className="rounded-2xl border-2 border-emerald-500 overflow-hidden">
-          <p className="bg-emerald-500 text-white text-[11px] font-extrabold uppercase py-1">{praise}</p>
-          <p className="py-3 text-2xl font-extrabold text-emerald-600 tabular-nums">🎯 {pct}%</p>
+          <p className="bg-emerald-700 text-white text-[11px] font-extrabold uppercase py-1">{praise}</p>
+          <p className="py-3 text-2xl font-extrabold text-emerald-700 dark:text-emerald-400 tabular-nums">🎯 {pct}%</p>
         </div>
       </div>
       {review && (
@@ -526,7 +526,7 @@ function LessonEnd({ results, xp, onClose, timedOut = false }: { results: Result
                 <span aria-hidden>{r.correct ? '✅' : '❌'}</span>
                 <span className="flex-1 min-w-0 break-words">
                   {label}
-                  {r.retry && <span className="ml-1 text-[11px] font-bold text-orange-500">(qayta)</span>}
+                  {r.retry && <span className="ml-1 text-[11px] font-bold text-orange-700 dark:text-orange-400">(qayta)</span>}
                 </span>
               </li>
             )
