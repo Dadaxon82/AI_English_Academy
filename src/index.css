@@ -144,6 +144,36 @@ html.no-motion *, html.no-motion *::before, html.no-motion *::after {
     --gem: #2f6fed;
     --star: #e8a013;
     --league: #7c3aed;
+
+    /* 3D ("chunky") tugmalar — `components/chunky.ts`. Oq matn bilan ≥4.5:1 (axe e2e). */
+    --btn-go: var(--color-emerald-700);
+    --btn-go-hover: var(--color-emerald-800);
+    --btn-go-edge: var(--color-emerald-900);
+    --btn-no: var(--color-rose-700);
+    --btn-no-hover: var(--color-rose-800);
+    --btn-no-edge: var(--color-rose-900);
+    --btn-alt: var(--color-navy-600);
+    --btn-alt-hover: var(--color-navy-700);
+    --btn-alt-edge: var(--color-navy-800);
+    --btn-off: var(--color-slate-200);
+    --btn-off-text: var(--color-slate-500);
+    --btn-off-edge: var(--color-slate-300);
+
+    /* O'quv yo'li xaritasi — `DuoPathMap.tsx` (qorong'ida ham o'qiladigan). */
+    --map-done: #f5b301;
+    --map-done-edge: #c98f00;
+    /* Sariq ustidagi matn — to'q (oq matn ≈1.9:1 edi). */
+    --map-done-ink: #3b2a00;
+    --map-current: #22c55e;
+    --map-current-edge: #15803d;
+    --map-current-ink: #15803d;
+    --map-locked: #e2e8f0;
+    --map-locked-edge: #b8c2d0;
+    --map-locked-ink: #8a96a8;
+    --map-chest: #b7791f;
+    --map-chest-lid: #d69e2e;
+    --map-chest-edge: #7c4a03;
+    --map-chest-lock: #f5b301;
   }
   .dark {
     color-scheme: dark;
@@ -165,6 +195,16 @@ html.no-motion *, html.no-motion *::before, html.no-motion *::after {
     --gem: #6d9dff;
     --star: #ffc53d;
     --league: #a78bfa;
+
+    --btn-off: var(--color-slate-700);
+    --btn-off-text: var(--color-slate-300);
+    --btn-off-edge: var(--color-slate-600);
+
+    --map-current-ink: #4ade80;
+    /* Qorong'ida qulflangan tugun oq dog' bo'lib qolmasin. */
+    --map-locked: #1e3a63;
+    --map-locked-edge: #16304f;
+    --map-locked-ink: #7d93b5;
   }
 
   * { border-color: var(--border); }

@@ -16,6 +16,8 @@ import type { CheckResult } from '../lib/check'
 import { JUMP_PASS_SCORE, buildSections, jumpTestExercises, skippedDaysFor, type SectionCard } from '../lib/sections'
 import { levelLabel } from '../lib/skillScoring'
 import { useStore } from '../lib/storeContext'
+import { CHUNKY, CHUNKY_ALT, CHUNKY_GO, CHUNKY_PLAIN } from '../components/chunky'
+
 
 const STATUS_CHIP: Record<SectionCard['status'], { text: string; tone: 'ok' | 'brand' | 'warn' | 'default' }> = {
   done: { text: '✓ Yakunlangan', tone: 'ok' },
@@ -25,13 +27,10 @@ const STATUS_CHIP: Record<SectionCard['status'], { text: string; tone: 'ok' | 'b
 }
 
 /** Katta "3D" tugma (pastki chegara — chuqurlik). */
-const chunky =
-  'w-full inline-flex items-center justify-center rounded-2xl px-5 py-3 text-sm font-extrabold uppercase tracking-wide ' +
-  'border-b-4 transition-all active:translate-y-0.5 active:border-b-2 focus-visible:outline-2 focus-visible:outline-offset-2 ' +
-  'disabled:opacity-50 disabled:cursor-not-allowed'
-const chunkyGreen = `${chunky} bg-emerald-700 hover:bg-emerald-800 text-white border-emerald-900`
-const chunkyBlue = `${chunky} bg-navy-600 hover:bg-navy-500 text-white border-navy-800`
-const chunkyPlain = `${chunky} bg-[var(--panel)] hover:bg-[var(--panel-2)] text-[var(--text)] border border-b-4`
+const chunky = `w-full ${CHUNKY} px-5 py-3 disabled:opacity-50`
+const chunkyGreen = `${chunky} ${CHUNKY_GO}`
+const chunkyBlue = `${chunky} ${CHUNKY_ALT}`
+const chunkyPlain = `${chunky} ${CHUNKY_PLAIN}`
 
 export default function Sections() {
   const { data, ready } = useStore()
