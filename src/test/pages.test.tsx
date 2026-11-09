@@ -152,12 +152,15 @@ describe('Yozish — AI ulanmagan bo‘lsa "AI" deb ko‘rsatilmaydi', () => {
     expect(screen.queryByText('Eski javob')).toBeNull()
   })
 
-  it('"ulangan" faqat VITE_AI_ENABLED=true + foydalanuvchi bayrog‘i + internet bo‘lganda', () => {
-    expect(aiRuntimeEnabled(true, true)).toBe(false)
+  it('"ulangan" faqat VITE_AI_ENABLED=true + foydalanuvchi bayrog‘i + internet + Supabase bo‘lganda', () => {
+    expect(aiRuntimeEnabled(true, true, true)).toBe(false)
     vi.stubEnv('VITE_AI_ENABLED', 'true')
-    expect(aiRuntimeEnabled(true, true)).toBe(true)
-    expect(aiRuntimeEnabled(false, true)).toBe(false)
-    expect(aiRuntimeEnabled(true, false)).toBe(false)
+    expect(aiRuntimeEnabled(true, true, true)).toBe(true)
+    expect(aiRuntimeEnabled(false, true, true)).toBe(false)
+    expect(aiRuntimeEnabled(true, false, true)).toBe(false)
+    // Edge funksiya JWT talab qiladi — Supabase sozlanmagan bo'lsa AI yo'q
+    expect(aiRuntimeEnabled(true, true, false)).toBe(false)
+    expect(aiRuntimeEnabled(true, true)).toBe(false)
   })
 })
 

@@ -21,7 +21,7 @@
     "render:check": "node scripts/render-check.mjs",
     "icons:build": "node scripts/make-icons.mjs",
     "audio:build": "node scripts/build-audio.mjs",
-    "lint:ci": "eslint src scripts e2e --max-warnings 0",
+    "lint:ci": "eslint src scripts e2e supabase --max-warnings 0",
     "e2e": "playwright test",
     "bundle:check": "node scripts/check-bundle.mjs"
   },

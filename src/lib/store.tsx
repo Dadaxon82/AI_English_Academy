@@ -22,6 +22,7 @@ import { isPristine, mergeRemote } from './merge'
 import { supabaseConfigured } from './supabase'
 import type { MockExamAttempt, SpeakingSession, UserSettings, WritingSubmission } from './types'
 import { emptyData, todayKey } from './types'
+import { aiRuntimeEnabled, requestSpeakingFeedback, requestWritingFeedback, speakingAnalysisFromAi, writingAnalysisFromAi } from './ai'
 import { nowMs } from './clock'
 import { reducer } from './reducer'
 import { skillEvidence, totalVocabCount } from './selectors'
@@ -197,9 +198,15 @@ export function StoreProvider({
         createdAt: Date.now(),
       }
       dispatch({ type: 'writing-add', sub })
+      // AI (ulangan bo'lsa): qoidaviy tahlil darhol ko'rinadi, AI javobi kelsa almashtiriladi.
+      if (task && sub.analysis && aiRuntimeEnabled(data.settings.aiEnabled, netOnline)) {
+        void requestWritingFeedback({ level: data.settings.currentLevel, taskPrompt: task.promptEn, text }).then((r) => {
+          if (r.ok) dispatch({ type: 'writing-analysis', id: sub.id, analysis: writingAnalysisFromAi(r.feedback, sub.wordCount) })
+        })
+      }
       return sub
     },
-    [data.settings.currentLevel],
+    [data.settings.currentLevel, data.settings.aiEnabled, netOnline],
   )
 
   const addSpeaking = useCallback<StoreValue['actions']['addSpeaking']>(
@@ -229,9 +236,15 @@ export function StoreProvider({
         createdAt: Date.now(),
       }
       dispatch({ type: 'speaking-add', session })
+      const said = (transcript ?? textAnswer ?? '').trim()
+      if (task && analysis && said && aiRuntimeEnabled(data.settings.aiEnabled, netOnline)) {
+        void requestSpeakingFeedback({ level: data.settings.currentLevel, taskPrompt: task.questionEn, text: said }).then((r) => {
+          if (r.ok) dispatch({ type: 'speaking-analysis', id: session.id, analysis: speakingAnalysisFromAi(r.feedback, analysis) })
+        })
+      }
       return session
     },
-    [data.settings.currentLevel],
+    [data.settings.currentLevel, data.settings.aiEnabled, netOnline],
   )
 
   const addMockAttempt = useCallback<StoreValue['actions']['addMockAttempt']>((partial) => {
