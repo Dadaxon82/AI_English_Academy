@@ -11,16 +11,15 @@ android {
         applicationId "com.dadaxon.aienglishacademy"
         minSdk 26
         targetSdk 34
-        // 2026-11-08 (2-son): MASHQ JARAYONI qo'shilgani uchun versiya yana
-        // ko'tarildi — jarayon chizig'i, to'g'ri/noto'g'ri fikr-mulohazasi
-        // (silkinish + zarba halqasi), sintez qilingan javob ovozi, combo
-        // satiri va variant tugmasining bosilishi (`Motion.shake/press/
-        // playFeedback`). versionCode 2 -> 3 SHART: Android eski versiya
-        // ustiga yangisini o'rnatishi uchun versionCode kattalashishi
-        // kerak (Release'da 2 qolsa yangilanish o'rniga
-        // "ilova o'rnatilmadi" xatosi chiqardi).
-        versionCode 3
-        versionName "1.2.0"
+        // 2026-11-09 (PR #8): BO'LIMLAR ekrani + sakrash testi mobilda paydo
+        // bo'lgani uchun versiya ko'tarildi (bo'limlar kartalari, joriy bo'lim
+        // banneri, `StoreAction.SectionJump`, sakrash natija kartasi).
+        // versionCode 3 -> 4 SHART: Android eski versiya ustiga yangisini
+        // o'rnatishi uchun versionCode kattalashishi kerak (Release'da 3 qolsa
+        // yangilanish o'rniga "ilova o'rnatilmadi" xatosi chiqadi — 2 -> 3 da
+        // o'sha xato o'rganilgan edi).
+        versionCode 4
+        versionName "1.3.0"
         resourceConfigurations += ['uz', 'en']
 
         // Veb-loomihadagi VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY ning

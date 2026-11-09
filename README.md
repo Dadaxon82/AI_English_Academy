@@ -25,7 +25,7 @@ Loyiha talabnomasi (`AI English Academy_v2.docx`) to'liq bajarilgan:
 - ✅ AI "ulangan" deb ko'rsatilmaydi — AI bo'lmasa **qoidaviy dvigatel** (`engine: 'rule-based'`) ishlatiladi
 - ✅ **7+ kun A1 kontenti** alohida (`src/content/day-01…07.ts`)
 - ✅ **13 ta jadval** (`supabase/migrations/0001_init.sql`), ID'lar, `created_at`, FK va indexlar bilan; keyin `0002_fix_content_fk.sql` (FK), `0003_motion.sql` (harakat sozlamasi — `motion_enabled`) va `0004_weekly_xp.sql` (haftalik XP — real ligalar)
-- ✅ Testlar: `tsc` tip tekshiruvi, ESLint, `vitest` (**347 test / 29 fayl**), production build, smoke + render tekshiruvi
+- ✅ Testlar: `tsc` tip tekshiruvi, ESLint, `vitest` (**355 test / 30 fayl**), production build, smoke + render tekshiruvi
 - ✅ JSON/CSV **eksport** va **ma'lumotlarni o'chirish**
 - ✅ **HECH QANDAY TUGMA DEKORATSIYA EMAS** — har bir tugma haqiqiy harakat bajaradi
 
@@ -203,7 +203,7 @@ npm run icons:build   # PWA ikonalaria (0 bog'liqlik, sof Node)
 ```bash
 npm run typecheck     # tsc — 0 xato
 npm run lint          # eslint — 0 xato
-npm test              # vitest — 347 test, 29 fayl (SRS, taymer/vaqt hisobi, tekshiruv, kontent auditi (yangi 5 tur uchun 6 qoida), audio yaxlitligi, rejalashtirish, daraja, sync, server birlashmasi (+selfAssessment), sahifalar, darslar zanjiri + HAQIQIY A1 kontentida zanjir auditi, harakat manifesti (mobil res/raw bilan solishtiradi), O‘YIN QATLAMI: yurak/quest/gem/liga + o‘yin manifesti (mobil GameConfig.kt bilan solishtiradi), MASHQ JARAYONI: progress chizig‘i + combo + bosish (store hisoblari va mobil manba bilan solishtiriladi), BO'LIMLAR: A1.1…C1.2 rejalari + sakrash testi, LUG'AT O'YINI: zanjir qoidalari, YANGI TURLAR: 5 tekshiruvchi + qisman ball, DARS REJIMI (lessons.ts), o'z-o'zini baholash)
+npm test              # vitest — 355 test, 30 fayl (SRS, taymer/vaqt hisobi, tekshiruv, kontent auditi (yangi 5 tur uchun 6 qoida), audio yaxlitligi, rejalashtirish, daraja, sync, server birlashmasi (+selfAssessment), sahifalar, darslar zanjiri + HAQIQIY A1 kontentida zanjir auditi, harakat manifesti (mobil res/raw bilan solishtiradi), O‘YIN QATLAMI: yurak/quest/gem/liga + o‘yin manifesti (mobil GameConfig.kt bilan solishtiradi), MASHQ JARAYONI: progress chizig‘i + combo + bosish (store hisoblari va mobil manba bilan solishtiriladi), BO'LIMLAR: A1.1…C1.2 rejalari + sakrash testi, LUG'AT O'YINI: zanjir qoidalari, YANGI TURLAR: 5 tekshiruvchi + qisman ball, DARS REJIMI (lessons.ts), o'z-o'zini baholash, XATOLAR DAFTARI O'YINLARI: 4 rejim + `remix` qayta qurish (§5h))
 npm run build         # production build + Service Worker
 npm run smoke         # dist'ni serverda ochib tekshirish + 375/1280 skrinshot
 npm run render:check  # 16 marshrut CDP orqali: DOM + konsol xatolari + 375px telefonda yonga surilmasligi
@@ -270,24 +270,31 @@ qator navbatda qoladi va migratsiyadan keyingi `flush`da o'zi yetib boradi;
 `user_settings`da rad etilgan 3 ustun tushirilib, yozuv yetkaziladi;
 `pullRemote`da `weekly_xp`/`profiles` yo'q bo'lsa ham o'qish ok qaytadi.
 
-Tayyor APK — GitHub Release [`v1.2.0-mobile`](https://github.com/Dadaxon82/AI_English_Academy/releases/tag/v1.2.0-mobile)
-(**2026-11-08**, 1.2.0 / versionCode 3 — mashq JARAYONI bilan, 5e-bo'lim): `app-release.apk`,
-20 341 114 B (o'lchangan), SHA256
-`433abd3ee6e891a361748311850a37c28b07554e43f5d98b5f814db3386f5708`. Imzo build'dan
+Tayyor APK — GitHub Release [`v1.3.0-mobile`](https://github.com/Dadaxon82/AI_English_Academy/releases/tag/v1.3.0-mobile)
+(**2026-11-09**, 1.3.0 / versionCode 4 — **BO'LIMLAR mobilda**, §5f): `app-release.apk`,
+20 376 210 B (o'lchangan), SHA256
+`54202620d522fc1ccb29d09ca893e0b9000e82c62701c2a04a42fb207ef25b69`. Imzo build'dan
 keyin qayta tekshirildi (`apksigner verify --print-certs` — xato yo'q):
 `Signer #1 CN=AI English Academy, OU=AEA, O=Dadaxon, L=Kokand, ST=Fergana, C=UZ`,
 sertifikat SHA-256 `d59a899ff5b03a8d691df1e72afd99b66984bd5f5cd17bd1fd51311faf587e55`
-(1.0.0 va 1.1.0 bilan BIR XIL imzo kaliti — eski ustiga yangilanadi).
+(1.0.0, 1.1.0 va 1.2.0 bilan BIR XIL imzo kaliti — eski ustiga yangilanadi).
+`aapt2 dump badging` — `versionCode='4' versionName='1.3.0'`; `resources.arsc`da
+yangi bo'lim matnlari bor. Shu APK emulatorda (Pixel 3a API 34) jonli quvildi:
+onboarding → Bo'limlar → A1.2 sakrash testi → natija kartasi va qayta chizilgan
+holatlar; `logcat`da `FATAL EXCEPTION` 0.
 
-**APK build'dan KEYIN kiritilgan yagona o'zgarish** (2026-11-09, 5d-bo'limdagi
-«sana izchilligi»): `settleLeaguePrize()` kunni devoldan o'zi o'qimasligi
-tuzatildi. Foydalanuvchi ko'radigan xulq O'ZGARMADI — prod'da `today` har doim
-`todayKey()` (`store.tsx:101`, `GameOps.settle(...)`), ya'ni chiqarilgan APK
-ham BIR XIL natija beradi. Shu sababli APK qayta yig'ilmadi (hash o'zgardida
-tekshirilgan qiymatlar buzilardi); tuzatish keyingi release kodiga kiradi,
-sinovlar soni shu paytdan boshlab mobil 349; veb PR #2–#4 dan keyin 314, PR #6
-dan keyin esa **347 test / 29 fayl** — qayta o'lchangan, §5f/§5g. Bo'limlar qismi
-mobilda ham qurildi (2026-11-09, §5f): mobil **377 test / 33 klass**.
+Oldingi release — [`v1.2.0-mobile`](https://github.com/Dadaxon82/AI_English_Academy/releases/tag/v1.2.0-mobile)
+(2026-11-08, 1.2.0 / versionCode 3 — mashq JARAYONI bilan, 5e-bo'lim): `app-release.apk`,
+20 341 114 B; SHA256 `433abd3ee6e891a361748311850a37c28b07554e43f5d98b5f814db3386f5708`.
+
+**1.2.0 APK build'dan KEYIN kiritilgan o'zgarishlar** (2026-11-09):
+(1) 5d-bo'limdagi «sana izchilligi» — `settleLeaguePrize()` kunni devoldan o'zi
+o'qimasligi tuzatildi (foydalanuvchi ko'radigan xulq O'ZGARMADI — prod'da `today`
+har doim `todayKey()` (`store.tsx:101`, `GameOps.settle(...)`));
+(2) **BO'LIMLAR pariteti** (PR #8 — §5f). Ikkalasi ham **v1.3.0 APK'siga kirdi**
+(versionCode 4) — shuning uchun 1.2.0 hash'i o'zgarmadi, yangi release yangi
+hash bilan chiqdi. Sonlar zanjiri halol: mobil 349 → 368 → **377**; veb PR #2–#4
+dan keyin 314, PR #6 dan keyin 347, PR #7 dan keyin **355 test / 30 fayl**.
 
 Oldingi release — [`v1.1.0-mobile`](https://github.com/Dadaxon82/AI_English_Academy/releases/tag/v1.1.0-mobile)
 (2026-11-08, 1.1.0 / versionCode 2 — o'yin qatlami, mashq jarayonisisiz): `app-release.apk`,
@@ -496,10 +503,12 @@ gap-fill-da chip bosilsa NAVBATDAGI bo'shliq to'ladi (`fillFirstEmptyGap`);
 oxirgi savolda tugma «Yakunlash» (`ex_finish`).
 
 **Hali mobilda YO'Q** (vebda bor, keyingi mobil ish): zigzag yo'l xaritasi
-(`pathMap.ts`/`DuoPathMap.tsx`), `LeaguePanel`, dars rejimi (bitta oqim) va
-lug'at o'yini (`wordGame.ts`/`WordGame.tsx`) — `mobile/` da bu nomlarda fayl
-yo'qligi qayta ro'yxatdan tekshirildi. Mobil APK (1.2.0) §5d/§5e qatlamigacha;
-yuqoridagi Bo'limlar qismi keyingi release kodiga kiradi.
+(`pathMap.ts`/`DuoPathMap.tsx`), `LeaguePanel`, dars rejimi (bitta oqim),
+lug'at o'yini (`wordGame.ts`/`WordGame.tsx`) va **Xatolar daftarining 4 o'yin
+usuli** (`mistakes.ts`/`remix.ts`/`MistakeGames.tsx` — §5h) — `mobile/` da bu
+nomlarda fayl yo'qligi qayta ro'yxatdan tekshirildi. **Mobil APK v1.3.0** §5d/§5e
+bilan birga **§5f Bo'limlar** qatlamini ham o'z ichiga oladi (release note'ida
+ro'yxat qilingan); qolganlari keyingi mobil ish.
 
 ## 5g. PR #6 — 5 yangi mashq turi, o'z-o'zini baholash (2026-11-08, main)
 
@@ -523,8 +532,11 @@ keltirildi (246 / 238 + 5 yangi tur soni), ya'ni test endi HAQIQIY eksportni
 kuzatadi, eski sonni emas.
 
 Mobil testlar to'plami qayta o'lchandi (rebase'dan keyin, `:app:testDebugUnitTest`):
-**377 test / 33 klass, 0 fail / 0 skip**. Veb: `tsc` 0 xato, ESLint 0 xato
-(27 ogohlantirish — bazaviy), `vitest` **347 test / 29 fayl**, build, smoke,
+**377 test / 33 klass, 0 fail / 0 skip** — PR #8 main'ga birlashganidan KEYIN ham
+shu sonlar o'zgarmadi (PR #7 faqat veb fayllarga tegdi, `mobile/` ga tegmadi).
+Veb: `tsc` 0 xato, ESLint 0 xato
+(27 ogohlantirish — bazaviy), `vitest` **355 test / 30 fayl** (main'da, PR #7
+bilan — qayta o'lchandi), build, smoke,
 `render:check` 16 marshrut (375 px yonga surilmasligi bilan) — hammasi OK.
 
 Bo'limlar qo'shilgan branchda **release** yo'li ham tekshirildi (2026-11-09):
@@ -538,10 +550,30 @@ bilan BIR XIL kalit); `aapt2 dump badging` — `versionCode='3' versionName='1.2
 jonli quvildi** (uninstall → install, chunki imzo kaliti rasm bilan farq qiladi):
 onboarding → Bo'limlar → sakrash testi 12/12 → «Sakrash testi topshirildi:
 100% ≥ 80% — A1.2 ochildi», Bo'limlarda A1.1 ✓ Yakunlangan / A1.2 Joriy;
-`logcat`da `FATAL EXCEPTION` soni **0**. **Lekin yangi release chop
-qilinmadi:** branch hozircha PR #8 ko'rinishida ochiq, `versionCode` hamon 3.
-Release faqat PR birlashtirilgach va versiya ko'tarilgach chiqariladi (2 → 3 da
-«ilova o'rnatilmadi» xatosi o'rganilgan).
+`logcat`da `FATAL EXCEPTION` soni **0**. Keyin PR #8 main'ga birlashdi
+(`aaee1d8`), `versionCode` 3 → 4 / `versionName` 1.2.0 → 1.3.0 ko'tarildi va
+**v1.3.0-mobile** release'i shu main'dan chiqarildi (yuan blokda — hajmi va
+SHA256 diskdan o'lchangan).
+
+## 5h. PR #7 — Xatolar daftarining 4 o'yin usuli (2026-11-09, main)
+
+PR #7 (`71b1a91`, merge `9001763`) — foydalanuvchi xatolarini qayta ishlashni
+o'yin ko'rinishiga keltirdi. **Faqat veb.**
+
+| Qism | Fayl | Mantiq |
+|---|---|---|
+| 4 o'yin rejimi | `src/lib/mistakes.ts` (sof funksiya) | `fix` — tuzatilmagan xatolar (eng yangisi birinchi, ≤10); `hard` — 2+ marta xato qilinganlar (≤8); `remix` — xato mashq BOSHQA formatda (≤8); `timed` — vaqtga qarshi, aralash tartibda (≤15). «Tuzatilmagan xato» = mashqning ENG OXIRGI urinishi noto'g'ri; to'g'ri yechilsa ro'yxatdan O'ZI chiqadi (alohida «o'chirish» holati yo'q) |
+| «Boshqa ko'rinishda» qayta qurish | `src/content/remix.ts` | `gap-fill → dropdown-cloze` (to'g'ri javob + o'quvchining xato javobi + bankdagi chalg'ituvchi), `dropdown-cloze → gap-fill`, `multiple-choice → short-answer` (1–3 so'z bo'lsa), `translation → word-order`. Boshqa turlarda `null` — o'yin asl mashqni beradi. Deterministik aralashtirish (id bo'yicha) |
+| `findExercise` remix'ni tiklaydi | `src/content/index.ts` | `remix-<id>` → asl mashqdan qayta quriladi (son ixtir qilinmaydi, faqat format o'zgaradi) |
+| O'yin ekrani | `src/components/MistakeGames.tsx`, `src/pages/ErrorLog.tsx` | kartalar + umumiy `LessonPlayer`; qahramon — `MascotFigure` (bizniki); `LessonStep.badgeTone: 'new'|'fix'` (`src/lib/lessons.ts`) |
+| Testlar | `src/test/mistakes.test.ts` | veb testlari **347 → 355** (29 → 30 fayl) |
+| Skrinshotlar | `docs/screenshots/errors-*.png` | 5 ta (rejim + mobil taqqoslash) |
+
+**Mobilda hali YO'Q** — `git ls-files mobile` da `mistakes`/`remix`/`MistakeGames`
+nomlari yo'q (qayta ro'yxatdan ko'rildi). Bu keyingi mobil ish: mavjud
+`Attempts`/urinishlar ma'lumoti va `AnswerChecker` bilan qurilishi mumkin,
+lekin hozircha mobil Xatolar ekranda bu 4 rejim yo'q — §5fdagi «Hali mobilda
+YO'Q» ro'yxatiga qo'shildi.
 
 ## 6. Arxitektura qisqacha
 
@@ -550,17 +582,20 @@ src/
   content/         # 7+ kun A1 kontenti (UI koddan alohida), A2+ zaxira bundle,
                    # vocabEmoji.ts (lug'at o'yini rasmlari — tizim emoji),
                    # a1/new-types.ts (5 yangi tur — 35 mashq, §5g), canDo.ts
-                   # (o'z-o'zini baholash da'volari)
+                   # (o'z-o'zini baholash da'volari), remix.ts (xato mashqni
+                   # boshqa formatda qayta qurish — §5h)
   lib/             # store (reducer + IndexedDB + sync navbati), SRS, taymer,
                    # tekshiruv dvigateli, rejalashtirish, daraja isboti, eksport,
                    # motionManifest (harakat byudjeti), feedbackSound (Web Audio),
                    # sections.ts (A1.1…C1.2 bo'lim rejalari + sakrash testi),
                    # pathMap.ts (zigzag yo'l xaritasi ma'lumotlari),
                    # wordGame.ts (lug'at o'yini zanjiri — sof funksiya),
-                   # lessons.ts (dars rejimi — bitta oqim)
+                   # lessons.ts (dars rejimi — bitta oqim),
+                   # mistakes.ts (xatolar daftari o'yinlari — sof funksiya, §5h)
   pages/           # 15 sahifa (/sections bilan)
   components/      # UI, ExerciseRunner (11 tur mashq + jarayon chizig'i/combo/bosish +
                    # dars rejimi), LessonPlayer / SectionLessons (dars oqimi),
+                   # MistakeGames (xatolarni 4 usulda qayta ishlash — §5h),
                    # Shell navigatsiya, Mascot (qahramon — bizniki),
                    # DuoPathMap (zigzag yo'l), SectionBanner, LeaguePanel,
                    # WordGame (lug'at o'yini — ExerciseRunner ustida),
