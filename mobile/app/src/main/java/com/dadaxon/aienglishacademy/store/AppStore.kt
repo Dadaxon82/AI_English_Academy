@@ -89,6 +89,9 @@ sealed class StoreAction {
      * yoziladi; DARAJAGA (`settings.currentLevel`) TEGILMAYDI.
      */
     data class SectionJump(val sectionId: String, val score: Int) : StoreAction()
+
+    /** O'z-o'zini baholash (Likert 1–5) — veb `self-assess`. Darajaga ta'sir qilmaydi. */
+    data class SelfAssess(val id: String, val score: Int, val at: Long) : StoreAction()
     data class Diagnostic(val at: Long, val level: String?, val labelUz: String, val confidence: Double) : StoreAction()
     data class Onboarded(val at: Long) : StoreAction()
     data class LevelSet(val level: String) : StoreAction()
@@ -361,6 +364,11 @@ class AppStore(private val context: Context, private val container: AppContainer
                 val nd = applySectionJump(d, a.sectionId, a.score) { lvl ->
                     runCatching { container.content.bundle(lvl).days }.getOrDefault(emptyList())
                 }
+                if (nd === d) s else s.copy(data = nd)
+            }
+
+            is StoreAction.SelfAssess -> {
+                val nd = com.dadaxon.aienglishacademy.domain.applySelfAssess(d, a.id, a.score, a.at)
                 if (nd === d) s else s.copy(data = nd)
             }
 

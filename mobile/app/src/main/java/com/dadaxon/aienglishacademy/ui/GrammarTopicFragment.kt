@@ -8,6 +8,8 @@ import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.dadaxon.aienglishacademy.R
+import com.dadaxon.aienglishacademy.domain.LessonStep
+import com.dadaxon.aienglishacademy.domain.grammarLesson
 import com.dadaxon.aienglishacademy.container
 import com.dadaxon.aienglishacademy.data.CommonMistake
 import com.dadaxon.aienglishacademy.data.ExampleEn
@@ -135,13 +137,16 @@ class GrammarTopicFragment : Fragment() {
             b.rows.addView(
                 Rows.primaryButton(ctx, getString(R.string.grammar_practice)).apply {
                     setOnClickListener {
+                        // Veb dars rejimi bilan bir xil tartib (`domain/Lessons.kt::grammarLesson`):
+                        // avval osonlari, o'rtada misollardan gap yig'ish (`lesson-gtr-…`).
                         Nav.openExercises(
                             this@GrammarTopicFragment,
-                            topic.exercises.map { it.id },
+                            grammarLesson(topic).mapNotNull { (it as? LessonStep.Ex)?.exercise?.id },
                             topic.id,
                             null,
                             Source.PRACTICE,
                             title,
+                            reorder = false,
                         )
                     }
                 },

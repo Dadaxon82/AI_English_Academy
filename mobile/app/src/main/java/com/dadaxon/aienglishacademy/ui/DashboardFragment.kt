@@ -27,6 +27,7 @@ import com.dadaxon.aienglishacademy.domain.evaluateLevelPromotion
 import com.dadaxon.aienglishacademy.domain.GameLogic
 import com.dadaxon.aienglishacademy.domain.lastNDays
 import com.dadaxon.aienglishacademy.domain.nextDayId
+import com.dadaxon.aienglishacademy.domain.pathLevel
 import com.dadaxon.aienglishacademy.domain.planProgress
 import com.dadaxon.aienglishacademy.domain.skillEvidence
 import com.dadaxon.aienglishacademy.domain.streakOf
@@ -318,7 +319,9 @@ class DashboardFragment : Fragment() {
         val ctx = requireContext()
         val c = container()
         val d = c.store.state.value.data
-        val level = d.settings.currentLevel
+        // O'quv yo'li darajasi (veb `pathLevel` bilan bir xil): A1 tugasa yoki A2.1 ga
+        // sakralsa — A2 kunlari. Baholangan daraja (`currentLevel`) o'zgarmaydi.
+        val level = pathLevel(d.path, d.settings.currentLevel) { lvl -> runCatching { c.content.bundle(lvl).days }.getOrDefault(emptyList()) }
         val bundle = runCatching { c.content.bundle(level) }.getOrNull()
         val days = bundle?.days ?: emptyList()
 

@@ -83,8 +83,17 @@ object Nav {
      * biz o'qish tartibini o'zimiz belgilaymiz. Ro'yxatdagi id'lar soni
      * ham o'smaydi (takrorlar faqat `practice`da).
      */
-    fun openExercises(f: Fragment, ids: List<String>, contentId: String?, dayId: String?, source: String, title: String) {
-        val ordered = if (source == com.dadaxon.aienglishacademy.data.Source.PRACTICE) {
+    fun openExercises(
+        f: Fragment,
+        ids: List<String>,
+        contentId: String?,
+        dayId: String?,
+        source: String,
+        title: String,
+        /** `false` — tartib saqlanadi (xatolar o'yini o'zi tartiblaydi). */
+        reorder: Boolean = true,
+    ) {
+        val ordered = if (reorder && source == com.dadaxon.aienglishacademy.data.Source.PRACTICE) {
             val cr = runCatching { f.requireActivity().container().content }.getOrNull()
             lessonSequence(
                 dayId = dayId ?: contentId ?: "",

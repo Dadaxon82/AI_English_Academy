@@ -325,6 +325,14 @@
     <string name="progress_promotion_weak">Zaif ko‘nikmalar: %1$s</string>
     <string name="progress_promotion_none">Daraja oshirish uchun kamida 4 ko‘nikma bo‘yicha dalil kerak.</string>
     <string name="progress_words_title">So‘zlar statistikasi</string>
+    <string name="errlog_games_title">Xatolar ustida o‘yinlar · %1$d ta tuzatilmagan</string>
+    <string name="errlog_games_none">Tuzatilmagan xato yo‘q — barcha xatolar keyinroq to‘g‘ri yechilgan 👏</string>
+    <string name="errlog_game_fix">Xatolarni tuzatish · %1$d ta mashq</string>
+    <string name="errlog_game_hard">Eng qiyinlari (2+ marta xato) · %1$d ta mashq</string>
+    <string name="errlog_game_remix">Boshqa ko‘rinishda · %1$d ta mashq</string>
+    <string name="progress_self_title">O‘zimni baholayman</string>
+    <string name="progress_self_hint">Har da’voni 1–5 bilan baholang. Bu baho darajangizni o‘zgartirmaydi — daraja faqat mashqlar dalili bilan ko‘tariladi.</string>
+    <string name="progress_self_none">Hali baholanmagan</string>
     <string name="progress_words_learned">O‘zlashtirilgan: %1$d</string>
     <string name="progress_words_due">Takror navbatida: %1$d</string>
     <string name="progress_write_title">Ma’lumotni eksport qilish</string>
