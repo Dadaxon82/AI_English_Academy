@@ -8,7 +8,7 @@
 
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState, type ReactNode } from 'react'
 import type { CefrLevel, Skill } from '../content/types'
-import { allGlossaryVocab, allVocab, getBundle, LOADED_LEVELS } from '../content/index'
+import { allGlossaryVocab, allVocab, getBundle, LOADED_LEVELS, loadLevels } from '../content/index'
 import { type SrsGrade } from './srs'
 import { currentElapsed, formatDuration, planProgress } from './timer'
 import { streakFor, evaluateLevelPromotion } from './skillScoring'
@@ -62,7 +62,8 @@ export function StoreProvider({
         if (alive && res.snapshot) dispatch({ type: 'merge-remote', userId, remote: res.snapshot })
       })
     void (async () => {
-      const d = await loadData(userId)
+      // Kontent darajalari (A2 … alohida chunk) ma'lumot bilan PARALLEL yuklanadi.
+      const [d] = await Promise.all([loadData(userId), loadLevels()])
       if (!alive) return
       loadedFor.current = userId
       if (remoteSync && isPristine(d)) {

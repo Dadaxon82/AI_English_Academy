@@ -161,7 +161,11 @@ export function ListeningLesson({ task, onClose }: { task: ListeningTask; onClos
         onClose={onClose}
         renderInfo={() => (
           <>
-            <p className="text-sm muted">Audioni tinglang — savollar shu audio bo‘yicha. Savol paytida uni qayta tinglash mumkin.</p>
+            <p className="text-sm muted">
+              {task.audio.fileAvailable
+                ? 'Audioni tinglang — savollar shu audio bo‘yicha. Savol paytida uni qayta tinglash mumkin.'
+                : 'Bu suhbatning audio fayli hali yo‘q — transkriptni o‘qing, savollar shu matn bo‘yicha.'}
+            </p>
             <LessonAudio task={task} />
           </>
         )}

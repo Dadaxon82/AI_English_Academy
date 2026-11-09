@@ -45,7 +45,9 @@ export interface SectionPlanEntry {
 export const SECTION_PLAN: readonly SectionPlanEntry[] = [
   { id: 'a1-1', level: 'A1', part: 1, dayNumbers: [1, 2, 3, 4], summaryUz: 'Salomlashish, oila va egalik, kunlik tartib, uy va xonalar: “to be”, “have got”, Present Simple, “there is / are”.' },
   { id: 'a1-2', level: 'A1', part: 2, dayNumbers: [5, 6, 7], summaryUz: 'Ovqat va ichimliklar, bo‘sh vaqt va rejalar, sayohat va yo‘l so‘rash: “some / any”, “can”, “going to”, “was / were”.' },
-  ...CEFR_LEVELS.filter((l) => l !== 'A1').flatMap((level) =>
+  { id: 'a2-1', level: 'A2', part: 1, dayNumbers: [1, 2, 3, 4], summaryUz: 'O‘tgan hafta oxiri, bolalik xotiralari, shahar va qishloq, rejalar va ob-havo: Past Simple (to‘g‘ri va noto‘g‘ri fe’llar), qiyosiy daraja, “going to / will”.' },
+  { id: 'a2-2', level: 'A2', part: 2, dayNumbers: [5, 6, 7], summaryUz: 'Hayot tajribalari, sog‘liq va maslahat, oshxona va xarid: Present Perfect, “should / must / have to”, “some / any, much / many”.' },
+  ...CEFR_LEVELS.filter((l) => l !== 'A1' && l !== 'A2').flatMap((level) =>
     [1, 2].map((part) => ({
       id: `${level.toLowerCase()}-${part}`,
       level,
@@ -181,15 +183,35 @@ export interface CurrentSectionInfo {
  * Hamma bo'lim tugagan bo'lsa — oxirgi kontentli bo'lim, oxirgi kuni.
  * Kontent umuman yo'q bo'lsa — null (banner ko'rsatilmaydi).
  */
-export function currentSectionInfo(data: Pick<AppData, 'path'>): CurrentSectionInfo | null {
+export function currentSectionInfo(
+  data: Pick<AppData, 'path'> & { settings?: Pick<AppData['settings'], 'currentLevel'> },
+): CurrentSectionInfo | null {
   const cards = buildSections(data)
-  const section = cards.find((c) => c.status === 'current') ?? [...cards].reverse().find((c) => c.status === 'done')
-  if (!section || section.days.length === 0) return null
+  // Baholangan darajadan PAST bo'limlar "joriy" hisoblanmaydi (A2 dan
+  // boshlagan o'quvchiga A1.1 ko'rsatilmasin). Daraja bu yerda o'zgarmaydi.
+  const from = data.settings ? CEFR_LEVELS.indexOf(data.settings.currentLevel) : 0
+  const eligible = cards.filter((c) => CEFR_LEVELS.indexOf(c.level) >= from && c.days.length > 0)
   const done = new Set(data.path.completedDays)
+  const section =
+    eligible.find((c) => c.days.some((d) => !done.has(d.id))) ??
+    [...cards].reverse().find((c) => c.status === 'done') ??
+    eligible[eligible.length - 1]
+  if (!section || section.days.length === 0) return null
   let idx = section.days.findIndex((d) => d.id === data.path.currentDayId)
   if (idx < 0) idx = section.days.findIndex((d) => !done.has(d.id))
   if (idx < 0) idx = section.days.length - 1
   return { section, unitNumber: idx + 1, day: section.days[idx]! }
+}
+
+/**
+ * O'quv yo'li QAYSI darajaning kunlarini ko'rsatadi: baholangan daraja
+ * (`settings.currentLevel`) yoki undan keyingi birinchi tugallanmagan bo'lim
+ * darajasi. Masalan A1 kunlari tugasa (yoki A2.1 ga sakralsa) yo'l A2 kunlariga
+ * o'tadi. BAHOLANGAN DARAJA O'ZGARMAYDI — u faqat ko'p ko'nikma dalili bilan
+ * ko'tariladi (`skillScoring.ts`).
+ */
+export function pathLevel(data: Pick<AppData, 'path' | 'settings'>): CefrLevel {
+  return currentSectionInfo(data)?.section.level ?? data.settings.currentLevel
 }
 
 /**

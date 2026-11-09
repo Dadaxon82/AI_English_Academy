@@ -11,7 +11,7 @@
  * xatolar bir marotaba ro'yxat bo'lib chiqadi.
  */
 import { describe, expect, it } from 'vitest'
-import { a1, diagnosticTest, mockExamA1 } from '../content'
+import { LOADED_LEVELS, diagnosticTest, getBundle, mockExamA1 } from '../content'
 import { normalize } from '../lib/check'
 import type { Exercise, ReadingPassage } from '../content/types'
 
@@ -27,13 +27,16 @@ function collect(): Item[] {
   const add = (ex: Exercise, owner: string, passage?: ReadingPassage, transcript?: string) =>
     out.push({ ex, owner, passage, transcript })
 
-  for (const g of a1.grammar) for (const e of g.exercises) add(e, g.id)
-  for (const r of a1.reading) for (const e of r.exercises) add(e, r.id, r)
-  for (const l of a1.listening) {
-    const tr = l.audio.transcript.map((t) => t.text).join(' ')
-    for (const e of l.exercises) add(e, l.id, undefined, tr)
+  // Barcha yuklangan darajalar (A1, A2 …) — yangi daraja audit'dan chetda qolmasin.
+  for (const b of LOADED_LEVELS.map(getBundle)) {
+    for (const g of b.grammar) for (const e of g.exercises) add(e, g.id)
+    for (const r of b.reading) for (const e of r.exercises) add(e, r.id, r)
+    for (const l of b.listening) {
+      const tr = l.audio.transcript.map((t) => t.text).join(' ')
+      for (const e of l.exercises) add(e, l.id, undefined, tr)
+    }
+    for (const t of b.tests) for (const e of t.exercises) add(e, t.id)
   }
-  for (const t of a1.tests) for (const e of t.exercises) add(e, t.id)
   for (const s of mockExamA1.sections) {
     const tr = s.audio?.transcript.map((t) => t.text).join(' ')
     for (const e of s.exercises) add(e, s.id, undefined, tr)
@@ -307,5 +310,38 @@ describe('Kontent auditi — mashqlar yaxlitligi', () => {
       for (const e of s.exercises) if (e.skill !== s.skill) bad.push(`${e.id}: skill=${e.skill} ≠ bo‘lim ${s.skill}`)
     }
     expectClean(bad, 'mock imtihon')
+  })
+})
+
+describe('A2 kontenti — tuzilma (A1 bilan bir xil)', () => {
+  const a2 = getBundle('A2')
+  it('A2 yuklangan', () => {
+    expect(LOADED_LEVELS).toContain('A2')
+    expect(a2.days.length).toBeGreaterThan(0)
+  })
+  it('har kun: 12 so‘z + 5 glossariy, grammatika, o‘qish, tinglash, yozish, 3 gapirish, kun testi', () => {
+    const bad: string[] = []
+    for (const d of a2.days) {
+      const ids = (skill: string) => d.sections.find((s) => s.skill === skill)?.itemIds ?? []
+      if (ids('vocabulary').length !== 12) bad.push(`${d.id}: lug‘at ${ids('vocabulary').length} ≠ 12`)
+      const rd = a2.reading.find((r) => r.id === ids('reading')[0])
+      if (!rd || (rd.glossary ?? []).length !== 5) bad.push(`${d.id}: o‘qish matni yoki 5 ta glossariy yo‘q`)
+      if (!a2.grammar.some((g) => g.id === ids('grammar')[0])) bad.push(`${d.id}: grammatika mavzusi yo‘q`)
+      if (!a2.listening.some((l) => l.id === ids('listening')[0])) bad.push(`${d.id}: tinglash yo‘q`)
+      if (!a2.writing.some((w) => w.id === ids('writing')[0])) bad.push(`${d.id}: yozish yo‘q`)
+      if (ids('speaking').length !== 3) bad.push(`${d.id}: gapirish ${ids('speaking').length} ≠ 3`)
+      if (!d.sectionTest || d.sectionTest.exercises.length < 8) bad.push(`${d.id}: kun testi 8 savoldan kam`)
+      for (const id of [...ids('vocabulary')]) if (!a2.vocab.some((v) => v.id === id)) bad.push(`${d.id}: so‘z ${id} topilmadi`)
+    }
+    expectClean(bad, 'A2 kun tuzilmasi')
+  })
+  it('A2 mashqlari darajasi A2, IDlari a2- bilan boshlanadi', () => {
+    const exs = [...a2.grammar, ...a2.reading, ...a2.listening].flatMap((x) => x.exercises).concat(a2.tests.flatMap((t) => t.exercises))
+    const bad = exs.filter((e) => e.level !== 'A2' || !e.id.startsWith('a2-')).map((e) => e.id)
+    expectClean(bad, 'A2 darajasi / ID')
+  })
+  it('audio fayli yo‘q tinglashlar pleyersiz (soxta audio yo‘q)', () => {
+    const bad = a2.listening.filter((l) => !l.audio.fileAvailable && l.audio.src !== '').map((l) => l.id)
+    expectClean(bad, 'fayli yo‘q audio uchun src bo‘sh bo‘lishi kerak')
   })
 })

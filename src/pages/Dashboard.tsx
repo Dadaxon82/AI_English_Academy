@@ -24,7 +24,7 @@ import type { Skill, VocabularyItem } from '../content/types'
 import { buildChain, exerciseIdsForSection } from '../lib/lessonChain'
 import { buildDayTasks, nextDayId, skillLabelUz } from '../lib/planning'
 import { buildPathLayout, focalNode } from '../lib/pathMap'
-import { pathMilestoneSpecs } from '../lib/sections'
+import { pathMilestoneSpecs, pathLevel } from '../lib/sections'
 import { levelLabel } from '../lib/skillScoring'
 import { useStore } from '../lib/storeContext'
 import { lastNDays } from '../lib/selectors'
@@ -65,7 +65,10 @@ export default function Dashboard() {
   const nav = useNavigate()
 
   // --- Hisoblab olinadigan ma'lumotlar (hook'lar katta return oldidan) ---
-  const bundle = useMemo(() => getBundle(data.settings.currentLevel), [data.settings.currentLevel])
+  // O'quv yo'li darajasi (A1 tugasa yoki A2.1 ga sakralsa — A2 kunlari).
+  // Baholangan daraja (`settings.currentLevel`) bundan o'zgarmaydi.
+  const pLevel = pathLevel(data)
+  const bundle = useMemo(() => getBundle(pLevel), [pLevel])
 
   const today = useMemo(() => {
     if (bundle.days.length === 0) return null
@@ -73,12 +76,12 @@ export default function Dashboard() {
     // Joriy kun allaqachon yakunlangan bo'lsa — keyingi (yoyilmagan) kun olinadi
     if (cur && !data.path.completedDays.includes(cur.id)) return cur
     const nid = nextDayId(
-      data.settings.currentLevel,
+      pLevel,
       bundle.days,
       data.path.completedDays,
     )
     return bundle.days.find((d) => d.id === nid) ?? null
-  }, [bundle.days, data.path.currentDayId, data.path.completedDays, data.settings.currentLevel])
+  }, [bundle.days, data.path.currentDayId, data.path.completedDays, pLevel])
 
   const tasks = useMemo(() => {
     if (!today) return []
@@ -140,8 +143,8 @@ export default function Dashboard() {
     [bundle, currentDayIdx, data.path.completedDays],
   )
   const pathLayout = useMemo(
-    () => buildPathLayout(pathChains, 340, pathMilestoneSpecs(data.settings.currentLevel)),
-    [pathChains, data.settings.currentLevel],
+    () => buildPathLayout(pathChains, 340, pathMilestoneSpecs(pLevel)),
+    [pathChains, pLevel],
   )
   const pathFocus = useMemo(() => focalNode(pathLayout), [pathLayout])
 
