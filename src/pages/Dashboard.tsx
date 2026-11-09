@@ -25,6 +25,7 @@ import { buildChain, exerciseIdsForSection } from '../lib/lessonChain'
 import { buildDayTasks, nextDayId, skillLabelUz } from '../lib/planning'
 import { buildPathLayout, focalNode } from '../lib/pathMap'
 import { pathMilestoneSpecs, pathLevel } from '../lib/sections'
+import { stepDoneChecker } from '../lib/stepProgress'
 import { levelLabel } from '../lib/skillScoring'
 import { useStore } from '../lib/storeContext'
 import { lastNDays } from '../lib/selectors'
@@ -69,6 +70,7 @@ export default function Dashboard() {
   // Baholangan daraja (`settings.currentLevel`) bundan o'zgarmaydi.
   const pLevel = pathLevel(data)
   const bundle = useMemo(() => getBundle(pLevel), [pLevel])
+  const stepDone = useMemo(() => stepDoneChecker(data), [data])
 
   const today = useMemo(() => {
     if (bundle.days.length === 0) return null
@@ -143,8 +145,8 @@ export default function Dashboard() {
     [bundle, currentDayIdx, data.path.completedDays],
   )
   const pathLayout = useMemo(
-    () => buildPathLayout(pathChains, 340, pathMilestoneSpecs(pLevel)),
-    [pathChains, pLevel],
+    () => buildPathLayout(pathChains, 340, pathMilestoneSpecs(pLevel), stepDone),
+    [pathChains, pLevel, stepDone],
   )
   const pathFocus = useMemo(() => focalNode(pathLayout), [pathLayout])
 

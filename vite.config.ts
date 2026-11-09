@@ -9,6 +9,10 @@ import { VitePWA } from 'vite-plugin-pwa'
 // uchun: VITE_BASE=/ npm run build
 export const APP_BASE = process.env.VITE_BASE ?? '/AI_English_Academy/'
 
+// OG / canonical uchun MUTLAQ manzil (index.html'da %VITE_SITE_URL%). Custom domain
+// bo'lsa: VITE_SITE_URL=https://example.uz/ npm run build
+process.env.VITE_SITE_URL ??= `https://dadaxon82.github.io${APP_BASE}`
+
 export default defineConfig({
   base: APP_BASE,
   plugins: [
@@ -20,7 +24,7 @@ export default defineConfig({
       manifest: {
         name: 'AI English Academy',
         short_name: 'AEA',
-        description: "Ingliz tilini A1 dan C1 gacha o'rganish platformasi",
+        description: "Ingliz tilini o'zbek tilida, o'yin shaklida o'rganish: CEFR yo'li (hozir A1 va A2 darslari), Mock Exam, oflayn",
         lang: 'uz',
         dir: 'ltr',
         display: 'standalone',
@@ -41,6 +45,13 @@ export default defineConfig({
             purpose: 'maskable',
           },
         ],
+        // Do'kon / o'rnatish oynasidagi skrinshotlar — haqiqiy ilovadan (scripts/make-share-images.mjs).
+        screenshots: [
+          { src: 'screenshots/wide-dashboard.png', sizes: '1280x800', type: 'image/png', form_factor: 'wide', label: 'Bosh sahifa: kunlik reja va darslar xaritasi' },
+          { src: 'screenshots/wide-path.png', sizes: '1280x800', type: 'image/png', form_factor: 'wide', label: 'O‘quv yo‘li xaritasi' },
+          { src: 'screenshots/narrow-dashboard.png', sizes: '390x844', type: 'image/png', form_factor: 'narrow', label: 'Bosh sahifa (telefon)' },
+          { src: 'screenshots/narrow-path.png', sizes: '390x844', type: 'image/png', form_factor: 'narrow', label: 'O‘quv yo‘li (telefon)' },
+        ],
         shortcuts: [
           { name: 'Dashboard', url: 'dashboard', description: 'Asosiy panel' },
           { name: 'Vocabulary', url: 'vocabulary', description: "Lug'at va flashcard" },
@@ -52,6 +63,8 @@ export default defineConfig({
         // Uning o'rniga pastdagi runtimeCaching `/audio/` qoidasi birinchi
         // tinglashdan keyin faylni keshlaydi → keyingi safar offline ishlaydi.
         globPatterns: ['**/*.{js,css,html,ico,png,svg,webmanifest,json}'],
+        // Ulashish rasmlari oflayn kerak emas — precache'ni og'irlashtirmaydi.
+        globIgnores: ['**/og-image.png', '**/screenshots/**'],
         navigateFallback: `${APP_BASE}index.html`,
         navigateFallbackDenylist: [/^\/api\//],
         runtimeCaching: [

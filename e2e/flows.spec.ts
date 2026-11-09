@@ -98,3 +98,15 @@ test('A2: onboardingda A2 tanlansa — yo‘l, grammatika va tinglash A2 kontent
   await expect(page.locator('audio')).toHaveCount(0)
   await expectClean(page, errors)
 })
+
+test('SEO/OG meta va PWA manifest skrinshotlari haqiqatan mavjud', async ({ page, request }) => {
+  await page.goto('dashboard')
+  const og = await page.locator('meta[property="og:image"]').getAttribute('content')
+  expect(og).toMatch(/^https:\/\/.+\/og-image\.png$/)
+  expect(await page.locator('meta[name="twitter:card"]').getAttribute('content')).toBe('summary_large_image')
+  // Rasm fayli build'da bor (mutlaq URL Pages'ga ishora qiladi — shu nisbiy yo'lni tekshiramiz)
+  expect((await request.get('og-image.png')).status()).toBe(200)
+  const manifest = await (await request.get('manifest.webmanifest')).json()
+  expect(manifest.screenshots.length).toBeGreaterThanOrEqual(2)
+  for (const s of manifest.screenshots) expect((await request.get(s.src)).status(), s.src).toBe(200)
+})

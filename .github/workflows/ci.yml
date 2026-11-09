@@ -30,6 +30,8 @@ jobs:
       - run: npm run typecheck
       - run: npm run lint:ci
       - run: npx vitest run
+      # README'dagi kontent sonlari eskirmaganmi (qo'lda emas — `npm run stats`)
+      - run: npm run stats -- --check
       - run: npm run build
         env:
           VITE_BASE: /AI_English_Academy/

@@ -117,7 +117,13 @@ function statusOf(chainState: (typeof ChainState)[keyof typeof ChainState]): Nod
  * `width` — chizish maydoni kengligi (responsive: chaqiruvchi tomonidan
  * beriladi, masalan konteyner kengligi yoki standart 360).
  */
-export function buildPathLayout(chains: readonly DayChain[], width = 360, milestoneSpecs: readonly MilestoneSpec[] = []): PathLayout {
+export function buildPathLayout(
+  chains: readonly DayChain[],
+  width = 360,
+  milestoneSpecs: readonly MilestoneSpec[] = [],
+  /** Ochiq kunda qadam bajarilganmi (`stepProgress.ts`) — berilmasa kun darajasida. */
+  isStepDone?: (step: DayChain['steps'][number], day: DayChain['day']) => boolean,
+): PathLayout {
   const nodes: PathNode[] = []
   const units: PathUnit[] = []
   const milestones: PathMilestone[] = []
@@ -142,7 +148,8 @@ export function buildPathLayout(chains: readonly DayChain[], width = 360, milest
       firstNodeOrder,
       bannerY,
       steps: chain.steps.length,
-      stepsDone: status === 'done' ? chain.steps.length : 0,
+      stepsDone:
+        status === 'done' ? chain.steps.length : status === 'current' && isStepDone ? chain.steps.filter((st) => isStepDone(st, chain.day)).length : 0,
     })
 
     // Kun ichidagi tartib: qadamlar, o'rtasida (4+ qadamda) sandiq belgisi.
@@ -169,7 +176,8 @@ export function buildPathLayout(chains: readonly DayChain[], width = 360, milest
         skill: step.skill,
         titleUz: step.titleUz,
         isTest: step.isTest,
-        status,
+        // Ochiq kunda bajarilgan qadam "done" — "N ta vazifa qoldi" kamayadi, qahramon keyingi qadamga o'tadi.
+        status: status === 'current' && isStepDone?.(step, chain.day) ? 'done' : status,
         minutes: step.minutes,
         order,
         x,

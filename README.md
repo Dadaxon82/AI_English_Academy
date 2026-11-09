@@ -23,9 +23,22 @@ Loyiha talabnomasi (`AI English Academy_v2.docx`) to'liq bajarilgan:
   **o'zi** qayta yuboriladi; sabab foydalanuvchiga migratsiya fayli nomi bilan ochiq aytiladi — quyida 3b-bo'lim
 - ✅ **Supabase RLS**: har foydalanuvchi faqat o'z qatorlarini ko'radi; service role va `AI_*` kalitlari faqat serverda
 - ✅ AI "ulangan" deb ko'rsatilmaydi — AI bo'lmasa **qoidaviy dvigatel** (`engine: 'rule-based'`) ishlatiladi
-- ✅ **7+ kun A1 kontenti** alohida (`src/content/day-01…07.ts`)
+- ✅ **A1 va A2 kontenti** — har biri 7 kun (`src/content/a1/`, `src/content/a2/`); aniq sonlar pastdagi o‘lchangan jadvalda
 - ✅ **13 ta jadval** (`supabase/migrations/0001_init.sql`), ID'lar, `created_at`, FK va indexlar bilan; keyin `0002_fix_content_fk.sql` (FK), `0003_motion.sql` (harakat sozlamasi — `motion_enabled`) va `0004_weekly_xp.sql` (haftalik XP — real ligalar)
-- ✅ Testlar: `tsc` tip tekshiruvi, ESLint, `vitest` (**355 test / 30 fayl**), production build, smoke + render tekshiruvi
+- ✅ Testlar: `tsc` tip tekshiruvi, ESLint (0 ogohlantirish), `vitest`, Playwright e2e + axe, production build, render tekshiruvi — har PR'da CI
+
+### Joriy sonlar
+
+<!-- STATS:START -->
+_Avtomatik o‘lchandi (`npm run stats`, 2026-11-09). Qo‘lda tahrirlamang._
+
+**Testlar:** vitest **383/383** (34 fayl) · **Kod:** veb 134 fayl / 36713 qator (TS/TSX), mobil 93 fayl / 25583 qator (Kotlin)
+
+| Daraja | Kun | Lug‘at | Mashq | Turlar | Audio fayl / tinglash | Mock |
+|---|---|---|---|---|---|---|
+| A1 | 7 | 84 + 35 glossariy | 238 | multiple-choice 62, true-false-notgiven 49, gap-fill 37, translation 22, matching 18, word-order 15, multi-select 7, dropdown-cloze 7, categorize 7, sequence 7, short-answer 7 | 7/7 | bor |
+| A2 | 7 | 84 + 35 glossariy | 238 | multiple-choice 69, gap-fill 42, true-false-notgiven 36, translation 21, matching 21, word-order 14, multi-select 7, dropdown-cloze 7, categorize 7, sequence 7, short-answer 7 | 0/7 | yo‘q |
+<!-- STATS:END -->
 - ✅ JSON/CSV **eksport** va **ma'lumotlarni o'chirish**
 - ✅ **HECH QANDAY TUGMA DEKORATSIYA EMAS** — har bir tugma haqiqiy harakat bajaradi
 
@@ -202,11 +215,15 @@ npm run icons:build   # PWA ikonalaria (0 bog'liqlik, sof Node)
 
 ```bash
 npm run typecheck     # tsc — 0 xato
-npm run lint          # eslint — 0 xato
-npm test              # vitest — 355 test, 30 fayl (SRS, taymer/vaqt hisobi, tekshiruv, kontent auditi (yangi 5 tur uchun 6 qoida), audio yaxlitligi, rejalashtirish, daraja, sync, server birlashmasi (+selfAssessment), sahifalar, darslar zanjiri + HAQIQIY A1 kontentida zanjir auditi, harakat manifesti (mobil res/raw bilan solishtiradi), O‘YIN QATLAMI: yurak/quest/gem/liga + o‘yin manifesti (mobil GameConfig.kt bilan solishtiradi), MASHQ JARAYONI: progress chizig‘i + combo + bosish (store hisoblari va mobil manba bilan solishtiriladi), BO'LIMLAR: A1.1…C1.2 rejalari + sakrash testi, LUG'AT O'YINI: zanjir qoidalari, YANGI TURLAR: 5 tekshiruvchi + qisman ball, DARS REJIMI (lessons.ts), o'z-o'zini baholash, XATOLAR DAFTARI O'YINLARI: 4 rejim + `remix` qayta qurish (§5h))
+npm run lint          # eslint — 0 xato (CI: npm run lint:ci — ogohlantirish ham xato)
+npm test              # vitest — aniq son «Joriy sonlar» blokida (npm run stats)
 npm run build         # production build + Service Worker
 npm run smoke         # dist'ni serverda ochib tekshirish + 375/1280 skrinshot
 npm run render:check  # 16 marshrut CDP orqali: DOM + konsol xatolari + 375px telefonda yonga surilmasligi
+npm run e2e           # Playwright: asosiy oqimlar + axe (WCAG AA), 1280px va 375px
+npm run bundle:check  # boshlang'ich JS byudjeti (gzip ≤ 300 KB)
+npm run stats         # README «Joriy sonlar» blokini o'lchab yangilaydi (CI: --check)
+node scripts/make-share-images.mjs  # og-image.png + PWA manifest skrinshotlari (preview server kerak)
 ```
 
 > `render:check` Chrome/Edge'ni remote debugging (CDP) orqali ochadi va har
