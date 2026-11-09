@@ -10,6 +10,10 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Button, Card, Chip, EmptyState, Field, InfoBanner, inputCls } from '../components/ui'
 import { useStore } from '../lib/store'
 import { findExercise } from '../content'
+import LessonPlayer from '../components/LessonPlayer'
+import MistakeGames from '../components/MistakeGames'
+import type { LessonStep } from '../lib/lessons'
+import { TIMED_SECONDS, buildMistakeLesson, unresolvedMistakes } from '../lib/mistakes'
 import { checkAnswer } from '../lib/check'
 import { skillLabelUz } from '../lib/planning'
 import type { AttemptRecord, AttemptSource } from '../lib/types'
@@ -26,6 +30,10 @@ export default function ErrorLog() {
   const [range, setRange] = useState<Range>('all')
   const [source, setSource] = useState<AttemptSource | 'all'>('all')
   const [q, setQ] = useState('')
+  const [game, setGame] = useState<{ steps: LessonStep[]; timed: boolean } | null>(null)
+
+  /** Tuzatilmagan xatolar (oxirgi urinish noto'g'ri) — o'yinlar uchun. */
+  const mistakes = useMemo(() => unresolvedMistakes(data.attempts, findExercise), [data.attempts])
 
   const errors = useMemo(() => {
     const cutoff = range === 'all' ? 0 : Date.now() - (range === '7' ? 7 : 30) * 86_400_000
@@ -54,6 +62,14 @@ export default function ErrorLog() {
 
   const totalErrors = data.attempts.filter((a) => !a.correct).length
 
+  if (game) {
+    return (
+      <Card className="p-4 sm:p-6">
+        <LessonPlayer steps={game.steps} onClose={() => setGame(null)} timeLimitSec={game.timed ? TIMED_SECONDS : undefined} />
+      </Card>
+    )
+  }
+
   return (
     <div className="grid gap-4">
       <Card className="grid gap-3">
@@ -64,6 +80,11 @@ export default function ErrorLog() {
         </p>
         <ExportButtons rows={errors} />
       </Card>
+
+      <MistakeGames
+        mistakes={mistakes}
+        onStart={(mode) => setGame({ steps: buildMistakeLesson(mode, mistakes), timed: mode === 'timed' })}
+      />
 
       {repeated.length > 0 && (
         <Card className="grid gap-3">

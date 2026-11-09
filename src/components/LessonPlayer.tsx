@@ -11,7 +11,7 @@
  * Xatolar daftari; yakunda `completeLesson`.
  */
 
-import { useState, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import type { Exercise } from '../content/types'
 import type { CheckResult } from '../lib/check'
 import { SPEECH_PASS, isGraded, speechMatch, type LessonStep } from '../lib/lessons'
@@ -49,6 +49,8 @@ export interface LessonPlayerProps {
   renderContext?: (kind: 'passage' | 'audio') => ReactNode
   /** Har baholangan javobdan keyin (masalan, SRS bahosi). */
   onAnswer?: (step: LessonStep, correct: boolean) => void
+  /** Vaqtga qarshi rejim: soniya. Vaqt tugasa dars shu zahoti yakunlanadi. */
+  timeLimitSec?: number
 }
 
 function exerciseOf(step: LessonStep): Exercise | null {
@@ -57,7 +59,7 @@ function exerciseOf(step: LessonStep): Exercise | null {
   return null
 }
 
-export default function LessonPlayer({ steps, onClose, renderInfo, renderContext, onAnswer }: LessonPlayerProps) {
+export default function LessonPlayer({ steps, onClose, renderInfo, renderContext, onAnswer, timeLimitSec }: LessonPlayerProps) {
   const { data, actions } = useStore()
   const [queue, setQueue] = useState<QueueItem[]>(() => steps.map((step) => ({ step, retry: false })))
   const [pos, setPos] = useState(0)
@@ -65,8 +67,34 @@ export default function LessonPlayer({ steps, onClose, renderInfo, renderContext
   const [results, setResults] = useState<ResultRow[]>([])
   const [xpStart] = useState(data.xp)
   const [ended, setEnded] = useState(false)
+  const [deadline] = useState<number | null>(() => (timeLimitSec ? Date.now() + timeLimitSec * 1000 : null))
+  const [now, setNow] = useState(() => Date.now())
+  const timedOut = deadline !== null && now >= deadline
+
+  // Taymer: har 250 ms yangilanadi; vaqt tugasa dars yakunlanadi (bir marta).
+  useEffect(() => {
+    if (deadline === null || ended) return
+    const t = window.setInterval(() => setNow(Date.now()), 250)
+    return () => window.clearInterval(t)
+  }, [deadline, ended])
+  const finishedOnce = useRef(false)
+  useEffect(() => {
+    if (!timedOut || finishedOnce.current) return
+    finishedOnce.current = true
+    actions.completeLesson(results.length, results.filter((x) => !x.correct).length)
+    setEnded(true)
+  }, [timedOut, actions, results])
 
   const item = queue[pos]
+  const wrap = (node: ReactNode) =>
+    deadline === null ? (
+      node
+    ) : (
+      <div className="grid gap-3">
+        <TimerPill msLeft={Math.max(0, deadline - now)} totalMs={(timeLimitSec ?? 0) * 1000} solved={results.filter((r) => r.correct).length} />
+        {node}
+      </div>
+    )
 
   const record = (r: { correct: boolean; partial: number; given: string }, secondsSpent: number) => {
     if (!item) return
@@ -84,19 +112,22 @@ export default function LessonPlayer({ steps, onClose, renderInfo, renderContext
       setPos(pos + 1)
       return
     }
+    if (finishedOnce.current) return
+    finishedOnce.current = true
     const graded = results.length
     actions.completeLesson(graded, results.filter((x) => !x.correct).length)
     setEnded(true)
   }
 
-  if (ended || !item) return <LessonEnd results={results} xp={Math.max(0, data.xp - xpStart)} onClose={onClose} />
+  if (ended || !item || timedOut)
+    return <LessonEnd results={results} xp={Math.max(0, data.xp - xpStart)} onClose={onClose} timedOut={timedOut} />
 
   const step = item.step
   const badge = item.retry ? 'Xatolarni tuzatamiz' : step.type === 'exercise' ? step.badge : undefined
-  const badgeTone = item.retry ? 'fix' : 'new'
+  const badgeTone = item.retry ? 'fix' : step.type === 'exercise' ? step.badgeTone ?? 'new' : 'new'
 
   if (step.type === 'info') {
-    return (
+    return wrap(
       <LessonFrame pos={pos} total={queue.length} streak={streak} onExit={onClose}>
         <h2 className="text-xl sm:text-2xl font-extrabold leading-tight">{step.titleUz}</h2>
         <div className="grid gap-3">{renderInfo?.(step)}</div>
@@ -110,7 +141,7 @@ export default function LessonPlayer({ steps, onClose, renderInfo, renderContext
   }
 
   if (step.type === 'speak') {
-    return (
+    return wrap(
       <SpeakStep
         key={`${pos}-${step.id}`}
         step={step}
@@ -125,7 +156,7 @@ export default function LessonPlayer({ steps, onClose, renderInfo, renderContext
     )
   }
 
-  return (
+  return wrap(
     <ExerciseRunner
       key={`${pos}-${step.id}`}
       exercise={step.exercise}
@@ -441,16 +472,40 @@ function SentenceBubble({ sentence, hidden = false }: { sentence: string; hidden
 
 /* ------------------------------ yakun ------------------------------ */
 
-function LessonEnd({ results, xp, onClose }: { results: ResultRow[]; xp: number; onClose: () => void }) {
+/** Vaqtga qarshi rejim taymeri. */
+function TimerPill({ msLeft, totalMs, solved }: { msLeft: number; totalMs: number; solved: number }) {
+  const sec = Math.ceil(msLeft / 1000)
+  const pct = totalMs > 0 ? (msLeft / totalMs) * 100 : 0
+  const low = sec <= 15
+  return (
+    <div className="flex items-center gap-3 rounded-2xl border-2 px-3 py-2" role="timer" aria-label={`Qolgan vaqt: ${sec} soniya`}>
+      <span className={`font-extrabold tabular-nums text-lg ${low ? 'text-rose-500 animate-pulse' : 'text-sky-600 dark:text-sky-400'}`}>
+        ⏱ {Math.floor(sec / 60)}:{String(sec % 60).padStart(2, '0')}
+      </span>
+      <div className="flex-1 h-2.5 rounded-full bg-[var(--panel-2)] overflow-hidden">
+        <div className={`h-full rounded-full transition-[width] duration-300 ${low ? 'bg-rose-500' : 'bg-sky-500'}`} style={{ width: `${pct}%` }} />
+      </div>
+      <span className="text-sm font-extrabold text-emerald-600 tabular-nums">✓ {solved}</span>
+    </div>
+  )
+}
+
+function LessonEnd({ results, xp, onClose, timedOut = false }: { results: ResultRow[]; xp: number; onClose: () => void; timedOut?: boolean }) {
   const [review, setReview] = useState(false)
   const first = results.filter((r) => !r.retry && isGraded(r.step))
   const right = first.filter((r) => r.correct).length
-  const pct = first.length === 0 ? 100 : Math.round((right / first.length) * 100)
+  // Hech narsa yechilmagan bo'lsa (masalan, vaqt tugadi) — 0%, "100%" emas.
+  const pct = first.length === 0 ? 0 : Math.round((right / first.length) * 100)
   const praise = pct >= 90 ? 'Zo‘r!' : pct >= 70 ? 'Yaxshi!' : 'Aniqlik'
   return (
     <div className="grid gap-5 py-2 sm:py-4 text-center justify-items-center animate-[var(--animate-pop)]">
       <MascotFigure maxHeight="max-h-36" alt="" />
-      <h2 className="text-2xl sm:text-3xl font-extrabold text-amber-500">Dars tugadi!</h2>
+      <h2 className="text-2xl sm:text-3xl font-extrabold text-amber-500">{timedOut ? 'Vaqt tugadi!' : 'Dars tugadi!'}</h2>
+      {timedOut && (
+        <p className="text-sm font-bold muted">
+          {results.filter((r) => r.correct).length} ta mashq to‘g‘ri yechildi — keyingi safar ko‘prog‘iga harakat qiling!
+        </p>
+      )}
       <div className="grid grid-cols-2 gap-3 w-full max-w-sm">
         <div className="rounded-2xl border-2 border-amber-400 overflow-hidden">
           <p className="bg-amber-400 text-white text-[11px] font-extrabold uppercase py-1">Tajriba ochkolari</p>
