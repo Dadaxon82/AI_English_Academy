@@ -575,6 +575,36 @@ nomlari yo'q (qayta ro'yxatdan ko'rildi). Bu keyingi mobil ish: mavjud
 lekin hozircha mobil Xatolar ekranda bu 4 rejim yo'q — §5fdagi «Hali mobilda
 YO'Q» ro'yxatiga qo'shildi.
 
+## 5i. PR #9 — yo'l xaritasining ko'rinmasligi va yangi ko'rinish (2026-11-09, main)
+
+PR #9 (`f4a2b9c`, merge `9f4b109`) — **faqat veb**, `mobile/` ga umuman tegmagan
+(`git diff aaee1d8..f4a2b9c -- mobile` bo'sh). Xarita ekrani (zigzag yo'l) oldin
+buzilgan edi: har tugunning O'Z `<g transform="translate(…)">`iga CSS animatsiyasi
+(`transform: scale`) qo'yilgan, CSS esa SVG atributini bosib tugunlarni (0,0) ga
+yig'ardi — ekranda faqat chiziq qolardi. Qahramon ham pikselda joylanib SVG
+masshtablangani uchun yuqorida kesilardi. Endi joylashuv tashqi `<g>`da, animatsiya
+ichki `<g>`da (`transform-box: fill-box`), qahramon SVG ichida.
+
+- Ko'rinish (dizayn va qahramon BIZNIKI — Duolingo brendi/rangi nusxalanmagan):
+  tugunlar yumshoq to'lqin bo'ylab, joriy tugunda halqa + «BOSHLASH», kun yakuniy
+  testida kubok, kun yarmida sandiq, kunlar orasida ajratgich; bo'lim oxirida sovrin
+  tuguni «A1.2-bo'lim — N ta vazifa qoldi»; tepada «Keyingi maqsad» yo'l-progressi.
+- Sonlar ixtir emas: `src/lib/sections.ts::pathMilestoneSpecs(level)` HAQIQIY kun
+  va testlar sonidan chiqadi; `pathMap.ts` banner/sovrin uchun alohida vertikal joy
+  ajratadi.
+- Skrinshotlar: `docs/screenshots/map-path.png`, `map-dashboard.png`,
+  `map-milestone.png`, `map-mobile.png`.
+
+`sections.ts` o'zgargani uchun mobil to'plam qayta o'lchandi: **377 test / 33 klass,
+0 fail / 0 skip** — `SectionJumpLogicTest.chegaralarVebBilanBirXil` yashil
+(`JUMP_PASS_SCORE = 80`, `JUMP_ITEMS_PER_DAY = 3` o'zgarmagan). Veb darvozalar ham
+shu main'da qayta o'lchangan: `tsc` 0 xato, ESLint 0 xato (27 ogohlantirish —
+bazaviy), `vitest` **355 test / 30 fayl** (PR #9 test fayli qo'shmagan), build,
+smoke, `render:check` 16 marshrut.
+
+**Mobilda hali YO'Q** — xarita (`DuoPathMap`/`pathMap`) mobil tomonda yo'q (§5f
+ro'yxatidagidek); PR #9 shu paritetni ochiq qoldiradi.
+
 ## 6. Arxitektura qisqacha
 
 ```
