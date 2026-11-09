@@ -19,7 +19,7 @@ import { getBundle } from '../content'
 import type { AudioAsset, ListeningTask } from '../content/types'
 import { assetUrl } from '../lib/audio'
 import type { CheckResult } from '../lib/check'
-import { useStore } from '../lib/store'
+import { useStore } from '../lib/storeContext'
 import { ListeningLesson, LessonStartCard } from '../components/SectionLessons'
 import { listeningLesson } from '../lib/lessons'
 
@@ -203,14 +203,11 @@ function TaskDetail({ task, onBack }: { task: ListeningTask; onBack: () => void 
   const [manifestLoading, setManifestLoading] = useState(manifestCache === null)
   const [refreshKey, setRefreshKey] = useState(0)
 
+  // Kesh bo'lsa holat boshidanoq undan olingan (useState). Qayta urinishda
+  // yuklanish holati tugma ishlovchisida yoqiladi — effect faqat yuklaydi.
   useEffect(() => {
-    if (manifestCache) {
-      setManifest(manifestCache)
-      setManifestLoading(false)
-      return
-    }
+    if (manifestCache) return
     let alive = true
-    setManifestLoading(true)
     void loadManifest().then((st) => {
       if (!alive) return
       setManifest(st)
@@ -225,12 +222,11 @@ function TaskDetail({ task, onBack }: { task: ListeningTask; onBack: () => void 
   const audioAvailable = status.available && status.src !== null
   const src = status.src ?? ''
 
-  const [cached, setCached] = useState(false)
+  // Audio yo'q bo'lsa "keshda" ham emas — hosila (effect'da tozalash shart emas).
+  const [cachedRaw, setCached] = useState(false)
+  const cached = audioAvailable && cachedRaw
   useEffect(() => {
-    if (!audioAvailable) {
-      setCached(false)
-      return
-    }
+    if (!audioAvailable) return
     let alive = true
     void audioIsCached(src).then((v) => {
       if (alive) setCached(v)
@@ -343,6 +339,7 @@ function TaskDetail({ task, onBack }: { task: ListeningTask; onBack: () => void 
             manifestCache = null
             manifestPromise = null
             setManifest(null)
+            setManifestLoading(true)
             setRefreshKey((k) => k + 1)
           }}
         />

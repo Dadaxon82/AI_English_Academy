@@ -10,7 +10,7 @@
 import { describe, expect, it } from 'vitest'
 import { a1, allGlossaryVocab, allVocab, findExercise, glossaryVocabId, vocabQuizExercise, wordKeyOf } from '../content'
 import { checkAnswer } from '../lib/check'
-import { reducer } from '../lib/store'
+import { reducer } from '../lib/reducer'
 import { migrate } from '../lib/storage'
 import { initialSrsState } from '../lib/srs'
 import { emptyData, todayKey, type AppData } from '../lib/types'

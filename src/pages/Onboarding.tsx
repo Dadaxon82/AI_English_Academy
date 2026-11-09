@@ -11,7 +11,7 @@ import { Button, Card, Chip, Field, InfoBanner, inputCls } from '../components/u
 import { MascotAvatar } from '../components/Mascot'
 import ExerciseRunner from '../components/ExerciseRunner'
 import { diagnosticTest, diagnose } from '../content/diagnostic'
-import { useStore } from '../lib/store'
+import { useStore } from '../lib/storeContext'
 import { CEFR_LEVELS, type CefrLevel } from '../content/types'
 import { LOADED_LEVELS } from '../content'
 import { MIN_DAILY_MINUTES, clampDailyMinutes } from '../lib/types'

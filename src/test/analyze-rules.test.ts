@@ -10,7 +10,7 @@
  */
 import { describe, expect, it } from 'vitest'
 import { analyzeSpeaking, analyzeSpeakingText, analyzeWriting, speakingScore } from '../lib/analyze'
-import { skillEvidence } from '../lib/store'
+import { skillEvidence } from '../lib/selectors'
 import { emptyData } from '../lib/types'
 import { a1 } from '../content'
 import type { WritingTask } from '../content/types'

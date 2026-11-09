@@ -20,7 +20,7 @@ import { getBundle } from '../content'
 import type { Exercise, GrammarTopic } from '../content/types'
 import { nextExerciseIndex, type CheckResult } from '../lib/check'
 import { lessonSequence } from '../lib/lessonChain'
-import { useStore } from '../lib/store'
+import { useStore } from '../lib/storeContext'
 import { GrammarLesson, LessonStartCard } from '../components/SectionLessons'
 import { grammarLesson } from '../lib/lessons'
 
