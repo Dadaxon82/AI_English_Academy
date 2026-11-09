@@ -23,7 +23,7 @@ export default function Login({ onAuth, authState }: { onAuth: (s: AuthState) =>
     e.preventDefault()
     setErr(null)
     setNotice(null)
-    const sb = getSupabase()
+    const sb = await getSupabase()
     if (!sb) {
       setErr('Supabase sozlanmagan. “Mehmon sifatida davom etish” tugmasidan foydalaning.')
       return

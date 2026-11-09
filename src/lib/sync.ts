@@ -456,7 +456,7 @@ export async function syncNow(userId: string, opts: { maxItems?: number } = {}):
   if (networkStatus() === 'offline') {
     return { ok: false, ...empty, reasonUz: 'Internet yo‘q. Navbat saqlandi, ulanish qaytganda yuboriladi.' }
   }
-  const sb = getSupabase()
+  const sb = await getSupabase()
   if (!sb) return { ok: false, ...empty, reasonUz: 'Supabase mijoziga ulanib bo‘lmadi.' }
 
   const { data: sess, error: authErr } = await sb.auth.getSession()
@@ -661,7 +661,7 @@ const PERSONAL_TABLES = [
 export async function deleteRemoteData(userId: string): Promise<{ ok: boolean; reasonUz: string | null }> {
   if (!supabaseConfigured) return { ok: true, reasonUz: null }
   if (networkStatus() === 'offline') return { ok: false, reasonUz: 'Internet yo‘q — serverdagi ma’lumot o‘chirilmadi.' }
-  const sb = getSupabase()
+  const sb = await getSupabase()
   if (!sb) return { ok: false, reasonUz: 'Supabase mijoziga ulanib bo‘lmadi.' }
   const { data: sess, error: authErr } = await sb.auth.getSession()
   if (authErr || !sess.session || sess.session.user.id !== userId) {
@@ -1003,7 +1003,7 @@ export interface PullResult {
 export async function pullRemote(userId: string): Promise<PullResult> {
   if (!supabaseConfigured) return { ok: false, snapshot: null, reasonUz: 'Supabase sozlanmagan.' }
   if (networkStatus() === 'offline') return { ok: false, snapshot: null, reasonUz: 'Internet yo‘q.' }
-  const sb = getSupabase()
+  const sb = await getSupabase()
   if (!sb) return { ok: false, snapshot: null, reasonUz: 'Supabase mijoziga ulanib bo‘lmadi.' }
   const { data: sess, error: authErr } = await sb.auth.getSession()
   // Boshqa foydalanuvchining sessiyasi bilan o'qilgan ma'lumot bu holatga aralashmasin.

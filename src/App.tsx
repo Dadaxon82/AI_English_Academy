@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { Suspense, lazy, useCallback, useEffect, useState } from 'react'
 import { BrowserRouter, HashRouter, Link, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { AuthContext } from './lib/authContext'
 import Layout from './components/Layout'
@@ -8,20 +8,23 @@ import { getSupabase, localGuestId, supabaseConfigured, type AuthState } from '.
 import { LoadingBlock, InfoBanner, Button } from './components/ui'
 import Login from './pages/Login'
 import { signOutCurrent } from './lib/auth'
-import Onboarding from './pages/Onboarding'
-import Dashboard from './pages/Dashboard'
-import LearningPath from './pages/LearningPath'
-import Sections from './pages/Sections'
-import Vocabulary from './pages/Vocabulary'
-import Grammar from './pages/Grammar'
-import Reading from './pages/Reading'
-import Listening from './pages/Listening'
-import Writing from './pages/Writing'
-import Speaking from './pages/Speaking'
-import MockExam from './pages/MockExam'
-import ErrorLog from './pages/ErrorLog'
-import Progress from './pages/Progress'
-import Settings from './pages/Settings'
+
+// Sahifalar alohida chunk'larda — birinchi ochilishda faqat kerakli sahifa
+// yuklanadi (PWA service worker barchasini oflayn uchun oldindan keshlaydi).
+const Onboarding = lazy(() => import('./pages/Onboarding'))
+const Dashboard = lazy(() => import('./pages/Dashboard'))
+const LearningPath = lazy(() => import('./pages/LearningPath'))
+const Sections = lazy(() => import('./pages/Sections'))
+const Vocabulary = lazy(() => import('./pages/Vocabulary'))
+const Grammar = lazy(() => import('./pages/Grammar'))
+const Reading = lazy(() => import('./pages/Reading'))
+const Listening = lazy(() => import('./pages/Listening'))
+const Writing = lazy(() => import('./pages/Writing'))
+const Speaking = lazy(() => import('./pages/Speaking'))
+const MockExam = lazy(() => import('./pages/MockExam'))
+const ErrorLog = lazy(() => import('./pages/ErrorLog'))
+const Progress = lazy(() => import('./pages/Progress'))
+const Settings = lazy(() => import('./pages/Settings'))
 
 /**
  * Router tanlovi:
@@ -59,25 +62,27 @@ function Shell({ auth, onAuth }: { auth: AuthState; onAuth: (s: AuthState) => vo
 
   return (
     <Layout>
-      <Routes>
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
-        <Route path="/login" element={<Login authState={auth} onAuth={onAuth} />} />
-        <Route path="/onboarding" element={<Onboarding />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/path" element={<LearningPath />} />
-        <Route path="/sections" element={<Sections />} />
-        <Route path="/vocabulary" element={<Vocabulary />} />
-        <Route path="/grammar" element={<Grammar />} />
-        <Route path="/reading" element={<Reading />} />
-        <Route path="/listening" element={<Listening />} />
-        <Route path="/writing" element={<Writing />} />
-        <Route path="/speaking" element={<Speaking />} />
-        <Route path="/mock-exam" element={<MockExam />} />
-        <Route path="/errors" element={<ErrorLog />} />
-        <Route path="/progress" element={<Progress />} />
-        <Route path="/settings" element={<Settings />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+      <Suspense fallback={<LoadingBlock label="Sahifa yuklanmoqda…" />}>
+        <Routes>
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route path="/login" element={<Login authState={auth} onAuth={onAuth} />} />
+          <Route path="/onboarding" element={<Onboarding />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/path" element={<LearningPath />} />
+          <Route path="/sections" element={<Sections />} />
+          <Route path="/vocabulary" element={<Vocabulary />} />
+          <Route path="/grammar" element={<Grammar />} />
+          <Route path="/reading" element={<Reading />} />
+          <Route path="/listening" element={<Listening />} />
+          <Route path="/writing" element={<Writing />} />
+          <Route path="/speaking" element={<Speaking />} />
+          <Route path="/mock-exam" element={<MockExam />} />
+          <Route path="/errors" element={<ErrorLog />} />
+          <Route path="/progress" element={<Progress />} />
+          <Route path="/settings" element={<Settings />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Suspense>
       {needsOnboarding && loc.pathname === '/dashboard' && <FirstRunHint />}
     </Layout>
   )
@@ -128,7 +133,7 @@ export default function App() {
         if (alive) setAuth({ kind: 'local-only', userId: localGuestId() })
         return
       }
-      const sb = getSupabase()
+      const sb = await getSupabase()
       if (!sb) {
         if (alive) setAuth({ kind: 'local-only', userId: localGuestId() })
         return
