@@ -178,26 +178,58 @@ export function allGlossaryVocab(levels: readonly CefrLevel[] = LOADED_LEVELS): 
 
 
 /**
- * Hozircha faqat A1 yuklangan. Qolgan darajalar bo'sh to'plam qaytaradi.
+ * Darajalar registri. A1 asosiy bundle'da (diagnostika, mock imtihon unga
+ * tayanadi); qolgan darajalar ALOHIDA chunk'da va `loadLevels()` bilan
+ * yuklanadi (store ma'lumot bilan parallel yuklaydi, `ready` shundan keyin).
+ * Yuklanmagan daraja bo'sh to'plam qaytaradi ("Tayyorlanmoqda").
  *
  * Natija KESHLANADI: to'plam immutabl, `normalizeDayMinutes` esa har chaqiruvda
- * qayta massiv yasardi (sahifa renderlari soniga ko'payib ketardi) va har safar
- * yangi obyekt qaytargani uchun sahifalardagi useMemo'lar ishlamasdi.
+ * qayta massiv yasardi va har safar yangi obyekt qaytargani uchun
+ * sahifalardagi useMemo'lar ishlamasdi.
  */
 const bundleCache = new Map<CefrLevel, LevelBundle>()
+const loadedBundles = new Map<CefrLevel, LevelBundle>([['A1', a1]])
+
+/** Kontenti mavjud (yuklab olinadigan) darajalar — CEFR tartibida. */
+const LEVEL_LOADERS: Partial<Record<CefrLevel, () => Promise<LevelBundle>>> = {
+  A2: () => import('./a2').then((m) => m.a2),
+}
 
 export function getBundle(level: CefrLevel): LevelBundle {
   const hit = bundleCache.get(level)
   if (hit) return hit
-  const made: LevelBundle =
-    level === 'A1'
-      ? { ...a1, days: a1.days.map((d) => normalizeDayMinutes(d)) }
-      : { level, days: [], vocab: [], grammar: [], reading: [], listening: [], writing: [], speaking: [], tests: [] }
+  const src = loadedBundles.get(level)
+  const made: LevelBundle = src
+    ? { ...src, days: src.days.map((d) => normalizeDayMinutes(d)) }
+    : { level, days: [], vocab: [], grammar: [], reading: [], listening: [], writing: [], speaking: [], tests: [] }
   bundleCache.set(level, made)
   return made
 }
 
+/**
+ * Yuklangan darajalar. JOYIDA yangilanadi (`loadLevels`) — import qilgan
+ * modullar bir xil massivni ko'radi.
+ */
 export const LOADED_LEVELS: CefrLevel[] = ['A1']
+
+const LEVEL_ORDER: CefrLevel[] = ['A1', 'A2', 'B1', 'B2', 'C1']
+let loading: Promise<void> | null = null
+
+/** Barcha mavjud darajalarni yuklaydi (takroriy chaqiruv — bitta va'da). */
+export function loadLevels(): Promise<void> {
+  loading ??= Promise.all(
+    Object.entries(LEVEL_LOADERS).map(async ([lvl, load]) => {
+      const level = lvl as CefrLevel
+      if (loadedBundles.has(level) || !load) return
+      loadedBundles.set(level, await load())
+    }),
+  ).then(() => {
+    LOADED_LEVELS.splice(0, LOADED_LEVELS.length, ...LEVEL_ORDER.filter((l) => loadedBundles.has(l)))
+    bundleCache.clear()
+    glossaryCache = null
+  })
+  return loading
+}
 
 export function allVocab(levels: readonly CefrLevel[] = LOADED_LEVELS): VocabularyItem[] {
   return levels.flatMap((l) => getBundle(l).vocab)

@@ -25,7 +25,7 @@ import type { DailyPlanDay, DaySection, Skill, VocabularyItem } from '../content
 import type { CheckResult } from '../lib/check'
 import { buildChain, chainAudit, exerciseIdsForSection } from '../lib/lessonChain'
 import { buildPathLayout, focalNode } from '../lib/pathMap'
-import { pathMilestoneSpecs } from '../lib/sections'
+import { pathMilestoneSpecs, pathLevel } from '../lib/sections'
 import { skillLabelUz } from '../lib/planning'
 import { useStore } from '../lib/storeContext'
 import { currentElapsed, formatDuration } from '../lib/timer'
@@ -60,7 +60,10 @@ function firstOpenSection(day: DailyPlanDay, data: AppData): DaySection | null {
 export default function LearningPath() {
   const { data, ready } = useStore()
 
-  const bundle = useMemo(() => getBundle(data.settings.currentLevel), [data.settings.currentLevel])
+  // O'quv yo'li darajasi (A1 tugasa yoki A2.1 ga sakralsa — A2 kunlari).
+  // Baholangan daraja (`settings.currentLevel`) bundan o'zgarmaydi.
+  const pLevel = pathLevel(data)
+  const bundle = useMemo(() => getBundle(pLevel), [pLevel])
   const days = bundle.days
   const completed = data.path.completedDays
 
@@ -116,8 +119,8 @@ export default function LearningPath() {
   )
 
   const layout = useMemo(
-    () => buildPathLayout(chains, 360, pathMilestoneSpecs(data.settings.currentLevel)),
-    [chains, data.settings.currentLevel],
+    () => buildPathLayout(chains, 360, pathMilestoneSpecs(pLevel)),
+    [chains, pLevel],
   )
   const focus = useMemo(() => focalNode(layout), [layout])
   // Xaritada tanlangan tugun — bosilganda shu KUN kartasi pastda ochiladi
@@ -137,7 +140,7 @@ export default function LearningPath() {
       <div className="grid gap-4">
         <h1 className="text-2xl font-bold">Shaxsiy o‘quv yo‘li</h1>
         <EmptyState
-          title={`${data.settings.currentLevel} uchun reja hali mavjud emas`}
+          title={`${pLevel} uchun reja hali mavjud emas`}
           body="Hozircha faqat A1 yo‘li yuklangan. Sozlamalardan A1 ga qaytib davom eting."
           action={
             <Link to="/settings" className={linkSecondary}>
@@ -160,7 +163,7 @@ export default function LearningPath() {
         <div className="flex-1 min-w-48 grid gap-1.5">
           <h1 className="text-2xl font-bold">Shaxsiy o‘quv yo‘li</h1>
           <p className="muted text-sm">
-            {data.settings.currentLevel} darajasi — {days.length} kunlik bosqich. Har kuni 6 ta bo‘lim va yakuniy test.
+            {pLevel} darajasi — {days.length} kunlik bosqich. Har kuni 6 ta bo‘lim va yakuniy test.
             Kunlar ketma-ket ochiladi.
           </p>
           <div className="flex flex-wrap gap-1.5">

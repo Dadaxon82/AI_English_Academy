@@ -10,6 +10,7 @@ import {
   jumpKey,
   jumpTestExercises,
   skippedDaysFor,
+  pathLevel,
 } from '../lib/sections'
 import { emptyData } from '../lib/types'
 
@@ -29,12 +30,14 @@ describe('Bo‘limlar rejasi', () => {
 })
 
 describe('buildSections — holatlar', () => {
-  it('yangi foydalanuvchi: A1.1 joriy, A1.2 qulflangan, qolganlari bo‘sh', () => {
+  it('yangi foydalanuvchi: A1.1 joriy, A1.2 va A2 qulflangan, kontentsizlari bo‘sh', () => {
     const cards = buildSections(emptyData('u'))
-    expect(cards.map((c) => c.status)).toEqual(['current', 'locked', 'empty', 'empty', 'empty', 'empty', 'empty', 'empty', 'empty', 'empty'])
+    expect(cards.map((c) => c.status)).toEqual(['current', 'locked', 'locked', 'locked', 'empty', 'empty', 'empty', 'empty', 'empty', 'empty'])
     expect(cards[0]!.daysDone).toBe(0)
     expect(cards[1]!.canJump).toBe(true)
-    expect(cards[2]!.canJump).toBe(false)
+    expect(cards[2]!.canJump).toBe(true)
+    // Kontenti yo'q bo'limga sakrash tugmasi chiqmaydi (soxta tugma yo'q)
+    expect(cards[4]!.canJump).toBe(false)
   })
 
   it('namuna ibora kontentdan olinadi (ixtiro emas)', () => {
@@ -104,11 +107,42 @@ describe('currentSectionInfo — banner', () => {
     expect(info.day.dayNumber).toBe(5)
   })
 
-  it('hamma kun tugasa: oxirgi bo‘limning oxirgi kuni', () => {
+  it('A1 tugasa: A2.1 ning 1-kuni joriy', () => {
     const d = emptyData('u')
     d.path.completedDays = a1Days.map((x) => x.id)
     const info = currentSectionInfo(d)!
-    expect(info.section.label).toBe('A1.2')
+    expect(info.section.label).toBe('A2.1')
+    expect(info.day.dayNumber).toBe(1)
+  })
+
+  it('hamma kun tugasa: oxirgi bo‘limning oxirgi kuni', () => {
+    const d = emptyData('u')
+    d.path.completedDays = [...a1Days, ...getBundle('A2').days].map((x) => x.id)
+    const info = currentSectionInfo(d)!
+    expect(info.section.label).toBe('A2.2')
     expect(info.day.dayNumber).toBe(7)
+  })
+})
+
+describe('pathLevel — o‘quv yo‘li darajasi', () => {
+  it('yangi foydalanuvchi: A1', () => {
+    expect(pathLevel(emptyData('u'))).toBe('A1')
+  })
+  it('A1 kunlari tugasa: A2, lekin baholangan daraja A1 qoladi', () => {
+    const d = emptyData('u')
+    d.path.completedDays = getBundle('A1').days.map((x) => x.id)
+    expect(pathLevel(d)).toBe('A2')
+    expect(d.settings.currentLevel).toBe('A1')
+  })
+  it('A2 dan boshlagan o‘quvchiga A1.1 ko‘rsatilmaydi', () => {
+    const d = emptyData('u')
+    d.settings.currentLevel = 'A2'
+    expect(pathLevel(d)).toBe('A2')
+    expect(currentSectionInfo(d)!.section.label).toBe('A2.1')
+  })
+  it('kontenti yo‘q daraja (B1) baholangan bo‘lsa — B1 qaytadi (yo‘l “reja yo‘q” deydi)', () => {
+    const d = emptyData('u')
+    d.settings.currentLevel = 'B1'
+    expect(pathLevel(d)).toBe('B1')
   })
 })

@@ -78,3 +78,23 @@ test('xatolar o‘yini: xato qilingan mashqlarni qayta ishlash', async ({ page }
   await skipThroughLesson(page)
   await expectClean(page, errors)
 })
+
+test('A2: onboardingda A2 tanlansa — yo‘l, grammatika va tinglash A2 kontentini ochadi', async ({ page }) => {
+  const errors = watchErrors(page)
+  await page.goto('onboarding')
+  await page.getByRole('button', { name: 'A2', exact: true }).first().click()
+  await page.getByRole('button', { name: 'Davom etish' }).click()
+  await page.getByRole('button', { name: 'Davom etish' }).click()
+  await page.getByRole('button', { name: 'Hozir o‘tkazmayman' }).click()
+  await page.getByRole('button', { name: 'Dashboardga o‘tish' }).click()
+  await waitPersist(page)
+  await page.goto('path')
+  await expect(page.getByText('O‘tgan hafta oxiri').first()).toBeVisible()
+  await page.goto('grammar')
+  await expect(page.getByText(/Past Simple/).first()).toBeVisible()
+  await page.goto('listening')
+  await expect(page.getByText(/fayl hali yaratilmagan/).first()).toBeVisible()
+  // Fayl yo'q — soxta pleyer ko'rsatilmaydi
+  await expect(page.locator('audio')).toHaveCount(0)
+  await expectClean(page, errors)
+})
