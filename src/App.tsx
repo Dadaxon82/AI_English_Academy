@@ -27,6 +27,7 @@ const Progress = lazy(() => import('./pages/Progress'))
 const Settings = lazy(() => import('./pages/Settings'))
 const StepLesson = lazy(() => import('./pages/StepLesson'))
 const QuickSession = lazy(() => import('./pages/QuickSession'))
+const Dialogues = lazy(() => import('./pages/Dialogues'))
 
 /**
  * Router tanlovi:
@@ -75,6 +76,7 @@ function Shell({ auth, onAuth }: { auth: AuthState; onAuth: (s: AuthState) => vo
           <Route path="/sections" element={<Sections />} />
           <Route path="/vocabulary" element={<Vocabulary />} />
           <Route path="/quick" element={<QuickSession />} />
+          <Route path="/dialogues" element={<Dialogues />} />
           <Route path="/grammar" element={<Grammar />} />
           <Route path="/reading" element={<Reading />} />
           <Route path="/listening" element={<Listening />} />

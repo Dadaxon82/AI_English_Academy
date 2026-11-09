@@ -15,6 +15,7 @@ const NAV = [
   { to: '/listening', label: 'Tinglash', icon: 'M4 12a8 8 0 0 1 16 0M6 12v4a2 2 0 0 0 4 0v-4m4 0v4a2 2 0 0 0 4 0v-4' },
   { to: '/writing', label: 'Yozish', icon: 'M4 20l4-1 11-11-3-3L5 16l-1 4Z' },
   { to: '/speaking', label: "Gapirish", icon: 'M12 3a4 4 0 0 1 4 4v4a4 4 0 0 1-8 0V7a4 4 0 0 1 4-4Zm-7 8a7 7 0 0 0 14 0M12 18v3' },
+  { to: '/dialogues', label: 'Suhbatlar', icon: 'M4 5h16v10H9l-5 4V5Zm4 4h8m-8 3h5' },
   { to: '/mock-exam', label: 'Mock Exam', icon: 'M6 3h12v18H6zM9 8h6M9 12h6M9 16h4' },
   { to: '/errors', label: 'Xatolar daftari', icon: 'M12 8v5m0 3.5.01 0M5 4h14v16H5z' },
   { to: '/progress', label: 'Progress', icon: 'M4 19h16M7 16V8m5 8V5m5 11v-6' },
@@ -195,7 +196,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       {/* ---------- BOTTOM NAV (mobil) ---------- */}
       <nav aria-label="Tez navigatsiya" className="lg:hidden fixed bottom-0 inset-x-0 z-30 border-t bg-[var(--panel)] pb-[env(safe-area-inset-bottom)]">
         <div className="grid grid-cols-5">
-          {[NAV[0], NAV[3], NAV[9], NAV[11], NAV[12]].map((n) => (
+          {[NAV[0], NAV[3], NAV[10], NAV[12], NAV[13]].map((n) => (
             <NavLink
               key={n.to}
               to={n.to}

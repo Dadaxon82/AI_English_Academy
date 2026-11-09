@@ -396,3 +396,39 @@ export interface MockExamSpec {
   disclaimerUz: string
   sections: MockExamSectionSpec[]
 }
+
+/** --------------------------- DIALOGLAR (real hayot stsenariylari) --------------------------- */
+
+/**
+ * Suhbatdagi bitta replika. `gap` bo'lsa — o'quvchining replikasi: `en`
+ * ichidagi `___` o'rniga `gap.answer` turadi va u variantlardan tanlanadi.
+ */
+export interface DialogueLine {
+  speaker: 'a' | 'b'
+  en: string
+  uz: string
+  gap?: {
+    answer: string
+    /** Variantlar (to'g'ri javob ham ichida, aralash tartibda yoziladi). */
+    options: string[]
+    /** Qaysi ko'nikma dalili sifatida yoziladi. */
+    skill: 'vocabulary' | 'grammar'
+    /** Javobdan keyin ko'rsatiladigan qisqa izoh (o'zbekcha). */
+    whyUz: string
+  }
+}
+
+export interface Dialogue {
+  id: string
+  level: CefrLevel
+  /** Shu darajadagi qaysi kun mavzusiga mos (1..7). */
+  dayNumber: number
+  titleUz: string
+  /** Vaziyat: qayerda, kim bilan, nima maqsadda. */
+  situationUz: string
+  /** Rollar nomi (inglizcha, suhbatda ko'rinadi). `b` — o'quvchi. */
+  roles: { a: string; b: string }
+  lines: DialogueLine[]
+  /** «Nega shunday?» — suhbatdagi asosiy grammatika/ibora izohi. */
+  note: { titleUz: string; pointsUz: string[]; examples: { en: string; uz: string }[] }
+}

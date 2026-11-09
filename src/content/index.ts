@@ -3,6 +3,7 @@
  * Yangi daraja qo'shish uchun faqat shu fayl va yangi papka kifoya.
  */
 
+import { DIALOGUE_PREFIX, findDialogueExercise } from './dialogues'
 import type {
   CefrLevel,
   DailyPlanDay,
@@ -472,6 +473,8 @@ export function findExercise(id: string): Exercise | undefined {
     return orig ? remixExercise(orig) ?? undefined : undefined
   }
   if (id.startsWith('lesson-')) return lessonExercise(id)
+  // Real hayot suhbatlari (`dialogues.ts`) — `dlg-<suhbat>-<qator>`.
+  if (id.startsWith(DIALOGUE_PREFIX)) return findDialogueExercise(id)
   const vocabById = (vid: string) => [...allVocab(), ...allGlossaryVocab()].find((x) => x.id === vid)
   if (id.startsWith(VOCAB_PIC_PREFIX)) {
     const v = vocabById(id.slice(VOCAB_PIC_PREFIX.length))

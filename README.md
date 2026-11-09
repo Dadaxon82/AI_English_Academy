@@ -7,6 +7,7 @@ Loyiha talabnomasi (`AI English Academy_v2.docx`) to'liq bajarilgan:
 - ✅ To'liq **o'zbek tilli interfeys**
 - ✅ **A1, A2, B1, B2, C1** darajalar; daraja faqat **ko'p ko'nikma dalili** bilan ko'tariladi (XP yoki kunlar emas), mock imtihon esa doim **"mashq uchun yaratilgan namuna"** deb yozilgan
 - ✅ **90 daqiqalik** asosiy kunlik reja (Vocab 10 / Grammar 15 / Reading 15 / Listening 15 / Writing 20 / Speaking 15) — zaif ko'nikma va imtihon sanasiga qarab qayta taqsimlanadi
+- ✅ **Real hayot suhbatlari** (`/dialogues`) — A1/A2 da 14 stsenariy va **Takrorlash menejeri** (xatolar + so'zlar bitta navbatda) — 5k-bo'lim
 - ✅ **«5 daqiqa» tezkor sessiya** (`/quick`) — takror + bitta mavzudan yangi so'zlar, surish bilan baholash (5j-bo'lim)
 - ✅ **14 sahifa**: Dashboard, Learning Path, Vocabulary, Grammar, Reading, Listening, Writing, Speaking, Mock Exam, Progress, Error Log, Settings, Login, 404
 - ✅ Premium **dark/light** mavzu, to'liq **responsiv**; har joyda **loading / empty / success / error** holatlari
@@ -33,7 +34,7 @@ Loyiha talabnomasi (`AI English Academy_v2.docx`) to'liq bajarilgan:
 <!-- STATS:START -->
 _Avtomatik o‘lchandi (`npm run stats`, 2026-11-09). Qo‘lda tahrirlamang._
 
-**Testlar:** vitest **396/396** (36 fayl) · **Kod:** veb 139 fayl / 37799 qator (TS/TSX), mobil 93 fayl / 25583 qator (Kotlin)
+**Testlar:** vitest **425/425** (39 fayl) · **Kod:** veb 145 fayl / 39225 qator (TS/TSX), mobil 97 fayl / 26514 qator (Kotlin)
 
 | Daraja | Kun | Lug‘at | Mashq | Turlar | Audio fayl / tinglash | Mock |
 |---|---|---|---|---|---|---|
@@ -673,6 +674,44 @@ pauza va qayta ochilganda davom etish), e2e `flows.spec.ts` (Dashboard → sessi
 89 ta so'z rasmi pariteti, zanjir qoidasi). `gradle testDebugUnitTest`: **397/397**
 (2026-11-09). Shu o'lchovda eskirgan bitta test ham tuzatildi:
 `ContentRepositoryTest` manifestda faqat `[A1]` kutardi, A2 esa `7df8def` da qo'shilgan edi.
+
+## 5k. Real hayot suhbatlari va Takrorlash menejeri — Babbel g'oyasi, 2-bosqich (2026-11-09)
+
+`docs/TIL_PLATFORMALARI_TAHLIL_VA_PROMPT.md` rejasining 2-bosqichi. G'oya Babbel'dan
+olingan (real vaziyatdagi dialoglar + xatoga asoslangan takrorlash), matnlar va dizayn
+bizniki. **Faqat veb**: mobil ilovaga keyingi PR'da qo'shiladi.
+
+| Nima | Qayerda |
+|---|---|
+| Kontent turi `Dialogue` (rollar, replikalar, o'zbekcha tarjima, bo'shliq + izoh, «Nega shunday?») | `src/content/types.ts` |
+| 14 ta suhbat: A1 va A2 ning har kuniga bittadan, kun mavzusiga mos (kafe, vokzal, shifokor, ish suhbati…), har birida 3 ta bo'shliq | `src/content/dialogues.ts` |
+| Bo'shliq → tanlov mashqi `dlg-<suhbat>-<qator>`; `findExercise()` uni id'dan tiklaydi | `dialogueExercise`, `src/content/index.ts` |
+| Dars: o'qish (tarjima tugmasi, TTS) → 3 bo'shliq (suhbat qayta ochiladi) → «Nega shunday?» | `src/lib/lessons.ts::dialogueLesson`, `src/pages/Dialogues.tsx` (`/dialogues`, menyuda «Suhbatlar») |
+| Takrorlash menejeri: tuzatilmagan xatolar va muddati kelgan so'zlar bitta navbatda (navbatma-navbat, ko'pi bilan 12) | `src/lib/reviewManager.ts`, `src/pages/ErrorLog.tsx` |
+
+**Halol qoidalar:**
+- Suhbat holati alohida saqlanmaydi: «2/3 to‘g‘ri» har bo'shliqning eng oxirgi urinishidan
+  hisoblanadi (`dialogueProgress`).
+- Har javob `recordAttempt` orqali yoziladi. XP, yuraklar va xatolar daftari alohida kodsiz ishlaydi.
+- **Bitta xato ikki marta sanalmaydi.** Agar xato so'z bilan bog'liq bo'lsa (`vocab-quiz-`,
+  `vocab-pic-`, `vocab-sent-`) va o'sha so'zning takrorlash vaqti ham kelgan bo'lsa, ular
+  bitta qadamga birlashadi. Javob SRS'ga **qadam uchun bir marta** yoziladi: dars oxiridagi
+  qayta urinish ikkinchi baho bermaydi.
+- Lug'at savoli id'dan tiklanganda faqat to'g'ri javobga ega bo'ladi. Shuning uchun
+  Takrorlash menejeri bunday savolni to'liq variantlar bilan qayta yasaydi (id o'zgarmaydi).
+- Kontent auditi (`src/test/dialogues.test.ts`) quyidagilarni tekshiradi: har kunga bitta
+  suhbat, 3 ta bo'shliq, `___` aynan bitta, javob variantlar ichida bir marta, variantlar
+  takrorlanmaydi, tarjima va izoh bo'sh emas, to'g'ri javob o'rni har xil.
+
+**Yo'l-yo'lakay tuzatilgan:** dars ichidagi «Matnni ko‘rish» tugmasi (`LessonPlayer`, O'qish
+darslarida ham bor) `text-sky-600` rangda edi va oq fonda kontrast ~4,1:1 bo'lardi. Endi
+`sky-700 / dark:sky-300` (WCAG AA). Buni yangi a11y testi (dars ichida savol qadami) topdi.
+
+**Testlar:** `dialogues.test.ts` (kontent auditi, id'dan tiklash, xatolar daftari, dars
+tuzilmasi, holat), `review-manager.test.ts` (birlashtirish, tartib, chegara),
+`dialogues-page.test.tsx` (suhbat oxirigacha; menejerda SRS bir marta baholanishi),
+e2e `flows.spec.ts` (suhbat → xatolar menejerda) va `a11y.spec.ts` (`/dialogues` hamda
+dars ichida; light/dark; 1280 va 375 px).
 
 ## 6. Arxitektura qisqacha
 
