@@ -13,8 +13,8 @@
  * Kun taymeri store.ga bog'langan (sessionId = dayId).
  */
 
-import { useMemo, useRef, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import DuoPathMap from '../components/DuoPathMap'
 import SectionBanner from '../components/SectionBanner'
 import ExerciseRunner from '../components/ExerciseRunner'
@@ -26,7 +26,7 @@ import type { CheckResult } from '../lib/check'
 import { buildChain, chainAudit, exerciseIdsForSection } from '../lib/lessonChain'
 import { buildPathLayout, focalNode } from '../lib/pathMap'
 import { pathMilestoneSpecs, pathLevel } from '../lib/sections'
-import { stepDoneChecker } from '../lib/stepProgress'
+import { stepDoneChecker, stepScoreReader } from '../lib/stepProgress'
 import { skillLabelUz } from '../lib/planning'
 import { useStore } from '../lib/storeContext'
 import { currentElapsed, formatDuration } from '../lib/timer'
@@ -59,13 +59,15 @@ function firstOpenSection(day: DailyPlanDay, data: AppData): DaySection | null {
 }
 
 export default function LearningPath() {
-  const { data, ready } = useStore()
+  const { data, ready, actions } = useStore()
+  const nav = useNavigate()
 
   // O'quv yo'li darajasi (A1 tugasa yoki A2.1 ga sakralsa — A2 kunlari).
   // Baholangan daraja (`settings.currentLevel`) bundan o'zgarmaydi.
   const pLevel = pathLevel(data)
   const bundle = useMemo(() => getBundle(pLevel), [pLevel])
   const stepDone = useMemo(() => stepDoneChecker(data), [data])
+  const stepScore = useMemo(() => stepScoreReader(data), [data])
   const days = bundle.days
   const completed = data.path.completedDays
 
@@ -78,7 +80,13 @@ export default function LearningPath() {
 
   // Ochiq kun: yuklangandan keyin joriy kun avtomatik ochiladi; foydalanuvchi
   // xaritada boshqa tugunni bossa shu tanlov hurmat qilinadi.
-  const [openOverride, setOpenOverride] = useState<string | null>(null)
+  // `/path?test=<kun>` (Dashboard xaritasidagi 🏆) — o'sha kun ochilib, test darhol boshlanadi.
+  const [params] = useSearchParams()
+  const [openOverride, setOpenOverride] = useState<string | null>(() => params.get('test'))
+  const [autoTest, setAutoTest] = useState<{ dayId: string; nonce: number } | null>(() => {
+    const d = params.get('test')
+    return d ? { dayId: d, nonce: 1 } : null
+  })
   const defaultOpenId = days[currentIdx]?.id ?? null
   const openDayId = openOverride !== null ? openOverride : defaultOpenId
 
@@ -121,8 +129,8 @@ export default function LearningPath() {
   )
 
   const layout = useMemo(
-    () => buildPathLayout(chains, 360, pathMilestoneSpecs(pLevel), stepDone),
-    [chains, pLevel, stepDone],
+    () => buildPathLayout(chains, 360, pathMilestoneSpecs(pLevel), stepDone, stepScore),
+    [chains, pLevel, stepDone, stepScore],
   )
   const focus = useMemo(() => focalNode(layout), [layout])
   // Xaritada tanlangan tugun — bosilganda shu KUN kartasi pastda ochiladi
@@ -190,14 +198,25 @@ export default function LearningPath() {
           <Chip>{chains.length} kun</Chip>
         </div>
         <p className="text-xs muted">
-          Har tanga — bitta bo‘lim, 🏆 — kun yakuniy testi. Oltin — tugatilgan, yashil — joriy (bosing), kulrang —
-          qulflangan. Sandiq — kun yarmi, katta kubok — keyingi bo‘lim ochiladigan joy. Qahramon joriy qadamda turadi.
+          Har tanga — bitta bo‘lim (belgisi va nomi ostida), 🏆 — kun yakuniy testi. Tangani bosing — o‘sha bo‘lim
+          darsi ochiladi; yakunlangach olingan ball tanga ustida ko‘rinadi. Oltin — bajarilgan, yashil — ochiq, kulrang —
+          qulflangan. Sandiq — kun yarmi, katta kubok — keyingi bo‘lim ochiladigan joy.
         </p>
         <DuoPathMap
           layout={layout}
           selectedId={selectedNodeId}
           focusId={focus?.id ?? null}
-          onSelect={(node) => setOpenOverride(node.dayId)}
+          onSelect={(node) => {
+            // Tugun — biriktirilgan bo'lim topshirig'ini to'g'ridan-to'g'ri ochadi.
+            if (!node.isTest) {
+              nav(`/lesson/${node.dayId}/${node.skill}`)
+              return
+            }
+            const d = days.find((x) => x.id === node.dayId)
+            if (d?.sectionTest) actions.startTimer(d.id, d.sectionTest.section)
+            setOpenOverride(node.dayId)
+            setAutoTest((a) => ({ dayId: node.dayId, nonce: (a?.nonce ?? 0) + 1 }))
+          }}
         />
         <p className="text-[11px] muted">
           Zanjir bo'yicha: {audit.rotationSteps} mashq qadami (+{audit.reinforcement} takrorlash) · bir xil tur
@@ -212,7 +231,8 @@ export default function LearningPath() {
         if (!open) return null
         return (
           <DayCard
-            key={day.id}
+            key={autoTest?.dayId === day.id ? `${day.id}:${autoTest.nonce}` : day.id}
+            autoStartTest={autoTest?.dayId === day.id}
             day={day}
             status={status}
             open={open}
@@ -235,7 +255,9 @@ function DayCard({
   onOpen,
   onClose,
   bundle,
+  autoStartTest = false,
 }: {
+  autoStartTest?: boolean
   day: DailyPlanDay
   status: DayStatus
   open: boolean
@@ -253,7 +275,12 @@ function DayCard({
   const total = test?.exercises.length ?? 0
 
   // Bo'lim testi holati: idle → running → done
-  const [phase, setPhase] = useState<'idle' | 'running' | 'done'>('idle')
+  // Xaritadagi 🏆 bosilsa — test darhol boshlanadi (taymer bosish ishlovchisida yoqilgan).
+  const [phase, setPhase] = useState<'idle' | 'running' | 'done'>(() => (autoStartTest && test ? 'running' : 'idle'))
+  const cardRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    if (autoStartTest) cardRef.current?.scrollIntoView({ block: 'start', behavior: 'smooth' })
+  }, [autoStartTest])
   const [pos, setPos] = useState(0)
   const [lastResult, setLastResult] = useState<CheckResult | null>(null)
   const [score, setScore] = useState<number | null>(null)
@@ -328,6 +355,7 @@ function DayCard({
   }
 
   return (
+    <div ref={cardRef} className="scroll-mt-20">
     <Card className={`grid gap-3.5 ${status === 'locked' ? 'opacity-70' : ''}`}>
       <div className="flex flex-wrap items-start gap-2">
         <div className="flex-1 min-w-0 grid gap-1">
@@ -554,6 +582,7 @@ function DayCard({
         </div>
       )}
     </Card>
+    </div>
   )
 }
 

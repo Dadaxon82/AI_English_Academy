@@ -25,6 +25,7 @@ const MockExam = lazy(() => import('./pages/MockExam'))
 const ErrorLog = lazy(() => import('./pages/ErrorLog'))
 const Progress = lazy(() => import('./pages/Progress'))
 const Settings = lazy(() => import('./pages/Settings'))
+const StepLesson = lazy(() => import('./pages/StepLesson'))
 
 /**
  * Router tanlovi:
@@ -69,6 +70,7 @@ function Shell({ auth, onAuth }: { auth: AuthState; onAuth: (s: AuthState) => vo
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/path" element={<LearningPath />} />
+          <Route path="/lesson/:dayId/:skill" element={<StepLesson />} />
           <Route path="/sections" element={<Sections />} />
           <Route path="/vocabulary" element={<Vocabulary />} />
           <Route path="/grammar" element={<Grammar />} />

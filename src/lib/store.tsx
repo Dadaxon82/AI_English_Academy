@@ -24,6 +24,7 @@ import type { MockExamAttempt, SpeakingSession, UserSettings, WritingSubmission 
 import { emptyData, todayKey } from './types'
 import { aiRuntimeEnabled, requestSpeakingFeedback, requestWritingFeedback, speakingAnalysisFromAi, writingAnalysisFromAi } from './ai'
 import { nowMs } from './clock'
+import { stepScoreKey } from './stepProgress'
 import { reducer } from './reducer'
 import { skillEvidence, totalVocabCount } from './selectors'
 import { StoreContext, type StoreValue, type SyncOutcome } from './storeContext'
@@ -262,6 +263,10 @@ export function StoreProvider({
     dispatch({ type: 'day-complete', dayId, testId, testScore })
   }, [])
 
+  const recordStepScore = useCallback((dayId: string, skill: string, score: number) => {
+    dispatch({ type: 'step-score', key: stepScoreKey(dayId, skill), score })
+  }, [])
+
   const jumpToSection = useCallback((sectionId: string, score: number) => {
     dispatch({ type: 'section-jump', sectionId, score })
   }, [])
@@ -443,6 +448,7 @@ export function StoreProvider({
       recordMockTime,
       completeDay,
       jumpToSection,
+      recordStepScore,
       rateCanDo,
       setDiagnostic,
       markOnboarded,

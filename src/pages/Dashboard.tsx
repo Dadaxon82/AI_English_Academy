@@ -25,7 +25,7 @@ import { buildChain, exerciseIdsForSection } from '../lib/lessonChain'
 import { buildDayTasks, nextDayId, skillLabelUz } from '../lib/planning'
 import { buildPathLayout, focalNode } from '../lib/pathMap'
 import { pathMilestoneSpecs, pathLevel } from '../lib/sections'
-import { stepDoneChecker } from '../lib/stepProgress'
+import { stepDoneChecker, stepScoreReader } from '../lib/stepProgress'
 import { levelLabel } from '../lib/skillScoring'
 import { useStore } from '../lib/storeContext'
 import { lastNDays } from '../lib/selectors'
@@ -71,6 +71,7 @@ export default function Dashboard() {
   const pLevel = pathLevel(data)
   const bundle = useMemo(() => getBundle(pLevel), [pLevel])
   const stepDone = useMemo(() => stepDoneChecker(data), [data])
+  const stepScore = useMemo(() => stepScoreReader(data), [data])
 
   const today = useMemo(() => {
     if (bundle.days.length === 0) return null
@@ -145,8 +146,8 @@ export default function Dashboard() {
     [bundle, currentDayIdx, data.path.completedDays],
   )
   const pathLayout = useMemo(
-    () => buildPathLayout(pathChains, 340, pathMilestoneSpecs(pLevel), stepDone),
-    [pathChains, pLevel, stepDone],
+    () => buildPathLayout(pathChains, 340, pathMilestoneSpecs(pLevel), stepDone, stepScore),
+    [pathChains, pLevel, stepDone, stepScore],
   )
   const pathFocus = useMemo(() => focalNode(pathLayout), [pathLayout])
 
@@ -246,7 +247,16 @@ export default function Dashboard() {
             layout={pathLayout}
             selectedId={pathFocus?.id ?? null}
             focusId={pathFocus?.id ?? null}
-            onSelect={() => nav('/path')}
+            onSelect={(node) => {
+              // Tugun — biriktirilgan bo'lim topshirig'i; 🏆 — o'quv yo'lida kun testi darhol boshlanadi.
+              if (!node.isTest) {
+                nav(`/lesson/${node.dayId}/${node.skill}`)
+                return
+              }
+              const d = bundle.days.find((x) => x.id === node.dayId)
+              if (d?.sectionTest) actions.startTimer(d.id, d.sectionTest.section)
+              nav(`/path?test=${node.dayId}`)
+            }}
           />
           <div className="flex justify-end">
             <Link to="/path" className={linkSecondary}>

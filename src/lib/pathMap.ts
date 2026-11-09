@@ -26,6 +26,8 @@ export interface PathNode {
   titleUz: string
   isTest: boolean
   status: NodeStatus
+  /** Olingan ball (0–100) — bo'lim darsi yoki kun testi yakunlangan bo'lsa; aks holda `null`. */
+  score: number | null
   minutes: number
   /** Zanjirdagi GLOBAL tartib (0 dan) — barcha kunlar bo'ylab ketma-ket. */
   order: number
@@ -96,7 +98,7 @@ const BANNER_TO_NODE = 96
 /** Oxirgi tugundan keyingi bosqich ajratgichiga qadar bo'shliq. */
 const AFTER_UNIT = 58
 /** Tugunlar orasidagi vertikal qadam (yo'l bo'ylab). */
-const STEP_GAP = 92
+const STEP_GAP = 108
 /** Yumshoq to'lqin: markazdan gorizontal siljish (kenglik ulushi). */
 const WAVE = [0, -0.17, -0.25, -0.17, 0, 0.17, 0.25, 0.17]
 /** Sovrin tuguni uchun ajratilgan vertikal joy (doira + yorliq). */
@@ -123,6 +125,8 @@ export function buildPathLayout(
   milestoneSpecs: readonly MilestoneSpec[] = [],
   /** Ochiq kunda qadam bajarilganmi (`stepProgress.ts`) — berilmasa kun darajasida. */
   isStepDone?: (step: DayChain['steps'][number], day: DayChain['day']) => boolean,
+  /** Qadam bali (`stepProgress.ts::stepScoreReader`) — tugun ustida ko'rsatiladi. */
+  scoreOf?: (step: DayChain['steps'][number], day: DayChain['day']) => number | null,
 ): PathLayout {
   const nodes: PathNode[] = []
   const units: PathUnit[] = []
@@ -178,6 +182,7 @@ export function buildPathLayout(
         isTest: step.isTest,
         // Ochiq kunda bajarilgan qadam "done" — "N ta vazifa qoldi" kamayadi, qahramon keyingi qadamga o'tadi.
         status: status === 'current' && isStepDone?.(step, chain.day) ? 'done' : status,
+        score: status === 'locked' ? null : scoreOf?.(step, chain.day) ?? null,
         minutes: step.minutes,
         order,
         x,

@@ -110,3 +110,17 @@ test('SEO/OG meta va PWA manifest skrinshotlari haqiqatan mavjud', async ({ page
   expect(manifest.screenshots.length).toBeGreaterThanOrEqual(2)
   for (const s of manifest.screenshots) expect((await request.get(s.src)).status(), s.src).toBe(200)
 })
+
+test('xarita: tugun bosilsa bo‘lim darsi ochiladi, yakunlangach ball tugun ustida', async ({ page }) => {
+  const errors = watchErrors(page)
+  await disableHearts(page)
+  await page.goto('path')
+  await page.getByRole('button', { name: /^Grammatika:/ }).first().click()
+  await expect(page).toHaveURL(/\/lesson\/a1-day-01\/grammar$/)
+  await skipThroughLesson(page)
+  await expect(page.getByText(/Natija: \d+%/)).toBeVisible()
+  await page.getByRole('button', { name: 'Davom etish' }).last().click()
+  await expect(page).toHaveURL(/\/path$/)
+  await expect(page.getByRole('button', { name: /^Grammatika: .* — natija \d+%/ }).first()).toBeVisible()
+  await expectClean(page, errors)
+})
