@@ -16,6 +16,8 @@ package com.dadaxon.aienglishacademy.data
  */
 
 import android.content.res.AssetManager
+import com.dadaxon.aienglishacademy.domain.GeneratedLookup
+import com.dadaxon.aienglishacademy.domain.generatedExercise
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
@@ -209,6 +211,8 @@ class ContentRepository {
      * ko'rsatardi).
      */
     fun findExercise(id: String): Exercise? {
+        // Veb yasagan (id'dan tiklanadigan) mashqlar: lug'at o'yini, dars, remix.
+        generatedExercise(id, generatedLookup)?.let { return it }
         if (id.startsWith(VOCAB_QUIZ_PREFIX)) {
             val vocabId = id.substring(VOCAB_QUIZ_PREFIX.length)
             val v = findVocab(vocabId)
@@ -223,6 +227,35 @@ class ContentRepository {
             val hit = exam.sections.flatMap { s -> s.exercises }.firstOrNull { e -> e.id == id }
             if (hit != null) return hit
         }
+        return null
+    }
+
+    private var canDoCache: com.dadaxon.aienglishacademy.domain.CanDoFile? = null
+
+    /** O'z-o'zini baholash da'volari (`content/can-do.json`); fayl yo'q bo'lsa — bo'sh (soxta da'vo yo'q). */
+    fun canDo(): com.dadaxon.aienglishacademy.domain.CanDoFile {
+        canDoCache?.let { return it }
+        val path = "content/can-do.json"
+        val made = if (!src().exists(path)) com.dadaxon.aienglishacademy.domain.CanDoFile()
+        else gson.fromJson(src().read(path), com.dadaxon.aienglishacademy.domain.CanDoFile::class.java) ?: com.dadaxon.aienglishacademy.domain.CanDoFile()
+        canDoCache = made
+        return made
+    }
+
+    /** `domain/GeneratedExercises.kt` uchun kontent qidiruvlari (veb `findExercise` bilan bir xil manbalar). */
+    private val generatedLookup: GeneratedLookup by lazy {
+        GeneratedLookup(
+            vocabById = { findVocab(it) },
+            grammarTopics = { levels().flatMap { bundle(it).grammar } },
+            writingTasks = { levels().flatMap { l -> bundle(l).writing + (bundle(l).mockExam?.sections?.mapNotNull { it.writingTask } ?: emptyList()) } },
+            speakingTasks = { levels().flatMap { l -> bundle(l).speaking + (bundle(l).mockExam?.sections?.mapNotNull { it.speakingTask } ?: emptyList()) } },
+            plainExercise = { pid -> findPlainExercise(pid) },
+        )
+    }
+
+    private fun findPlainExercise(id: String): Exercise? {
+        for (lvl in levels()) allExercises(lvl).firstOrNull { it.id == id }?.let { return it }
+        for (lvl in levels()) bundle(lvl).mockExam?.sections?.flatMap { it.exercises }?.firstOrNull { it.id == id }?.let { return it }
         return null
     }
 

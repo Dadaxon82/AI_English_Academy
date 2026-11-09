@@ -1,0 +1,191 @@
+{
+ "labels": [
+  "Umuman qila olmayman",
+  "Qiyinchilik bilan",
+  "Qisman",
+  "Ancha yaxshi",
+  "Bemalol qila olaman"
+ ],
+ "statements": [
+  {
+   "id": "cd-a1-speak",
+   "level": "A1",
+   "skill": "speaking",
+   "textUz": "O‘zimni tanishtira olaman: ismim, yoshim, qayerda yashashim."
+  },
+  {
+   "id": "cd-a1-listen",
+   "level": "A1",
+   "skill": "listening",
+   "textUz": "Sekin va aniq aytilgan oddiy savollarni (ism, yosh, soat) tushunaman."
+  },
+  {
+   "id": "cd-a1-read",
+   "level": "A1",
+   "skill": "reading",
+   "textUz": "Oila, uy, maktab haqidagi qisqa va oddiy matnni tushunaman."
+  },
+  {
+   "id": "cd-a1-write",
+   "level": "A1",
+   "skill": "writing",
+   "textUz": "O‘zim va oilam haqida 3–5 ta oddiy gap yoza olaman."
+  },
+  {
+   "id": "cd-a1-vocab",
+   "level": "A1",
+   "skill": "vocabulary",
+   "textUz": "Sonlar, ranglar, ovqat va uy-ro‘zg‘or buyumlarining nomlarini bilaman."
+  },
+  {
+   "id": "cd-a1-grammar",
+   "level": "A1",
+   "skill": "grammar",
+   "textUz": "“am / is / are”, “have got” va “there is / are”ni to‘g‘ri ishlataman."
+  },
+  {
+   "id": "cd-a2-speak",
+   "level": "A2",
+   "skill": "speaking",
+   "textUz": "Do‘konda xarid qilish yoki yo‘l so‘rash kabi oddiy vaziyatlarda gaplasha olaman."
+  },
+  {
+   "id": "cd-a2-listen",
+   "level": "A2",
+   "skill": "listening",
+   "textUz": "Kundalik mavzudagi qisqa e’lon va xabarlarning asosiy ma’nosini tushunaman."
+  },
+  {
+   "id": "cd-a2-read",
+   "level": "A2",
+   "skill": "reading",
+   "textUz": "Qisqa xat, menyu va jadvaldan kerakli ma’lumotni topa olaman."
+  },
+  {
+   "id": "cd-a2-write",
+   "level": "A2",
+   "skill": "writing",
+   "textUz": "Do‘stimga dam olish kunlari haqida qisqa xabar yoza olaman."
+  },
+  {
+   "id": "cd-a2-vocab",
+   "level": "A2",
+   "skill": "vocabulary",
+   "textUz": "Sayohat, ish, sog‘liq kabi kundalik mavzular so‘zlarini bilaman."
+  },
+  {
+   "id": "cd-a2-grammar",
+   "level": "A2",
+   "skill": "grammar",
+   "textUz": "Past Simple va kelasi zamon (going to / will) bilan gap tuza olaman."
+  },
+  {
+   "id": "cd-b1-speak",
+   "level": "B1",
+   "skill": "speaking",
+   "textUz": "Tajribam, rejalarim va fikrimni sabablari bilan aytib bera olaman."
+  },
+  {
+   "id": "cd-b1-listen",
+   "level": "B1",
+   "skill": "listening",
+   "textUz": "Tanish mavzudagi radio yoki video asosiy fikrlarini tushunaman."
+  },
+  {
+   "id": "cd-b1-read",
+   "level": "B1",
+   "skill": "reading",
+   "textUz": "Kundalik mavzudagi maqolaning asosiy g‘oyasi va tafsilotlarini tushunaman."
+  },
+  {
+   "id": "cd-b1-write",
+   "level": "B1",
+   "skill": "writing",
+   "textUz": "Tanish mavzuda bog‘langan matn (insho, xat) yoza olaman."
+  },
+  {
+   "id": "cd-b1-vocab",
+   "level": "B1",
+   "skill": "vocabulary",
+   "textUz": "Notanish so‘z ma’nosini kontekstdan taxmin qila olaman."
+  },
+  {
+   "id": "cd-b1-grammar",
+   "level": "B1",
+   "skill": "grammar",
+   "textUz": "Present Perfect va shart gaplarni (if …) ishlata olaman."
+  },
+  {
+   "id": "cd-b2-speak",
+   "level": "B2",
+   "skill": "speaking",
+   "textUz": "Ona tilida so‘zlashuvchi bilan erkin, tabiiy suhbat qura olaman."
+  },
+  {
+   "id": "cd-b2-listen",
+   "level": "B2",
+   "skill": "listening",
+   "textUz": "Ma’ruza va yangiliklardagi murakkab fikrlarni tushunaman."
+  },
+  {
+   "id": "cd-b2-read",
+   "level": "B2",
+   "skill": "reading",
+   "textUz": "Muallif nuqtai nazarini bildiruvchi maqolalarni tushunaman."
+  },
+  {
+   "id": "cd-b2-write",
+   "level": "B2",
+   "skill": "writing",
+   "textUz": "Dalillar bilan “tarafdor / qarshi” insho yoza olaman."
+  },
+  {
+   "id": "cd-b2-vocab",
+   "level": "B2",
+   "skill": "vocabulary",
+   "textUz": "Bir fikrni turli so‘z va iboralar bilan ifoda eta olaman."
+  },
+  {
+   "id": "cd-b2-grammar",
+   "level": "B2",
+   "skill": "grammar",
+   "textUz": "Majhul nisbat (passive) va murakkab zamonlarni xatosiz ishlataman."
+  },
+  {
+   "id": "cd-c1-speak",
+   "level": "C1",
+   "skill": "speaking",
+   "textUz": "Murakkab mavzularda ravon va aniq, so‘z izlamasdan gapiraman."
+  },
+  {
+   "id": "cd-c1-listen",
+   "level": "C1",
+   "skill": "listening",
+   "textUz": "Aniq tuzilmagan, tez nutqni ham qiyinchiliksiz tushunaman."
+  },
+  {
+   "id": "cd-c1-read",
+   "level": "C1",
+   "skill": "reading",
+   "textUz": "Uzun va murakkab matnlardagi yashirin ma’nolarni ilg‘ayman."
+  },
+  {
+   "id": "cd-c1-write",
+   "level": "C1",
+   "skill": "writing",
+   "textUz": "Aniq tuzilgan, puxta asoslangan rasmiy matn yoza olaman."
+  },
+  {
+   "id": "cd-c1-vocab",
+   "level": "C1",
+   "skill": "vocabulary",
+   "textUz": "Idioma va so‘zlashuv iboralarini o‘rinli ishlataman."
+  },
+  {
+   "id": "cd-c1-grammar",
+   "level": "C1",
+   "skill": "grammar",
+   "textUz": "Murakkab grammatik tuzilmalarni uslubga mos tanlay olaman."
+  }
+ ]
+}

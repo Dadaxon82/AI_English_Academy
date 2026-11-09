@@ -24,6 +24,7 @@ import com.dadaxon.aienglishacademy.domain.chainAudit
 import com.dadaxon.aienglishacademy.domain.computeAllocation
 import com.dadaxon.aienglishacademy.domain.lessonSequence
 import com.dadaxon.aienglishacademy.domain.nextDayId
+import com.dadaxon.aienglishacademy.domain.pathLevel
 import com.dadaxon.aienglishacademy.domain.skillEvidence
 
 /**
@@ -60,7 +61,9 @@ class LearningPathFragment : Fragment() {
         val ctx = requireContext()
         val c = container()
         val d = c.store.state.value.data
-        val level = d.settings.currentLevel
+        // O'quv yo'li darajasi (veb `pathLevel` bilan bir xil): A1 tugasa yoki A2.1 ga
+        // sakralsa — A2 kunlari. Baholangan daraja (`currentLevel`) o'zgarmaydi.
+        val level = pathLevel(d.path, d.settings.currentLevel) { lvl -> runCatching { c.content.bundle(lvl).days }.getOrDefault(emptyList()) }
         val bundle = runCatching { c.content.bundle(level) }.getOrNull()
         val days = bundle?.days ?: emptyList()
 

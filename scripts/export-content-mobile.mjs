@@ -18,12 +18,45 @@ const OUT = path.join(ROOT, 'mobile', 'app', 'src', 'main', 'assets')
 const TMP = path.join(ROOT, '.tmp-content-bundle')
 
 const entry = `
-import { getBundle, LOADED_LEVELS } from ${JSON.stringify(path.join(ROOT, 'src', 'content', 'index.ts').replace(/\\/g, '/'))}
+import { getBundle, LOADED_LEVELS, loadLevels } from ${JSON.stringify(path.join(ROOT, 'src', 'content', 'index.ts').replace(/\\/g, '/'))}
 import { diagnosticTest } from ${JSON.stringify(path.join(ROOT, 'src', 'content', 'diagnostic.ts').replace(/\\/g, '/'))}
-export const payload = {
-  bundles: Object.fromEntries(LOADED_LEVELS.map((l) => [l, getBundle(l)])),
-  diagnostic: diagnosticTest,
-  generatedAt: new Date().toISOString(),
+import * as C from ${JSON.stringify(path.join(ROOT, 'src', 'content', 'index.ts').replace(/\\/g, '/'))}
+import { CAN_DO, LIKERT_LABELS } from ${JSON.stringify(path.join(ROOT, 'src', 'content', 'canDo.ts').replace(/\\/g, '/'))}
+export const canDo = { labels: LIKERT_LABELS, statements: CAN_DO }
+import { remixExercise } from ${JSON.stringify(path.join(ROOT, 'src', 'content', 'remix.ts').replace(/\\/g, '/'))}
+import * as LS from ${JSON.stringify(path.join(ROOT, 'src', 'lib', 'lessons.ts').replace(/\\/g, '/'))}
+
+/** Mobil paritet testi uchun: veb yasagan mashqlar (Kotlin xuddi shuni yasashi shart). */
+export function makeParity() {
+  const out = { exercises: [], lessons: [] }
+  const add = (e) => e && out.exercises.push(e)
+  for (const l of C.LOADED_LEVELS) {
+    const b = C.getBundle(l)
+    b.vocab.forEach((v) => { add(C.vocabPictureExercise(v)); add(C.vocabSentenceExercise(v, 'en')); add(C.vocabSentenceExercise(v, 'uz')) })
+    for (let i = 0; i + 3 <= b.vocab.length; i += 3) add(C.vocabMatchExercise(b.vocab.slice(i, i + 3)))
+    const lessons = [
+      ...b.grammar.map((t) => ['grammar', t.id, LS.grammarLesson(t)]),
+      ...b.reading.map((t) => ['reading', t.id, LS.readingLesson(t)]),
+      ...b.listening.map((t) => ['listening', t.id, LS.listeningLesson(t)]),
+      ...b.writing.map((t) => ['writing', t.id, LS.writingLesson(t)]),
+      ...b.speaking.map((t) => ['speaking', t.id, LS.speakingLesson(t)]),
+    ]
+    for (const [kind, owner, steps] of lessons) {
+      out.lessons.push({ kind, owner, steps: steps.map((s) => ({ type: s.type, id: s.id, exerciseId: s.type === 'exercise' ? s.exercise.id : s.type === 'speak' ? s.fallback.id : null })) })
+      for (const s of steps) { if (s.type === 'exercise') add(s.exercise); if (s.type === 'speak') add(s.fallback) }
+    }
+    for (const e of C.allExercises(l)) add(remixExercise(e))
+  }
+  return out
+}
+// A2 … alohida chunk'larda (dinamik import) — avval hammasi yuklanadi.
+export async function makePayload() {
+  await loadLevels()
+  return {
+    bundles: Object.fromEntries(LOADED_LEVELS.map((l) => [l, getBundle(l)])),
+    diagnostic: diagnosticTest,
+    generatedAt: new Date().toISOString(),
+  }
 }
 `
 
@@ -43,7 +76,7 @@ async function main() {
   })
 
   const nodeRequire = createRequire(import.meta.url)
-  const { payload } = nodeRequire(path.join(TMP, 'bundle.cjs'))
+  const payload = await nodeRequire(path.join(TMP, 'bundle.cjs')).makePayload()
 
   // Har daraja — alohida fayl (mobil xotirasida keraksiz darajani yuklamaslik uchun).
   const levels = []
@@ -84,6 +117,16 @@ async function main() {
     copyFileSync(path.join(srcAudio, f), path.join(dstAudio, f))
     audioCopied++
   }
+
+  // O'z-o'zini baholash da'volari (Likert) — bitta manba (veb `canDo.ts`).
+  writeFileSync(path.join(OUT, 'content', 'can-do.json'), JSON.stringify(nodeRequire(path.join(TMP, 'bundle.cjs')).canDo, null, 1), 'utf8')
+
+  // Mobil paritet fixture (faqat testlar uchun — APK'ga kirmaydi).
+  const testRes = path.join(ROOT, 'mobile', 'app', 'src', 'test', 'resources')
+  mkdirSync(testRes, { recursive: true })
+  const parity = nodeRequire(path.join(TMP, 'bundle.cjs')).makeParity()
+  writeFileSync(path.join(testRes, 'generated-parity.json'), JSON.stringify(parity), 'utf8')
+  console.log(`paritet: ${parity.exercises.length} mashq, ${parity.lessons.length} dars`)
 
   rmSync(TMP, { recursive: true, force: true })
   console.log(JSON.stringify({ levels, audioCopied }, null, 2))

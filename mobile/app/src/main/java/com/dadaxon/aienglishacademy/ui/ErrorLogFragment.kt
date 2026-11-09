@@ -13,7 +13,12 @@ import com.dadaxon.aienglishacademy.data.Exercise
 import com.dadaxon.aienglishacademy.data.Skills
 import com.dadaxon.aienglishacademy.data.Source
 import com.dadaxon.aienglishacademy.databinding.FragmentShellBinding
+import com.dadaxon.aienglishacademy.domain.LessonStep
+import com.dadaxon.aienglishacademy.domain.MistakeModes
+import com.dadaxon.aienglishacademy.domain.buildMistakeLesson
 import com.dadaxon.aienglishacademy.domain.checkAnswer
+import com.dadaxon.aienglishacademy.domain.modeCount
+import com.dadaxon.aienglishacademy.domain.unresolvedMistakes
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import java.text.SimpleDateFormat
@@ -71,6 +76,7 @@ class ErrorLogFragment : Fragment() {
             return
         }
 
+        renderGames(ctx)
         renderFilters(ctx, wrong)
 
         val shown = filterSkill?.let { skill -> wrong.filter { it.skill == skill } } ?: wrong
@@ -83,6 +89,40 @@ class ErrorLogFragment : Fragment() {
 
         val df = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
         for (a in shown) renderEntry(ctx, a, df)
+    }
+
+    /**
+     * Xatolar o'yinlari (veb `MistakeGames.tsx`): tuzatilmagan xatolar —
+     * eng oxirgi urinishi noto'g'ri mashqlar. To'g'ri yechilsa o'zi chiqadi.
+     * Mantiq `domain/Lessons.kt` (veb `mistakes.ts` bilan bir xil, testlangan).
+     * "Vaqtga qarshi" usuli mobil pleyerda taymer yo'qligi sababli hozircha yo'q.
+     */
+    private fun renderGames(ctx: Context) {
+        val c = container()
+        val list = runCatching {
+            unresolvedMistakes(c.store.attempts()) { id -> c.content.findExercise(id) }
+        }.getOrElse { emptyList() }
+        b.rows.addView(Rows.sectionTitle(ctx, getString(R.string.errlog_games_title, list.size)))
+        if (list.isEmpty()) {
+            b.rows.addView(Rows.small(ctx, getString(R.string.errlog_games_none)))
+            return
+        }
+        val modes = listOf(
+            MistakeModes.FIX to R.string.errlog_game_fix,
+            MistakeModes.HARD to R.string.errlog_game_hard,
+            MistakeModes.REMIX to R.string.errlog_game_remix,
+        )
+        for ((mode, label) in modes) {
+            val n = modeCount(mode, list)
+            val btn = Rows.button(ctx, getString(label, n))
+            // Mos xato yo'q bo'lsa tugma faol emas (soxta o'yin ochilmaydi)
+            btn.isEnabled = n > 0
+            btn.setOnClickListener {
+                val ids = buildMistakeLesson(mode, list).mapNotNull { (it as? LessonStep.Ex)?.exercise?.id }
+                Nav.openExercises(this, ids, contentId = "mistakes:$mode", dayId = null, source = Source.PRACTICE, title = getString(label, ids.size), reorder = false)
+            }
+            b.rows.addView(btn)
+        }
     }
 
     /** Ko'nikma filtri — bitta tanlov (`ChipGroup` bir tanlovli). */

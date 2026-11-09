@@ -161,6 +161,9 @@ class ProgressFragment : Fragment() {
             b.rows.addView(Rows.small(ctx, getString(R.string.progress_promotion_none)))
         }
 
+        /* ---- o'z-o'zini baholash (Likert) — veb `SelfAssessment.tsx` ---- */
+        addSelfAssessment(d)
+
         /* ---- so'zlar statistikasi ---- */
         val srs = d.srs.values.toList()
         b.rows.addView(Rows.sectionTitle(ctx, getString(R.string.progress_words_title)))
@@ -222,6 +225,46 @@ class ProgressFragment : Fragment() {
     }
 
     /** Oraliq kunlari soni (`-1` = hammasi → 365 kunlik oynaga tengelash). */
+    /**
+     * Joriy daraja da'volari, har biriga 1–5 tugma. Baho DARAJANI O'ZGARTIRMAYDI
+     * (faqat o'quvchining o'z bahosi; sinxron orqali vebga ham boradi).
+     */
+    private fun addSelfAssessment(d: com.dadaxon.aienglishacademy.data.AppData) {
+        val ctx = requireContext()
+        val file = runCatching { container().content.canDo() }.getOrNull() ?: return
+        val items = file.statements.filter { it.level == d.settings.currentLevel }
+        if (items.isEmpty() || file.labels.size != 5) return
+        b.rows.addView(Rows.sectionTitle(ctx, getString(R.string.progress_self_title)))
+        b.rows.addView(Rows.small(ctx, getString(R.string.progress_self_hint)))
+        for (st in items) {
+            val cur = d.selfAssessment[st.id]?.score
+            val card = Rows.card(ctx)
+            val box = LinearLayout(ctx).apply {
+                orientation = LinearLayout.VERTICAL
+                val p = Rows.dp(ctx, 12)
+                setPadding(p, p, p, p)
+            }
+            box.addView(Rows.body(ctx, st.textUz))
+            val row = LinearLayout(ctx).apply { orientation = LinearLayout.HORIZONTAL }
+            for (score in 1..5) {
+                val btn = if (score == cur) Rows.primaryButton(ctx, score.toString()) else Rows.button(ctx, score.toString())
+                btn.contentDescription = "$score — ${file.labels[score - 1]}"
+                btn.layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f).apply {
+                    marginEnd = Rows.dp(ctx, 4)
+                }
+                btn.setOnClickListener {
+                    container().store.dispatch(StoreAction.SelfAssess(st.id, score, System.currentTimeMillis()))
+                    render()
+                }
+                row.addView(btn)
+            }
+            box.addView(row)
+            box.addView(Rows.small(ctx, cur?.let { file.labels[it - 1] } ?: getString(R.string.progress_self_none)))
+            card.addView(box)
+            b.rows.addView(card)
+        }
+    }
+
     private fun rangeDaysOrAll(): Int = if (rangeDays <= 0) 365 else rangeDays
 
     private fun attemptsInRange(attempts: List<com.dadaxon.aienglishacademy.data.AttemptRecord>): List<com.dadaxon.aienglishacademy.data.AttemptRecord> {

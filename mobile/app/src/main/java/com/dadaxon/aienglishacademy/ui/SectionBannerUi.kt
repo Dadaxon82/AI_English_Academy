@@ -43,12 +43,14 @@ object SectionBannerUi {
     /** Banner ma'lumoti — kontent provayderlari `ContentRepository`dan. */
     fun infoFor(f: Fragment): CurrentSectionInfo? {
         val cr = runCatching { f.container().content }.getOrNull() ?: return null
-        val path = runCatching { f.container().store.state.value.data.path }.getOrNull() ?: return null
+        val data = runCatching { f.container().store.state.value.data }.getOrNull() ?: return null
+        val path = data.path
         return runCatching {
             currentSectionInfo(
                 path,
                 { lvl -> runCatching { cr.bundle(lvl).days }.getOrDefault(emptyList()) },
                 { lvl -> runCatching { cr.bundle(lvl).vocab }.getOrDefault(emptyList()) },
+                fromLevel = data.settings.currentLevel,
             )
         }.getOrNull()
     }

@@ -56,14 +56,17 @@ class SectionsTest {
         val cards = buildSections(AppData().path, ::daysOf) { repo.bundle(it).vocab }
         assertEquals(
             listOf(
-                SectionStatus.CURRENT, SectionStatus.LOCKED, SectionStatus.EMPTY, SectionStatus.EMPTY, SectionStatus.EMPTY,
+                // A2 kontenti bor — A2.1/A2.2 qulflangan; B1+ bo'sh (veb bilan bir xil)
+                SectionStatus.CURRENT, SectionStatus.LOCKED, SectionStatus.LOCKED, SectionStatus.LOCKED, SectionStatus.EMPTY,
                 SectionStatus.EMPTY, SectionStatus.EMPTY, SectionStatus.EMPTY, SectionStatus.EMPTY, SectionStatus.EMPTY,
             ),
             cards.map { it.status },
         )
         assertEquals(0, cards[0].daysDone.toLong())
         assertTrue(cards[1].canJump)
-        assertTrue(!cards[2].canJump)
+        assertTrue(cards[2].canJump)
+        // Kontenti yo'q bo'limga sakrash tugmasi chiqmaydi
+        assertTrue(!cards[4].canJump)
     }
 
     @Test
@@ -144,10 +147,29 @@ class SectionsTest {
     }
 
     @Test
-    fun hammaKunTugasaOxirgiBolimOxirgiKuni() {
+    fun a1TugasaA21BirinchiKun() {
         val d = AppData().copy(path = AppData().path.copy(completedDays = a1Days.map { it.id }))
         val info = currentSectionInfo(d.path, ::daysOf)!!
-        assertEquals("A1.2", info.section.label)
+        assertEquals("A2.1", info.section.label)
+        assertEquals(1, info.day.dayNumber.toLong())
+        // O'quv yo'li A2 ga o'tadi, baholangan daraja o'zgarmaydi
+        assertEquals("A2", pathLevel(d.path, d.settings.currentLevel, ::daysOf))
+        assertEquals("A1", d.settings.currentLevel)
+    }
+
+    @Test
+    fun hammaKunTugasaOxirgiBolimOxirgiKuni() {
+        val d = AppData().copy(path = AppData().path.copy(completedDays = (a1Days + daysOf("A2")).map { it.id }))
+        val info = currentSectionInfo(d.path, ::daysOf)!!
+        assertEquals("A2.2", info.section.label)
         assertEquals(7, info.day.dayNumber.toLong())
+    }
+
+    @Test
+    fun a2danBoshlaganOquvchigaA11Korsatilmaydi() {
+        val d = AppData()
+        assertEquals("A2.1", currentSectionInfo(d.path, ::daysOf, fromLevel = "A2")!!.section.label)
+        assertEquals("A2", pathLevel(d.path, "A2", ::daysOf))
+        assertEquals("A1", pathLevel(d.path, "A1", ::daysOf))
     }
 }

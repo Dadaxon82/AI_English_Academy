@@ -71,8 +71,22 @@ val SECTION_PLAN: List<SectionPlanEntry> =
             dayNumbers = listOf(5, 6, 7),
             summaryUz = "Ovqat va ichimliklar, bo‘sh vaqt va rejalar, sayohat va yo‘l so‘rash: “some / any”, “can”, “going to”, “was / were”.",
         ),
+        SectionPlanEntry(
+            id = "a2-1",
+            level = Levels.A2,
+            part = 1,
+            dayNumbers = listOf(1, 2, 3, 4),
+            summaryUz = "O‘tgan hafta oxiri, bolalik xotiralari, shahar va qishloq, rejalar va ob-havo: Past Simple (to‘g‘ri va noto‘g‘ri fe’llar), qiyosiy daraja, “going to / will”.",
+        ),
+        SectionPlanEntry(
+            id = "a2-2",
+            level = Levels.A2,
+            part = 2,
+            dayNumbers = listOf(5, 6, 7),
+            summaryUz = "Hayot tajribalari, sog‘liq va maslahat, oshxona va xarid: Present Perfect, “should / must / have to”, “some / any, much / many”.",
+        ),
     ) +
-        Levels.ALL.filter { it != Levels.A1 }.flatMap { level ->
+        Levels.ALL.filter { it != Levels.A1 && it != Levels.A2 }.flatMap { level ->
             listOf(1, 2).map { part ->
                 SectionPlanEntry(
                     id = "${level.lowercase()}-$part",
@@ -258,13 +272,31 @@ fun currentSectionInfo(
     path: LearningPath,
     daysOf: (String) -> List<DailyPlanDay>,
     vocabOf: (String) -> List<VocabularyItem> = { emptyList() },
+    /** Baholangan daraja — undan PAST bo'limlar "joriy" hisoblanmaydi (veb bilan bir xil). */
+    fromLevel: String? = null,
 ): CurrentSectionInfo? {
     val cards = buildSections(path, daysOf, vocabOf)
-    val section = cards.firstOrNull { it.status == SectionStatus.CURRENT } ?: cards.reversed().firstOrNull { it.status == SectionStatus.DONE }
-    if (section == null || section.days.isEmpty()) return null
+    val from = fromLevel?.let { Levels.ALL.indexOf(it) } ?: 0
+    val eligible = cards.filter { Levels.ALL.indexOf(it.level) >= from && it.days.isNotEmpty() }
     val done = path.completedDays.toHashSet()
+    val section =
+        eligible.firstOrNull { c -> c.days.any { !done.contains(it.id) } }
+            ?: cards.reversed().firstOrNull { it.status == SectionStatus.DONE }
+            ?: eligible.lastOrNull()
+    if (section == null || section.days.isEmpty()) return null
     var idx = section.days.indexOfFirst { it.id == path.currentDayId }
     if (idx < 0) idx = section.days.indexOfFirst { !done.contains(it.id) }
     if (idx < 0) idx = section.days.size - 1
     return CurrentSectionInfo(section = section, unitNumber = idx + 1, day = section.days[idx])
 }
+
+/**
+ * O'quv yo'li darajasi (veb `sections.ts::pathLevel` bilan bir xil): baholangan
+ * daraja yoki undan keyingi birinchi tugallanmagan bo'lim darajasi. Baholangan
+ * daraja (`settings.currentLevel`) BU YERDA O'ZGARMAYDI.
+ */
+fun pathLevel(
+    path: LearningPath,
+    currentLevel: String,
+    daysOf: (String) -> List<DailyPlanDay>,
+): String = currentSectionInfo(path, daysOf, fromLevel = currentLevel)?.section?.level ?: currentLevel
