@@ -182,7 +182,7 @@ export default function ExerciseRunner({
     <div className="aea-lesson grid gap-5">
       {/* ---- Ketma-ket to'g'ri javoblar (dars ichida) ---- */}
       {streak >= 3 && (
-        <p className="-mb-3 text-center text-[11px] font-extrabold uppercase tracking-wider text-amber-500 animate-[var(--animate-pop)]">
+        <p className="-mb-3 text-center text-[11px] font-extrabold uppercase tracking-wider text-amber-700 dark:text-amber-400 animate-[var(--animate-pop)]">
           {streak} ta ketma-ket to‘g‘ri javob
         </p>
       )}
@@ -279,7 +279,7 @@ export default function ExerciseRunner({
       <div className="grid gap-1 animate-[var(--animate-fade-in)]">
         <p
           className={`inline-flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-wider ${
-            badge && badgeTone === 'fix' ? 'text-orange-500' : 'text-violet-600 dark:text-violet-400'
+            badge && badgeTone === 'fix' ? 'text-orange-700 dark:text-orange-400' : 'text-violet-600 dark:text-violet-400'
           }`}
         >
           {badge ? (
@@ -379,7 +379,7 @@ export default function ExerciseRunner({
               disabled={!canCheck || blocked}
               className={`${chunkyBtn} ${
                 canCheck && !blocked
-                  ? 'bg-emerald-500 hover:bg-emerald-400 text-white border-emerald-700'
+                  ? 'bg-emerald-700 hover:bg-emerald-800 text-white border-emerald-900'
                   : 'bg-slate-200 text-slate-400 border-slate-300 dark:bg-slate-700 dark:text-slate-400 dark:border-slate-600'
               }`}
             >
@@ -390,7 +390,7 @@ export default function ExerciseRunner({
               type="button"
               onClick={onNext}
               className={`${chunkyBtn} text-white ${
-                result?.correct ? 'bg-emerald-500 hover:bg-emerald-400 border-emerald-700' : 'bg-rose-500 hover:bg-rose-400 border-rose-700'
+                result?.correct ? 'bg-emerald-700 hover:bg-emerald-800 border-emerald-900' : 'bg-rose-700 hover:bg-rose-800 border-rose-900'
               }`}
             >
               {index + 1 < total ? 'Keyingi mashq' : 'Yakunlash'}
@@ -443,7 +443,7 @@ function SpeakIcon({ text }: { text: string }) {
         window.speechSynthesis.cancel()
         window.speechSynthesis.speak(u)
       }}
-      className="shrink-0 inline-grid place-items-center w-8 h-8 rounded-lg text-sky-500 hover:bg-sky-50 dark:hover:bg-sky-950/40"
+      className="shrink-0 inline-grid place-items-center w-8 h-8 rounded-lg text-sky-700 dark:text-sky-400 hover:bg-sky-50 dark:hover:bg-sky-950/40"
     >
       <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
         <path d="M11 5 6 9H3v6h3l5 4V5Z" />

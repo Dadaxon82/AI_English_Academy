@@ -29,7 +29,7 @@ const chunky =
   'w-full inline-flex items-center justify-center rounded-2xl px-5 py-3 text-sm font-extrabold uppercase tracking-wide ' +
   'border-b-4 transition-all active:translate-y-0.5 active:border-b-2 focus-visible:outline-2 focus-visible:outline-offset-2 ' +
   'disabled:opacity-50 disabled:cursor-not-allowed'
-const chunkyGreen = `${chunky} bg-emerald-500 hover:bg-emerald-400 text-white border-emerald-700`
+const chunkyGreen = `${chunky} bg-emerald-700 hover:bg-emerald-800 text-white border-emerald-900`
 const chunkyBlue = `${chunky} bg-navy-600 hover:bg-navy-500 text-white border-navy-800`
 const chunkyPlain = `${chunky} bg-[var(--panel)] hover:bg-[var(--panel-2)] text-[var(--text)] border border-b-4`
 
@@ -108,7 +108,7 @@ function SectionCardView({
 
   return (
     <article
-      className={`panel rounded-3xl border-2 border-b-4 p-4 sm:p-6 grid gap-4 ${accent} ${empty ? 'opacity-75' : ''}`}
+      className={`panel rounded-3xl border-2 border-b-4 p-4 sm:p-6 grid gap-4 ${accent} ${empty ? 'border-dashed' : ''}`}
       aria-label={`${s.label}-bo‘lim`}
     >
       <div className="grid sm:grid-cols-[1fr_auto] gap-4 items-center">
@@ -122,7 +122,7 @@ function SectionCardView({
           </div>
 
           {s.status === 'done' && (
-            <p className="text-sm font-bold text-amber-600 dark:text-amber-400">
+            <p className="text-sm font-bold text-amber-700 dark:text-amber-400">
               ✓ Barcha {total} kun yakunlangan
               {s.jumpScore !== null && s.jumpScore >= JUMP_PASS_SCORE ? ` · sakrash testi ${s.jumpScore}%` : ''}
             </p>

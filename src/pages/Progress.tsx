@@ -72,7 +72,7 @@ export default function Progress() {
             return (
               <span
                 key={lvl}
-                className={`chip ${active ? '!border-[var(--accent)] !text-[var(--accent)] font-bold' : ''} ${loaded ? '' : 'opacity-50'}`}
+                className={`chip ${active ? '!border-[var(--accent)] !text-[var(--accent)] font-bold' : ''} ${loaded ? '' : 'border-dashed'}`}
                 title={loaded ? (active ? 'Siz hozir shu darajadasiz' : 'Kontent yuklangan daraja') : 'Kontent hali tayyor emas'}
               >
                 {lvl}
