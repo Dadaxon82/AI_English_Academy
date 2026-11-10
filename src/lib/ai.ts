@@ -57,16 +57,21 @@ function defaultDeps(): AiDeps {
   }
 }
 
-async function callFunction(req: FeedbackRequest, deps: AiDeps): Promise<{ ok: true; body: Record<string, unknown> } | { ok: false; reasonUz: string }> {
+/** Edge funksiyani chaqirish (JWT bilan, vaqt chegarasi bilan). Xato — o'zbekcha sabab. */
+export async function callAiFunction(
+  name: string,
+  payload: unknown,
+  deps: AiDeps = defaultDeps(),
+): Promise<{ ok: true; body: Record<string, unknown> } | { ok: false; reasonUz: string }> {
   const token = await deps.getToken()
   if (!token) return { ok: false, reasonUz: 'AI tahlili uchun hisobga kiring.' }
   const ctrl = new AbortController()
   const timer = setTimeout(() => ctrl.abort(), AI_TIMEOUT_MS)
   try {
-    const res = await deps.fetch(`${deps.functionsUrl}/ai-feedback`, {
+    const res = await deps.fetch(`${deps.functionsUrl}/${name}`, {
       method: 'POST',
       headers: { 'content-type': 'application/json', authorization: `Bearer ${token}`, apikey: deps.anonKey },
-      body: JSON.stringify(req),
+      body: JSON.stringify(payload),
       signal: ctrl.signal,
     })
     let body: Record<string, unknown> = {}
@@ -88,7 +93,7 @@ async function callFunction(req: FeedbackRequest, deps: AiDeps): Promise<{ ok: t
 }
 
 export async function requestWritingFeedback(req: Omit<FeedbackRequest, 'kind'>, deps: AiDeps = defaultDeps()): Promise<AiResult<WritingFeedback>> {
-  const r = await callFunction({ ...req, kind: 'writing' }, deps)
+  const r = await callAiFunction('ai-feedback', { ...req, kind: 'writing' } satisfies FeedbackRequest, deps)
   if (!r.ok) return r
   const fb = parseWritingFeedback(r.body.feedback)
   if (!fb) return { ok: false, reasonUz: 'AI javobi sxemaga mos emas.' }
@@ -96,7 +101,7 @@ export async function requestWritingFeedback(req: Omit<FeedbackRequest, 'kind'>,
 }
 
 export async function requestSpeakingFeedback(req: Omit<FeedbackRequest, 'kind'>, deps: AiDeps = defaultDeps()): Promise<AiResult<SpeakingFeedback>> {
-  const r = await callFunction({ ...req, kind: 'speaking' }, deps)
+  const r = await callAiFunction('ai-feedback', { ...req, kind: 'speaking' } satisfies FeedbackRequest, deps)
   if (!r.ok) return r
   const fb = parseSpeakingFeedback(r.body.feedback)
   if (!fb) return { ok: false, reasonUz: 'AI javobi sxemaga mos emas.' }

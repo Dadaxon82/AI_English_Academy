@@ -164,3 +164,16 @@ test('suhbatlar: A1 suhbati oxirigacha va xato Takrorlash menejeriga tushadi', a
   await expect(page.locator('.aea-lesson').first()).toBeVisible()
   await expectClean(page, errors)
 })
+
+test('suhbatdosh: stsenariy rejimida kafe suhbati oxirigacha', async ({ page }) => {
+  const errors = watchErrors(page)
+  await page.goto('conversation')
+  await expect(page.getByText(/AI ulanmagan/)).toBeVisible()
+  await page.getByRole('article').filter({ hasText: 'Kafeda buyurtma berish' }).getByRole('button', { name: 'Gaplashish' }).click()
+  for (const t of ['Can I have tea please', 'I would like a sandwich', 'How much is it']) {
+    await page.getByLabel('Javobingiz').fill(t)
+    await page.getByRole('button', { name: 'Yuborish' }).click()
+  }
+  await expect(page.getByRole('heading', { name: 'Suhbat yakunlandi' })).toBeVisible()
+  await expectClean(page, errors)
+})

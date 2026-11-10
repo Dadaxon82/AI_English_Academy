@@ -133,6 +133,12 @@ export default function Dialogues() {
           </div>
           <MascotFigure maxHeight="max-h-24" alt="" />
         </div>
+        <p className="text-sm">
+          Erkin gaplashmoqchimisiz?{' '}
+          <Link to="/conversation" className="font-semibold underline">
+            Suhbatdosh bilan gaplashish →
+          </Link>
+        </p>
         <div className="flex flex-wrap gap-2" role="group" aria-label="Daraja">
           {LEVELS.map((l) => (
             <Button key={l} size="sm" variant={l === level ? 'primary' : 'secondary'} aria-pressed={l === level} onClick={() => setLevel(l)}>

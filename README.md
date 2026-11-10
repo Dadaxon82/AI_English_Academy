@@ -7,6 +7,7 @@ Loyiha talabnomasi (`AI English Academy_v2.docx`) to'liq bajarilgan:
 - ✅ To'liq **o'zbek tilli interfeys**
 - ✅ **A1, A2, B1, B2, C1** darajalar; daraja faqat **ko'p ko'nikma dalili** bilan ko'tariladi (XP yoki kunlar emas), mock imtihon esa doim **"mashq uchun yaratilgan namuna"** deb yozilgan
 - ✅ **90 daqiqalik** asosiy kunlik reja (Vocab 10 / Grammar 15 / Reading 15 / Listening 15 / Writing 20 / Speaking 15) — zaif ko'nikma va imtihon sanasiga qarab qayta taqsimlanadi
+- ✅ **AI suhbatdosh** (`/conversation`) — rol o'yini, AI bo'lmasa stsenariy, xatolar mashqqa aylanadi (5m-bo'lim)
 - ✅ **Hamjamiyat tekshiruvi** (`/community`), «Men qila olaman» dalili va yakunlash guvohnomasi — 5l-bo'lim
 - ✅ **Real hayot suhbatlari** (`/dialogues`) — A1/A2 da 14 stsenariy va **Takrorlash menejeri** (xatolar + so'zlar bitta navbatda) — 5k-bo'lim
 - ✅ **«5 daqiqa» tezkor sessiya** (`/quick`) — takror + bitta mavzudan yangi so'zlar, surish bilan baholash (5j-bo'lim)
@@ -35,7 +36,7 @@ Loyiha talabnomasi (`AI English Academy_v2.docx`) to'liq bajarilgan:
 <!-- STATS:START -->
 _Avtomatik o‘lchandi (`npm run stats`, 2026-11-10). Qo‘lda tahrirlamang._
 
-**Testlar:** vitest **444/444** (42 fayl) · **Kod:** veb 154 fayl / 40416 qator (TS/TSX), mobil 97 fayl / 26514 qator (Kotlin)
+**Testlar:** vitest **459/459** (44 fayl) · **Kod:** veb 159 fayl / 41403 qator (TS/TSX), mobil 97 fayl / 26514 qator (Kotlin)
 
 | Daraja | Kun | Lug‘at | Mashq | Turlar | Audio fayl / tinglash | Mock |
 |---|---|---|---|---|---|---|
@@ -754,6 +755,44 @@ o'zi ham tekshirildi: bitta RLS qoidasi ataylab buzilganda test darhol yiqildi.
 **Qilinmagan:** tekshiruvchiga gem mukofoti. O'yin sonlari veb, `game_manifest.json` va
 `GameConfig.kt` da bir xil turishi shart, shuning uchun mukofot mobil parite bilan birga
 qo'shiladi.
+
+## 5m. AI suhbatdosh (rol o'yini) — Memrise / Ling g'oyasi, 4-bosqich (2026-11-10)
+
+`docs/TIL_PLATFORMALARI_TAHLIL_VA_PROMPT.md` rejasining 4-bosqichi. **Faqat veb** (mobil — keyinroq).
+
+| Nima | Qayerda |
+|---|---|
+| Server: hamsuhbat rolida keyingi replika, o'quvchining oxirgi replikasidagi xatolar (≤ 3) va foydali so'zlar (≤ 3). Javob JSON schema bilan tuzilgan. Model `claude-opus-5-5`, `effort: low`. Zaxira model (`fallbacks: default`) va `ai_usage` kunlik limiti `ai-feedback` bilan umumiy | `supabase/functions/ai-roleplay/index.ts`, `supabase/functions/_shared/roleplay.ts` |
+| Mijoz: chaqiruv, stsenariy rejimi, namuna bilan solishtirish, lug'atdagi so'zni topish | `src/lib/roleplay.ts`, `src/lib/ai.ts::callAiFunction` |
+| Sahifa `/conversation`: vaziyat tanlanadi (14 ta suhbat bilan bir xil), javob yoziladi yoki aytiladi (Web Speech API, qo'llanmasa sabab aytiladi) | `src/pages/Conversation.tsx`, `src/lib/useSpeechInput.ts`; havolalar «Suhbatlar» va «Gapirish» sahifalarida |
+| Tuzatish → «to'g'ri gapni tuzing» mashqi. Ma'lumot to'liq id ichida (`rpfix-` + base64url), `findExercise()` uni tiklaydi | `src/content/index.ts::roleplayFixId / roleplayFixExercise` |
+
+**Halol qoidalar:**
+- Dvigatel ekranda doim yoziladi: «AI hamsuhbat» yoki «Oldindan yozilgan stsenariy».
+- AI ulanmagan bo'lsa (bayroq o'chiq, internet yo'q yoki server sozlanmagan) suhbat stsenariy
+  bo'yicha boradi. Javob namuna bilan so'zma-so'z solishtiriladi va «bu baho emas» deb yoziladi;
+  soxta ball yoki soxta xato chiqmaydi.
+- AI xatosida (limit, tarmoq, sxemaga mos emas) o'quvchi replikasi yo'qolmaydi. Sabab ko'rsatiladi
+  va ikki tanlov taklif qilinadi: qayta yuborish yoki stsenariy bilan boshidan boshlash.
+- Suhbatdagi xato «noto'g'ri urinish» sifatida yozilmaydi: aks holda o'quvchi har xato uchun yurak
+  yo'qotardi. Buning o'rniga yakunda «Xatolar ustida ishlash» darsi taklif qilinadi. Unda
+  noto'g'ri yechilgan mashq Xatolar daftari va Takrorlash menejeriga tushadi.
+- AI aytgan so'zlardan faqat **lug'atimizda bor** bo'lganlari SRS'ga saqlanadi. Lug'atda yo'qlari
+  shunchaki ko'rsatiladi, yangi lug'at yozuvi yaratilmaydi.
+- Audio hech qayerga yuborilmaydi: faqat brauzer tanigan matn ketadi.
+
+**Joylash:** `supabase functions deploy ai-roleplay` (sekretlar `ai-feedback` bilan umumiy,
+`VITE_AI_ENABLED=true`).
+
+**Testlar:** `roleplay.test.ts` (so'rov va javob tekshiruvi, sxema, mijoz, stsenariy, solishtirish,
+tuzatish mashqi), `conversation-page.test.tsx` (stsenariy oxirigacha; AI javobi → mashq va SRS;
+AI xatosi → sabab va stsenariyga o'tish); e2e `flows.spec.ts` va a11y `/conversation`.
+
+**Qilinmagan:** «real nutq klipi» (ona tili egasining audio yoki videosi). Litsenziyasi aniq
+yozuvlar yo'q, shuning uchun bo'lim umuman ko'rsatilmaydi: soxta audio yoki video qo'shilmagan.
+Edge funksiya bu muhitda Deno'da ishga tushirib ko'rilmadi (Deno yo'q). Umumiy mantiq
+`_shared/roleplay.ts` vitest bilan tekshirilgan, funksiyaning o'zi esa `ai-feedback` andozasini
+qatorma-qator takrorlaydi.
 
 ## 6. Arxitektura qisqacha
 
