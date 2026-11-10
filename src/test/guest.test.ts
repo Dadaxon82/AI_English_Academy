@@ -20,7 +20,7 @@ describe('mehmon rejimi (faqat A1.1)', () => {
   })
 
   it('qolgan sahifalar yopiq', () => {
-    for (const p of ['/vocabulary', '/grammar', '/mock-exam', '/progress', '/errors', '/quick', '/admin', '/nomalum']) {
+    for (const p of ['/vocabulary', '/grammar', '/mock-exam', '/progress', '/errors', '/quick', '/shorts', '/admin', '/nomalum']) {
       expect(isGuestAllowedPath(p)).toBe(false)
     }
   })

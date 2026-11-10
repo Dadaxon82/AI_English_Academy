@@ -957,6 +957,37 @@ bu yerde → bu **yerda**, «fe’l olga -s … qöşadi» → «**fe’lga** -s
 **Testlar:** `uz-alphabet.test.ts` (yozuvlar tengligi, kontentda eski «o‘/g‘» qolmagani), `check.test.ts`
 va Kotlin `AnswerCheckerTest` (har xil apostrof va yangi alifbo bilan javob).
 
+## 5s. Video shortlar — Memrise «Learn with Locals» g'oyasi (2026-11-10)
+
+Memrise'da ona tilida so'zlashuvchilar real joylarda suratga olingan qisqa kliplarda iboralarni aytadi. O'quvchi
+klipni ko'radi, keyin savolga javob beradi. Biz shu g'oyani mashq jarayoniga qo'shdik, lekin Memrise videolaridan
+foydalanilmadi (mualliflik huquqi) va «haqiqiy odam» deb soxta video ko'rsatilmaydi.
+
+| Qism | Fayl |
+|---|---|
+| Shortlar: 14 ta real hayot suhbatining har replikasi (85 ta: A1 — 43, A2 — 42), mashqlar `short-<suhbat>-<qator>-<m\|l>` (`findExercise` tiklaydi, Xatolar daftariga tushadi) | `src/content/shorts.ts` |
+| Pleyer: vertikal 9:16 sahna (kafe, vokzal, shifoxona…), personajlar (gapirayotgani oldinda), ovoz — qurilmaning ingliz TTS'i, aytilayotgan so'z subtitrda yonadi, «🐢 Sekin», qayta ko'rish | `src/components/ShortPlayer.tsx`, `src/lib/shortPlayback.ts`, `src/components/shortScene.ts` |
+| Mashq oqimi: suhbat darsiga 2 ta short (suhbatdoshning replikalari — bo'shliq javoblarini oshkor qilmaydi), `/shorts` sahifasida suhbat bo'yicha playlistlar | `src/lib/lessons.ts`, `src/pages/Shorts.tsx`, `ExerciseRunner` |
+
+**Mashq (Memrise uslubi):** avval tomosha → savol. **Eshitish** («Qaysi gapni eshitdingiz?») va **ma'no**
+(«Nima demoqchi?») navbatma-navbat. Subtitr va tarjima **javobdan keyin** ochiladi. Variantlar avval o'sha
+suhbatdan olinadi, ya'ni mavzu bir xil bo'ladi va topish oson bo'lmaydi. Tartib id bo'yicha barqaror.
+
+**Halollik:**
+- Pleyer ostida har doim manba yoziladi: «Animatsion short · ovoz: qurilmangizning ingliz nutq sintezi».
+- Qurilmada TTS ishlamasa, bu ochiq aytiladi va subtitr ochiladi. Ovozsiz «video» ko'rsatilmaydi.
+
+**Haqiqiy video qo'shish:** klipni `public/video/` ga qo'ying va `public/video/manifest.json` ga
+`{ shortId, src, speakerUz, license }` yozing (yo'riqnoma: `public/video/README.md`). O'sha short avtomatik
+haqiqiy video bilan ko'rsatiladi, gapiruvchi va litsenziya ham yoziladi. Litsenziyasiz yoki noto'g'ri manzilli yozuv
+qabul qilinmaydi.
+
+**Testlar:** `shorts.test.ts` (kontent qoidalari, id tiklash, takrorsiz variantlar), `short-player.test.tsx` (TTS va
+so'z yonishi, subtitr javobdan keyin, TTS yo'q holati, video manifesti, sahifa). `dialogues*.test` dars
+tuzilmasi bilan, e2e: playlist oxirigacha va `/shorts` axe (light/dark, 1280/375).
+
+**Hali qilinmagan:** mobil ilovada shortlar yo'q. Haqiqiy video kliplar ham yo'q, ularni yozib olish kerak.
+
 ## 6. Arxitektura qisqacha
 
 ```

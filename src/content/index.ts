@@ -4,6 +4,7 @@
  */
 
 import { DIALOGUE_PREFIX, findDialogueExercise } from './dialogues'
+import { SHORT_PREFIX, findShortExercise } from './shorts'
 import { CEFR_LEVELS } from './types'
 import type {
   CefrLevel,
@@ -540,6 +541,8 @@ export function findExercise(id: string): Exercise | undefined {
   if (id.startsWith(ROLEPLAY_FIX_PREFIX)) return roleplayFixExercise(id)
   // Real hayot suhbatlari (`dialogues.ts`) — `dlg-<suhbat>-<qator>`.
   if (id.startsWith(DIALOGUE_PREFIX)) return findDialogueExercise(id)
+  // Video shortlar (`shorts.ts`) — `short-<suhbat>-<qator>-<m|l>`.
+  if (id.startsWith(SHORT_PREFIX)) return findShortExercise(id)
   const vocabById = (vid: string) => [...allVocab(), ...allGlossaryVocab()].find((x) => x.id === vid)
   if (id.startsWith(VOCAB_PIC_PREFIX)) {
     const v = vocabById(id.slice(VOCAB_PIC_PREFIX.length))

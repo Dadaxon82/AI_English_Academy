@@ -34,6 +34,7 @@ const Dialogues = lazy(() => import('./pages/Dialogues'))
 const Community = lazy(() => import('./pages/Community'))
 const Conversation = lazy(() => import('./pages/Conversation'))
 const Pronunciation = lazy(() => import('./pages/Pronunciation'))
+const Shorts = lazy(() => import('./pages/Shorts'))
 // Admin panel — alohida chunk (grafik kutubxonasi faqat adminga yuklanadi).
 const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'))
 
@@ -92,6 +93,7 @@ function Shell({ auth, onAuth }: { auth: AuthState; onAuth: (s: AuthState) => vo
               <Route path="/vocabulary" element={<Vocabulary />} />
               <Route path="/quick" element={<QuickSession />} />
               <Route path="/dialogues" element={<Dialogues />} />
+              <Route path="/shorts" element={<Shorts />} />
               <Route path="/community" element={<Community />} />
               <Route path="/conversation" element={<Conversation />} />
               <Route path="/pronunciation" element={<Pronunciation />} />
