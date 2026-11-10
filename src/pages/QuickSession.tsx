@@ -23,6 +23,7 @@ import { useStore } from '../lib/storeContext'
 import { formatDuration } from '../lib/timer'
 import { todayKey } from '../lib/types'
 import { useNow } from '../lib/clock'
+import { useImmersion } from '../lib/prefs'
 
 type Phase = 'intro' | 'run' | 'done'
 
@@ -58,6 +59,8 @@ export default function QuickSession() {
   const [startedHere, setStartedHere] = useState(false)
   const [idx, setIdx] = useState(0)
   const [flipped, setFlipped] = useState(false)
+  const immersion = useImmersion()
+  const [revealUz, setRevealUz] = useState(false)
   const [log, setLog] = useState<LogEntry[]>([])
   const [drag, setDrag] = useState(0)
   const [dragging, setDragging] = useState(false)
@@ -105,6 +108,7 @@ export default function QuickSession() {
     // «Yana» — karta navbat oxiriga qaytadi (sessiya ichida mustahkamlanadi).
     if (g === 'again') setQueue((q) => [...(q ?? []), { item: card.item, isNew: false }])
     setFlipped(false)
+    setRevealUz(false)
     setDrag(0)
     setIdx((n) => n + 1)
   }
@@ -358,7 +362,11 @@ export default function QuickSession() {
               {card.item.ipa && <span className="muted font-mono text-sm">{card.item.ipa}</span>}
               {flipped ? (
                 <>
-                  <span className="text-lg font-semibold text-[var(--accent)] dark:text-navy-300">{card.item.translationUz}</span>
+                  {immersion && !revealUz ? (
+                    <span className="text-sm">{card.item.explanationEn}</span>
+                  ) : (
+                    <span className="text-lg font-semibold text-[var(--accent)] dark:text-navy-300">{card.item.translationUz}</span>
+                  )}
                   {card.item.exampleEn.trim() !== '' && <span className="muted text-sm italic">"{card.item.exampleEn}"</span>}
                 </>
               ) : (
@@ -367,6 +375,14 @@ export default function QuickSession() {
               {hint && <span className="text-sm font-bold">{hint === 'Bilaman' ? 'Bilaman →' : '← Yana'}</span>}
             </span>
           </button>
+
+          {immersion && flipped && !revealUz && (
+            <div>
+              <Button size="sm" variant="ghost" onClick={() => setRevealUz(true)}>
+                Tarjimani ko‘rsatish
+              </Button>
+            </div>
+          )}
 
           <div className="flex flex-wrap items-center justify-between gap-2">
             <SpeakButton text={card.item.pronunciation?.ttsText ?? card.item.word} label={`${card.item.word} — talaffuz`} size="md" />

@@ -7,6 +7,7 @@ Loyiha talabnomasi (`AI English Academy_v2.docx`) to'liq bajarilgan:
 - ✅ To'liq **o'zbek tilli interfeys**
 - ✅ **A1, A2, B1, B2, C1** darajalar; daraja faqat **ko'p ko'nikma dalili** bilan ko'tariladi (XP yoki kunlar emas), mock imtihon esa doim **"mashq uchun yaratilgan namuna"** deb yozilgan
 - ✅ **90 daqiqalik** asosiy kunlik reja (Vocab 10 / Grammar 15 / Reading 15 / Listening 15 / Writing 20 / Speaking 15) — zaif ko'nikma va imtihon sanasiga qarab qayta taqsimlanadi
+- ✅ **Talaffuz mashqi** (`/pronunciation`) va **Immersion rejimi** (tarjimasiz) — 5n-bo'lim
 - ✅ **AI suhbatdosh** (`/conversation`) — rol o'yini, AI bo'lmasa stsenariy, xatolar mashqqa aylanadi (5m-bo'lim)
 - ✅ **Hamjamiyat tekshiruvi** (`/community`), «Men qila olaman» dalili va yakunlash guvohnomasi — 5l-bo'lim
 - ✅ **Real hayot suhbatlari** (`/dialogues`) — A1/A2 da 14 stsenariy va **Takrorlash menejeri** (xatolar + so'zlar bitta navbatda) — 5k-bo'lim
@@ -36,7 +37,7 @@ Loyiha talabnomasi (`AI English Academy_v2.docx`) to'liq bajarilgan:
 <!-- STATS:START -->
 _Avtomatik o‘lchandi (`npm run stats`, 2026-11-10). Qo‘lda tahrirlamang._
 
-**Testlar:** vitest **459/459** (44 fayl) · **Kod:** veb 159 fayl / 41403 qator (TS/TSX), mobil 97 fayl / 26514 qator (Kotlin)
+**Testlar:** vitest **467/467** (45 fayl) · **Kod:** veb 164 fayl / 41928 qator (TS/TSX), mobil 97 fayl / 26514 qator (Kotlin)
 
 | Daraja | Kun | Lug‘at | Mashq | Turlar | Audio fayl / tinglash | Mock |
 |---|---|---|---|---|---|---|
@@ -793,6 +794,36 @@ yozuvlar yo'q, shuning uchun bo'lim umuman ko'rsatilmaydi: soxta audio yoki vide
 Edge funksiya bu muhitda Deno'da ishga tushirib ko'rilmadi (Deno yo'q). Umumiy mantiq
 `_shared/roleplay.ts` vitest bilan tekshirilgan, funksiyaning o'zi esa `ai-feedback` andozasini
 qatorma-qator takrorlaydi.
+
+## 5n. Talaffuz mashqi va Immersion rejimi — Rosetta Stone g'oyasi, 5-bosqich (2026-11-10)
+
+`docs/TIL_PLATFORMALARI_TAHLIL_VA_PROMPT.md` rejasining 5-bosqichi. **Faqat veb** (mobil — keyinroq).
+
+| Nima | Qayerda |
+|---|---|
+| Talaffuz: gap tinglanadi (TTS) → aytiladi → brauzer tanigan matn namuna bilan so'zma-so'z (LCS) solishtiriladi. Natija: yashil (tanildi), qizil (tanilmadi), ortiqcha so'zlar va **taxminiy** moslik %. Gaplar suhbatlar kontentidan (3–12 so'z) | `src/lib/pronunciation.ts`, `src/pages/Pronunciation.tsx` (`/pronunciation`, havola Gapirish sahifasida) |
+| Nutqni tanish (Web Speech API), umumiy hook | `src/lib/useSpeechInput.ts` |
+| Immersion: o'zbekcha tarjima yashiriladi, so'z ma'nosi inglizcha izoh va misol orqali beriladi. «Tarjimani ko'rsatish» tugmasi doim bor | `src/lib/prefs.ts`, `src/components/UzTranslation.tsx`; Sozlamalar → «Immersion rejimi» |
+
+**Halol qoidalar:**
+- Talaffuz natijasi «taxminiy moslik» deb yoziladi, rasmiy talaffuz bahosi emas: brauzer nutqni qanday
+  tanigani o'lchanadi. Brauzer nutqni tanimasa (Safari/Firefox) sabab oldindan aytiladi,
+  «Aytish» o'chiriladi va ball chiqmaydi. Tinglash baribir ishlaydi.
+- Brauzer bergan ishonch darajasi (`confidence`) faqat brauzer uni bersagina ko'rsatiladi.
+- Talaffuz urinishlari kundalik urinishlarga (`attempts`) yozilmaydi: nutqni tanish xatosi
+  ko'nikma dalilini buzmasligi uchun. Sessiya hisobi faqat ekranda ko'rinadi.
+- Immersion rejimi **qurilma sozlamasi** (`localStorage`): hisob sozlamalari `user_settings`
+  ustunlari orqali mobil ilova bilan bo'lishiladi, yangi ustun esa migratsiya va mobil paritetni
+  talab qiladi. Bu Sozlamalarda ochiq yozilgan.
+- Tarjima yashiriladigan joylar: lug'at ro'yxati va kartalari, «5 daqiqa», O'quv yo'li so'zlari,
+  Suhbatdosh maslahati. Topshiriq va izohlar o'zbekcha qoladi.
+- Karta `<button>` ichida bo'lgani uchun «Tarjimani ko'rsatish» tugmasi kartadan tashqariga
+  qo'yilgan (ichma-ich interaktiv element bo'lmasin, axe talabi).
+
+**Testlar:** `pronunciation-immersion.test.tsx` (moslash: tinish belgisi, apostrof, raqam,
+tushib qolgan va ortiqcha so'z; gaplar ro'yxati; Immersion o'chiq/yoqilgan/ochish; sahifa nutqni
+tanish yo'q va bor holatlarda, soxta `SpeechRecognition` bilan); e2e: Sozlama → lug'at kartasi,
+a11y `/pronunciation`.
 
 ## 6. Arxitektura qisqacha
 

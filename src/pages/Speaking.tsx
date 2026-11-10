@@ -175,6 +175,9 @@ export default function Speaking() {
         <p className="text-sm">
           <Link to="/conversation" className="font-semibold underline">
             Suhbatdosh bilan rol o‘ynash →
+          </Link>{' '}
+          <Link to="/pronunciation" className="font-semibold underline ml-2">
+            Talaffuz mashqi →
           </Link>
         </p>
         <div className="flex flex-wrap gap-1.5">

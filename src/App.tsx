@@ -30,6 +30,7 @@ const QuickSession = lazy(() => import('./pages/QuickSession'))
 const Dialogues = lazy(() => import('./pages/Dialogues'))
 const Community = lazy(() => import('./pages/Community'))
 const Conversation = lazy(() => import('./pages/Conversation'))
+const Pronunciation = lazy(() => import('./pages/Pronunciation'))
 
 /**
  * Router tanlovi:
@@ -81,6 +82,7 @@ function Shell({ auth, onAuth }: { auth: AuthState; onAuth: (s: AuthState) => vo
           <Route path="/dialogues" element={<Dialogues />} />
           <Route path="/community" element={<Community />} />
           <Route path="/conversation" element={<Conversation />} />
+          <Route path="/pronunciation" element={<Pronunciation />} />
           <Route path="/grammar" element={<Grammar />} />
           <Route path="/reading" element={<Reading />} />
           <Route path="/listening" element={<Listening />} />

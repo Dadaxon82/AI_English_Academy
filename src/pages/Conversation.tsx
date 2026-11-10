@@ -15,6 +15,7 @@
 import { useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import LessonPlayer from '../components/LessonPlayer'
+import UzTranslation from '../components/UzTranslation'
 import { Button, Card, Chip, InfoBanner, LoadingBlock, SpeakButton, inputCls } from '../components/ui'
 import { allGlossaryVocab, allVocab, roleplayFixExercise, roleplayFixId } from '../content'
 import { dialoguesFor } from '../content/dialogues'
@@ -262,7 +263,10 @@ export default function Conversation() {
           <div className="grid gap-2">
             {turn && (
               <p className="text-xs muted">
-                Aytmoqchi bo‘lgan fikringiz: <b>{turn.modelUz}</b>
+                Aytmoqchi bo‘lgan fikringiz:{' '}
+                <b>
+                  <UzTranslation>{turn.modelUz}</UzTranslation>
+                </b>
               </p>
             )}
             {engine === 'ai' && lines.length === 0 && <p className="text-xs muted">Suhbatni siz boshlang — {d.roles.b} sifatida birinchi gapni yozing.</p>}

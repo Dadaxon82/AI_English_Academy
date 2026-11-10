@@ -5,6 +5,7 @@
  * tashqariga chiqarmaydi, o'chirish ma'lumotlarni haqiqatan o'chiradi.
  */
 
+import { setImmersion, useImmersion } from '../lib/prefs'
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuthActions } from '../lib/authContext'
@@ -41,6 +42,7 @@ export default function Settings() {
   const authActions = useAuthActions()
   const nav = useNavigate()
   const s = data.settings
+  const immersion = useImmersion()
 
   const [queueLen, setQueueLen] = useState<number | null>(null)
   const [cache, setCache] = useState<OfflineCache | null>(null)
@@ -276,6 +278,24 @@ export default function Settings() {
           Harakatlarni yoqish (o‘tish, qahramon sakrashi, XP ko‘tarilishi, zanjir kataklari)
         </label>
         <p className="text-xs muted">Byudjet: o‘tish {MOTION.stepMs} ms, qahramon {MOTION.popMs} ms, XP {MOTION.xpMs} ms. Brauzer «kamaytirilgan harakat» so‘rovi bo‘lsa harakat avtomatik o‘chiriladi. Bu sozlama telefon ilovasi bilan ham sinxronlanadi.</p>
+      </Card>
+
+      {/* --- Immersion (tarjimasiz o'rganish) — QURILMA sozlamasi --- */}
+      <Card className="grid gap-3">
+        <div className="flex flex-wrap items-center gap-2">
+          <h2 className="font-bold">Immersion rejimi</h2>
+          <Chip tone={immersion ? 'brand' : 'default'}>{immersion ? 'Yoqilgan' : 'O‘chiq'}</Chip>
+          {(s.currentLevel === 'A1' || s.currentLevel === 'A2') && <Chip>B1 dan tavsiya etiladi</Chip>}
+        </div>
+        <label className="flex items-center gap-2 text-sm">
+          <input type="checkbox" checked={immersion} onChange={(e) => setImmersion(e.target.checked)} />
+          O‘zbekcha tarjimalarni yashirish (so‘z ma’nosi inglizcha izoh va misol orqali)
+        </label>
+        <p className="text-xs muted">
+          Lug‘at kartalari, «5 daqiqa», O‘quv yo‘li so‘zlari va Suhbatdosh maslahatlarida tarjima yashiriladi — istalgan paytda
+          «Tarjimani ko‘rsatish» tugmasi bilan ochiladi. Topshiriq va izohlar o‘zbekcha qoladi. Bu sozlama faqat shu qurilmada
+          saqlanadi (hisobga va telefon ilovasiga sinxronlanmaydi).
+        </p>
       </Card>
 
       {/* --- O‘yin qatlami: yuraklar va kunlik XP maqsadi --- */}

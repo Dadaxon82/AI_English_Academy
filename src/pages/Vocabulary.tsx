@@ -20,6 +20,8 @@ import { initialSrsState, isDue, review } from '../lib/srs'
 import type { SrsGrade, SrsState } from '../lib/srs'
 import { useStore } from '../lib/storeContext'
 import WordGame from '../components/WordGame'
+import UzTranslation from '../components/UzTranslation'
+import { useImmersion } from '../lib/prefs'
 import { Button, Card, Chip, EmptyState, InfoBanner, Kbd, LoadingBlock, SpeakButton, StatTile, SuccessBanner, inputCls } from '../components/ui'
 import { nowMs, secondsSince, useNow } from '../lib/clock'
 
@@ -338,7 +340,9 @@ function WordCard({
             <h3 className="text-lg font-bold">{item.word}</h3>
             {item.ipa && <span className="muted text-sm font-mono">{item.ipa}</span>}
           </div>
-          <p className="font-semibold text-[var(--accent)] dark:text-navy-300">{item.translationUz}</p>
+          <p className="font-semibold text-[var(--accent)] dark:text-navy-300">
+            <UzTranslation>{item.translationUz}</UzTranslation>
+          </p>
         </div>
         <div className="flex flex-wrap gap-1.5">
           <Chip>{item.level}</Chip>
@@ -454,6 +458,8 @@ function Flashcards({
   const [idx, setIdx] = useState(0)
   const [flipped, setFlipped] = useState(false)
   const [log, setLog] = useState<{ word: string; grade: SrsGrade }[]>([])
+  const immersion = useImmersion()
+  const [revealUz, setRevealUz] = useState(false)
 
   // Sessiya navbati — SNAPSHOT. Baholash SRS holatini o'zgartirsa ham joriy
   // sessiya tartibi adashmaydi; filtrlar o'zgarsa yangi sessiya boshlanadi.
@@ -513,6 +519,7 @@ function Flashcards({
     onGrade(card.item.id, g)
     setLog((prev) => [...prev, { word: card.item.word, grade: g }])
     setFlipped(false)
+    setRevealUz(false)
     if (g === 'again') {
       // Xato so'z navbatning oxiriga qaytadi — sessiya ichida mustahklanadi.
       const refreshed: DeckCard = { item: card.item, state: review(card.state, g) }
@@ -574,7 +581,11 @@ function Flashcards({
           {card.item.ipa && <span className="muted font-mono text-sm">{card.item.ipa}</span>}
           {flipped ? (
             <>
-              <span className="text-lg font-semibold text-[var(--accent)] dark:text-navy-300">{card.item.translationUz}</span>
+              {immersion && !revealUz ? (
+                <span className="text-sm">{card.item.explanationEn}</span>
+              ) : (
+                <span className="text-lg font-semibold text-[var(--accent)] dark:text-navy-300">{card.item.translationUz}</span>
+              )}
               <span className="muted text-sm italic">"{card.item.exampleEn}"</span>
               <span className="text-[11px] muted">
                 {card.item.topic} · {POS_UZ[card.item.pos]}
@@ -587,6 +598,14 @@ function Flashcards({
           )}
         </span>
       </button>
+
+      {immersion && flipped && !revealUz && (
+        <div>
+          <Button size="sm" variant="ghost" onClick={() => setRevealUz(true)}>
+            Tarjimani ko‘rsatish
+          </Button>
+        </div>
+      )}
 
       <div className="flex flex-wrap items-center justify-between gap-2">
         <SpeakButton text={card.item.pronunciation?.ttsText ?? card.item.word} label={`${card.item.word} — talaffuz`} size="md" />

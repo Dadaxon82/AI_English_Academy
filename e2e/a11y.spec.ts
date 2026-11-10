@@ -8,7 +8,7 @@ import { disableHearts, skipThroughLesson } from './helpers'
  */
 const ROUTES = [
   'dashboard', 'path', 'sections', 'vocabulary', 'grammar', 'reading', 'listening',
-  'writing', 'speaking', 'mock-exam', 'progress', 'errors', 'settings', 'onboarding', 'quick', 'dialogues', 'community', 'conversation',
+  'writing', 'speaking', 'mock-exam', 'progress', 'errors', 'settings', 'onboarding', 'quick', 'dialogues', 'community', 'conversation', 'pronunciation',
 ]
 
 for (const scheme of ['light', 'dark'] as const) {
