@@ -5,6 +5,7 @@
  * Talab: foydalanuvchi o'z xatolarini ko'radi va ular ustida ishlaydi.
  */
 
+import { trackUsage } from '../lib/usage'
 import { useMemo, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Button, Card, Chip, EmptyState, Field, InfoBanner, inputCls } from '../components/ui'
@@ -51,6 +52,7 @@ export default function ErrorLog() {
   const srsGraded = useRef(new Set<string>())
   const startReview = () => {
     srsGraded.current = new Set()
+    trackUsage('review', 'started')
     // Variantlar (3 ta noto'g'ri tarjima) boshlash paytida bir marta yasaladi.
     const plan = buildReviewPlan(mistakes, data.srs, vocabPool, Date.now(), (v) => vocabQuizExercise(v, quizOptions(v, vocabPool)))
     setGame({ steps: plan.steps, timed: false, srs: true })
@@ -89,6 +91,7 @@ export default function ErrorLog() {
           steps={game.steps}
           onClose={() => setGame(null)}
           timeLimitSec={game.timed ? TIMED_SECONDS : undefined}
+          onFinish={game.srs ? () => trackUsage('review', 'finished') : undefined}
           onAnswer={
             game.srs
               ? (step, correct) => {

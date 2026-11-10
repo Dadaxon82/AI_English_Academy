@@ -10,6 +10,7 @@
  * hisoblanadi: har bo'shliqning ENG OXIRGI urinishi to'g'rimi.
  */
 
+import { trackUsage } from '../lib/usage'
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import LessonPlayer from '../components/LessonPlayer'
@@ -101,6 +102,7 @@ export default function Dialogues() {
         <LessonPlayer
           steps={steps}
           onClose={() => setActive(null)}
+          onFinish={() => trackUsage('dialogue', 'finished')}
           renderInfo={(step) =>
             step.info === 'rule' ? (
               <NoteView d={active} />
@@ -165,7 +167,13 @@ export default function Dialogues() {
                 <p className="text-sm muted">{d.situationUz}</p>
               </div>
               <div className="flex justify-end">
-                <Button size="sm" onClick={() => setActive(d)}>
+                <Button
+                  size="sm"
+                  onClick={() => {
+                    trackUsage('dialogue', 'started')
+                    setActive(d)
+                  }}
+                >
                   {p.tried === 0 ? 'Boshlash' : 'Qayta o‘tish'}
                 </Button>
               </div>

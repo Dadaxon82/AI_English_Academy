@@ -13,6 +13,7 @@
  *    chiqilsa taymer PAUZA qilinadi (ko'rilmagan vaqt sanalmaydi).
  */
 
+import { trackUsage } from '../lib/usage'
 import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { allGlossaryVocab, allVocab, getBundle } from '../content'
@@ -86,7 +87,9 @@ export default function QuickSession() {
   // Vaqt yoki kartalar tugasa — taymer to'xtatiladi (vaqt kunlik hisobga yoziladi),
   // shundan so'ng bosqich o'zi «natija»ga o'tadi.
   useEffect(() => {
-    if (outOfCards || outOfTime) actions.stopTimer()
+    if (!outOfCards && !outOfTime) return
+    trackUsage('quick', 'finished')
+    actions.stopTimer()
   }, [outOfCards, outOfTime, actions])
 
   /** Navbatni tuzish va taymerni yurgizish (yangi sessiya yoki pauzadan davom). */
@@ -99,7 +102,10 @@ export default function QuickSession() {
     actions.startTimer(sid, 'vocabulary')
   }
 
-  const start = () => begin(true)
+  const start = () => {
+    trackUsage('quick', 'started')
+    begin(true)
+  }
 
   const grade = (g: 'good' | 'again') => {
     if (!card || !running || !queue) return

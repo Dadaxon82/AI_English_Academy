@@ -7,6 +7,7 @@ Loyiha talabnomasi (`AI English Academy_v2.docx`) to'liq bajarilgan:
 - ✅ To'liq **o'zbek tilli interfeys**
 - ✅ **A1, A2, B1, B2, C1** darajalar; daraja faqat **ko'p ko'nikma dalili** bilan ko'tariladi (XP yoki kunlar emas), mock imtihon esa doim **"mashq uchun yaratilgan namuna"** deb yozilgan
 - ✅ **90 daqiqalik** asosiy kunlik reja (Vocab 10 / Grammar 15 / Reading 15 / Listening 15 / Writing 20 / Speaking 15) — zaif ko'nikma va imtihon sanasiga qarab qayta taqsimlanadi
+- ✅ **Foydalanish o'lchovi** (Progress, faqat qurilmada) — 5o-bo'lim
 - ✅ **Talaffuz mashqi** (`/pronunciation`) va **Immersion rejimi** (tarjimasiz) — 5n-bo'lim
 - ✅ **AI suhbatdosh** (`/conversation`) — rol o'yini, AI bo'lmasa stsenariy, xatolar mashqqa aylanadi (5m-bo'lim)
 - ✅ **Hamjamiyat tekshiruvi** (`/community`), «Men qila olaman» dalili va yakunlash guvohnomasi — 5l-bo'lim
@@ -37,7 +38,7 @@ Loyiha talabnomasi (`AI English Academy_v2.docx`) to'liq bajarilgan:
 <!-- STATS:START -->
 _Avtomatik o‘lchandi (`npm run stats`, 2026-11-10). Qo‘lda tahrirlamang._
 
-**Testlar:** vitest **467/467** (45 fayl) · **Kod:** veb 164 fayl / 41928 qator (TS/TSX), mobil 97 fayl / 26514 qator (Kotlin)
+**Testlar:** vitest **470/470** (46 fayl) · **Kod:** veb 167 fayl / 42221 qator (TS/TSX), mobil 97 fayl / 26514 qator (Kotlin)
 
 | Daraja | Kun | Lug‘at | Mashq | Turlar | Audio fayl / tinglash | Mock |
 |---|---|---|---|---|---|---|
@@ -824,6 +825,26 @@ qatorma-qator takrorlaydi.
 tushib qolgan va ortiqcha so'z; gaplar ro'yxati; Immersion o'chiq/yoqilgan/ochish; sahifa nutqni
 tanish yo'q va bor holatlarda, soxta `SpeechRecognition` bilan); e2e: Sozlama → lug'at kartasi,
 a11y `/pronunciation`.
+
+## 5o. Yangi funksiyalardan foydalanish o'lchovi — 6-bosqich (2026-11-10)
+
+`docs/TIL_PLATFORMALARI_TAHLIL_VA_PROMPT.md` rejasining 6-bosqichi: qaysi funksiya haqiqatan
+ishlatilayotganini va oxirigacha yetkazilayotganini ko'rish uchun.
+
+| Nima | Qayerda |
+|---|---|
+| 8 ta funksiya uchun «boshlangan / yakunlangan» hisoblagichi va oxirgi sana. «Yakunlangan»ning ma'nosi har funksiyada ochiq yozilgan: masalan «5 daqiqa» — vaqt yoki kartalar tugaguncha, talaffuz — moslik ≥ 80% | `src/lib/usage.ts` (`FEATURES`) |
+| Progress → «Yangi funksiyalardan foydalanish» jadvali: soni, tugatish foizi, «Tozalash» tugmasi | `src/components/UsageCard.tsx` |
+| Hodisalar ulangan joylar: «5 daqiqa», Suhbatlar, Takrorlash menejeri, Suhbatdosh, Talaffuz, Hamjamiyat (yuborish va tekshirish), Guvohnoma | tegishli sahifalar |
+
+**Maxfiylik:** hisob faqat shu qurilmada (`localStorage`) saqlanadi va hech qayerga
+yuborilmaydi. Matn yoki javob saqlanmaydi, faqat sonlar va sana. Saqlov buzilgan bo'lsa,
+noma'lum kalitlar va noto'g'ri sonlar tashlanadi (`parseUsage`). «Yakunlangan» soni hech qachon
+«boshlangan»dan oshmaydi. Server jadvali ataylab qo'shilmadi: foydalanish ma'lumotini serverga
+yig'ish alohida rozilik va maxfiylik siyosatini talab qiladi.
+
+**Testlar:** `usage.test.tsx` (hisob, foiz, buzilgan saqlov, karta va tozalash) hamda sahifa
+testlarida haqiqiy hodisa: «5 daqiqa» va Suhbat darsi tugaganda `finished` oshadi.
 
 ## 6. Arxitektura qisqacha
 

@@ -11,6 +11,7 @@
  * yoziladi (soxta ro'yxat ko'rsatilmaydi). Hammasi `src/lib/peer.ts` orqali.
  */
 
+import { trackUsage } from '../lib/usage'
 import { useCallback, useEffect, useId, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Button, Card, Chip, EmptyState, InfoBanner, LoadingBlock, SuccessBanner, inputCls } from '../components/ui'
@@ -211,12 +212,16 @@ export default function Community() {
                             disabled={!consent || sent}
                             busy={busy === c.key}
                             onClick={async () => {
+                              trackUsage('community_submit', 'started')
                               const ok = await act(
                                 c.key,
                                 () => submitForPeerReview({ kind: c.kind, taskId: c.taskId, level: c.level, prompt: c.prompt, body: c.body }),
                                 'Javob tekshiruvga yuborildi. Izohlar kelganda «Mening javoblarim»da ko‘rinadi.',
                               )
-                              if (ok) void loadMine()
+                              if (ok) {
+                                trackUsage('community_submit', 'finished')
+                                void loadMine()
+                              }
                             }}
                           >
                             Yuborish
@@ -303,6 +308,7 @@ export default function Community() {
                     const r = await claimPeerSubmission()
                     setBusy(null)
                     if (r.ok) {
+                      if (r.data) trackUsage('community_review', 'started')
                       setTask(r.data)
                       setScore(0)
                       setComment('')
@@ -365,7 +371,10 @@ export default function Community() {
                     busy={busy === 'review'}
                     onClick={async () => {
                       const ok = await act('review', () => submitPeerReview(task.id, score, comment), 'Rahmat! Izohingiz muallifga yetkaziladi.')
-                      if (ok) setTask(undefined)
+                      if (ok) {
+                        trackUsage('community_review', 'finished')
+                        setTask(undefined)
+                      }
                     }}
                   >
                     Izohni yuborish

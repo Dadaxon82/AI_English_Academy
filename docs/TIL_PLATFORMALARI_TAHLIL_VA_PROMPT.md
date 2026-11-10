@@ -164,3 +164,23 @@ Taxmin qilingan son yozma; faqat o'lchangan natija.
 | 4 | Memrise/Ling — AI suhbat | Juda yuqori | Yuqori | Edge Function va 2-bosqich tayyor bo'lgach |
 | 5 | Rosetta Stone — talaffuz | O'rta–yuqori | O'rta | Brauzer imkoniyatiga bog'liq, alohida sinov kerak |
 | 6 | O'lchov | O'rta | Past | Qaysi funksiya haqiqatan yordam berayotganini bilish |
+
+---
+
+## 4-qism. Joriy etish holati (2026-11-10)
+
+| Bosqich | Veb | Mobil | README |
+|---|---|---|---|
+| 1. «5 daqiqa» tezkor sessiya (Drops) | ✅ `/quick` | ✅ `QuickSessionFragment` (1.4.0) | §5j |
+| 2. Real hayot suhbatlari + Takrorlash menejeri (Babbel) | ✅ `/dialogues`, Xatolar daftari | ⏳ | §5k |
+| 3. «Men qila olaman» dalili, hamjamiyat tekshiruvi, guvohnoma (Busuu) | ✅ Progress, `/community`, migratsiya 0006 | ⏳ | §5l |
+| 4. AI suhbatdosh (Memrise / Ling) | ✅ `/conversation`, `ai-roleplay` | ⏳ | §5m |
+| 5. Talaffuz mashqi + Immersion (Rosetta Stone) | ✅ `/pronunciation`, Sozlamalar | ⏳ | §5n |
+| 6. Foydalanish o'lchovi | ✅ Progress | ⏳ | §5o |
+
+Rejadan ongli ravishda chetga chiqilgan joylar (sabablari README'da):
+- Ona tili egasining real audio yoki video klipi yo'q, chunki litsenziyasi aniq yozuv yo'q.
+- Tekshiruvchiga gem mukofoti yo'q: o'yin sonlari mobil bilan teng turishi shart.
+- Immersion va foydalanish o'lchovi qurilma darajasida saqlanadi.
+- Stsenariy rejimi chiziqli: tarmoqlangan dialog daraxti emas.
+

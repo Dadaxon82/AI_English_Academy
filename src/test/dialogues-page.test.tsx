@@ -121,6 +121,7 @@ describe('Suhbatlar sahifasi', () => {
     expect(screen.getByText('Dars tugadi!')).toBeTruthy()
     expect(screen.getByTestId('attempts').textContent).toBe('4')
     expect(screen.getByTestId('wrong').textContent).toBe('1')
+    expect(JSON.parse(localStorage.getItem('aea-usage-v1')!).dialogue).toMatchObject({ started: 1, finished: 1 })
     // Ro'yxatga qaytish: oxirgi urinishlar hammasi to'g'ri → 3/3.
     fireEvent.click(screen.getByRole('button', { name: 'Davom etish' }))
     await advance(0)

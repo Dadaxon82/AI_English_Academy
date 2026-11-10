@@ -82,6 +82,8 @@ describe('«5 daqiqa» sahifasi', () => {
     expect(sec).toBeGreaterThanOrEqual(300)
     expect(sec).toBeLessThanOrEqual(302)
     expect(screen.getByText(/3 ta karta: 2 tasini bildingiz, 1 tasi qayta takrorlanadi/)).toBeTruthy()
+    // 6-bosqich: foydalanish o'lchovi (faqat qurilmada).
+    expect(JSON.parse(localStorage.getItem('aea-usage-v1')!).quick).toMatchObject({ started: 1, finished: 1 })
   })
 
   it('sahifadan chiqilsa taymer pauzaga olinadi va qaytganda «Davom etish» taklif qilinadi', async () => {

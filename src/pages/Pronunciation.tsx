@@ -8,6 +8,7 @@
  * aytiladi; tinglash baribir ishlaydi. Audio hech qayerga yuborilmaydi.
  */
 
+import { trackUsage } from '../lib/usage'
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Button, Card, Chip, InfoBanner, LoadingBlock, SpeakButton } from '../components/ui'
@@ -34,6 +35,8 @@ export default function Pronunciation() {
     const res = comparePronunciation(target.en, r.text)
     setSaid(r)
     setResult(res)
+    trackUsage('pronunciation', 'started')
+    if (res.score >= 80) trackUsage('pronunciation', 'finished')
     setTally((t) => ({ tries: t.tries + 1, sum: t.sum + res.score }))
   })
 

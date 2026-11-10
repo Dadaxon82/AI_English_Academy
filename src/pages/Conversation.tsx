@@ -12,6 +12,7 @@
  * AI aytgan so'zlardan LUG'ATIMIZDA bor bo'lganlari SRS'ga saqlanadi.
  */
 
+import { trackUsage } from '../lib/usage'
 import { useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import LessonPlayer from '../components/LessonPlayer'
@@ -65,6 +66,7 @@ export default function Conversation() {
 
   const start = (dlg: Dialogue, eng: RoleplayEngine) => {
     const s = scriptTurns(dlg)
+    trackUsage('conversation', 'started')
     setD(dlg)
     setEngine(eng)
     setPos(0)
@@ -80,6 +82,7 @@ export default function Conversation() {
 
   const finish = () => {
     speech.stop()
+    trackUsage('conversation', 'finished')
     setFinished(true)
     scroll()
   }

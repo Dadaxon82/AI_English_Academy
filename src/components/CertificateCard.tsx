@@ -4,6 +4,7 @@
  * yasay olmasa SABAB aytiladi. Ism faqat shu qurilmada kiritiladi.
  */
 
+import { trackUsage } from '../lib/usage'
 import { useMemo, useState } from 'react'
 import { allGlossaryVocab, getBundle, mockExamA1 } from '../content'
 import type { CefrLevel } from '../content/types'
@@ -31,6 +32,7 @@ export default function CertificateCard() {
 
   const make = () => {
     setError(null)
+    trackUsage('certificate', 'started')
     const canvas = document.createElement('canvas')
     const dateUz = new Date().toLocaleDateString('uz-UZ', { year: 'numeric', month: 'long', day: 'numeric' })
     let ok = false
@@ -44,6 +46,7 @@ export default function CertificateCard() {
       return
     }
     setUrl(canvas.toDataURL('image/png'))
+    trackUsage('certificate', 'finished')
   }
 
   return (
