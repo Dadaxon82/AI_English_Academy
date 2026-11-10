@@ -23,7 +23,8 @@ export default function UsageCard() {
         Sonlar hech qayerga yuborilmaydi va javoblaringiz saqlanmaydi — faqat necha marta boshlangan va oxirigacha yetkazilgani.
         «Yakunlangan»ning ma’nosi har qatorda yozilgan.
       </p>
-      <div className="overflow-x-auto">
+      {/* Tor ekranda jadval gorizontal aylanadi — klaviatura bilan ham aylantirish uchun fokuslanadigan hudud (axe: scrollable-region-focusable). */}
+      <div className="overflow-x-auto" tabIndex={0} role="region" aria-label="Funksiyalardan foydalanish jadvali">
         <table className="w-full text-sm">
           <thead>
             <tr className="text-left text-xs muted">
