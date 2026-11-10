@@ -6,6 +6,7 @@ import { Button, Chip } from './ui'
 import { MascotAvatar } from './Mascot'
 import { useAuthActions } from '../lib/authContext'
 import { useIsAdmin } from '../lib/admin'
+import SignOutButton from './SignOutButton'
 
 /** Pastki panel — yo'l bo'yicha (indeks emas: menyuga band qo'shilsa siljimaydi). */
 const BOTTOM_PATHS = ['/dashboard', '/vocabulary', '/mock-exam', '/progress', '/settings']
@@ -139,6 +140,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               </svg>
             )}
           </Button>
+
+          <SignOutButton compact />
 
           <Button
             variant="ghost"

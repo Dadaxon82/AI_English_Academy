@@ -7,8 +7,7 @@
 
 import { setImmersion, useImmersion } from '../lib/prefs'
 import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { useAuthActions } from '../lib/authContext'
+import { Link } from 'react-router-dom'
 import { Button, Card, Chip, Field, InfoBanner, Modal, StatTile, SuccessBanner, inputCls } from '../components/ui'
 import { aiRuntimeEnabled } from '../lib/ai'
 import { useStore } from '../lib/storeContext'
@@ -16,6 +15,7 @@ import { skillLabelUz, daysUntil } from '../lib/planning'
 import { loadCacheMeta, loadQueue, purgeUserData, storageBackend } from '../lib/storage'
 import { MOTION, motionAllowed } from '../lib/motionManifest'
 import { GameIcon } from '../components/icons'
+import SignOutButton from '../components/SignOutButton'
 import { BET_COST_GEMS, BET_DAYS, BET_STREAK_DAYS, BET_WIN_GEMS, GOAL_GEM_REWARD, HEARTS_COST_WRONG, HEARTS_MAX, HEART_COMBO_STREAK, HEART_PRACTICE_REVIEWS, HEART_REFILL_MINUTES, MAX_FREEZES, XP_GOAL_TIERS } from '../lib/gameConfig'
 import { supabaseConfigured, safeErrorMessage } from '../lib/supabase'
 import { deleteRemoteData } from '../lib/sync'
@@ -39,8 +39,6 @@ function examHint(examLeft: number | null): string {
 
 export default function Settings() {
   const { data, actions, allocation, evidence, netOnline, promotion, hearts, goal, shop } = useStore()
-  const authActions = useAuthActions()
-  const nav = useNavigate()
   const s = data.settings
   const immersion = useImmersion()
 
@@ -50,8 +48,6 @@ export default function Settings() {
   const [syncing, setSyncing] = useState(false)
   const [confirmReset, setConfirmReset] = useState(false)
   const [resetDone, setResetDone] = useState(false)
-  const [signingOut, setSigningOut] = useState(false)
-  const [unsynced, setUnsynced] = useState<{ pending: number; reasonUz: string | null } | null>(null)
   const [deleting, setDeleting] = useState(false)
   const [deleteError, setDeleteError] = useState<string | null>(null)
   // Do'kon xaridining natija xabari (muvaffaqiyat yoki sababi bilan).
@@ -95,29 +91,6 @@ export default function Settings() {
     }
     setDeleting(false)
     setConfirmReset(false)
-  }
-
-  const doSignOut = () => {
-    setUnsynced(null)
-    authActions?.signOut()
-    void nav('/login')
-  }
-
-  // ESKI BUG: chiqishda lokal ma'lumot va navbat darhol o'chirilardi —
-  // serverga yetmagan progress jimgina yo'qolardi. Endi avval sinxronlanadi,
-  // yuborilmagan narsa qolsa foydalanuvchidan tasdiq so'raladi.
-  const requestSignOut = async () => {
-    if (isGuest || !supabaseConfigured) {
-      doSignOut()
-      return
-    }
-    setSigningOut(true)
-    const res = await actions.sync()
-    const q = await loadQueue(data.userId)
-    setSigningOut(false)
-    setQueueLen(q.length)
-    if (res.ok && q.length === 0) doSignOut()
-    else setUnsynced({ pending: q.length, reasonUz: res.reasonUz })
   }
 
   useEffect(() => {
@@ -488,9 +461,7 @@ export default function Settings() {
             </p>
           </div>
           <div className="grid gap-2 content-end">
-            <Button variant="secondary" busy={signingOut} onClick={() => void requestSignOut()}>
-              {isGuest ? 'Chiqish (ma’lumot saqlanadi)' : signingOut ? 'Sinxronlanmoqda…' : 'Hisobdan chiqish'}
-            </Button>
+            <SignOutButton />
             <Link to="/dashboard">
               <Button variant="ghost" size="sm">
                 Dashboardga qaytish
@@ -508,35 +479,12 @@ export default function Settings() {
           fayllardan{hasServerCopy ? ', shuningdek serverdan' : ''} o‘chiriladi.
         </p>
         <div className="flex flex-wrap gap-2">
-          <Button variant="danger" disabled={syncing || signingOut} onClick={() => setConfirmReset(true)}>
+          <Button variant="danger" disabled={syncing} onClick={() => setConfirmReset(true)}>
             Barcha ma’lumotni o‘chirish
           </Button>
         </div>
         {resetDone && <SuccessBanner>Ma’lumotlar o‘chirildi — ilova boshlang‘ich holatga qaytdi.</SuccessBanner>}
       </Card>
-
-      <Modal open={unsynced !== null} title="Serverga yetmagan ma’lumot bor" onClose={() => setUnsynced(null)}>
-        <div className="grid gap-3">
-          <p className="text-sm">
-            {unsynced && unsynced.pending > 0
-              ? `${unsynced.pending} ta yozuv serverga yuborilmadi.`
-              : 'Sinxronizatsiya to‘liq bajarilmadi.'}{' '}
-            {unsynced?.reasonUz}
-          </p>
-          <InfoBanner tone="warn">
-            Hisobdan chiqsangiz, bu qurilmadagi ma’lumotlar o‘chiriladi — serverga yetmagan qismini tiklab bo‘lmaydi.
-            Internetni tekshirib, qayta urinib ko‘ring.
-          </InfoBanner>
-          <div className="flex gap-2 justify-end">
-            <Button variant="ghost" onClick={() => setUnsynced(null)}>
-              Qolish
-            </Button>
-            <Button variant="danger" onClick={doSignOut}>
-              Baribir chiqish
-            </Button>
-          </div>
-        </div>
-      </Modal>
 
       <Modal
         open={confirmReset}
