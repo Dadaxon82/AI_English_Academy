@@ -10,7 +10,9 @@ import { allShorts } from '../content/shorts'
 import { StoreProvider } from '../lib/store'
 import { parseVideoManifest, resetVideoManifest, wordAt, wordStarts } from '../lib/shortPlayback'
 import Shorts from '../pages/Shorts'
-import { roleEmoji } from '../components/shortScene'
+import { LEARNER_ART, roleArt, roleEmoji } from '../components/shortScene'
+import { existsSync } from 'node:fs'
+import path from 'node:path'
 import { DIALOGUES } from '../content/dialogues'
 
 type Utter = {
@@ -73,6 +75,16 @@ describe('so‘z indekslari', () => {
 })
 
 describe('personajlar', () => {
+  it('rasmli rollar (o‘qituvçi, şifokor, döst) — fayllar public/characters da bor', () => {
+    const pub = path.resolve(__dirname, '../../public')
+    expect(existsSync(path.join(pub, LEARNER_ART))).toBe(true)
+    for (const role of ['Teacher', 'Doctor', 'Friend', 'New friend', 'Classmate']) {
+      const art = roleArt(role)
+      expect(art, role).toBeTruthy()
+      expect(existsSync(path.join(pub, art!)), art!).toBe(true)
+    }
+    expect(roleArt('Waiter')).toBeNull() // rasmi yöq — emoji
+  })
   it('har rol uçun BITTA belgili emoji (ZWJ birikmasi Windows’da ikki bölak bölib çiqadi)', () => {
     for (const d of DIALOGUES) {
       for (const role of [d.roles.a, d.roles.b]) {

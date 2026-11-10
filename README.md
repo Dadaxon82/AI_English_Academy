@@ -986,6 +986,12 @@ qabul qilinmaydi.
 so'z yonishi, subtitr javobdan keyin, TTS yo'q holati, video manifesti, sahifa). `dialogues*.test` dars
 tuzilmasi bilan, e2e: playlist oxirigacha va `/shorts` axe (light/dark, 1280/375).
 
+**Personajlar (2026-11-10):** loyiha egasi bergan qahramon rasmlaridan fonsiz qirqib olingan:
+`public/characters/teacher.webp` (Teacher), `doctor.webp` (Doctor), `traveler.webp` (Friend, New friend, Classmate),
+`learner.webp` (o'quvchi, maskot). Sahnada ikkalasi butun bo'yi bilan turadi, gapirayotgani tebranadi va «•••» pufagi
+chiqadi. Rasmi yo'q rollar (Waiter, Shop assistant, Ticket clerk, Landlord, Manager, Colleague, Passer-by) hozircha
+emoji bilan ko'rsatiladi. Rasm qo'shilsa, `src/components/shortScene.ts` dagi `ROLE_ART`ga yoziladi.
+
 **Hali qilinmagan:** mobil ilovada shortlar yo'q. Haqiqiy video kliplar ham yo'q, ularni yozib olish kerak.
 
 ## 6. Arxitektura qisqacha

@@ -14,7 +14,7 @@ import { useEffect, useRef, useState } from 'react'
 import type { Short } from '../content/shorts'
 import { loadVideoManifest, speakWithWords, splitWords, ttsSupported, type ShortVideoItem } from '../lib/shortPlayback'
 import UzTranslation from './UzTranslation'
-import { roleEmoji, sceneOf } from './shortScene'
+import { LEARNER_ART, roleArt, roleEmoji, sceneOf } from './shortScene'
 
 type Phase = 'ready' | 'playing' | 'done' | 'no-tts'
 
@@ -74,6 +74,7 @@ export default function ShortPlayer({ short, revealed, autoPlay = false }: { sho
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [autoPlay, short.id, video])
 
+  const partnerRole = short.learnerSpeaks ? short.listener : short.speaker
   const captionsOpen = revealed || phase === 'no-tts'
   const speaking = phase === 'playing'
 
@@ -102,15 +103,17 @@ export default function ShortPlayer({ short, revealed, autoPlay = false }: { sho
             <span className="absolute left-3 top-3 rounded-full bg-black/35 px-2.5 py-1 text-[11px] font-bold">
               {scene.emoji} {scene.labelUz}
             </span>
-            {/* Personajlar: gapirayotgani oldinda, kattaroq */}
-            <div className="absolute inset-x-0 top-[10%] sm:top-[20%] flex items-end justify-center gap-6 sm:gap-12 px-3">
-              <Character
+            {/* Pol va personajlar: chapda o'quvchi (maskot), o'ngda suhbatdoş — butun bo'yi bilan */}
+            <span aria-hidden className="absolute inset-x-[12%] bottom-[4%] h-[9%] rounded-[50%] bg-white/15 blur-[2px]" />
+            <div className="absolute inset-x-0 bottom-[3%] top-[9%] flex items-end justify-center gap-[8%] px-[8%]">
+              <Figure active={short.learnerSpeaks} speaking={speaking && short.learnerSpeaks} label="Siz" art={LEARNER_ART} />
+              <Figure
                 active={!short.learnerSpeaks}
                 speaking={speaking && !short.learnerSpeaks}
-                label={short.learnerSpeaks ? short.listener : short.speaker}
-                emoji={roleEmoji(short.learnerSpeaks ? short.listener : short.speaker)}
+                label={partnerRole}
+                art={roleArt(partnerRole)}
+                emoji={roleEmoji(partnerRole)}
               />
-              <Character active={short.learnerSpeaks} speaking={speaking && short.learnerSpeaks} label="Siz" mascot />
             </div>
           </>
         )}
@@ -194,21 +197,33 @@ export default function ShortPlayer({ short, revealed, autoPlay = false }: { sho
   )
 }
 
-function Character({ active, speaking, label, emoji, mascot }: { active: boolean; speaking: boolean; label: string; emoji?: string; mascot?: boolean }) {
+function Figure({ active, speaking, label, art, emoji }: { active: boolean; speaking: boolean; label: string; art: string | null; emoji?: string }) {
   return (
-    <div className={`grid justify-items-center gap-1 transition-all duration-300 ${active ? 'opacity-100' : 'opacity-60 scale-90'}`}>
-      <div
-        className={`grid place-items-center rounded-full bg-white/15 ring-2 ${speaking ? 'ring-yellow-300 motion-safe:animate-[short-talk_0.5s_ease-in-out_infinite]' : 'ring-white/30'} ${active ? 'h-16 w-16 sm:h-28 sm:w-28' : 'h-12 w-12 sm:h-20 sm:w-20'}`}
-      >
-        {mascot ? (
-          <img src={`${import.meta.env.BASE_URL}mascot/mascot-avatar-128.png`} alt="" className="h-[80%] w-[80%] object-contain" />
-        ) : (
-          <span aria-hidden className={active ? 'text-4xl sm:text-7xl' : 'text-2xl sm:text-5xl'}>
-            {emoji}
-          </span>
-        )}
-      </div>
-      <span className="rounded-full bg-black/40 px-2 py-0.5 text-[10px] font-bold">{label}</span>
+    <div
+      className={`relative flex h-full flex-col items-center justify-end transition-all duration-300 ${active ? 'opacity-100' : 'opacity-75'}`}
+      style={{ height: active ? '100%' : '90%' }}
+    >
+      {speaking && (
+        <span aria-hidden className="absolute -top-1 right-0 rounded-full bg-white px-2 py-0.5 text-xs font-black text-indigo-800 shadow motion-safe:animate-pulse">
+          •••
+        </span>
+      )}
+      <span className="mb-1 rounded-full bg-black/45 px-2 py-0.5 text-[10px] sm:text-xs font-bold">{label}</span>
+      {art ? (
+        <img
+          src={`${import.meta.env.BASE_URL}${art}`}
+          alt=""
+          draggable={false}
+          className={`min-h-0 flex-1 w-auto object-contain object-bottom drop-shadow-lg select-none origin-bottom ${speaking ? 'motion-safe:animate-[short-bob_0.6s_ease-in-out_infinite]' : ''}`}
+        />
+      ) : (
+        <span
+          aria-hidden
+          className={`mb-[12%] grid aspect-square h-[45%] place-items-center rounded-full bg-white/15 ring-2 text-4xl sm:text-7xl ${speaking ? 'ring-yellow-300 motion-safe:animate-[short-talk_0.5s_ease-in-out_infinite]' : 'ring-white/30'}`}
+        >
+          {emoji}
+        </span>
+      )}
     </div>
   )
 }

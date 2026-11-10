@@ -44,3 +44,21 @@ export function sceneOf(dialogueId: string) {
 export function roleEmoji(role: string): string {
   return ROLE_EMOJI[role] ?? '🙂'
 }
+
+/**
+ * Personaj rasmlari (`public/characters/`, foydalanuvchi bergan qahramonlar
+ * asosida). Rasmi yo'q rol — emoji bilan (keyin rasm qo'shilsa shu yerga yoziladi).
+ */
+const ROLE_ART: Record<string, string> = {
+  Teacher: 'characters/teacher.webp',
+  Doctor: 'characters/doctor.webp',
+  Friend: 'characters/traveler.webp',
+  'New friend': 'characters/traveler.webp',
+  Classmate: 'characters/traveler.webp',
+}
+
+export const LEARNER_ART = 'characters/learner.webp'
+
+export function roleArt(role: string): string | null {
+  return ROLE_ART[role] ?? null
+}
