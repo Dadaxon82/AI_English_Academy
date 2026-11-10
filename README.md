@@ -263,7 +263,7 @@ python mobile/scripts/make_assets.py        # mascot + ikonalar
 cd mobile
 JAVA_HOME=<jdk17> GRADLE_USER_HOME=<kecha papkasi> \
   gradle --offline :app:testDebugUnitTest :app:assembleDebug
-# Release (imzo `mobile/keystores/aea-release.jks` da — repoda):
+# Release (imzo kaliti repoda EMAS — mobile/keystores/README.md ga qarang):
 gradle --offline :app:assembleRelease      # 2026-11-08: lint-gradle kechada bo'lmagani
                                            # uchun `:app:lintVitalRelease` alohida tarmoqda bajarildi
 ```

@@ -24,3 +24,9 @@ language sql stable as $$
 $$;
 grant execute on function auth.uid() to anon, authenticated, service_role;
 grant usage on schema public to anon, authenticated, service_role;
+
+-- Supabase standarti: public sxemada yaratilgan har jadvalga anon/authenticated
+-- ga barcha huquqlar beriladi (himoya — RLS va 0008 dagi revoke'lar). Testlar
+-- real muhitdagidek bo'lishi uchun shu yerda ham.
+alter default privileges in schema public grant all on tables to anon, authenticated, service_role;
+alter default privileges in schema public grant all on functions to anon, authenticated, service_role;
