@@ -70,6 +70,12 @@
         android:name="com.dadaxon.aienglishacademy.ui.DialoguesFragment"
         android:label="@string/dlg_title" />
 
+    <!-- Hamjamiyat tekshiruvi (veb `/community`). -->
+    <fragment
+        android:id="@+id/communityFragment"
+        android:name="com.dadaxon.aienglishacademy.ui.CommunityFragment"
+        android:label="@string/com_title" />
+
     <fragment
         android:id="@+id/vocabReviewFragment"
         android:name="com.dadaxon.aienglishacademy.ui.VocabReviewFragment"

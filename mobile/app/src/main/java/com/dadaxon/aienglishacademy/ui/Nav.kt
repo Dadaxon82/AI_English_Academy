@@ -55,6 +55,7 @@ object Nav {
         R.id.vocabReviewFragment,
         R.id.quickSessionFragment,
         R.id.dialoguesFragment,
+        R.id.communityFragment,
         R.id.grammarTopicFragment,
         R.id.readingFragment,
         R.id.listeningFragment,

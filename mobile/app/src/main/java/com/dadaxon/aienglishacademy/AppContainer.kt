@@ -36,6 +36,11 @@ class AppContainer(ctx: Context) {
 
     val local: LocalStore by lazy { LocalStore(keyValue) }
 
+    /** Hamjamiyat tekshiruvi (3-bosqich) — Supabase + sessiya. */
+    val peer: com.dadaxon.aienglishacademy.data.PeerRepository by lazy {
+        com.dadaxon.aienglishacademy.data.PeerRepository(supabase, auth)
+    }
+
     val network: NetworkMonitor by lazy { NetworkMonitor(appCtx) }
 
     val protocol: SyncProtocol by lazy { SyncProtocol(local) }

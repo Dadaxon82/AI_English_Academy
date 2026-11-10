@@ -159,4 +159,47 @@
     <string name="review_none">Hozircha takrorlanadigan narsa yo‘q</string>
     <string name="review_body">Tuzatilmagan xatolar va takrorlash vaqti kelgan so‘zlar bitta navbatda (ko‘pi bilan %1$d ta). So‘z bilan bog‘liq xato ikki marta sanalmaydi: bitta javob ham xatoni, ham so‘z takrorini yangilaydi.</string>
     <string name="review_start">Takrorlashni boshlash</string>
+    <!-- Hamjamiyat tekshiruvi, «Men qila olaman» dalili va guvohnoma (3-bosqich) —
+         veb `Community.tsx`, `SelfAssessment.tsx`, `CertificateCard.tsx` bilan bir xil. -->
+    <string name="com_title">Hamjamiyat tekshiruvi</string>
+    <string name="com_intro">Yozma javobingizni yoki nutqingiz matnini boshqa o‘quvchiga yuboring — u baho (1–5) va izoh yozadi. Siz ham boshqalarni tekshirasiz: server sizga bittasini tayinlaydi. Ismingiz ko‘rsatilmaydi, audio hech qachon yuborilmaydi.</string>
+    <string name="com_checking">Tekshirilmoqda…</string>
+    <string name="com_send_title">Javobimni tekshiruvga yuborish</string>
+    <string name="com_send_empty">Yuboriladigan javob yo‘q — avval Yozish yoki Gapirish topshirig‘ini bajaring.</string>
+    <string name="com_consent">Roziman: tanlagan matnim (ismimsiz) boshqa o‘quvchiga ko‘rsatiladi. Shaxsiy ma’lumot yozmaganman. Kuniga ko‘pi bilan %1$d ta.</string>
+    <string name="com_send">Yuborish</string>
+    <string name="com_sent">Yuborilgan</string>
+    <string name="com_sent_ok">Javob tekshiruvga yuborildi. Izohlar kelganda «Mening javoblarim»da ko‘rinadi.</string>
+    <string name="com_kind_writing">Yozish</string>
+    <string name="com_kind_speaking">Gapirish (matn)</string>
+    <string name="com_mine_title">Mening javoblarim</string>
+    <string name="com_mine_empty">Hali javob yubormagansiz.</string>
+    <string name="com_hidden">Shikoyatlar sababli yashirildi</string>
+    <string name="com_reviews">%1$d/%2$d izoh</string>
+    <string name="com_report">Shikoyat qilish</string>
+    <string name="com_report_ok">Shikoyat qabul qilindi.</string>
+    <string name="com_delete">O‘chirish</string>
+    <string name="com_deleted">Javob o‘chirildi.</string>
+    <string name="com_review_title">Boshqalarni tekshirish</string>
+    <string name="com_claim">Tekshirish uchun javob olish</string>
+    <string name="com_review_none">Hozircha tekshiriladigan javob yo‘q — keyinroq qayta urinib ko‘ring.</string>
+    <string name="com_comment_hint">Izoh (kamida %1$d belgi): nimasi yaxshi, qaysi xatoni qanday tuzatish kerak?</string>
+    <string name="com_review_send">Izohni yuborish</string>
+    <string name="com_review_ok">Rahmat! Izohingiz muallifga yetkaziladi.</string>
+    <string name="com_dash_body">Javobingizni boshqa o‘quvchi tekshiradi, siz ham boshqalarni tekshirasiz.</string>
+    <string name="cando_none">Dalil yo‘q — %1$s %2$s mashqlari natijasi hali yo‘q.</string>
+    <string name="cando_few">Dalil yetarli emas: %1$d ta natija (%2$d%%) — yana %3$d ta kerak.</string>
+    <string name="cando_practice">Hali mashq kerak: %1$d ta natija, %2$d%%.</string>
+    <string name="cando_confirmed">Natija bilan tasdiqlandi: %1$d ta natija, %2$d%%.</string>
+    <string name="cert_title">Yakunlash guvohnomasi</string>
+    <string name="cert_disclaimer">Bu rasmiy sertifikat emas: AI English Academy platformasidagi mashq natijalari asosida avtomatik yaratilgan yakunlash guvohnomasi.</string>
+    <string name="cert_stats">%1$d/%2$d kun · %3$d ta mashq · %4$s · %5$d ta so‘z · «Men qila olaman»: %6$d/%7$d</string>
+    <string name="cert_locked">Guvohnoma %1$s darajasining barcha %2$d kuni O‘quv yo‘lida yakunlangach ochiladi (yana %3$d kun).</string>
+    <string name="cert_make">Guvohnomani yaratish</string>
+    <string name="cert_save">Rasmlarga saqlash</string>
+    <string name="cert_saved">Guvohnoma «Rasmlar» papkasiga saqlandi.</string>
+    <string name="cert_save_old">Saqlash Android 10 va yangisida ishlaydi — rasmni ekran surati bilan saqlang.</string>
+    <string name="cert_save_fail">Rasmni saqlab bo‘lmadi.</string>
+    <string name="cert_no_accuracy">aniqlik —</string>
+    <string name="cert_accuracy">aniqlik %1$d%%</string>
 </resources>
