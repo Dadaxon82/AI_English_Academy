@@ -11,6 +11,7 @@ import { StoreProvider } from '../lib/store'
 import { useStore } from '../lib/storeContext'
 import Dialogues from '../pages/Dialogues'
 import ErrorLog from '../pages/ErrorLog'
+import { lessonShortExercises } from '../content/shorts'
 
 const [wordA, wordB] = getBundle('A1').vocab
 
@@ -108,6 +109,15 @@ describe('Suhbatlar sahifasi', () => {
       next()
       await advance(0)
     }
+    // Video shortlar (2 ta): to'g'ri javob — `lessonShortExercises` dagi variant.
+    for (const ex of lessonShortExercises(d)) {
+      expect(screen.getByRole('figure', { name: /Video short/ })).toBeTruthy()
+      pick(ex.options[ex.answerIndex]!)
+      check()
+      await advance(0)
+      next()
+      await advance(0)
+    }
     // «Nega shunday?» izohi — xatoni qayta urinishdan OLDIN (qoidani o'qib, keyin tuzatadi).
     expect(screen.getByRole('heading', { name: `Nega şunday? ${d.note.titleUz}` })).toBeTruthy()
     fireEvent.click(screen.getByRole('button', { name: 'Davom etiş' }))
@@ -119,7 +129,7 @@ describe('Suhbatlar sahifasi', () => {
     next()
     await advance(0)
     expect(screen.getByText('Dars tugadi!')).toBeTruthy()
-    expect(screen.getByTestId('attempts').textContent).toBe('4')
+    expect(screen.getByTestId('attempts').textContent).toBe('6')
     expect(screen.getByTestId('wrong').textContent).toBe('1')
     expect(JSON.parse(localStorage.getItem('aea-usage-v1')!).dialogue).toMatchObject({ started: 1, finished: 1 })
     // Ro'yxatga qaytish: oxirgi urinishlar hammasi to'g'ri → 3/3.

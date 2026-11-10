@@ -59,6 +59,11 @@
   --animate-impact: impact-ring var(--aea-pop) ease-out both;
 }
 
+/* Video short: gapirayotgan personaj (faqat motion-safe) */
+@keyframes short-talk {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.07); }
+}
 @keyframes fade-in {
   from { opacity: 0; }
   to { opacity: 1; }

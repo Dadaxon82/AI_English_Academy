@@ -130,6 +130,8 @@ export interface MultipleChoiceExercise extends ExerciseBase {
   options: string[]
   /** options ichidagi indeks */
   answerIndex: number
+  /** Video short (`shorts.ts`): bo'lsa savol ustida short pleyeri ko'rsatiladi */
+  shortId?: string
 }
 
 export interface TrueFalseNotGivenExercise extends ExerciseBase {
