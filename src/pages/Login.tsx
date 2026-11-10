@@ -4,6 +4,7 @@ import { Button, Card, Field, InfoBanner, inputCls } from '../components/ui'
 import { MascotFigure } from '../components/Mascot'
 import { CHUNKY, CHUNKY_GO } from '../components/chunky'
 import { getSupabase, localGuestId, safeErrorMessage, supabaseConfigured, type AuthState } from '../lib/supabase'
+import { NEW_PASSWORD_MIN, authRedirectUrl, validateNewPassword } from '../lib/auth'
 
 export default function Login({ onAuth, authState }: { onAuth: (s: AuthState) => void; authState: AuthState }) {
   const nav = useNavigate()
@@ -36,14 +37,16 @@ export default function Login({ onAuth, authState }: { onAuth: (s: AuthState) =>
       setErr('Email manzil notöğri körinmoqda.')
       return
     }
-    if (password.length < 6) {
-      setErr('Parol kamida 6 belgi bölişi kerak.')
+    // Kiriş — eski (6 belgili) parollar ham işlaydi; yangi hisob — kuçliroq talab.
+    const pwErr = mode === 'sign-up' ? validateNewPassword(password) : password.length < 6 ? 'Parol kamida 6 belgi bölişi kerak.' : null
+    if (pwErr) {
+      setErr(pwErr)
       return
     }
     setBusy(true)
     try {
       if (mode === 'sign-up') {
-        const { data, error } = await sb.auth.signUp({ email, password, options: { data: { display_name: name } } })
+        const { data, error } = await sb.auth.signUp({ email, password, options: { data: { display_name: name }, emailRedirectTo: authRedirectUrl() } })
         if (error) throw error
         if (!data.session) {
           setNotice('Hisob yaratildi. Emailingizdagi tasdiq havolasini oçing, söng qaytadan kiring.')
@@ -79,7 +82,7 @@ export default function Login({ onAuth, authState }: { onAuth: (s: AuthState) =>
   return (
     <div className="@container min-h-dvh grid place-items-center px-4 py-8 sm:py-12">
       <div className="w-full max-w-6xl mx-auto grid gap-8 @5xl:gap-10 @5xl:grid-cols-[minmax(0,1fr)_minmax(0,400px)] items-center">
-        <header className="grid gap-6 @xl:grid-cols-[auto_minmax(0,1fr)] items-center text-center @xl:text-left">
+        <header className="grid gap-6 @xl:grid-cols-[auto_minmax(0,1fr)] items-center text-center @xl:text-left w-fit max-w-full mx-auto @5xl:w-auto @5xl:mx-0">
           <MascotFigure
             maxHeight="max-h-52 @xl:max-h-72 @6xl:max-h-[22rem]"
             alt="AI English Academy qahramoni"
@@ -134,8 +137,8 @@ export default function Login({ onAuth, authState }: { onAuth: (s: AuthState) =>
               <Field label="Email" htmlFor="login-email">
                 <input id="login-email" ref={emailRef} className={inputCls} type="email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" required placeholder="siz@example.com" />
               </Field>
-              <Field label="Parol" htmlFor="login-pass" hint="Kamida 6 belgi">
-                <input id="login-pass" className={inputCls} type="password" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete={mode === 'sign-in' ? 'current-password' : 'new-password'} required minLength={6} />
+              <Field label="Parol" htmlFor="login-pass" hint={mode === 'sign-up' ? `Kamida ${NEW_PASSWORD_MIN} belgi, harf va raqam bilan` : undefined}>
+                <input id="login-pass" className={inputCls} type="password" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete={mode === 'sign-in' ? 'current-password' : 'new-password'} required minLength={mode === 'sign-up' ? NEW_PASSWORD_MIN : 6} />
               </Field>
 
               {err && <InfoBanner tone="warn">{err}</InfoBanner>}

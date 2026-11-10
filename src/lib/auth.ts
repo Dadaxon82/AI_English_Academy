@@ -17,3 +17,18 @@ export async function signOutCurrent(userId: string) {
     /* kesh o'chirilmasa ham xavfsizlik RLS'da — davom etamiz */
   }
 }
+
+/** Yangi parol talabi — Supabase Auth sozlamasi bilan bir xil (min 8, harf + raqam). */
+export const NEW_PASSWORD_MIN = 8
+
+/** Ro'yxatdan o'tishdagi parol: xato bo'lsa o'zbekcha sabab, aks holda null. */
+export function validateNewPassword(pw: string): string | null {
+  if (pw.length < NEW_PASSWORD_MIN) return `Parol kamida ${NEW_PASSWORD_MIN} belgi bölişi kerak.`
+  if (!/[A-Za-z]/.test(pw) || !/[0-9]/.test(pw)) return 'Parolda kamida bitta harf va bitta raqam bölsin.'
+  return null
+}
+
+/** Email tasdiq havolasi qaytadigan manzil (saytning öz bazasi; localhost emas). */
+export function authRedirectUrl(): string {
+  return new URL(import.meta.env.BASE_URL || '/', window.location.origin).toString()
+}

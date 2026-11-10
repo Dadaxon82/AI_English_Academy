@@ -35,19 +35,29 @@ android {
         buildConfigField "boolean", "AI_ENABLED", "false"
     }
 
+    // Release imzosi — MAXFIY: kalit va parollar repoda saqlanmaydi.
+    // Manba: mobile/keystore.properties (gitignore'da) yoki muhit o'zgaruvchilari
+    // AEA_KEYSTORE_FILE / AEA_KEYSTORE_PASSWORD / AEA_KEY_ALIAS / AEA_KEY_PASSWORD.
+    // Ikkalasi ham yo'q bo'lsa — release APK imzosiz yig'iladi (o'rnatib bo'lmaydi).
+    def ksProps = new Properties()
+    def ksFile = rootProject.file('keystore.properties')
+    if (ksFile.exists()) ksFile.withInputStream { ksProps.load(it) }
+    def ksPath = ksProps.getProperty('storeFile') ?: System.getenv('AEA_KEYSTORE_FILE')
     signingConfigs {
         release {
-            storeFile file('../keystores/aea-release.jks')
-            storePassword 'aienglishacademy'
-            keyAlias 'aea'
-            keyPassword 'aienglishacademy'
+            if (ksPath) {
+                storeFile rootProject.file(ksPath)
+                storePassword ksProps.getProperty('storePassword') ?: System.getenv('AEA_KEYSTORE_PASSWORD')
+                keyAlias ksProps.getProperty('keyAlias') ?: System.getenv('AEA_KEY_ALIAS')
+                keyPassword ksProps.getProperty('keyPassword') ?: System.getenv('AEA_KEY_PASSWORD')
+            }
         }
     }
 
     buildTypes {
         release {
             minifyEnabled false
-            signingConfig signingConfigs.release
+            if (ksPath) signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }

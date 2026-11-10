@@ -2,6 +2,22 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
+import type { Plugin } from 'vite'
+import { cspContent } from './src/lib/csp'
+
+function securityMeta(): Plugin {
+  return {
+    name: 'aea-security-meta',
+    apply: 'build',
+    transformIndexHtml(html) {
+      const csp = cspContent(process.env.VITE_SUPABASE_URL)
+      return html.replace(
+        '<head>',
+        `<head>\n    <meta http-equiv="Content-Security-Policy" content="${csp}" />\n    <meta name="referrer" content="strict-origin-when-cross-origin" />`,
+      )
+    },
+  }
+}
 
 // GitHub project page `/AI_English_Academy/` ostida turadi. Barcha resurs
 // yo'llari shu bazaga nisbatan chiqarilishi kerak — aks holda brauzer
@@ -16,6 +32,7 @@ process.env.VITE_SITE_URL ??= `https://dadaxon82.github.io${APP_BASE}`
 export default defineConfig({
   base: APP_BASE,
   plugins: [
+    securityMeta(),
     react(),
     tailwindcss(),
     VitePWA({
