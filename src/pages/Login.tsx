@@ -82,7 +82,7 @@ export default function Login({ onAuth, authState }: { onAuth: (s: AuthState) =>
   return (
     <div className="@container min-h-dvh grid place-items-center px-4 py-8 sm:py-12">
       <div className="w-full max-w-6xl mx-auto grid gap-8 @5xl:gap-10 @5xl:grid-cols-[minmax(0,1fr)_minmax(0,400px)] items-center">
-        <header className="grid gap-6 @xl:grid-cols-[auto_minmax(0,1fr)] items-center text-center @xl:text-left">
+        <header className="grid gap-6 @xl:grid-cols-[auto_minmax(0,1fr)] items-center text-center @xl:text-left w-fit max-w-full mx-auto @5xl:w-auto @5xl:mx-0">
           <MascotFigure
             maxHeight="max-h-52 @xl:max-h-72 @6xl:max-h-[22rem]"
             alt="AI English Academy qahramoni"

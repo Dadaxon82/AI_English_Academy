@@ -530,8 +530,11 @@ export default function Dashboard() {
       </Card>
         </div>
 
-        {/* ---------- O'ng panel: Liga / Questlar / Streak-Gem-Qalqon / Kunlik maqsad ---------- */}
-        <LeaguePanel />
+        {/* ---------- O'ng panel: Liga / Questlar / Streak-Gem-Qalqon / Kunlik maqsad ----------
+            Katta ekranda yopishqoq: chap ustun uzun — panel ostida bo'shliq qolmaydi. */}
+        <div className="lg:sticky lg:top-20">
+          <LeaguePanel />
+        </div>
       </div>
     </div>
   )
