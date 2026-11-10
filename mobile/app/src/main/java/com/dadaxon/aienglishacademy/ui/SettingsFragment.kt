@@ -237,6 +237,23 @@ class SettingsFragment : Fragment() {
             b.rows.addView(Rows.small(ctx, getString(R.string.settings_motion_scale_off)))
         }
 
+        /* ---- Immersion (qurilma sozlamasi) — veb Sozlamalar «Immersion rejimi» ---- */
+        b.rows.addView(Rows.sectionTitle(ctx, getString(R.string.imm_title)))
+        val imm = DevicePrefs.immersion(ctx)
+        b.rows.addView(
+            Rows.row(
+                ctx,
+                getString(if (imm) R.string.imm_on else R.string.imm_off),
+                null,
+                null,
+                onClick = {
+                    DevicePrefs.setImmersion(ctx, !imm)
+                    render()
+                },
+            ),
+        )
+        b.rows.addView(Rows.small(ctx, getString(R.string.imm_hint)))
+
         /* ---- hisob ---- */
         b.rows.addView(Rows.sectionTitle(ctx, getString(R.string.settings_account_title)))
         val session: Session? = runCatching { c.auth.session() }.getOrNull()

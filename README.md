@@ -21,7 +21,7 @@ Loyiha talabnomasi (`AI English Academy_v2.docx`) to'liq bajarilgan:
 - ✅ **Jonli taymer** — sahifa yangilansa ham vaqt yo'qolmaydi (IndexedDB'da saqlanadi)
 - ✅ **Offline / PWA**: sync navbati, Service Worker; logout'da avval sinxronlanadi (yuborilmagan narsa qolsa tasdiq so'raladi), so'ng kesh tozalanadi
 - ✅ **Mobil ilova**: Dashboard yuqorisidagi blok PWA'ni bosh ekranga o'rnatadi (Android/kompyuter — "Ilovani o'rnatish" tugmasi, iPhone — yo'riqnoma); APK fayl shart emas
-- ✅ **Native Android ilovasi** (`mobile/` — Kotlin + XML Views, `com.dadaxon.aienglishacademy`): bitta baza va bitta auth, **397 unit test**, qahramon har ekranda; DULO_mod.apk dan o'lchangan **darslar ketma-ketligi va harakat byudjeti** ikkala platformada — quyida 5b-bo'lim va
+- ✅ **Native Android ilovasi** (`mobile/` — Kotlin + XML Views, `com.dadaxon.aienglishacademy`): bitta baza va bitta auth, **422 unit test**, qahramon har ekranda; DULO_mod.apk dan o'lchangan **darslar ketma-ketligi va harakat byudjeti** ikkala platformada — quyida 5b-bo'lim va
 `mobile/MOBIL_ARXITEKTURA.md` 8-bo'limi
 - ✅ **Server bilan ikki tomonlama**: hisobga kirganda progress serverdan tiklanadi va qurilmadagisi bilan birlashtiriladi
 - ✅ **Baza eski sxemada ham sinxron islaydi** (2026-11-08): `0003/0004` migratsiyalari qo'llanmagan bazada sozlamalar
@@ -845,6 +845,35 @@ yig'ish alohida rozilik va maxfiylik siyosatini talab qiladi.
 
 **Testlar:** `usage.test.tsx` (hisob, foiz, buzilgan saqlov, karta va tozalash) hamda sahifa
 testlarida haqiqiy hodisa: «5 daqiqa» va Suhbat darsi tugaganda `finished` oshadi.
+
+## 5p. Mobil ilova: 2–6-bosqichlar pariteti (2026-11-10, 1.5.0 / versionCode 6)
+
+Vebdagi 2–6-bosqichlar Android ilovaga ko'chirildi. Qoidalar veb bilan bir xil, domen mantiqi
+Kotlin'ga satrma-satr ko'chirilgan va testlar ham vebdagi holatlarni takrorlaydi.
+
+| Bosqich | Mobil fayllar |
+|---|---|
+| 2. Suhbatlar + Takrorlash menejeri | `domain/Dialogues.kt`, `domain/ReviewManager.kt`, `ui/DialoguesFragment.kt`, `ErrorLogFragment` (menejer), `assets/content/dialogues.json` (eksport: veb `dialogues.ts` — bitta manba) |
+| 3. «Men qila olaman» dalili, hamjamiyat, guvohnoma | `domain/CanDoEvidence.kt`, `domain/Peer.kt`, `data/PeerRepository.kt` (`SupabaseClient.insert/rpc`), `ui/CommunityFragment.kt`, `domain/Certificate.kt`, `ui/CertificateDrawer.kt` (Progress) |
+| 4. AI suhbatdosh | `domain/Roleplay.kt`, `data/RoleplayClient.kt`, `ui/ConversationFragment.kt` (`BuildConfig.AI_ENABLED=false` — veb deploy bilan bir xil) |
+| 5. Talaffuz + Immersion | `domain/Pronunciation.kt`, `ui/PronunciationFragment.kt`, `ui/DevicePrefs.kt` (Sozlamalar; lug'at ro'yxati, flashcard, «5 daqiqa», Talaffuz) |
+| 6. Foydalanish o'lchovi | `domain/Usage.kt`, `ui/UsageTracker.kt` (faqat qurilmada), Progress jadvali |
+
+Kirish nuqtalari Dashboard'da: Suhbatlar, Hamjamiyat, Suhbatdosh, Talaffuz.
+
+**Paritet kafolatlari (testlar):**
+- `DialoguesParityTest`: 42 ta `dlg-` mashq veb eksporti bilan maydonma-maydon bir xil.
+- `RoleplayTest`: `rpfix-` id'si veb `roleplayFixId` bilan baytma-bayt bir xil (pin qiymatlar).
+- `PeerAndCertificateTest`: hamjamiyat chegaralari veb `peer.ts` faylidan o'qib solishtiriladi;
+  soxta HTTP transport bilan so'rov shakli (muallif id'si yuborilmaydi, JWT bor) tekshiriladi.
+- `PronunciationTest`: A1 bo'yicha 43 ta gap, xuddi vebdagi kabi.
+
+**Yo'l-yo'lakay tuzatilgan:** mobil mashq pleyerida id'dan tiklangan lug'at savoli bitta variantga
+ega edi (xatolar o'yinlarida ham). Endi havuzdan 3 ta boshqa tarjima barqaror tasodifiy usulda
+qo'shiladi (seed — mashq id'si).
+
+**Tekshiruv:** `testDebugUnitTest` **422/422**, `assembleDebug` va imzolangan `assembleRelease` o'tdi.
+Qurilmada sinalmagan: bu muhitda KVM yo'q, shuning uchun emulyator ishga tushirilmadi.
 
 ## 6. Arxitektura qisqacha
 

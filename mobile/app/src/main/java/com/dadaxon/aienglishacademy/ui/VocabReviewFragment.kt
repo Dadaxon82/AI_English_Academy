@@ -59,6 +59,8 @@ class VocabReviewFragment : Fragment() {
     /** Interfeys holati: navbatdagi o'rin, kartaning burilishi, sessiya hisobi. */
     private var pos = 0
     private var flipped = false
+    /** Immersion rejimida joriy kartaning tarjimasi ochildimi. */
+    private var revealUz = false
     private var graded = 0
     private var known = 0
 
@@ -206,10 +208,14 @@ class VocabReviewFragment : Fragment() {
         b.vrIndex.text = getString(R.string.ex_index, pos + 1, queue.size)
         b.vrWord.text = v.word
         b.vrIpa.text = v.ipa?.takeIf { it.isNotBlank() }?.let { getString(R.string.vocab_ipa, it) } ?: ""
-        b.vrTranslation.text = v.translationUz
+        // Immersion: tarjima (va o'zbekcha misol) yashirin — inglizcha izoh qoladi; bosilsa ochiladi.
+        val hideUz = DevicePrefs.immersion(ctx) && !revealUz
+        b.vrTranslation.text = if (hideUz) getString(R.string.imm_reveal) else v.translationUz
+        b.vrTranslation.isClickable = hideUz
+        b.vrTranslation.setOnClickListener(if (hideUz) View.OnClickListener { revealUz = true; render(container().store.state.value) } else null)
         b.vrExplanation.text = v.explanationEn
         b.vrExample.text = v.exampleEn.takeIf { it.isNotBlank() }?.let { getString(R.string.vocab_example, it) } ?: ""
-        b.vrExampleUz.text = v.exampleUz.takeIf { it.isNotBlank() }?.let { getString(R.string.vocab_example_uz, it) } ?: ""
+        b.vrExampleUz.text = if (hideUz) "" else v.exampleUz.takeIf { it.isNotBlank() }?.let { getString(R.string.vocab_example_uz, it) } ?: ""
         b.vrMeta.text = srsLine(ctx, state, v)
 
         // Burilmaganda javob yashirinadi va baholash so'ralmaydi (veb xulqi).
@@ -300,11 +306,13 @@ class VocabReviewFragment : Fragment() {
             },
         )
         flipped = false
+        revealUz = false
         render(container().store.state.value)
     }
 
     private fun advance() {
         if (queue.isEmpty()) return
+        revealUz = false
         pos = (pos + 1).coerceAtMost(queue.size)
         flipped = false
         b.vrNextReview.text = ""

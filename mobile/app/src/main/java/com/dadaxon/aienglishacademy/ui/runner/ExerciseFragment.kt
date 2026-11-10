@@ -1,5 +1,6 @@
 package com.dadaxon.aienglishacademy.ui.runner
 
+import com.dadaxon.aienglishacademy.ui.UsageTracker
 import com.dadaxon.aienglishacademy.data.VOCAB_QUIZ_PREFIX
 import com.dadaxon.aienglishacademy.domain.SrsGrade
 import com.dadaxon.aienglishacademy.domain.vocabIdOfExercise
@@ -956,6 +957,11 @@ class ExerciseFragment : Fragment() {
         val total = results.size
         val correct = results.count { it.correct }
         val percent = if (total == 0) 0 else correct * 100 / total
+        // Foydalanish o'lchovi (faqat qurilmada): suhbat darsi / Takrorlash menejeri oxirigacha yetdi.
+        when {
+            contentId?.startsWith("dialogue:") == true -> UsageTracker.track(requireContext(), "dialogue", started = false)
+            contentId == "review" -> UsageTracker.track(requireContext(), "review", started = false)
+        }
         val head = getString(R.string.ex_result_summary, correct, total, percent)
         b.summaryText.text = if (missingCount > 0) {
             "$head · $missingCount ${getString(R.string.content_empty)}"

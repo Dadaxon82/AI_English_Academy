@@ -150,6 +150,7 @@ class ErrorLogFragment : Fragment() {
             Rows.primaryButton(ctx, getString(R.string.review_start)).apply {
                 isEnabled = plan.exerciseIds.isNotEmpty()
                 setOnClickListener {
+                    UsageTracker.track(requireContext(), "review", started = true)
                     Nav.openExercises(
                         this@ErrorLogFragment, plan.exerciseIds, contentId = "review", dayId = null,
                         source = Source.PRACTICE, title = getString(R.string.review_title), reorder = false, gradeVocab = true,

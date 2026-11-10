@@ -170,6 +170,9 @@ class ProgressFragment : Fragment() {
         /* ---- daraja yakunlash guvohnomasi (rasmiy emas) — veb `CertificateCard.tsx` ---- */
         addCertificate(d)
 
+        /* ---- yangi funksiyalardan foydalanish (faqat qurilmada) — veb `UsageCard.tsx` ---- */
+        addUsage()
+
         /* ---- so'zlar statistikasi ---- */
         val srs = d.srs.values.toList()
         b.rows.addView(Rows.sectionTitle(ctx, getString(R.string.progress_words_title)))
@@ -284,6 +287,28 @@ class ProgressFragment : Fragment() {
         }
     }
 
+    private fun addUsage() {
+        val ctx = requireContext()
+        val stats = UsageTracker.stats(ctx)
+        b.rows.addView(Rows.sectionTitle(ctx, getString(R.string.usage_title)))
+        b.rows.addView(Rows.small(ctx, getString(R.string.usage_hint)))
+        for (f in com.dadaxon.aienglishacademy.domain.USAGE_FEATURES) {
+            val s = stats[f.id]
+            val pct = com.dadaxon.aienglishacademy.domain.completionPct(s)
+            b.rows.addView(
+                Rows.row(
+                    ctx,
+                    f.titleUz,
+                    getString(R.string.usage_row, s?.started ?: 0, s?.finished ?: 0, f.finishedUz),
+                    pct?.let { "$it%" } ?: "—",
+                ),
+            )
+        }
+        if (stats.isNotEmpty()) {
+            b.rows.addView(Rows.button(ctx, getString(R.string.usage_clear)).apply { setOnClickListener { UsageTracker.clear(ctx); render() } })
+        }
+    }
+
     /** Mock imtihon id'si → daraja (kontentdagi `mockExam.id`). */
     private fun examLevel(examId: String): String? {
         val cr = container().content
@@ -324,7 +349,9 @@ class ProgressFragment : Fragment() {
                 setOnClickListener {
                     val name = d.profileName.ifBlank { "O‘quvchi" }
                     val date = java.text.SimpleDateFormat("dd.MM.yyyy", java.util.Locale.getDefault()).format(java.util.Date())
+                    UsageTracker.track(ctx, "certificate", started = true)
                     certBitmap = CertificateDrawer.draw(info, name, date, getString(R.string.cert_disclaimer), acc)
+                    UsageTracker.track(ctx, "certificate", started = false)
                     image.setImageBitmap(certBitmap)
                     image.visibility = View.VISIBLE
                     save.visibility = View.VISIBLE

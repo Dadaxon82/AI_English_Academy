@@ -231,4 +231,30 @@
     <string name="conv_words_none">Bu so‘zlar lug‘atimizda yo‘q — takrorlash jadvaliga qo‘shilmaydi.</string>
     <string name="conv_again">Qaytadan</string>
     <string name="conv_dash_body">Kafe, vokzal, shifokor — hamsuhbat bilan gaplashing.</string>
+    <!-- Talaffuz mashqi, Immersion (5-bosqich) va foydalanish o'lchovi (6-bosqich) —
+         veb `Pronunciation.tsx`, Sozlamalar, `UsageCard.tsx` bilan bir xil. -->
+    <string name="pron_title">Talaffuz mashqi</string>
+    <string name="pron_intro">Gapni tinglang, so‘ng ovoz chiqarib ayting. Tanilgan so‘zlar namuna bilan solishtiriladi: yashil — to‘g‘ri tanildi, qizil — tanilmadi. Bu taxminiy moslik, rasmiy talaffuz bahosi emas. Audio hech qayerga yuborilmaydi.</string>
+    <string name="pron_tally">Bu sessiyada %1$d urinish · o‘rtacha %2$d%%</string>
+    <string name="pron_listen">Namunani tinglash</string>
+    <string name="pron_say">🎤 Aytish</string>
+    <string name="pron_say_again">🎤 Qayta aytish</string>
+    <string name="pron_prev">← Oldingi</string>
+    <string name="pron_next">Keyingi →</string>
+    <string name="pron_unsupported">Bu qurilmada nutqni tanish vositasi yo‘q — tinglash baribir ishlaydi.</string>
+    <string name="pron_score">Taxminiy moslik: %1$d%%</string>
+    <string name="pron_confidence">tizim ishonchi %1$d%%</string>
+    <string name="pron_heard">Tizim tanigani: “%1$s”</string>
+    <string name="pron_extra">Namunada yo‘q so‘zlar: %1$s</string>
+    <string name="pron_tip">Qizil so‘zni avval tinglang, keyin sekinroq va aniqroq ayting. Shovqinli joyda tizim so‘zni noto‘g‘ri tanishi mumkin.</string>
+    <string name="pron_dash_body">Gapni tinglang, ayting — so‘zma-so‘z solishtiriladi.</string>
+    <string name="imm_title">Immersion rejimi</string>
+    <string name="imm_on">Yoqilgan — o‘zbekcha tarjimalar yashirin (bosib o‘chirish)</string>
+    <string name="imm_off">O‘chiq — o‘zbekcha tarjimalar ko‘rinadi (bosib yoqish)</string>
+    <string name="imm_hint">Lug‘at kartalari, «5 daqiqa» va Talaffuz mashqida tarjima yashiriladi — so‘z ma’nosi inglizcha izoh orqali; istalgan paytda «Tarjimani ko‘rsatish» bilan ochiladi. B1 dan tavsiya etiladi. Bu sozlama faqat shu qurilmada saqlanadi.</string>
+    <string name="imm_reveal">Tarjimani ko‘rsatish</string>
+    <string name="usage_title">Yangi funksiyalardan foydalanish</string>
+    <string name="usage_hint">Faqat shu qurilmada: sonlar hech qayerga yuborilmaydi va javoblaringiz saqlanmaydi — faqat necha marta boshlangan va oxirigacha yetkazilgani.</string>
+    <string name="usage_row">Boshlangan %1$d · yakunlangan %2$d (yakunlangan = %3$s)</string>
+    <string name="usage_clear">Tozalash</string>
 </resources>

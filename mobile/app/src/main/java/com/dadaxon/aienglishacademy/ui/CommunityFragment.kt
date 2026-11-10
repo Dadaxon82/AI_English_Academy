@@ -158,9 +158,11 @@ class CommunityFragment : Fragment() {
                         isEnabled = consent && !already && !busy
                         setOnClickListener {
                             busy = true
+                            UsageTracker.track(requireContext(), "community_submit", started = true)
                             render()
                             io({ container().peer.submit(cnd.kind, cnd.taskId, cnd.level, cnd.prompt, cnd.body) }) { r ->
                                 busy = false
+                                if (r is PeerResult.Ok) UsageTracker.track(requireContext(), "community_submit", started = false)
                                 message = when (r) {
                                     is PeerResult.Ok -> getString(R.string.com_sent_ok)
                                     is PeerResult.Fail -> r.reasonUz
@@ -216,6 +218,7 @@ class CommunityFragment : Fragment() {
                             busy = false
                             when (r) {
                                 is PeerResult.Ok -> {
+                                    if (r.data != null) UsageTracker.track(requireContext(), "community_review", started = true)
                                     task = r.data
                                     taskEmpty = r.data == null
                                     score = 0
@@ -262,6 +265,7 @@ class CommunityFragment : Fragment() {
                         busy = false
                         when (r) {
                             is PeerResult.Ok -> {
+                                UsageTracker.track(requireContext(), "community_review", started = false)
                                 message = getString(R.string.com_review_ok)
                                 task = null
                                 taskEmpty = false

@@ -172,11 +172,11 @@ Taxmin qilingan son yozma; faqat o'lchangan natija.
 | Bosqich | Veb | Mobil | README |
 |---|---|---|---|
 | 1. «5 daqiqa» tezkor sessiya (Drops) | ✅ `/quick` | ✅ `QuickSessionFragment` (1.4.0) | §5j |
-| 2. Real hayot suhbatlari + Takrorlash menejeri (Babbel) | ✅ `/dialogues`, Xatolar daftari | ⏳ | §5k |
-| 3. «Men qila olaman» dalili, hamjamiyat tekshiruvi, guvohnoma (Busuu) | ✅ Progress, `/community`, migratsiya 0006 | ⏳ | §5l |
-| 4. AI suhbatdosh (Memrise / Ling) | ✅ `/conversation`, `ai-roleplay` | ⏳ | §5m |
-| 5. Talaffuz mashqi + Immersion (Rosetta Stone) | ✅ `/pronunciation`, Sozlamalar | ⏳ | §5n |
-| 6. Foydalanish o'lchovi | ✅ Progress | ⏳ | §5o |
+| 2. Real hayot suhbatlari + Takrorlash menejeri (Babbel) | ✅ `/dialogues`, Xatolar daftari | ✅ `DialoguesFragment`, ErrorLog | §5k, §5p |
+| 3. «Men qila olaman» dalili, hamjamiyat tekshiruvi, guvohnoma (Busuu) | ✅ Progress, `/community`, migratsiya 0006 | ✅ Progress, `CommunityFragment` | §5l, §5p |
+| 4. AI suhbatdosh (Memrise / Ling) | ✅ `/conversation`, `ai-roleplay` | ✅ `ConversationFragment` | §5m, §5p |
+| 5. Talaffuz mashqi + Immersion (Rosetta Stone) | ✅ `/pronunciation`, Sozlamalar | ✅ `PronunciationFragment`, Sozlamalar | §5n, §5p |
+| 6. Foydalanish o'lchovi | ✅ Progress | ✅ Progress | §5o, §5p |
 
 Rejadan ongli ravishda chetga chiqilgan joylar (sabablari README'da):
 - Ona tili egasining real audio yoki video klipi yo'q, chunki litsenziyasi aniq yozuv yo'q.

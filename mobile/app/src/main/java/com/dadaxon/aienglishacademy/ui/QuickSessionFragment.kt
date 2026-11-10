@@ -66,6 +66,8 @@ class QuickSessionFragment : Fragment() {
     private var queue: MutableList<QuickSession.Card>? = null
     private var pos = 0
     private var flipped = false
+    /** Immersion rejimida joriy kartaning tarjimasi ochildimi. */
+    private var revealUz = false
     private var startedHere = false
     private val log = ArrayList<LogEntry>()
 
@@ -147,7 +149,20 @@ class QuickSessionFragment : Fragment() {
 
     /* ------------------------------ amallar ----------------------------- */
 
+    /** Foydalanish o'lchovi: sessiya tabiiy yakunlandi (bir marta). */
+    private var doneTracked = false
+
+    private fun trackDone() {
+        if (doneTracked || !startedHere) return
+        doneTracked = true
+        UsageTracker.track(requireContext(), "quick", started = false)
+    }
+
     private fun begin(fresh: Boolean) {
+        if (fresh) {
+            doneTracked = false
+            UsageTracker.track(requireContext(), "quick", started = true)
+        }
         val store = container().store
         queue = deckNow(store.state.value).cards.toMutableList()
         pos = 0
@@ -172,6 +187,7 @@ class QuickSessionFragment : Fragment() {
         if (g == SrsGrade.AGAIN) q.add(QuickSession.Card(card.item, false))
         pos += 1
         flipped = false
+        revealUz = false
         b.shellMascot.setMood(if (g == SrsGrade.GOOD) MascotView.Mood.HAPPY else MascotView.Mood.NEUTRAL)
         if (g == SrsGrade.GOOD) Motion.pop(b.shellMascot)
         // Dispatch oxirida: store yangi holatni chiqaradi va ekran qayta chiziladi.
@@ -244,7 +260,7 @@ class QuickSessionFragment : Fragment() {
         val card = q.getOrNull(pos)
         // Vaqt yoki kartalar tugadi — taymer to'xtatiladi (natija keyingi render'da).
         if (card == null || left <= 0) {
-            b.root.post { stop() }
+            b.root.post { trackDone(); stop() }
             return
         }
         val isRunning = running(s)
@@ -307,7 +323,8 @@ class QuickSessionFragment : Fragment() {
         box.addView(centered(ctx, card.item.word, R.style.Text_Aea_Number))
         card.item.ipa?.takeIf { it.isNotBlank() }?.let { box.addView(centered(ctx, it, R.style.Text_Aea_Small)) }
         if (flipped) {
-            box.addView(centered(ctx, card.item.translationUz, R.style.Text_Aea_Section))
+            if (DevicePrefs.immersion(ctx) && !revealUz) box.addView(centered(ctx, card.item.explanationEn, R.style.Text_Aea_Small))
+            else box.addView(centered(ctx, card.item.translationUz, R.style.Text_Aea_Section))
             card.item.exampleEn.takeIf { it.isNotBlank() }?.let {
                 box.addView(centered(ctx, getString(R.string.vocab_example, it), R.style.Text_Aea_Small))
             }
@@ -325,6 +342,16 @@ class QuickSessionFragment : Fragment() {
         b.rows.addView(cardView)
         Motion.stepIn(cardView)
 
+        if (flipped && DevicePrefs.immersion(ctx) && !revealUz) {
+            b.rows.addView(
+                Rows.button(ctx, getString(R.string.imm_reveal)).apply {
+                    setOnClickListener {
+                        revealUz = true
+                        render(container().store.state.value)
+                    }
+                },
+            )
+        }
         b.rows.addView(Rows.small(ctx, getString(R.string.quick_swipe_hint)))
         b.rows.addView(
             Rows.button(ctx, getString(R.string.vocab_speak)).apply {
@@ -405,6 +432,7 @@ class QuickSessionFragment : Fragment() {
                 progress?.progress = QuickSession.SESSION_SEC - left
                 if (left <= 0) {
                     cancel()
+                    trackDone()
                     stop()
                 }
             }

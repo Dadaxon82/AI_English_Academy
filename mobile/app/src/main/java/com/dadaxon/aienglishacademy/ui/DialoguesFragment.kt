@@ -148,6 +148,7 @@ class DialoguesFragment : Fragment() {
             Rows.primaryButton(ctx, getString(R.string.dlg_start, ids.size)).apply {
                 isEnabled = ids.isNotEmpty()
                 setOnClickListener {
+                    UsageTracker.track(requireContext(), "dialogue", started = true)
                     // Tartib saqlanadi (suhbat ketma-ketligi), qayta tartiblanmaydi.
                     Nav.openExercises(this@DialoguesFragment, ids, contentId = "dialogue:${d.id}", dayId = null, source = Source.PRACTICE, title = d.titleUz, reorder = false)
                 }
