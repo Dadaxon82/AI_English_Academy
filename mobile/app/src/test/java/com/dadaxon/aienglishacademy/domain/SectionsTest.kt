@@ -75,7 +75,7 @@ class SectionsTest {
         val vocab = repo.bundle("A1").vocab
         assertNotNull(card.sampleEn)
         assertTrue(
-            "namuna ibora kontentda BO'LISHI kerak (ixtiro emas)",
+            "namuna ibora kontentda BÖLIŞI kerak (ixtiro emas)",
             vocab.any { it.exampleEn == card.sampleEn },
         )
         assertTrue(vocab.any { it.exampleUz == card.sampleUz })

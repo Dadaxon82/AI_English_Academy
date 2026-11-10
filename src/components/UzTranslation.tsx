@@ -21,7 +21,7 @@ export default function UzTranslation({ children, className = '' }: { children: 
         setShown(true)
       }}
     >
-      Tarjimani ko‘rsatish
+      Tarjimani körsatiş
     </button>
   )
 }

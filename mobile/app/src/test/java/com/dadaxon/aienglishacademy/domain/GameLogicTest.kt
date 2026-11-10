@@ -37,7 +37,7 @@ class GameLogicTest {
         const val MIN = 60_000L
         const val DAY_MS = 86_400_000L
 
-        /** Liga haftasi boshi — poneshanba (Node: `Date.UTC(2026,10,2)`). */
+        /** Liga haftasi boshi — dushanba (Node: `Date.UTC(2026,10,2)`). */
         const val WEEK0 = "2026-11-02"
         const val WEEK0_MS = 1_793_577_600_000L
         const val T0 = WEEK0_MS + 3_600_000L
@@ -74,7 +74,7 @@ class GameLogicTest {
     @Test
     fun fullHeartsAreLeftUntouched() {
         val g = emptyGame(DAY, T0)
-        assertSame("to'la holatda obyekt qayta tuzilmasin", g, GameLogic.refillHearts(g, T0 + 10 * DAY_MS))
+        assertSame("töla holatda obyekt qayta tuzilmasin", g, GameLogic.refillHearts(g, T0 + 10 * DAY_MS))
         assertEquals(0, GameLogic.heartMinutesLeft(g, T0))
         assertSame(g, GameLogic.refillHearts(g, T0 - 5 * MIN))
     }
@@ -83,10 +83,10 @@ class GameLogicTest {
     fun wrongAnswerCostsOneHeartAndResetsTheTimer() {
         val next = GameLogic.afterAttempt(emptyGame(DAY, T0), correct = false, source = "grammar", xp = 1, now = T0 + 10 * MIN)
         assertEquals(4, next.hearts)
-        assertEquals("jarima taymeri xatodan qayta boshlanadi", T0 + 10 * MIN, next.heartsAt)
+        assertEquals("jarima taymeri xatodan qayta boşlanadi", T0 + 10 * MIN, next.heartsAt)
         assertEquals(1, next.today.xp)
         assertEquals(1, next.today.attempts)
-        assertEquals("noto'g'ri javob combo'ni uzadi", 0, next.combo)
+        assertEquals("notöğri javob comböni uzadi", 0, next.combo)
     }
 
     @Test
@@ -106,7 +106,7 @@ class GameLogicTest {
         assertEquals(2, g.hearts)
         g = GameLogic.afterAttempt(g, true, "grammar", 8, T0 + 4000L)
         assertEquals(5, g.combo)
-        assertEquals("5 ta ketma-ket to'g'ri javob bitta yurak qaytaradi", 3, g.hearts)
+        assertEquals("5 ta ketma-ket töğri javob bitta yurak qaytaradi", 3, g.hearts)
         assertEquals("qaytilgan yurak taymerni yangilaydi", T0 + 4000L, g.heartsAt)
         // 6-chi javob yurak QAYTARMASIN (faqat har 5 tada).
         g = GameLogic.afterAttempt(g, true, "grammar", 8, T0 + 5000L)
@@ -126,7 +126,7 @@ class GameLogicTest {
         repeat(GameConfig.HEART_PRACTICE_REVIEWS - 1) { i -> g = GameLogic.afterReview(g, true, T0 + i) }
         assertEquals(GameConfig.HEART_PRACTICE_REVIEWS - 1, g.practiceReviews)
         assertEquals(0, g.hearts)
-        assertEquals("darvoza ochilishigacha qolgan takrorlar", 1, GameLogic.practiceHeartsNeeded(g))
+        assertEquals("darvoza oçilişigaça qolgan takrorlar", 1, GameLogic.practiceHeartsNeeded(g))
 
         // 8-chi takror — BITTA yurak, taymer shu zahoti, hisob qayta bo'sh.
         g = GameLogic.afterReview(g, true, T0 + 1000L)
@@ -159,7 +159,7 @@ class GameLogicTest {
 
         // Sozlamada o'chirilgan bo'lsa darvoza YO'Q (foydalanuvchi tanlovi).
         val off = data.copy(settings = data.settings.copy(heartsEnabled = false))
-        assertFalse("yuraklar o'chirilgan — darvoza yo'q", GameLogic.heartsView(off, T0).blocked)
+        assertFalse("yuraklar öçirilgan — darvoza yöq", GameLogic.heartsView(off, T0).blocked)
         assertFalse(GameLogic.heartsBlocked(off.game, off, T0))
         assertFalse(GameLogic.heartsEnabled(off))
     }
@@ -204,7 +204,7 @@ class GameLogicTest {
                 "listening" -> 200
                 else -> 60
             }
-            assertEquals("${p.quest.id} — hisob noto'g'ri manbadan olingan", want, p.value)
+            assertEquals("${p.quest.id} — hisob notöğri manbadan olingan", want, p.value)
             assertEquals(p.quest.target, p.target)
             assertEquals("bajarilgan = yetgan", want >= p.target, p.done)
             assertFalse(p.claimed)
@@ -238,7 +238,7 @@ class GameLogicTest {
         assertEquals(ids.size, once.game.questsTotal)
 
         val twice = GameLogic.settleQuests(once, T0 + 60_000L)
-        assertSame("qayta chaqiruvda gem qo'shilmasin", once, twice)
+        assertSame("qayta çaqiruvda gem qöşilmasin", once, twice)
 
         // Hech narsa yetmagan — holat O'ZGARMAYDI.
         val poor = base()
@@ -276,7 +276,7 @@ class GameLogicTest {
         assertEquals(DAY, next.questsDay)
         assertTrue(next.questsDone.isEmpty())
         assertEquals(0, next.combo)
-        assertEquals("kechagi JAMI hisob saqlanadi", 4, next.questsTotal)
+        assertEquals("keçagi JAMI hisob saqlanadi", 4, next.questsTotal)
     }
 
     /* --------------------------- Dars bonusi va haftalik sandiq --------------------------- */
@@ -285,7 +285,7 @@ class GameLogicTest {
     fun lessonBonusRequiresEnoughExercises() {
         val d = base()
         val short = GameLogic.lessonComplete(d, exercises = 2, mistakes = 0)
-        assertEquals("3 ta mashqdan kamida bonus yo'q", d, short)
+        assertEquals("3 ta maşqdan kamida bonus yöq", d, short)
         assertEquals(0, short.game.perfectLessonsTotal)
 
         val ok = GameLogic.lessonComplete(d, exercises = 3, mistakes = 1)
@@ -304,18 +304,18 @@ class GameLogicTest {
     fun weeklyChestOpensOnceWithFourActiveDays() {
         val week = GameLogic.weekStartOf(DAY)
         val d = base()
-        assertSame("faol kun yo'q — sandiq ochilmaydi", d, GameLogic.settleChest(d))
+        assertSame("faol kun yöq — sandiq oçilmaydi", d, GameLogic.settleChest(d))
 
         val three = listOf("2026-11-02", "2026-11-03", "2026-11-04").associateWith { act(it) }
         val threeData = d.copy(activity = three)
-        assertSame("uch faol kun yetmaydi", threeData, GameLogic.settleChest(threeData))
+        assertSame("uç faol kun yetmaydi", threeData, GameLogic.settleChest(threeData))
 
         val days = (0 until GameConfig.CHEST_MIN_ACTIVE_DAYS).map { GameLogic.shiftDay(week, it.toLong()) }
         val four = d.copy(activity = days.associateWith { act(it) })
         val won = GameLogic.settleChest(four)
         assertEquals(GameConfig.CHEST_GEM_REWARD, won.game.gems)
         assertEquals(listOf(week), won.game.chestsWeeks)
-        assertSame("haftalik sandiq takror ochilmaydi", won, GameLogic.settleChest(won))
+        assertSame("haftalik sandiq takror oçilmaydi", won, GameLogic.settleChest(won))
 
         // 59 sekund — faol kun HISOBLANMAYDI (veb bilan bir xil chegara).
         val weak = d.copy(activity = days.associateWith { act(it, seconds = 59) })
@@ -333,9 +333,9 @@ class GameLogicTest {
             game = emptyGame(DAY, T0).copy(freezes = 1),
             activity = listOf(DAY, "2026-11-05", "2026-11-04").associateWith { act(it) },
         )
-        assertEquals("zanjir uzilgan kun bilan to'xtaydi", 1, GameLogic.streakWithFreezes(d, DAY))
+        assertEquals("zanjir uzilgan kun bilan töxtaydi", 1, GameLogic.streakWithFreezes(d, DAY))
         val out = GameLogic.applyFreezes(d, DAY)
-        assertEquals("uzilgan kun aniq o'zi qoplanadi", listOf("2026-11-06"), out.game.frozenDays)
+        assertEquals("uzilgan kun aniq özi qoplanadi", listOf("2026-11-06"), out.game.frozenDays)
         assertEquals("qalqon ombordan sarflandi", 0, out.game.freezes)
         assertEquals("qoplangan kun zanjirni uzmaydi", 4, GameLogic.streakWithFreezes(out, DAY))
     }
@@ -351,7 +351,7 @@ class GameLogicTest {
         val out2 = GameLogic.applyFreezes(out1, DAY)
         assertEquals(listOf("2026-11-06", "2026-11-05"), out2.game.frozenDays)
         assertEquals(0, out2.game.freezes)
-        assertEquals("qoplangan ikki kun zanjirga qo'shiladi", 3, GameLogic.streakWithFreezes(out2, DAY))
+        assertEquals("qoplangan ikki kun zanjirga qöşiladi", 3, GameLogic.streakWithFreezes(out2, DAY))
         // Izlash oynasi ombordagi sondan KAT'iy bog'liq emas (veb izohi).
         assertTrue(GameConfig.FREEZE_SEARCH_DAYS > GameConfig.MAX_FREEZES)
         // Ombor bo'sh — qalqon qo'yilmaydi.
@@ -364,7 +364,7 @@ class GameLogicTest {
             game = emptyGame(DAY, T0).copy(freezes = GameConfig.MAX_FREEZES),
             activity = mapOf(DAY to act(DAY)),
         )
-        assertSame("yangi o'quvchida qalqon sarflanmaydi", d, GameLogic.applyFreezes(d, DAY))
+        assertSame("yangi öquvçida qalqon sarflanmaydi", d, GameLogic.applyFreezes(d, DAY))
         assertEquals(GameConfig.MAX_FREEZES, d.game.freezes)
     }
 
@@ -376,7 +376,7 @@ class GameLogicTest {
             activity = days.associateWith { act(it) },
         )
         assertEquals(days.size, GameLogic.streakWithFreezes(d, DAY))
-        assertSame("bo'sh kun yo'q — qalqon kerak emas", d, GameLogic.applyFreezes(d, DAY))
+        assertSame("böş kun yöq — qalqon kerak emas", d, GameLogic.applyFreezes(d, DAY))
     }
 
     @Test
@@ -388,7 +388,7 @@ class GameLogicTest {
             game = emptyGame(DAY, T0).copy(freezes = GameConfig.MAX_FREEZES),
             activity = listOf(DAY, tooFar).associateWith { act(it) },
         )
-        assertSame("uzilish Joylashuvi oyna tashqarisida — sarflanmaydi", d, GameLogic.applyFreezes(d, DAY))
+        assertSame("uziliş Joylaşuvi oyna taşqarisida — sarflanmaydi", d, GameLogic.applyFreezes(d, DAY))
         // Oyna CHERRASI: aynan `FREEZE_SEARCH_DAYS + 1` kun ortdagi faol kun topiladi.
         val edge = GameLogic.shiftDay(DAY, -(GameConfig.FREEZE_SEARCH_DAYS + 1L))
         val atEdge = d.copy(activity = listOf(DAY, edge).associateWith { act(it) })
@@ -411,7 +411,7 @@ class GameLogicTest {
         // `a-wildfire` (3, 7 → 2 daraja) + `a-scholar` (1000 → 1 daraja).
         assertEquals(3, out.badges.size)
         assertEquals(
-            "nishon id'lari daraja tartibida", listOf("a-wildfire-1", "a-wildfire-2", "a-scholar-1"),
+            "nişon id'lari daraja tartibida", listOf("a-wildfire-1", "a-wildfire-2", "a-scholar-1"),
             out.badges.map { it.id },
         )
         assertTrue(out.badges[0].titleUz.contains("1-daraja"))
@@ -428,7 +428,7 @@ class GameLogicTest {
     fun freezeRewardsAreCappedAndMilestonesAreSourced() {
         val d = base().copy(game = emptyGame(DAY, T0).copy(freezes = GameConfig.MAX_FREEZES))
         val out = GameLogic.settleAchievements(d, streakDays = 400, now = T0)
-        assertEquals("ombordagi chegaradan oshmasin", GameConfig.MAX_FREEZES, out.game.freezes)
+        assertEquals("ombordagi çegaradan oşmasin", GameConfig.MAX_FREEZES, out.game.freezes)
         // Bosqichlar Duolingo manbasidan (manifestda `freezeMilestonesSource`).
         assertEquals(mapOf(7 to 1, 30 to 1, 90 to 2, 365 to 2), GameConfig.FREEZE_MILESTONES)
         assertEquals(6, GameConfig.ACHIEVEMENTS.size)
@@ -450,11 +450,11 @@ class GameLogicTest {
         )
         assertEquals(1000, GameLogic.achievementValue(d, "xp_total", 4))
         assertEquals(4, GameLogic.achievementValue(d, "streak_days", 4))
-        assertEquals("faqat o'zlashtirilgan so'zlar sanaladi", 1, GameLogic.achievementValue(d, "words_learned", 0))
+        assertEquals("faqat özlaştirilgan sözlar sanaladi", 1, GameLogic.achievementValue(d, "words_learned", 0))
         assertEquals(5, GameLogic.achievementValue(d, "attempts_total", 0))
         assertEquals("125 sekund = 2 daqiqa", 2, GameLogic.achievementValue(d, "minutes_total", 0))
         assertEquals(3, GameLogic.achievementValue(d, "lessons_perfect", 0))
-        assertEquals("noma'lum mezon — 0 (ixtir yo'q)", 0, GameLogic.achievementValue(d, "xabada", 0))
+        assertEquals("noma'lum mezon — 0 (ixtir yöq)", 0, GameLogic.achievementValue(d, "xabada", 0))
     }
 
     @Test
@@ -470,11 +470,11 @@ class GameLogicTest {
         val views = GameLogic.achievementViews(base().copy(xp = 600), streakDays = 5)
         assertEquals(GameConfig.ACHIEVEMENT_COUNT, views.size)
         for (v in views) {
-            assertTrue("${v.spec.id} nisbat 0..1 dan chiqmasin", v.ratio in 0.0..1.0)
+            assertTrue("${v.spec.id} nisbat 0..1 dan çiqmasin", v.ratio in 0.0..1.0)
             if (v.level < v.spec.levels.size) {
                 assertEquals(v.spec.levels[v.level], v.nextTarget)
             } else {
-                assertNull("eng yuqori darajada keyingi maqsad yo'q", v.nextTarget)
+                assertNull("eng yuqori darajada keyingi maqsad yöq", v.nextTarget)
                 assertEquals(1.0, v.ratio, 0.0)
             }
         }
@@ -513,7 +513,7 @@ class GameLogicTest {
         val bad = GameLogic.buy(poor, "heart", T0)
         assertFalse(bad.ok)
         assertTrue(bad.reasonUz!!.contains("Gem yetmadi"))
-        assertSame("muvaffaqiyatsiz xaridda holat o'zgarmasin", poor, bad.data)
+        assertSame("muvaffaqiyatsiz xaridda holat özgarmasin", poor, bad.data)
 
         // Fabulka YARIM yurak bilan: `heart` sotib olinadi (to'la holat quyida).
         val rich = base().copy(game = emptyGame(DAY, T0).copy(gems = 5000, hearts = 3))
@@ -525,16 +525,16 @@ class GameLogicTest {
 
         val fullHearts = rich.copy(game = rich.game.copy(hearts = GameConfig.HEARTS_MAX))
         val full = GameLogic.buy(fullHearts, "refill", T0)
-        assertFalse("yuraklar to'la — sabab ochiq aytiladi", full.ok)
-        assertTrue(full.reasonUz!!.contains("to‘la"))
+        assertFalse("yuraklar töla — sabab oçiq aytiladi", full.ok)
+        assertTrue(full.reasonUz!!.contains("töla"))
         assertSame(full.data, fullHearts)
 
         val low = rich.copy(game = rich.game.copy(hearts = 2, heartsAt = T0 - 10 * MIN, practiceReviews = 3))
         val bought = GameLogic.buy(low, "heart", T0)
         assertTrue(bought.ok)
         assertEquals(3, bought.data.game.hearts)
-        assertEquals("sotib olingan yurak taymerni qayta boshlamasin", low.game.heartsAt, bought.data.game.heartsAt)
-        assertEquals("takrorlash hisobi ham o'zgarmasin", low.game.practiceReviews, bought.data.game.practiceReviews)
+        assertEquals("sotib olingan yurak taymerni qayta boşlamasin", low.game.heartsAt, bought.data.game.heartsAt)
+        assertEquals("takrorlaş hisobi ham özgarmasin", low.game.practiceReviews, bought.data.game.practiceReviews)
 
         val refilled = GameLogic.buy(low, "refill", T0 + 42L)
         assertTrue(refilled.ok)
@@ -549,13 +549,13 @@ class GameLogicTest {
         val rich = base().copy(game = emptyGame(DAY, T0).copy(gems = 5000))
         assertEquals(1, GameLogic.buy(rich, "freeze", T0).data.game.freezes)
         val capped = rich.copy(game = rich.game.copy(freezes = GameConfig.MAX_FREEZES))
-        assertFalse("ombor to'la", GameLogic.buy(capped, "freeze", T0).ok)
+        assertFalse("ombor töla", GameLogic.buy(capped, "freeze", T0).ok)
         val boosted = GameLogic.buy(rich, "xpBoost", T0)
         assertTrue(boosted.ok)
         assertEquals(T0 + GameConfig.XP_BOOST_MINUTES * MIN, boosted.data.game.boostUntil)
         val again = GameLogic.buy(boosted.data, "xpBoost", T0)
         assertFalse(again.ok)
-        assertTrue(again.reasonUz!!.contains("Byust allaqachon faol"))
+        assertTrue(again.reasonUz!!.contains("Byust allaqaçon faol"))
         assertEquals(0, GameLogic.priceOf("noma'lum"))
         assertEquals(listOf("refill", "heart", "freeze", "xpBoost"), GameLogic.SHOP_ITEMS.map { it.id })
     }
@@ -567,24 +567,24 @@ class GameLogicTest {
         assertTrue(placed.ok)
         assertEquals(500 - GameConfig.BET_COST_GEMS, placed.data.game.gems)
         assertEquals(BetState(DAY, 3, GameConfig.BET_COST_GEMS), placed.data.game.bet)
-        assertFalse("garov allaqachon ochiq", GameLogic.placeBet(placed.data, 3).ok)
+        assertFalse("garov allaqaçon oçiq", GameLogic.placeBet(placed.data, 3).ok)
         val poor = rich.copy(game = rich.game.copy(gems = GameConfig.BET_COST_GEMS - 1))
         assertFalse(GameLogic.placeBet(poor, 1).ok)
         assertTrue(GameLogic.placeBet(poor, 1).reasonUz!!.contains("gem kerak"))
 
         val weekLater = "2026-11-14"
         assertSame(
-            "hali ${GameConfig.BET_DAYS} kun bo'lmadi", placed.data,
+            "hali ${GameConfig.BET_DAYS} kun bölmadi", placed.data,
             GameLogic.settleBet(placed.data, streakDays = 99),
         )
 
         val ended = placed.data.copy(game = placed.data.game.copy(today = TodayCounters(day = weekLater)))
         val lost = GameLogic.settleBet(ended, streakDays = 5)
         assertNull(lost.game.bet)
-        assertEquals("shart bajarilmadi — gem qaytmaydi", placed.data.game.gems, lost.game.gems)
+        assertEquals("şart bajarilmadi — gem qaytmaydi", placed.data.game.gems, lost.game.gems)
         val won = GameLogic.settleBet(ended, streakDays = 3 + GameConfig.BET_STREAK_DAYS)
         assertEquals(placed.data.game.gems + GameConfig.BET_WIN_GEMS, won.game.gems)
-        assertSame("garov yopilgach qayta hisoblanmaydi", won, GameLogic.settleBet(won, 999))
+        assertSame("garov yopilgaç qayta hisoblanmaydi", won, GameLogic.settleBet(won, 999))
     }
 
     /* ---------------------------- Haftalik XP va liga ---------------------------- */
@@ -608,7 +608,7 @@ class GameLogicTest {
 
         val lw = GameLogic.leagueWeek(data, DAY)
         assertEquals(week, lw.weekStart)
-        assertEquals("liga XP'si faqat urinishlardan", expected, lw.xp)
+        assertEquals("liga XP'si faqat urinişlardan", expected, lw.xp)
         assertEquals(GameConfig.leagueFor(expected).id, lw.leagueId)
         assertEquals("hafta davomida liga barqaror", lw.leagueId, GameLogic.leagueWeek(data, "2026-11-03").leagueId)
         assertEquals(0, GameLogic.weeklyXp(base(), week))
@@ -620,7 +620,7 @@ class GameLogicTest {
         val entries = snapEntries(top = 300, mid = 200, mine = 100)
         assertEquals(1, GameLogic.rankOf(entries, "b"))
         assertEquals(3, GameLogic.rankOf(entries, "u-1"))
-        assertEquals("jadvalda biz yo'q — o'rin ixtir qilinmaydi", 0, GameLogic.rankOf(entries, "begona"))
+        assertEquals("jadvalda biz yöq — örin ixtir qilinmaydi", 0, GameLogic.rankOf(entries, "begona"))
         assertEquals(0, GameLogic.rankOf(emptyList(), "u-1"))
 
         val promoted = LeagueSnapshot(LAST_WEEK, "bronze", rank = 0, boardSize = 30, at = T0, entries = entries, prizeClaimed = true)
@@ -628,9 +628,9 @@ class GameLogicTest {
 
         // `promoteTop` chegarasidan tashqarida — liga O'ZGARMAYDI (obsidian: 5).
         val obsidian = LeagueSnapshot(LAST_WEEK, "obsidian", rank = 6, boardSize = 30, at = T0, entries = entries, prizeClaimed = true)
-        assertEquals("chegaradan tashqarida — o'zgarmaydi", "obsidian", GameLogic.promotedLeague(obsidian, "u-1"))
+        assertEquals("çegaradan taşqarida — özgarmaydi", "obsidian", GameLogic.promotedLeague(obsidian, "u-1"))
         assertEquals(
-            "pastki o'rin pasaytirilmaydi (manbada qoida topilmadi)",
+            "pastki örin pasaytirilmaydi (manbada qoida topilmadi)",
             "diamond",
             GameLogic.promotedLeague(
                 LeagueSnapshot(LAST_WEEK, "diamond", rank = 30, boardSize = 30, at = T0, entries = entries, prizeClaimed = true),
@@ -678,7 +678,7 @@ class GameLogicTest {
         val out = GameLogic.settleLeaguePrize(d)
         assertEquals(GameConfig.LEAGUE_PRIZE_GEMS[0], out.game.gems)
         assertTrue(out.game.league!!.prizeClaimed)
-        assertSame("sovg'a bir marta", out, GameLogic.settleLeaguePrize(out))
+        assertSame("sovğa bir marta", out, GameLogic.settleLeaguePrize(out))
 
         // 2-o'rin — boshqa summa.
         val second = d.copy(
@@ -688,8 +688,8 @@ class GameLogicTest {
 
         val absent = d.copy(game = d.game.copy(league = snap.copy(entries = listOf(LeagueRow("b", "B", 1)))))
         val marked = GameLogic.settleLeaguePrize(absent)
-        assertEquals("o'rin noma'lum — gem YO'Q", 0, marked.game.gems)
-        assertTrue("lekin qayta tekshirilmasin deb belgilanadi", marked.game.league!!.prizeClaimed)
+        assertEquals("örin noma'lum — gem YÖQ", 0, marked.game.gems)
+        assertTrue("lekin qayta tekşirilmasin deb belgilanadi", marked.game.league!!.prizeClaimed)
 
         // Hali davom etayotgan hafta. `today` ANIQ beriladi: bu sinov devol
         // sanasiga bog'liq bo'lib qolmasin (veb tomonda 2026-11-09 da aynan
@@ -697,7 +697,7 @@ class GameLogicTest {
         val ongoing = d.copy(game = d.game.copy(league = snap.copy(weekStart = WEEK0)))
         assertSame("hafta hali davom etmoqda", ongoing, GameLogic.settleLeaguePrize(ongoing, DAY))
         val noLeague = base()
-        assertSame("liga snapshoti yo'q — holat o'zgarmasin", noLeague, GameLogic.settleLeaguePrize(noLeague, DAY))
+        assertSame("liga snapshoti yöq — holat özgarmasin", noLeague, GameLogic.settleLeaguePrize(noLeague, DAY))
         assertEquals(listOf(100, 50, 30), GameConfig.LEAGUE_PRIZE_GEMS)
     }
 
@@ -714,7 +714,7 @@ class GameLogicTest {
             entries = listOf(LeagueRow("u-1", "Men", 900)),
             prizeClaimed = false,
         )
-        assertEquals("WEEK0 — DAY haftasining boshi (poneshanba)", GameLogic.weekStartOf(DAY), WEEK0)
+        assertEquals("WEEK0 — DAY haftasining boşi (poneşanba)", GameLogic.weekStartOf(DAY), WEEK0)
 
         // O'sha hafta ichidagi kun — sovg'a YO'Q, belgi ham qo'yilmaydi.
         val sameWeek = base().copy(game = emptyGame(DAY, T0).copy(league = snap))
@@ -739,7 +739,7 @@ class GameLogicTest {
     fun settleIsIdempotentAndReturnsTheSameObjectWhenNothingChanged() {
         val d = base()
         val a = GameLogic.settle(d, T0, DAY)
-        assertSame("hech narsa o'zgarmadi — saidan bir xil obyekt qaytadi", d, a)
+        assertSame("heç narsa özgarmadi — saidan bir xil obyekt qaytadi", d, a)
         assertSame(a, GameLogic.settle(a, T0, DAY))
 
         // Maqsadga yetgan kun — gem beriladi, keyin jim.
@@ -765,7 +765,7 @@ class GameLogicTest {
         assertEquals(0, out.game.today.attempts)
         assertEquals(0, out.game.combo)
         assertTrue(out.game.questsDone.isEmpty())
-        assertTrue("vaqt o'tgani bilan yuraklar tiklandi", out.game.hearts > d.game.hearts)
+        assertTrue("vaqt ötgani bilan yuraklar tiklandi", out.game.hearts > d.game.hearts)
     }
 
     @Test
@@ -828,8 +828,8 @@ class GameLogicTest {
         assertEquals(0, g.combo)
         assertEquals(0, g.perfectLessonsTotal)
         assertEquals(0, g.questsTotal)
-        assertEquals("heartsAt=0 — maydon yo'q, hozirgi vaqt qo'yiladi", T0, g.heartsAt)
-        assertNull("startDay bo'sh — garov yo'q", g.bet)
+        assertEquals("heartsAt=0 — maydon yöq, hozirgi vaqt qöyiladi", T0, g.heartsAt)
+        assertNull("startDay böş — garov yöq", g.bet)
         assertEquals(listOf("2026-11-05"), g.frozenDays)
         assertEquals(DAY, g.today.day)
         assertEquals(DAY, g.questsDay)
@@ -857,7 +857,7 @@ class GameLogicTest {
     fun normalizeGameJsonRepairsForeignTypes() {
         val raw = JsonParser.parseString(
             """
-            {"hearts":4,"gems":"ko'p","heartsAt":0,"today":{"day":5,"xp":250.7},
+            {"hearts":4,"gems":"köp","heartsAt":0,"today":{"day":5,"xp":250.7},
              "questsDay":null,"league":{"weekStart":5,"leagueId":"platina",
              "entries":[{"userId":"a"},{"userId":7,"name":3,"xp":"10"},{"userId":"c","xp":-4}]},
              "bet":{"gems":0,"startDay":"2026-11-01","streakAtStart":-2},
@@ -868,22 +868,22 @@ class GameLogicTest {
         val g = GameLogic.normalizeGameJson(raw, DAY, T0)
 
         assertEquals(4, g.hearts)
-        assertEquals("son bo'lmagan gem — standart", 0, g.gems)
+        assertEquals("son bölmagan gem — standart", 0, g.gems)
         assertEquals(T0, g.heartsAt)
-        assertEquals("son bo'lgan sana tiklanadi", DAY, g.today.day)
+        assertEquals("son bölgan sana tiklanadi", DAY, g.today.day)
         assertEquals("maydon butun songa qaytariladi", 250, g.today.xp)
         assertEquals(DAY, g.questsDay)
         val l = g.league!!
         assertEquals("begona liga → eng pastgisi", "bronze", l.leagueId)
-        assertEquals("son bo'lgan hafta boshi tiklanadi", WEEK0, l.weekStart)
-        assertEquals("userId son — qator tashlanadi", 2, l.entries.size)
+        assertEquals("son bölgan hafta boşi tiklanadi", WEEK0, l.weekStart)
+        assertEquals("userId son — qator taşlanadi", 2, l.entries.size)
         assertEquals(listOf("a", "c"), l.entries.map { it.userId })
-        assertEquals("userId bor, xp yo'q — 0", 0, l.entries[0].xp)
+        assertEquals("userId bor, xp yöq — 0", 0, l.entries[0].xp)
         assertEquals("", l.entries[0].name)
         assertEquals("salbiy xp 0 ga qaytadi", 0, l.entries[1].xp)
-        assertEquals("tabla o'lchami maydoni bo'lmasa — jadval o'lchami", GameConfig.LEAGUE_BOARD_SIZE, l.boardSize)
+        assertEquals("tabla ölçami maydoni bölmasa — jadval ölçami", GameConfig.LEAGUE_BOARD_SIZE, l.boardSize)
         val bet = checkNotNull(g.bet)
-        assertEquals("gems=0 bo'lgan garov narxiga qaytadi", GameConfig.BET_COST_GEMS, bet.gems)
+        assertEquals("gems=0 bölgan garov narxiga qaytadi", GameConfig.BET_COST_GEMS, bet.gems)
         assertEquals("2026-11-01", bet.startDay)
         assertEquals(0, bet.streakAtStart)
         assertEquals(listOf(WEEK0), g.chestsWeeks)
@@ -907,13 +907,13 @@ class GameLogicTest {
         assertNull("son satr emas", o.jStr("n"))
         assertNull("massiv satr emas", o.jStr("arr"))
         assertNull("objekt satr emas", o.jStr("obj"))
-        assertNull("kalit yo'q", o.jStr("yo'q"))
+        assertNull("kalit yöq", o.jStr("yöq"))
         assertEquals("", o.jStr("empty"))
         // Ko'rsatish uchun `jText` — son ham satrga aylanadi (veb `String(...)`).
         assertEquals("5", o.jText("n"))
         assertEquals("x", o.jText("s"))
         assertEquals("", o.jText("obj"))
-        assertEquals("", o.jText("yo'q"))
+        assertEquals("", o.jText("yöq"))
         assertEquals(listOf("y"), o.jStrList("arr"))
         assertEquals(emptyList<String>(), o.jStrList("s"))
         assertNotNull(o.jObj("obj"))
@@ -928,7 +928,7 @@ class GameLogicTest {
         assertEquals(5L, q.jQuests("questsDone")[0].at)
         val b = JsonParser.parseString("""{"bet":{"startDay":"2026-11-01"},"bet2":{"startDay":5}}""").asJsonObject
         assertEquals(GameConfig.BET_COST_GEMS, b.jBet("bet")!!.gems)
-        assertNull("startDay son — garov yo'q", b.jBet("bet2"))
+        assertNull("startDay son — garov yöq", b.jBet("bet2"))
         val lg = JsonParser.parseString("""{"league":{"entries":[{"userId":"a","name":42,"xp":"12"}]}}""").asJsonObject.jLeague("league", DAY, T0)!!
         assertEquals("42", lg.entries[0].name)
         assertEquals(12, lg.entries[0].xp)

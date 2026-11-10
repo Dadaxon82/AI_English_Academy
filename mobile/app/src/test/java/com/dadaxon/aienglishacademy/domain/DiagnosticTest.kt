@@ -45,7 +45,7 @@ class DiagnosticTest {
             )
         assertEquals("C1", o.level)
         assertEquals(1.0, o.confidence, 1e-9)
-        assertEquals("Diagnostika natijasi: C1. Bu taxminiy baho — darslar davomida aniqlashtiriladi.", o.labelUz)
+        assertEquals("Diagnostika natijasi: C1. Bu taxminiy baho — darslar davomida aniqlaştiriladi.", o.labelUz)
     }
 
     @Test
@@ -53,16 +53,16 @@ class DiagnosticTest {
         val o = diagnose(results())
         assertNull(o.level)
         assertEquals(0.0, o.confidence, 1e-9)
-        assertEquals("Natija noaniq — A1 dan boshlaymiz va diagnostikani keyin takrorlaymiz.", o.labelUz)
+        assertEquals("Natija noaniq — A1 dan boşlaymiz va diagnostikani keyin takrorlaymiz.", o.labelUz)
     }
 
     @Test
     fun `faqat A1 to'liq bo'lsa ishonch 0,2 ya'ni 0,5 dan past — daraja null`() {
         val o = diagnose(results("dg-01", "dg-02", "dg-03"))
         assertEquals(0.2, o.confidence, 1e-9)
-        assertNull("confidence < 0.5 bo'lsa daraja aniq deb ko'rsatilmaydi", o.level)
+        assertNull("confidence < 0.5 bölsa daraja aniq deb körsatilmaydi", o.level)
         assertTrue(o.labelUz.startsWith("Taxminiy darajangiz A1, ammo dalil yetarli emas."))
-        assertTrue(o.labelUz.contains("birinchi bo‘lim testidan so‘ng qayta baholanadi."))
+        assertTrue(o.labelUz.contains("birinçi bölim testidan söng qayta baholanadi."))
     }
 
     @Test
@@ -77,7 +77,7 @@ class DiagnosticTest {
         // 4 ta banda 2/3+ → confidence 0.8
         assertEquals(0.8, o.confidence, 1e-9)
         assertEquals("B1", o.level)
-        assertEquals("Diagnostika natijasi: B1. Bu taxminiy baho — darslar davomida aniqlashtiriladi.", o.labelUz)
+        assertEquals("Diagnostika natijasi: B1. Bu taxminiy baho — darslar davomida aniqlaştiriladi.", o.labelUz)
     }
 
     @Test
@@ -94,7 +94,7 @@ class DiagnosticTest {
         val o = diagnose(results("dg-01", "dg-02"))
         assertEquals(0.2, o.confidence, 1e-9)
         assertNull(o.level)
-        assertEquals("Natija noaniq — A1 dan boshlaymiz va diagnostikani keyin takrorlaymiz.", o.labelUz)
+        assertEquals("Natija noaniq — A1 dan boşlaymiz va diagnostikani keyin takrorlaymiz.", o.labelUz)
     }
 
     @Test

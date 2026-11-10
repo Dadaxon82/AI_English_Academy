@@ -82,7 +82,7 @@ export default function Speaking() {
 
     if (!navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === 'undefined') {
       setRecState('unsupported')
-      setRecError('Bu brauzer audio yozishni qo‘llab-quvvatlamaydi — matnli usuldan foydalaning.')
+      setRecError('Bu brauzer audio yozişni qöllab-quvvatlamaydi — matnli usuldan foydalaning.')
       return
     }
     try {
@@ -120,8 +120,8 @@ export default function Speaking() {
           if (final) setTranscript((t) => (t + ' ' + final).trim())
         }
         r.onerror = (e) => {
-          if (e.error === 'not-allowed') setRecError('Mikrofon ruxsati berilmadi — matnli usulni ishlating.')
-          else if (e.error === 'no-speech') setRecError('Ovoz eshitilmadi. Mikrofonni tekshiring.')
+          if (e.error === 'not-allowed') setRecError('Mikrofon ruxsati berilmadi — matnli usulni işlating.')
+          else if (e.error === 'no-speech') setRecError('Ovoz eşitilmadi. Mikrofonni tekşiring.')
         }
         r.onend = () => {
           setEngineUsed((cur) => (cur === 'none' ? 'none' : cur))
@@ -151,10 +151,10 @@ export default function Speaking() {
     setRecState('ready')
   }
 
-  if (!ready) return <LoadingBlock label="Gapirish ma'lumotlari yuklanmoqda…" />
+  if (!ready) return <LoadingBlock label="Gapiriş ma'lumotlari yuklanmoqda…" />
 
   if (tasks.length === 0) {
-    return <EmptyState title="Gapirish topshiriqlari topilmadi" body="Ushbu daraja uchun kontent hali yuklanmagan." />
+    return <EmptyState title="Gapiriş topşiriqlari topilmadi" body="Uşbu daraja uçun kontent hali yuklanmagan." />
   }
 
   const history = data.speaking.filter((s) => s.taskId === selectedId)
@@ -167,17 +167,17 @@ export default function Speaking() {
   return (
     <div className="grid gap-4">
       <Card className="grid gap-3">
-        <h1 className="text-xl font-bold">Gapirish</h1>
+        <h1 className="text-xl font-bold">Gapiriş</h1>
         <p className="muted text-sm">
-          Kunlik mavzu va savollar. Ovoz yozuvi faqat shu brauzer seansida turadi (sahifa yopilsa o‘chadi) —
-          roziligingizsiz serverga hech qachon yuborilmaydi.
+          Kunlik mavzu va savollar. Ovoz yozuvi faqat şu brauzer seansida turadi (sahifa yopilsa öçadi) —
+          roziligingizsiz serverga heç qaçon yuborilmaydi.
         </p>
         <p className="text-sm">
           <Link to="/conversation" className="font-semibold underline">
-            Suhbatdosh bilan rol o‘ynash →
+            Suhbatdoş bilan rol öynaş →
           </Link>{' '}
           <Link to="/pronunciation" className="font-semibold underline ml-2">
-            Talaffuz mashqi →
+            Talaffuz maşqi →
           </Link>
         </p>
         <div className="flex flex-wrap gap-1.5">
@@ -202,9 +202,9 @@ export default function Speaking() {
 
       {task && (
         <LessonStartCard
-          kicker="Gapirish darsi"
+          kicker="Gapiriş darsi"
           title={task.topicUz}
-          body="Gaplarni tinglab ovoz chiqarib takrorlang, so‘ng savolga javob bering"
+          body="Gaplarni tinglab ovoz çiqarib takrorlang, söng savolga javob bering"
           steps={speakingLesson(task)}
           onStart={() => setLesson(true)}
         />
@@ -225,11 +225,11 @@ export default function Speaking() {
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
                     <circle cx="12" cy="12" r="7" />
                   </svg>
-                  Yozishni boshlash
+                  Yozişni boşlaş
                 </Button>
               ) : (
                 <Button variant="danger" onClick={stopRecording}>
-                  To‘xtatish ({formatDuration(seconds)})
+                  Töxtatiş ({formatDuration(seconds)})
                 </Button>
               )}
               {recState === 'recording' && <span className="text-xs text-[var(--bad)] animate-pulse">● Yozilmoqda…</span>}
@@ -239,7 +239,7 @@ export default function Speaking() {
 
             {audioUrl && (
               <div className="grid gap-1.5">
-                <label className="text-xs font-semibold muted">Yozuvni qayta tinglash</label>
+                <label className="text-xs font-semibold muted">Yozuvni qayta tinglaş</label>
                 <audio src={audioUrl} controls className="w-full" />
               </div>
             )}
@@ -247,9 +247,9 @@ export default function Speaking() {
             {/* Safari / Firefox: SpeechRecognition yo'q — oldindan ochiq aytiladi (yozib bo'lgandan keyin emas). */}
             {!transcribeSupported && recState !== 'unsupported' && recState !== 'denied' && (
               <InfoBanner tone="muted">
-                Bu brauzer nutqni matnga aylantirmaydi (masalan, Safari yoki Firefox). Ovozingizni yozib, qayta tinglashingiz
-                mumkin, lekin baho uchun javobingizni pastdagi matn maydoniga ham yozing. Chrome yoki Edge’da transkript
-                avtomatik bo‘ladi.
+                Bu brauzer nutqni matnga aylantirmaydi (masalan, Safari yoki Firefox). Ovozingizni yozib, qayta tinglaşingiz
+                mumkin, lekin baho uçun javobingizni pastdagi matn maydoniga ham yozing. Chrome yoki Edge’da transkript
+                avtomatik böladi.
               </InfoBanner>
             )}
             {recError && <InfoBanner tone="warn">{recError}</InfoBanner>}
@@ -276,7 +276,7 @@ export default function Speaking() {
 
             <div>
               <div className="text-xs font-semibold muted mb-1">
-                Matnli javob {transcript ? '(qo‘shimcha)' : '(muqobil usul)'}
+                Matnli javob {transcript ? '(qöşimça)' : '(muqobil usul)'}
               </div>
               <textarea
                 value={textAnswer}
@@ -291,7 +291,7 @@ export default function Speaking() {
             <div className="flex flex-wrap gap-2">
               {recState === 'ready' && (
                 <Button variant="ghost" onClick={() => void startRecording()}>
-                  Qayta yozish
+                  Qayta yoziş
                 </Button>
               )}
               {/* BUG: transkript bo'lmasa tugma o'chib qolardi — brauzeri
@@ -313,14 +313,14 @@ export default function Speaking() {
                   setSaved(session.analysis ? 'analyzed' : 'saved')
                 }}
               >
-                Saqlash va tahlil
+                Saqlaş va tahlil
               </Button>
             </div>
 
             {saved === 'analyzed' && <SuccessBanner>Javob saqlandi va tahlil qilindi (pastda).</SuccessBanner>}
             {saved === 'saved' && (
               <InfoBanner tone="warn">
-                Yozuv saqlandi, lekin tahlil qilinmadi: transkript yo‘q. Tahlil uchun javobingizni matnli maydonga ham
+                Yozuv saqlandi, lekin tahlil qilinmadi: transkript yöq. Tahlil uçun javobingizni matnli maydonga ham
                 yozing.
               </InfoBanner>
             )}
@@ -335,7 +335,7 @@ export default function Speaking() {
 
 function LastAttempts({ history }: { history: ReturnType<typeof useStore>['data']['speaking'] }) {
   if (history.length === 0) {
-    return <EmptyState title="Tarix bo'sh" body="Birinchi javobingizni yozing — statistika shu yerda paydo bo'ladi." />
+    return <EmptyState title="Tarix böş" body="Birinçi javobingizni yozing — statistika şu yerda paydo böladi." />
   }
   return (
     <Card className="grid gap-3">
@@ -344,7 +344,7 @@ function LastAttempts({ history }: { history: ReturnType<typeof useStore>['data'
         <div key={s.id} className="rounded-xl border p-3 grid gap-2">
           <div className="flex flex-wrap gap-2 text-xs">
             <Chip>{s.durationSec}s</Chip>
-            <Chip>{s.transcriptionEngine === 'browser-speech' ? 'Brauzer transkripsiyasi' : 'Transkripsiya yo‘q'}</Chip>
+            <Chip>{s.transcriptionEngine === 'browser-speech' ? 'Brauzer transkripsiyasi' : 'Transkripsiya yöq'}</Chip>
             {/* Ovoz hech qayerda saqlanmaydi (faqat yozilgan sahifada eshitiladi) —
                 eski "Ovoz qurilmada" yozuvi sahifa yangilangach noto'g'ri edi. */}
             <Chip>{s.audioBlobStored ? 'Ovoz yozilgan (saqlanmaydi)' : 'Ovozsiz javob'}</Chip>
@@ -357,7 +357,7 @@ function LastAttempts({ history }: { history: ReturnType<typeof useStore>['data'
                 [
                   // Matnli javobda ravonlik o'lchanmaydi — "0/5" deb ko'rsatish yolg'on bo'lardi.
                   ['Ravonlik', s.analysis.mode === 'text' ? null : s.analysis.fluency],
-                  ['Lug‘at', s.analysis.lexis],
+                  ['Luğat', s.analysis.lexis],
                   ['Grammatika', s.analysis.grammar],
                   [s.analysis.mode === 'text' ? 'Hajm' : 'Davomiylik', s.analysis.length],
                 ] as const

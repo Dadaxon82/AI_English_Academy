@@ -16,7 +16,7 @@ function att(exerciseId: string, correct: boolean, at: number, given = ''): Atte
 
 describe('Tuzatilmagan xatolar', () => {
   const [e1, e2, e3] = all
-  it('oxirgi urinishi xato bo‘lganlar qoladi; to‘g‘ri yechilgani chiqadi', () => {
+  it('oxirgi urinişi xato bölganlar qoladi; töğri yeçilgani çiqadi', () => {
     const list = unresolvedMistakes(
       [att(e1!.id, false, 1), att(e1!.id, true, 2), att(e2!.id, false, 3), att(e2!.id, false, 4), att(e3!.id, true, 5)],
       findExercise,
@@ -24,19 +24,19 @@ describe('Tuzatilmagan xatolar', () => {
     expect(list.map((m) => m.exercise.id)).toEqual([e2!.id])
     expect(list[0]!.wrongCount).toBe(2)
   })
-  it('remix to‘g‘ri yechilsa — asl mashq ham tuzatilgan hisoblanadi', () => {
+  it('remix töğri yeçilsa — asl maşq ham tuzatilgan hisoblanadi', () => {
     const list = unresolvedMistakes([att(e1!.id, false, 1), att(`${REMIX_PREFIX}${e1!.id}`, true, 2)], findExercise)
     expect(list).toEqual([])
   })
-  it('topilmaydigan (eski) mashq tashlab yuboriladi', () => {
+  it('topilmaydigan (eski) maşq taşlab yuboriladi', () => {
     expect(unresolvedMistakes([att('yo-q-id', false, 1)], findExercise)).toEqual([])
   })
 })
 
-describe('O‘yin usullari', () => {
+describe('Öyin usullari', () => {
   const attempts = all.slice(0, 20).flatMap((e, i) => (i % 3 === 0 ? [att(e.id, false, i), att(e.id, false, i + 0.5)] : [att(e.id, false, i)]))
   const list = unresolvedMistakes(attempts, findExercise)
-  it('fix — 10 tagacha, eng yangisi birinchi', () => {
+  it('fix — 10 tagaça, eng yangisi birinçi', () => {
     const steps = buildMistakeLesson('fix', list)
     expect(steps.length).toBe(10)
     expect(modeCount('fix', list)).toBe(10)
@@ -46,15 +46,15 @@ describe('O‘yin usullari', () => {
     expect(steps.length).toBe(modeCount('hard', list))
     for (const s of steps) if (s.type === 'exercise') expect(list.find((m) => m.exercise.id === s.exercise.id)!.wrongCount).toBeGreaterThanOrEqual(2)
   })
-  it('timed — 15 tagacha, takrorsiz', () => {
+  it('timed — 15 tagaça, takrorsiz', () => {
     const steps = buildMistakeLesson('timed', list, () => 0.3)
     expect(steps.length).toBe(Math.min(15, list.length))
     expect(new Set(steps.map((s) => (s.type === 'exercise' ? s.exercise.id : ''))).size).toBe(steps.length)
   })
 })
 
-describe('Boshqa ko‘rinishda (remix)', () => {
-  it('har remix yechiladi va id’dan tiklanadi', () => {
+describe('Boşqa körinişda (remix)', () => {
+  it('har remix yeçiladi va id’dan tiklanadi', () => {
     let count = 0
     for (const ex of all) {
       const r = remixExercise(ex)
@@ -73,7 +73,7 @@ describe('Boshqa ko‘rinishda (remix)', () => {
     }
     expect(count).toBeGreaterThan(30)
   })
-  it('gap-fill → ro‘yxat: o‘quvchining o‘z xato javobi variantlar ichida', () => {
+  it('gap-fill → röyxat: öquvçining öz xato javobi variantlar içida', () => {
     const gf = all.find((e) => e.kind === 'gap-fill')!
     if (gf.kind !== 'gap-fill') throw new Error()
     const wrong = gf.answers.map(() => 'xyzwrong').join(' / ')

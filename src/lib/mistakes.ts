@@ -104,10 +104,10 @@ export function buildMistakeLesson(mode: MistakeMode, list: readonly Mistake[], 
         .map((m) => remixExercise(m.exercise, m.lastGiven))
         .filter((e): e is Exercise => e !== null)
         .slice(0, 8)
-        .map((e, i) => step(e, i, 'Boshqa ko‘rinishda', 'new'))
+        .map((e, i) => step(e, i, 'Boşqa körinişda', 'new'))
     case 'timed':
       return shuffled(list, rand)
         .slice(0, 15)
-        .map((m, i) => step(m.exercise, i, 'Vaqtga qarshi'))
+        .map((m, i) => step(m.exercise, i, 'Vaqtga qarşi'))
   }
 }

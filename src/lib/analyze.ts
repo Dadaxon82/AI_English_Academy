@@ -13,9 +13,9 @@ import type { WritingTask } from '../content/types'
 import type { CoreCriterionKey, SpeakingAnalysis, WritingAnalysis } from './types'
 
 const CRITERIA_UZ: Record<CoreCriterionKey, string> = {
-  task_achievement: 'Topshiriq bajarilishi',
-  coherence: 'Mantiqiy bog‘lanish',
-  lexical_resource: 'Lug‘at boyligi',
+  task_achievement: 'Topşiriq bajarilişi',
+  coherence: 'Mantiqiy boğlaniş',
+  lexical_resource: 'Luğat boyligi',
   grammatical_range: 'Grammatik qamrov',
   accuracy: 'Aniqlik',
 }
@@ -47,19 +47,19 @@ export function analyzeWriting(text: string, task: WritingTask): WritingAnalysis
   // --- 1. Aniq, tez tekshiriladigan xatolar ---
   const rules: { re: RegExp; kind: string; fix: (m: RegExpExecArray) => string; why: string }[] = [
     { re: /\bi\b(?!')/g, kind: 'capitalization', fix: () => 'I', why: 'Ingliz tilida “I” har doim katta harf bilan yoziladi.' },
-    { re: /\bdont\b/gi, kind: 'punctuation', fix: () => "don't", why: 'Apostrof tushib qolgan.' },
-    { re: /\bcant\b/gi, kind: 'punctuation', fix: () => "can't", why: 'Apostrof tushib qolgan.' },
+    { re: /\bdont\b/gi, kind: 'punctuation', fix: () => "don't", why: 'Apostrof tuşib qolgan.' },
+    { re: /\bcant\b/gi, kind: 'punctuation', fix: () => "can't", why: 'Apostrof tuşib qolgan.' },
     { re: /\bim\b(?=\s)/gi, kind: 'contraction', fix: () => "I'm", why: 'Qisqartirma apostrof bilan yoziladi.' },
     { re: /\bive\b/gi, kind: 'contraction', fix: () => "I've", why: 'Apostrof kerak.' },
-    { re: /\ba m\b/g, kind: 'spacing', fix: () => 'am', why: '“am” bir so‘z.' },
-    { re: /\bisnt\b/gi, kind: 'punctuation', fix: () => "isn't", why: 'Apostrof tushib qolgan.' },
-    { re: /\bgonna\b/gi, kind: 'register', fix: () => 'going to', why: 'Rasmiy yozuvda “gonna” ishlatilmaydi.' },
+    { re: /\ba m\b/g, kind: 'spacing', fix: () => 'am', why: '“am” bir söz.' },
+    { re: /\bisnt\b/gi, kind: 'punctuation', fix: () => "isn't", why: 'Apostrof tuşib qolgan.' },
+    { re: /\bgonna\b/gi, kind: 'register', fix: () => 'going to', why: 'Rasmiy yozuvda “gonna” işlatilmaydi.' },
     { re: /\bthx\b/gi, kind: 'register', fix: () => 'thanks', why: 'Qisqartirma rasmiy uslubga mos emas.' },
     { re: /\bwich\b/gi, kind: 'spelling', fix: () => 'which', why: 'Imlo xatosi.' },
     { re: /\bbecouse\b/gi, kind: 'spelling', fix: () => 'because', why: 'Imlo xatosi.' },
     { re: /\bteh\b/gi, kind: 'spelling', fix: () => 'the', why: 'Imlo xatosi.' },
     { re: /\brecieve\b/gi, kind: 'spelling', fix: () => 'receive', why: 'Imlo xatosi.' },
-    { re: /\b(alot)\b/gi, kind: 'spacing', fix: () => 'a lot', why: 'Ikki so‘z bilan yoziladi.' },
+    { re: /\b(alot)\b/gi, kind: 'spacing', fix: () => 'a lot', why: 'Ikki söz bilan yoziladi.' },
     {
       // FaqAT uchinchi shaxs birlikdagi xato tutadi: "he go" → "he goes".
       // Birinchi/ikkinchi shaxs ("I go", "we like") AVTODAN TO'G'RI — ularni
@@ -70,7 +70,7 @@ export function analyzeWriting(text: string, task: WritingTask): WritingAnalysis
         const map: Record<string, string> = { go: 'goes', do: 'does', have: 'has', like: 'likes', want: 'wants', need: 'needs' }
         return `${m[1]} ${map[m[2]] ?? m[2]}`
       },
-      why: 'Uchinchi shaxs birlikda fe‘lga -s/-es qo‘shiladi.',
+      why: 'Uçinçi şaxs birlikda fe’lga -s/-es qöşiladi.',
     },
   ]
 
@@ -109,7 +109,7 @@ export function analyzeWriting(text: string, task: WritingTask): WritingAnalysis
   for (const need of task.mustInclude ?? []) {
     const found = containsLoose(text, need.pattern)
     if (!found) {
-      errors.push({ excerpt: '—', kind: 'content', correction: need.pattern, whyUz: `Topshiriqda bu ma‘no kutiladi: ${need.whyUz}` })
+      errors.push({ excerpt: '—', kind: 'content', correction: need.pattern, whyUz: `Topşiriqda bu ma’no kutiladi: ${need.whyUz}` })
     } else hit++
   }
   const lenScore = words < task.minWords ? (words >= task.minWords * 0.7 ? 2 : 0) : words > task.maxWords ? 3 : 4
@@ -137,15 +137,15 @@ export function analyzeWriting(text: string, task: WritingTask): WritingAnalysis
     accuracy,
   }
 
-  if (words >= task.minWords) strengthsUz.push(`Hajm talabi bajarildi: ${words} so‘z.`)
-  if (linkers >= 3) strengthsUz.push('Gaplar bog‘lovchilar bilan mantiqiy bog‘langan.')
-  if (unique.size >= words * 0.55 && words > 20) strengthsUz.push('So‘z boyligi yaxshi — takrorlar kam.')
-  if (errors.length === 0) strengthsUz.push('Tekshirilgan asosiy xatolar topilmadi.')
+  if (words >= task.minWords) strengthsUz.push(`Hajm talabi bajarildi: ${words} söz.`)
+  if (linkers >= 3) strengthsUz.push('Gaplar boğlovçilar bilan mantiqiy boğlangan.')
+  if (unique.size >= words * 0.55 && words > 20) strengthsUz.push('Söz boyligi yaxşi — takrorlar kam.')
+  if (errors.length === 0) strengthsUz.push('Tekşirilgan asosiy xatolar topilmadi.')
 
-  if (words < task.minWords) weaknessesUz.push(`Matn qisqa: ${words} so‘z, kamida ${task.minWords} kerak.`)
-  if (linkers < 2) weaknessesUz.push('Bog‘lovchilar kam: and, but, because, then, so qo‘shing.')
-  if (sents.length < 3) weaknessesUz.push('Gaplar soni kam — fikrlarni alohida gaplarga bo‘ling.')
-  if (errors.length > 0) weaknessesUz.push(`${errors.length} ta tuzatiladigan xato bor (pastda ko‘rsatilgan).`)
+  if (words < task.minWords) weaknessesUz.push(`Matn qisqa: ${words} söz, kamida ${task.minWords} kerak.`)
+  if (linkers < 2) weaknessesUz.push('Boğlovçilar kam: and, but, because, then, so qöşing.')
+  if (sents.length < 3) weaknessesUz.push('Gaplar soni kam — fikrlarni alohida gaplarga böling.')
+  if (errors.length > 0) weaknessesUz.push(`${errors.length} ta tuzatiladigan xato bor (pastda körsatilgan).`)
 
   const suggestionsUz = buildSuggestions(criteriaScores, task)
 
@@ -162,12 +162,12 @@ export function analyzeWriting(text: string, task: WritingTask): WritingAnalysis
 
 function buildSuggestions(scores: Record<CoreCriterionKey, number>, task: WritingTask): string[] {
   const out: string[] = []
-  if (scores.task_achievement < 3) out.push(`Topshiriqdagi har bir bandni alohida gap bilan javoblang (hajm: ${task.minWords}–${task.maxWords} so‘z).`)
+  if (scores.task_achievement < 3) out.push(`Topşiriqdagi har bir bandni alohida gap bilan javoblang (hajm: ${task.minWords}–${task.maxWords} söz).`)
   if (scores.coherence < 3) out.push('Fikrlarni first / next / then / finally bilan tartiblang.')
-  if (scores.lexical_resource < 3) out.push('Bir so‘zni takrorlamang — sinonim izlang (vocabulary bo‘limidan foydalaning).')
-  if (scores.grammatical_range < 3) out.push(`${task.genre === 'email' ? 'Hozirgi va o‘tmish zamonlarini birga' : 'Ikki xil zamonni'} ishlatishga harakat qiling.`)
-  if (scores.accuracy < 3) out.push('Yozganingizdan so‘ng har bir fe‘lga e’tibor bering: kim ishlayapti — -s kerakmi?')
-  out.push('Qayta yozib, eski va yangi versiyani solishtiring — o‘sish shu taqqoslashda ko‘rinadi.')
+  if (scores.lexical_resource < 3) out.push('Bir sözni takrorlamang — sinonim izlang (vocabulary bölimidan foydalaning).')
+  if (scores.grammatical_range < 3) out.push(`${task.genre === 'email' ? 'Hozirgi va ötmiş zamonlarini birga' : 'Ikki xil zamonni'} işlatişga harakat qiling.`)
+  if (scores.accuracy < 3) out.push('Yozganingizdan söng har bir fe’lga e’tibor bering: kim işlayapti — -s kerakmi?')
+  out.push('Qayta yozib, eski va yangi versiyani soliştiring — ösiş şu taqqoslaşda körinadi.')
   return out.slice(0, 5)
 }
 
@@ -219,11 +219,11 @@ export function analyzeSpeaking(transcript: string, durationSec: number, task: {
   const fluency = wpm === 0 ? 0 : wpm < 60 ? 2 : wpm > 190 ? 3 : 5
 
   const notesUz: string[] = []
-  if (durationSec < task.minSeconds) notesUz.push(`Javob qisqa: ${durationSec}s. Kamida ${task.minSeconds} sekund gapirishga harakat qiling.`)
-  if (wpm > 0 && wpm < 60) notesUz.push('Gapirish sekin — gaplar orasidagi pauzalarni kamaytiring, kunni shu mavzuda 1 daqiqa mashq qilib ko‘ring.')
-  if (unique.size <= 8 && words > 0) notesUz.push('Kam so‘z ishlatdingiz — kunlik lug‘atdan 3–4 ta yangi so‘zni shu javobga qo‘shib ko‘ring.')
-  if (sents.length < 3) notesUz.push('Fikrlarni alohida gaplarga bo‘ling: kim, nima, qachon, nega.')
-  if (notesUz.length === 0) notesUz.push('Yaxshi javob: davomiylik va tuzilish A1 me’yoriga mos.')
+  if (durationSec < task.minSeconds) notesUz.push(`Javob qisqa: ${durationSec}s. Kamida ${task.minSeconds} sekund gapirişga harakat qiling.`)
+  if (wpm > 0 && wpm < 60) notesUz.push('Gapiriş sekin — gaplar orasidagi pauzalarni kamaytiring, kunni şu mavzuda 1 daqiqa maşq qilib köring.')
+  if (unique.size <= 8 && words > 0) notesUz.push('Kam söz işlatdingiz — kunlik luğatdan 3–4 ta yangi sözni şu javobga qöşib köring.')
+  if (sents.length < 3) notesUz.push('Fikrlarni alohida gaplarga böling: kim, nima, qaçon, nega.')
+  if (notesUz.length === 0) notesUz.push('Yaxşi javob: davomiylik va tuziliş A1 me’yoriga mos.')
 
   return {
     engine: 'rule-based',
@@ -235,7 +235,7 @@ export function analyzeSpeaking(transcript: string, durationSec: number, task: {
     wpm,
     notesUz,
     disclaimerUz:
-      'Bu baho mashq maqsadida berildi — rasmiy imtihon natijasi emas. Transkript avtomatik va aniq bo‘lmasligi mumkin.',
+      'Bu baho maşq maqsadida berildi — rasmiy imtihon natijasi emas. Transkript avtomatik va aniq bölmasligi mumkin.',
   }
 }
 
@@ -259,10 +259,10 @@ export function analyzeSpeakingText(text: string, task: { minSeconds: number; ta
   const targetWords = Math.round(task.targetSeconds)
   const length = clamp(words < minWords ? (words >= minWords * 0.6 ? 1 : 0) : words >= targetWords ? 5 : 3, 0, 5)
 
-  const notesUz = ['Matnli javob: ravonlik va talaffuz baholanmadi — imkon bo‘lsa javobni ovoz bilan ham yozib ko‘ring.']
-  if (words < minWords) notesUz.push(`Javob qisqa: ${words} so‘z. Kamida ${minWords} so‘z yozishga harakat qiling.`)
-  if (unique.size <= 8 && words > 0) notesUz.push('So‘zlar kam — kunlik lug‘atdan 3–4 ta yangi so‘zni shu javobga qo‘shib ko‘ring.')
-  if (sents.length < 3) notesUz.push('Fikrlarni alohida gaplarga bo‘ling: kim, nima, qachon, nega.')
+  const notesUz = ['Matnli javob: ravonlik va talaffuz baholanmadi — imkon bölsa javobni ovoz bilan ham yozib köring.']
+  if (words < minWords) notesUz.push(`Javob qisqa: ${words} söz. Kamida ${minWords} söz yozişga harakat qiling.`)
+  if (unique.size <= 8 && words > 0) notesUz.push('Sözlar kam — kunlik luğatdan 3–4 ta yangi sözni şu javobga qöşib köring.')
+  if (sents.length < 3) notesUz.push('Fikrlarni alohida gaplarga böling: kim, nima, qaçon, nega.')
 
   return {
     engine: 'rule-based',
@@ -274,7 +274,7 @@ export function analyzeSpeakingText(text: string, task: { minSeconds: number; ta
     wordCount: words,
     wpm: 0,
     notesUz,
-    disclaimerUz: 'Bu baho mashq maqsadida berildi — rasmiy imtihon natijasi emas. Matnli javobda ravonlik o‘lchanmaydi.',
+    disclaimerUz: 'Bu baho maşq maqsadida berildi — rasmiy imtihon natijasi emas. Matnli javobda ravonlik ölçanmaydi.',
   }
 }
 

@@ -15,12 +15,12 @@ export function watchErrors(page: Page): string[] {
 
 export async function expectNoHorizontalScroll(page: Page): Promise<void> {
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)
-  expect(overflow, 'gorizontal scroll bo‘lmasligi kerak').toBeLessThanOrEqual(1)
+  expect(overflow, 'gorizontal scroll bölmasligi kerak').toBeLessThanOrEqual(1)
 }
 
 export async function expectClean(page: Page, errors: string[]): Promise<void> {
   await expectNoHorizontalScroll(page)
-  expect(errors, 'konsol xatolari bo‘lmasligi kerak').toEqual([])
+  expect(errors, 'konsol xatolari bölmasligi kerak').toEqual([])
 }
 
 /** Ma'lumot IndexedDB'ga debounce bilan yoziladi — sahifa almashishidan oldin kutamiz. */
@@ -47,15 +47,15 @@ export async function skipThroughLesson(page: Page, maxSteps = 80): Promise<void
   for (let i = 0; i < maxSteps; i++) {
     if (await end.count()) break
     const lesson = page.locator('.aea-lesson').first()
-    const cont = lesson.getByRole('button', { name: 'Davom etish' })
+    const cont = lesson.getByRole('button', { name: 'Davom etiş' })
     if (await cont.count()) {
       await cont.first().click()
       continue
     }
-    const skip = lesson.getByRole('button', { name: 'O‘tkazib yuborish' })
+    const skip = lesson.getByRole('button', { name: 'Ötkazib yuboriş' })
     if (await skip.count()) {
       await skip.click()
-      await lesson.getByRole('button', { name: /Keyingi mashq|Yakunlash/ }).click()
+      await lesson.getByRole('button', { name: /Keyingi maşq|Yakunlaş/ }).click()
       continue
     }
     await page.waitForTimeout(100)
@@ -65,7 +65,7 @@ export async function skipThroughLesson(page: Page, maxSteps = 80): Promise<void
 
 /** ExerciseRunner'da "Tekshirish" faol bo'lguncha biror javob tanlaydi/yozadi. */
 export async function answerSomething(scope: Locator): Promise<void> {
-  const check = scope.getByRole('button', { name: 'Tekshirish' })
+  const check = scope.getByRole('button', { name: 'Tekşiriş' })
   const pairs = scope.locator('.grid-cols-2 > div')
   if ((await pairs.count()) === 2 && (await pairs.nth(0).locator('button').count()) > 0) {
     const n = await pairs.nth(0).locator('button').count()

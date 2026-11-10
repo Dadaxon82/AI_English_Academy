@@ -8,8 +8,8 @@ import { WORDS_PER_GAME, buildWordGame, pickGameWords, seededRand } from '../lib
 
 const pool = getBundle('A1').vocab
 
-describe('Lug‘at o‘yini — sessiya tuzilishi', () => {
-  it('yangi foydalanuvchi: 5 ta so‘z, har biri «YANGI SO‘Z» bilan boshlanadi, oxirida juftlik', () => {
+describe('Luğat öyini — sessiya tuzilişi', () => {
+  it('yangi foydalanuvçi: 5 ta söz, har biri «YANGI SÖZ» bilan boşlanadi, oxirida juftlik', () => {
     const steps = buildWordGame(pool, {}, seededRand(1))
     const ids = new Set(steps.flatMap((s) => s.vocabIds))
     expect(ids.size).toBe(WORDS_PER_GAME)
@@ -17,7 +17,7 @@ describe('Lug‘at o‘yini — sessiya tuzilishi', () => {
     expect(steps.at(-1)!.exercise.kind).toBe('matching')
   })
 
-  it('takrori yetgan so‘zlar birinchi tanlanadi', () => {
+  it('takrori yetgan sözlar birinçi tanlanadi', () => {
     const v = pool[10]!
     const past = Date.now() - 10 * 86_400_000
     const st = review(initialSrsState(past), 'good', past)
@@ -25,7 +25,7 @@ describe('Lug‘at o‘yini — sessiya tuzilishi', () => {
     expect(picked[0]!.id).toBe(v.id)
   })
 
-  it('rasmli tanlovda 3 ta HAR XIL rasm, to‘g‘ri javob variantlar ichida', () => {
+  it('rasmli tanlovda 3 ta HAR XIL rasm, töğri javob variantlar içida', () => {
     for (let seed = 1; seed < 20; seed++) {
       for (const s of buildWordGame(pool, {}, seededRand(seed)).filter((x) => x.icons)) {
         expect(s.icons!.length).toBe(3)
@@ -38,7 +38,7 @@ describe('Lug‘at o‘yini — sessiya tuzilishi', () => {
     }
   })
 
-  it('har topshiriq to‘g‘ri javob bilan yechiladi va id’dan tiklanadi (Xatolar daftari)', () => {
+  it('har topşiriq töğri javob bilan yeçiladi va id’dan tiklanadi (Xatolar daftari)', () => {
     for (let seed = 1; seed < 10; seed++) {
       for (const s of buildWordGame(pool, {}, seededRand(seed))) {
         const ex = s.exercise
@@ -52,7 +52,7 @@ describe('Lug‘at o‘yini — sessiya tuzilishi', () => {
     }
   })
 
-  it('misol gapi BO‘SH so‘z (glossariy) gap topshirig‘iga tushmaydi', () => {
+  it('misol gapi BÖŞ söz (glossariy) gap topşiriğiga tuşmaydi', () => {
     const bare: VocabularyItem[] = pool.map((v) => ({ ...v, exampleEn: '', exampleUz: '' }))
     for (let seed = 1; seed < 10; seed++) {
       const steps = buildWordGame([...bare, ...allGlossaryVocab()], {}, seededRand(seed))

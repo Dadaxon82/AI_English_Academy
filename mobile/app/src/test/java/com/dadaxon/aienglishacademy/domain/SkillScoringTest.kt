@@ -49,7 +49,7 @@ class SkillScoringTest {
         val p = evaluateLevelPromotion("A1", mixed)
         assertNull(p.recommendedLevel)
         assertTrue(p.weakSkills.contains("speaking"))
-        assertTrue(p.reasonUz.contains("XP va kunlar soni darajani o‘zgartirmaydi."))
+        assertTrue(p.reasonUz.contains("XP va kunlar soni darajani özgartirmaydi."))
     }
 
     @Test
@@ -77,7 +77,7 @@ class SkillScoringTest {
         val p = evaluateLevelPromotion("C1", allFour(99.0))
         assertNull(p.recommendedLevel)
         assertEquals(SKILLS_REQUIRED_TO_PROMOTE, p.readySkills.size)
-        assertEquals("Keyingi bosqich hozircha oxirgi daraja.", p.reasonUz)
+        assertEquals("Keyingi bosqiç hozirça oxirgi daraja.", p.reasonUz)
     }
 
     @Test
@@ -167,7 +167,7 @@ class SkillScoringTest {
 
     @Test
     fun `levelLabel o'zbekcha va inglizcha nom`() {
-        assertEquals("Boshlang‘ich", levelLabel("A1").titleUz)
+        assertEquals("Boşlanğiç", levelLabel("A1").titleUz)
         assertEquals("Beginner", levelLabel("A1").titleEn)
         assertEquals("Advanced", levelLabel("C1").titleEn)
         assertEquals("X9", levelLabel("X9").titleEn)

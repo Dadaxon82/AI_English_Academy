@@ -28,15 +28,15 @@ function day(over: Partial<DailyPlanDay> = {}): DailyPlanDay {
     id: 'a1-day-01',
     level: 'A1',
     dayNumber: 1,
-    titleUz: 'Salomlashuv',
-    goalUz: 'Tanishuv',
+    titleUz: 'Salomlaşuv',
+    goalUz: 'Tanişuv',
     sections: [
-      { skill: 'vocabulary', minutes: 10, itemIds: ['w1', 'w2'], titleUz: 'Lug‘at' },
+      { skill: 'vocabulary', minutes: 10, itemIds: ['w1', 'w2'], titleUz: 'Luğat' },
       { skill: 'grammar', minutes: 15, itemIds: ['g1'], titleUz: 'Grammatika' },
-      { skill: 'reading', minutes: 15, itemIds: ['r1'], titleUz: "O'qish" },
-      { skill: 'listening', minutes: 15, itemIds: ['l1'], titleUz: 'Tinglash' },
-      { skill: 'writing', minutes: 20, itemIds: ['wr1'], titleUz: 'Yozish' },
-      { skill: 'speaking', minutes: 15, itemIds: ['sp1'], titleUz: 'Gapirish' },
+      { skill: 'reading', minutes: 15, itemIds: ['r1'], titleUz: "Öqiş" },
+      { skill: 'listening', minutes: 15, itemIds: ['l1'], titleUz: 'Tinglaş' },
+      { skill: 'writing', minutes: 20, itemIds: ['wr1'], titleUz: 'Yoziş' },
+      { skill: 'speaking', minutes: 15, itemIds: ['sp1'], titleUz: 'Gapiriş' },
     ],
     ...over,
   }
@@ -49,8 +49,8 @@ function idsWithKinds(n: number, cycle: number = KINDS.length): { ids: string[];
   return { ids, kind: (id) => k.get(id) ?? '' }
 }
 
-describe('lessonSequence — DULO tur almashinuvi (matematika darsidan o‘lchangan qoida)', () => {
-  it('bir xil tur qo‘shni kelmaydi (bizning talabimiz: MIN_KIND_GAP)', () => {
+describe('lessonSequence — DULO tur almaşinuvi (matematika darsidan ölçangan qoida)', () => {
+  it('bir xil tur qöşni kelmaydi (bizning talabimiz: MIN_KIND_GAP)', () => {
     const { ids, kind } = idsWithKinds(15, 10)
     // `reinforce=false` — mustahkamlash AYNAN shu mashqni qayta qo'yadi,
     // shuning uchun u "bir xil tur qo'shni" hisobiga kiradi. Mobildagi
@@ -62,7 +62,7 @@ describe('lessonSequence — DULO tur almashinuvi (matematika darsidan o‘lchan
     expect(audit.minGap).toBeGreaterThanOrEqual(MIN_KIND_GAP)
   })
 
-  it('turni bilinmagan mashq cheklovga kirmaydi — tartib saqlanadi', () => {
+  it('turni bilinmagan maşq çeklovga kirmaydi — tartib saqlanadi', () => {
     const ids = ['a', 'b', 'c']
     const out = lessonSequence(ids, () => undefined)
     expect(out).toEqual(ids)
@@ -72,7 +72,7 @@ describe('lessonSequence — DULO tur almashinuvi (matematika darsidan o‘lchan
    * DULO `math_lesson.json`da 15 mashq / 10 tur: ba'zi turlar 2 marta uchraydi.
    * Bizning rotatsiyamiz ham ularni imkon boricha ajratadi.
    */
-  it('takrorlanuvchi turlar imkon boricha ajratiladi (DULO 15 turli darsidagi kabi)', () => {
+  it('takrorlanuvçi turlar imkon boriça ajratiladi (DULO 15 turli darsidagi kabi)', () => {
     const ids = ['m1', 'd1', 'd2', 'f1', 't1', 'e1', 'e2', 'n1', 'b1', 's1', 'w1', 'p1', 'p2', 'p3', 'q1']
     const k = new Map<string, string>([
       ['m1', 'mathMatch'],
@@ -101,32 +101,32 @@ describe('lessonSequence — DULO tur almashinuvi (matematika darsidan o‘lchan
     expect(gap.minGap).toBeGreaterThanOrEqual(MIN_KIND_GAP)
   })
 
-  it('bitta turli poolda hamma mashq saqlanadi (DULO “chess” darsi kabi — cheklov majburiy emas)', () => {
+  it('bitta turli poolda hamma maşq saqlanadi (DULO “chess” darsi kabi — çeklov majburiy emas)', () => {
     const ids = ['x1', 'x2', 'x3', 'x4']
     const out = lessonSequence(ids, () => 'matching')
     expect(out).toHaveLength(ids.length)
     expect(new Set(out).size).toBe(ids.length)
   })
 
-  it('bo‘sh ro‘yxat — bo‘sh javob (son ixtir qilinmaydi)', () => {
+  it('böş röyxat — böş javob (son ixtir qilinmaydi)', () => {
     expect(lessonSequence([], () => 'gap-fill')).toEqual([])
   })
 })
 
-describe('lessonSequence — mustahkamlash (check.ts qoidasi bilan birga ishlaydi)', () => {
-  it('reinforce=true da qayta takrorlanadigan mashq qo‘shiladi, yangi id emas', () => {
+describe('lessonSequence — mustahkamlaş (check.ts qoidasi bilan birga işlaydi)', () => {
+  it('reinforce=true da qayta takrorlanadigan maşq qöşiladi, yangi id emas', () => {
     const { ids, kind } = idsWithKinds(13)
     const out = lessonSequence(ids, kind, true)
     expect(out.length).toBe(ids.length + Math.floor(13 / REINFORCE_EVERY))
     for (const id of out) expect(ids).toContain(id)
   })
 
-  it('qisqa ro‘yxat shishmaydi (test havzasi kengaymaydi)', () => {
+  it('qisqa röyxat şişmaydi (test havzasi kengaymaydi)', () => {
     const { ids, kind } = idsWithKinds(5)
     expect(lessonSequence(ids, kind, true)).toHaveLength(5)
   })
 
-  it('test uchun reinforce=false — savollar takrorlanmaydi', () => {
+  it('test uçun reinforce=false — savollar takrorlanmaydi', () => {
     const { ids, kind } = idsWithKinds(13)
     const out = lessonSequence(ids, kind, false)
     expect(out).toHaveLength(13)
@@ -134,8 +134,8 @@ describe('lessonSequence — mustahkamlash (check.ts qoidasi bilan birga ishlayd
   })
 })
 
-describe('buildChain — kun ichidagi bo‘limlar tartibi', () => {
-  it('bo‘limlar ko‘rinadigan tartibda, test oxirida', () => {
+describe('buildChain — kun içidagi bölimlar tartibi', () => {
+  it('bölimlar körinadigan tartibda, test oxirida', () => {
     const t: SectionTest = {
       id: 'a1-test-01',
       level: 'A1',
@@ -165,12 +165,12 @@ describe('buildChain — kun ichidagi bo‘limlar tartibi', () => {
     expect(chain.steps.map((s) => s.index)).toEqual([0, 1, 2, 3, 4, 5, 6])
   })
 
-  it('mashqi bo‘lmagan bo‘lim zanjirga kirmaydi, yozish/gapirish qoladi', () => {
-    const chain = buildChain(day({ sections: [{ skill: 'grammar', minutes: 15, itemIds: ['g1'], titleUz: 'Grammatika' }, { skill: 'writing', minutes: 20, itemIds: ['wr1'], titleUz: 'Yozish' }] }), {})
+  it('maşqi bölmagan bölim zanjirga kirmaydi, yoziş/gapiriş qoladi', () => {
+    const chain = buildChain(day({ sections: [{ skill: 'grammar', minutes: 15, itemIds: ['g1'], titleUz: 'Grammatika' }, { skill: 'writing', minutes: 20, itemIds: ['wr1'], titleUz: 'Yoziş' }] }), {})
     expect(chain.steps.map((s) => s.skill)).toEqual(['writing'])
   })
 
-  it('kun qulfi: tugatilgan → done, joriy → current, boshqasi → locked', () => {
+  it('kun qulfi: tugatilgan → done, joriy → current, boşqasi → locked', () => {
     const chains = buildDayChains(
       [day({ id: 'd1', dayNumber: 1 }), day({ id: 'd2', dayNumber: 2 }), day({ id: 'd3', dayNumber: 3 })],
       {},
@@ -183,7 +183,7 @@ describe('buildChain — kun ichidagi bo‘limlar tartibi', () => {
 })
 
 describe('Zanjir byudjeti va audit (halollik)', () => {
-  it('A1 kontenti uchun kataklar soni bo‘laklash chegarasidan oshmaydi', () => {
+  it('A1 kontenti uçun kataklar soni bölaklaş çegarasidan oşmaydi', () => {
     // O'lchangan kontent hajmi: a1.json — 7 kun, 49 bo'lim/test, 133 element.
     const days: DailyPlanDay[] = Array.from({ length: 7 }, (_, i) => day({ id: `d${i}`, dayNumber: i + 1 }))
     const chains = buildDayChains(days, {}, [], 'd0')
@@ -191,7 +191,7 @@ describe('Zanjir byudjeti va audit (halollik)', () => {
     expect(chains.reduce((a, c) => a + c.steps.length, 0)).toBeLessThanOrEqual(budget)
   })
 
-  it('sequenceAudit — sonlar kontentdan hisoblanadi (31.1% DULO ko‘rsatkichi bizda 0)', () => {
+  it('sequenceAudit — sonlar kontentdan hisoblanadi (31.1% DULO körsatkiçi bizda 0)', () => {
     expect(sequenceAudit(['a', 'b'], () => undefined)).toEqual({ steps: 2, sameNeighbours: 0, minGap: 0 })
     const a = sequenceAudit(['a', 'b'], () => 'gap-fill')
     expect(a.sameNeighbours).toBe(1)
@@ -200,8 +200,8 @@ describe('Zanjir byudjeti va audit (halollik)', () => {
 })
 
 describe('exerciseIdsForSection — mobil `exerciseIdsFor` bilan bir xil', () => {
-  it('lug‘at bo‘limi test savoli id lariga aylanadi', () => {
-    const sec: DaySection = { skill: 'vocabulary', minutes: 10, itemIds: ['w1', 'w2'], titleUz: 'Lug‘at' }
+  it('luğat bölimi test savoli id lariga aylanadi', () => {
+    const sec: DaySection = { skill: 'vocabulary', minutes: 10, itemIds: ['w1', 'w2'], titleUz: 'Luğat' }
     const out = exerciseIdsForSection(sec, {
       vocabQuizIds: (ids) => ids.map((id) => `vocab-quiz-${id}`),
       grammarExercises: () => [],
@@ -212,7 +212,7 @@ describe('exerciseIdsForSection — mobil `exerciseIdsFor` bilan bir xil', () =>
     expect(out).toEqual(['vocab-quiz-w1', 'vocab-quiz-w2'])
   })
 
-  it('grammatika/reading/listening — element ichidagi mashqlar olinadi', () => {
+  it('grammatika/reading/listening — element içidagi maşqlar olinadi', () => {
     const lookup = {
       vocabQuizIds: (ids: readonly string[]) => ids.slice(),
       grammarExercises: (id: string) => (id === 'g1' ? [{ id: 'g1-a' } as Exercise, { id: 'g1-b' } as Exercise] : []),
@@ -226,7 +226,7 @@ describe('exerciseIdsForSection — mobil `exerciseIdsFor` bilan bir xil', () =>
     expect(exerciseIdsForSection(reading, lookup)).toEqual(['r1-a'])
   })
 
-  it('yozish/gapirish — mashq ro‘yxati bo‘sh (topshiriq baholanadi)', () => {
+  it('yoziş/gapiriş — maşq röyxati böş (topşiriq baholanadi)', () => {
     const lookup = {
       vocabQuizIds: (ids: readonly string[]) => ids.slice(),
       grammarExercises: () => [] as Exercise[],

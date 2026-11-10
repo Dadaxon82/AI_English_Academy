@@ -21,7 +21,7 @@ for (const scheme of ['light', 'dark'] as const) {
       const res = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).analyze()
       const bad = res.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical')
       const report = bad.map((v) => `${v.id} (${v.impact}) ×${v.nodes.length}: ${v.nodes.slice(0, 4).map((n) => n.target.join(' ')).join(' | ')}`)
-      expect(report, 'serious/critical axe buzilishlari').toEqual([])
+      expect(report, 'serious/critical axe buzilişlari').toEqual([])
     })
   }
 }
@@ -37,54 +37,54 @@ async function seriousViolations(page: import('@playwright/test').Page): Promise
 }
 
 for (const scheme of ['light', 'dark'] as const) {
-  test(`a11y ${scheme}: dars ichida (savol, natija, yakun)`, async ({ page }) => {
+  test(`a11y ${scheme}: dars içida (savol, natija, yakun)`, async ({ page }) => {
     await page.emulateMedia({ colorScheme: scheme })
     await disableHearts(page)
     await page.goto('grammar')
-    await page.getByRole('button', { name: 'Darsni boshlash' }).first().click()
+    await page.getByRole('button', { name: 'Darsni boşlaş' }).first().click()
     const lesson = page.locator('.aea-lesson').first()
     const found: string[] = []
     // Qoida kartasi
     found.push(...(await seriousViolations(page)))
-    await lesson.getByRole('button', { name: 'Davom etish' }).click()
+    await lesson.getByRole('button', { name: 'Davom etiş' }).click()
     // Savol (idle) va xato natija holati
     found.push(...(await seriousViolations(page)))
-    await lesson.getByRole('button', { name: 'O‘tkazib yuborish' }).click()
+    await lesson.getByRole('button', { name: 'Ötkazib yuboriş' }).click()
     found.push(...(await seriousViolations(page)))
-    await lesson.getByRole('button', { name: /Keyingi mashq|Yakunlash/ }).click()
+    await lesson.getByRole('button', { name: /Keyingi maşq|Yakunlaş/ }).click()
     await skipThroughLesson(page)
     found.push(...(await seriousViolations(page)))
-    expect([...new Set(found)], 'serious/critical axe buzilishlari').toEqual([])
+    expect([...new Set(found)], 'serious/critical axe buzilişlari').toEqual([])
   })
 }
 
 for (const scheme of ['light', 'dark'] as const) {
-  test(`a11y ${scheme}: «5 daqiqa» sessiyasi ichida`, async ({ page }) => {
+  test(`a11y ${scheme}: «5 daqiqa» sessiyasi içida`, async ({ page }) => {
     await page.emulateMedia({ colorScheme: scheme })
     await page.goto('quick')
-    await page.getByRole('button', { name: /Boshlash/ }).click()
+    await page.getByRole('button', { name: /Boşlaş/ }).click()
     await expect(page.getByRole('button', { name: 'Bilaman →' })).toBeVisible()
     const found = await seriousViolations(page)
-    await page.getByRole('button', { name: /tarjimani ko‘rish/ }).click()
+    await page.getByRole('button', { name: /tarjimani köriş/ }).click()
     found.push(...(await seriousViolations(page)))
-    expect([...new Set(found)], 'serious/critical axe buzilishlari').toEqual([])
+    expect([...new Set(found)], 'serious/critical axe buzilişlari').toEqual([])
   })
 }
 
 for (const scheme of ['light', 'dark'] as const) {
-  test(`a11y ${scheme}: suhbat darsi ichida (o‘qish, savol, izoh)`, async ({ page }) => {
+  test(`a11y ${scheme}: suhbat darsi içida (öqiş, savol, izoh)`, async ({ page }) => {
     await page.emulateMedia({ colorScheme: scheme })
     await disableHearts(page)
     await page.goto('dialogues')
-    await page.getByRole('button', { name: 'Boshlash' }).first().click()
+    await page.getByRole('button', { name: 'Boşlaş' }).first().click()
     const lesson = page.locator('.aea-lesson').first()
     const found = await seriousViolations(page)
-    await page.getByRole('button', { name: 'O‘zbekcha tarjimani ko‘rsatish' }).click()
+    await page.getByRole('button', { name: 'Özbekça tarjimani körsatiş' }).click()
     found.push(...(await seriousViolations(page)))
-    await lesson.getByRole('button', { name: 'Davom etish' }).click()
+    await lesson.getByRole('button', { name: 'Davom etiş' }).click()
     found.push(...(await seriousViolations(page)))
     await skipThroughLesson(page)
     found.push(...(await seriousViolations(page)))
-    expect([...new Set(found)], 'serious/critical axe buzilishlari').toEqual([])
+    expect([...new Set(found)], 'serious/critical axe buzilişlari').toEqual([])
   })
 }

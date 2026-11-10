@@ -11,26 +11,26 @@ import { StoreProvider } from '../lib/store'
 import Pronunciation from '../pages/Pronunciation'
 
 describe('comparePronunciation', () => {
-  it('hammasi tanildi — 100; tinish belgilari va katta harf ahamiyatsiz', () => {
+  it('hammasi tanildi — 100; tiniş belgilari va katta harf ahamiyatsiz', () => {
     const r = comparePronunciation('Can I have a cup of tea, please?', 'can i have a cup of tea please')
     expect(r.score).toBe(100)
     expect(r.words.every((w) => w.status === 'ok')).toBe(true)
     expect(r.words[7]!.text).toBe('please?')
   })
-  it('tushib qolgan va ortiqcha so‘zlar alohida; tartib saqlanadi', () => {
+  it('tuşib qolgan va ortiqça sözlar alohida; tartib saqlanadi', () => {
     const r = comparePronunciation('I usually get up at seven', 'I get up at eleven')
     expect(r.words.map((w) => w.status)).toEqual(['ok', 'miss', 'ok', 'ok', 'ok', 'miss'])
     expect(r.extra).toEqual(['eleven'])
     expect(r.score).toBe(67)
   })
-  it('apostrof turlari va raqam/so‘z bir xil', () => {
+  it('apostrof turlari va raqam/söz bir xil', () => {
     expect(comparePronunciation('I’m nineteen', "I'm nineteen").score).toBe(100)
     expect(comparePronunciation('It takes 4 hours', 'it takes four hours').score).toBe(100)
   })
-  it('bo‘sh javob — 0, soxta moslik yo‘q', () => {
+  it('böş javob — 0, soxta moslik yöq', () => {
     expect(comparePronunciation('Hello there', '').score).toBe(0)
   })
-  it('gaplar suhbatlardan: 3–12 so‘z, takrorsiz', () => {
+  it('gaplar suhbatlardan: 3–12 söz, takrorsiz', () => {
     const list = pronunciationSentences('A1')
     expect(list.length).toBeGreaterThan(20)
     expect(new Set(list.map((x) => x.en)).size).toBe(list.length)
@@ -44,12 +44,12 @@ describe('Immersion rejimi', () => {
     cleanup()
     localStorage.clear()
   })
-  it('o‘chiq — tarjima ko‘rinadi; yoqilsa — yashirin, tugma bilan ochiladi; boshqa komponent ham yangilanadi', () => {
+  it('öçiq — tarjima körinadi; yoqilsa — yaşirin, tugma bilan oçiladi; boşqa komponent ham yangilanadi', () => {
     render(<UzTranslation>non</UzTranslation>)
     expect(screen.getByText('non')).toBeTruthy()
     act(() => setImmersion(true))
     expect(screen.queryByText('non')).toBeNull()
-    fireEvent.click(screen.getByRole('button', { name: 'Tarjimani ko‘rsatish' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Tarjimani körsatiş' }))
     expect(screen.getByText('non')).toBeTruthy()
     expect(localStorage.getItem('aea-immersion')).toBe('1')
     act(() => setImmersion(false))
@@ -57,7 +57,7 @@ describe('Immersion rejimi', () => {
   })
 })
 
-describe('Talaffuz sahifasi — nutqni tanish yo‘q (jsdom)', () => {
+describe('Talaffuz sahifasi — nutqni taniş yöq (jsdom)', () => {
   beforeEach(() => {
     vi.useFakeTimers()
     vi.stubGlobal('fetch', vi.fn(async () => ({ ok: false, status: 404, json: async () => ({}) })))
@@ -67,7 +67,7 @@ describe('Talaffuz sahifasi — nutqni tanish yo‘q (jsdom)', () => {
     vi.useRealTimers()
     vi.unstubAllGlobals()
   })
-  it('sabab oldindan aytiladi, «Aytish» o‘chiq, ball chiqmaydi; gaplar orasida yurish ishlaydi', async () => {
+  it('sabab oldindan aytiladi, «Aytiş» öçiq, ball çiqmaydi; gaplar orasida yuriş işlaydi', async () => {
     render(
       <MemoryRouter>
         <StoreProvider userId="u-pron">
@@ -78,8 +78,8 @@ describe('Talaffuz sahifasi — nutqni tanish yo‘q (jsdom)', () => {
     await act(async () => {
       await vi.advanceTimersByTimeAsync(50)
     })
-    expect(screen.getByText(/Web Speech API yo‘q/)).toBeTruthy()
-    expect((screen.getByRole('button', { name: /Aytish/ }) as HTMLButtonElement).disabled).toBe(true)
+    expect(screen.getByText(/Web Speech API yöq/)).toBeTruthy()
+    expect((screen.getByRole('button', { name: /Aytiş/ }) as HTMLButtonElement).disabled).toBe(true)
     expect(screen.queryByTestId('pron-result')).toBeNull()
     const first = pronunciationSentences('A1')[0]!.en
     expect(screen.getByText(first)).toBeTruthy()
@@ -116,7 +116,7 @@ describe('Talaffuz sahifasi — nutq tanildi (soxta SpeechRecognition)', () => {
     vi.useRealTimers()
     vi.unstubAllGlobals()
   })
-  it('tanilgan matn so‘zma-so‘z solishtiriladi va «taxminiy» ball chiqadi', async () => {
+  it('tanilgan matn sözma-söz soliştiriladi va «taxminiy» ball çiqadi', async () => {
     render(
       <MemoryRouter>
         <StoreProvider userId="u-pron2">
@@ -128,7 +128,7 @@ describe('Talaffuz sahifasi — nutq tanildi (soxta SpeechRecognition)', () => {
       await vi.advanceTimersByTimeAsync(50)
     })
     const target = pronunciationSentences('A1')[0]!.en
-    fireEvent.click(screen.getByRole('button', { name: /Aytish/ }))
+    fireEvent.click(screen.getByRole('button', { name: /Aytiş/ }))
     const words = target.split(/\s+/)
     act(() => {
       instance!.onresult!({ resultIndex: 0, results: [{ 0: { transcript: words.slice(0, -1).join(' '), confidence: 0.9 }, isFinal: true }] })
@@ -136,7 +136,7 @@ describe('Talaffuz sahifasi — nutq tanildi (soxta SpeechRecognition)', () => {
     })
     const res = screen.getByTestId('pron-result')
     expect(res.textContent).toMatch(/Taxminiy moslik: \d+%/)
-    expect(res.textContent).toMatch(/brauzer ishonchi 90%/)
-    expect(screen.getByText(/Bu sessiyada 1 urinish/)).toBeTruthy()
+    expect(res.textContent).toMatch(/brauzer işonçi 90%/)
+    expect(screen.getByText(/Bu sessiyada 1 uriniş/)).toBeTruthy()
   })
 })

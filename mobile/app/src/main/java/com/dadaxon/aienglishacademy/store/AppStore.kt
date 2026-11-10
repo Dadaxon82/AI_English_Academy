@@ -500,7 +500,7 @@ class AppStore(private val context: Context, private val container: AppContainer
                 val res = runCatching {
                     container.sync.pushAppData(_state.value.data)
                     container.sync.syncNow(who, true)
-                }.getOrElse { SyncStats(false, 0, 0, 0, 0, false, it.message ?: "Sinxronlash xatosi") }
+                }.getOrElse { SyncStats(false, 0, 0, 0, 0, false, it.message ?: "Sinxronlaş xatosi") }
                 val fresh = runCatching { container.local.loadData(who) }.getOrElse { _state.value.data }
                 runOnMain {
                     _state.value = _state.value.copy(

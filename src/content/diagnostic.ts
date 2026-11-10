@@ -16,58 +16,58 @@ export interface DiagnosticQuestion {
 
 export const diagnosticTest = {
   id: 'diagnostic-01',
-  titleUz: 'Boshlang‘ich diagnostika',
+  titleUz: 'Boşlanğiç diagnostika',
   descriptionUz:
-    'Taxminan 10 daqiqa. 12 ta qisqa savol — hozirgi darajangizni aniqlash uchun. Bu test rasmiy imtihon emas.',
+    'Taxminan 10 daqiqa. 12 ta qisqa savol — hozirgi darajangizni aniqlaş uçun. Bu test rasmiy imtihon emas.',
   passScore: 50,
   exercises: [
     {
       id: 'dg-01',
       kind: 'multiple-choice',
-      instructionUz: 'Bo‘sh joyni to‘ldiring.',
+      instructionUz: 'Böş joyni töldiring.',
       question: 'My name ___ Sardor.',
       options: ['is', 'are', 'am', 'be'],
       answerIndex: 0,
       level: 'A1',
       skill: 'grammar',
       difficulty: 1,
-      explanationUz: '“My name” uchinchi shaxs birlik — “is” ishlatiladi.',
+      explanationUz: '“My name” uçinçi şaxs birlik — “is” işlatiladi.',
     },
     {
       id: 'dg-02',
       kind: 'multiple-choice',
-      instructionUz: 'To‘g‘ri variantni tanlang.',
+      instructionUz: 'Töğri variantni tanlang.',
       question: 'She ___ to school every day.',
       options: ['go', 'goes', 'going', 'gone'],
       answerIndex: 1,
       level: 'A1',
       skill: 'grammar',
       difficulty: 2,
-      explanationUz: 'Present Simple, uchinchi shaxs birlikda fe‘lga -s qo‘shiladi.',
+      explanationUz: 'Present Simple, uçinçi şaxs birlikda fe’lga -s qöşiladi.',
     },
     {
       id: 'dg-03',
       kind: 'gap-fill',
-      instructionUz: 'Bo‘sh joyni to‘ldiring.',
+      instructionUz: 'Böş joyni töldiring.',
       text: "There isn't ___ milk in the fridge.",
       answers: ['any'],
       level: 'A1',
       skill: 'grammar',
       difficulty: 2,
-      explanationUz: 'Inkor gapda “any” ishlatiladi.',
+      explanationUz: 'Inkor gapda “any” işlatiladi.',
     },
     {
       id: 'dg-04',
       kind: 'translation',
-      instructionUz: 'Inglizchaga tarjima qiling.',
-      source: 'Men kecha kutubxonaga bordim.',
+      instructionUz: 'Inglizçaga tarjima qiling.',
+      source: 'Men keça kutubxonaga bordim.',
       sourceLang: 'uz',
       // "kecha" = yesterday: "last week" ma'nosi boshqa — qabul qilinmaydi.
       accepted: ['i went to the library yesterday', 'yesterday i went to the library'],
       level: 'A2',
       skill: 'grammar',
       difficulty: 3,
-      explanationUz: 'Past Simple: “go” → “went”, vaqt so‘zi oxirga qo‘yiladi.',
+      explanationUz: 'Past Simple: “go” → “went”, vaqt sözi oxirga qöyiladi.',
     },
     {
       id: 'dg-05',
@@ -81,7 +81,7 @@ export const diagnosticTest = {
       skill: 'reading',
       difficulty: 2,
       passageExcerpt: 'Anna is a waiter in a small cafe near her house. She gets up at six and takes the bus to work.',
-      explanationUz: 'Matnda u kafeda ishlashi aytilgan — shuning uchun False.',
+      explanationUz: 'Matnda u kafeda işlaşi aytilgan — şuning uçun False.',
     },
     {
       id: 'dg-06',
@@ -94,36 +94,36 @@ export const diagnosticTest = {
       skill: 'reading',
       difficulty: 3,
       passageExcerpt: 'Anna is a waiter in a small cafe near her house. She gets up at six and takes the bus to work.',
-      explanationUz: 'Maosh haqida hech narsa aytilmagan — Not Given.',
+      explanationUz: 'Maoş haqida heç narsa aytilmagan — Not Given.',
     },
     {
       id: 'dg-07',
       kind: 'multiple-choice',
-      instructionUz: 'So‘zning ma’nosini tanlang.',
+      instructionUz: 'Sözning ma’nosini tanlang.',
       question: '“reluctant” means…',
       options: ['very happy', 'not wanting to do something', 'very fast', 'dangerous'],
       answerIndex: 1,
       level: 'B1',
       skill: 'vocabulary',
       difficulty: 3,
-      explanationUz: '“Reluctant” — istagsiz, ko‘ngilsiz.',
+      explanationUz: '“Reluctant” — istagsiz, köngilsiz.',
     },
     {
       id: 'dg-08',
       kind: 'multiple-choice',
-      instructionUz: 'To‘g‘ri variantni tanlang.',
+      instructionUz: 'Töğri variantni tanlang.',
       question: 'If the train had left on time, we ___ here now.',
       options: ['would be', 'will be', 'had been', 'are'],
       answerIndex: 0,
       level: 'B2',
       skill: 'grammar',
       difficulty: 4,
-      explanationUz: 'Aralash (mixed) conditional: o‘tmish sharti + hozirgi natija.',
+      explanationUz: 'Aralaş (mixed) conditional: ötmiş şarti + hozirgi natija.',
     },
     {
       id: 'dg-09',
       kind: 'gap-fill',
-      instructionUz: 'Bo‘sh joyni to‘ldiring.',
+      instructionUz: 'Böş joyni töldiring.',
       text: 'By this time next year, she ___ her degree.',
       answers: ['will have finished'],
       acceptAlternatives: [['will have finished', 'will have completed', 'will have got', 'will have gotten']],
@@ -135,22 +135,22 @@ export const diagnosticTest = {
     {
       id: 'dg-10',
       kind: 'multiple-choice',
-      instructionUz: 'Ma‘noviy farqni aniqlang.',
+      instructionUz: 'Ma’noviy farqni aniqlang.',
       question: '“The findings were largely inconclusive” — “largely” here means…',
       options: ['in a large building', 'mostly', 'rarely', 'loudly'],
       answerIndex: 1,
       level: 'C1',
       skill: 'vocabulary',
       difficulty: 5,
-      explanationUz: '“Largely” — asosan, ko‘p jihatdan.',
+      explanationUz: '“Largely” — asosan, köp jihatdan.',
     },
     {
       id: 'dg-11',
       kind: 'word-order',
-      instructionUz: 'So‘zlarni to‘g‘ri tartibga tizing.',
+      instructionUz: 'Sözlarni töğri tartibga tizing.',
       answer: ['Never', 'had', 'she', 'seen', 'snow'],
       bank: ['she', 'had', 'Never', 'seen', 'snow'],
-      noteUz: '“Never” bilan boshlangan gapda invertsiya bo‘ladi.',
+      noteUz: '“Never” bilan boşlangan gapda invertsiya böladi.',
       level: 'C1',
       skill: 'grammar',
       difficulty: 5,
@@ -159,8 +159,8 @@ export const diagnosticTest = {
     {
       id: 'dg-12',
       kind: 'translation',
-      instructionUz: 'Inglizchaga tarjima qiling.',
-      source: 'Kitobni o‘qib bo‘lgach, uni yopdim.',
+      instructionUz: 'Inglizçaga tarjima qiling.',
+      source: 'Kitobni öqib bölgaç, uni yopdim.',
       sourceLang: 'uz',
       accepted: [
         'after i had finished reading the book, i closed it',
@@ -170,7 +170,7 @@ export const diagnosticTest = {
       level: 'B2',
       skill: 'writing',
       difficulty: 4,
-      explanationUz: 'Ikki o‘tmish harakatidan oldinroq bo‘lgani uchun Past Simple (yoki Perfect participle).',
+      explanationUz: 'Ikki ötmiş harakatidan oldinroq bölgani uçun Past Simple (yoki Perfect participle).',
     },
   ] as Exercise[],
 }
@@ -208,14 +208,14 @@ export function diagnose(exerciseResults: Record<string, boolean>): {
 
   const confidence = Number((confidentBands / order.length).toFixed(2))
   if (!reached) {
-    return { level: null, confidence, labelUz: 'Natija noaniq — A1 dan boshlaymiz va diagnostikani keyin takrorlaymiz.' }
+    return { level: null, confidence, labelUz: 'Natija noaniq — A1 dan boşlaymiz va diagnostikani keyin takrorlaymiz.' }
   }
   if (confidence < 0.5) {
     return {
       level: null,
       confidence,
-      labelUz: `Taxminiy darajangiz ${reached}, ammo dalil yetarli emas. A1 bosqichidan boshlab, birinchi bo‘lim testidan so‘ng qayta baholanadi.`,
+      labelUz: `Taxminiy darajangiz ${reached}, ammo dalil yetarli emas. A1 bosqiçidan boşlab, birinçi bölim testidan söng qayta baholanadi.`,
     }
   }
-  return { level: reached, confidence, labelUz: `Diagnostika natijasi: ${reached}. Bu taxminiy baho — darslar davomida aniqlashtiriladi.` }
+  return { level: reached, confidence, labelUz: `Diagnostika natijasi: ${reached}. Bu taxminiy baho — darslar davomida aniqlaştiriladi.` }
 }

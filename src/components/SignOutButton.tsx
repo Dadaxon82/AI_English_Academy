@@ -41,7 +41,7 @@ export default function SignOutButton({ compact = false }: { compact?: boolean }
     else setUnsynced({ pending: q.length, reasonUz: res.reasonUz })
   }
 
-  const label = isGuest ? 'Chiqish (ma’lumot saqlanadi)' : busy ? 'Sinxronlanmoqda…' : 'Hisobdan chiqish'
+  const label = isGuest ? 'Çiqiş (ma’lumot saqlanadi)' : busy ? 'Sinxronlanmoqda…' : 'Hisobdan çiqiş'
 
   return (
     <>
@@ -60,7 +60,7 @@ export default function SignOutButton({ compact = false }: { compact?: boolean }
               <path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l-5-5 5-5M5 12h11" />
             </svg>
           )}
-          <span className="hidden sm:inline">Chiqish</span>
+          <span className="hidden sm:inline">Çiqiş</span>
         </Button>
       ) : (
         <Button variant="secondary" busy={busy} onClick={() => void request()}>
@@ -73,19 +73,19 @@ export default function SignOutButton({ compact = false }: { compact?: boolean }
           <p className="text-sm">
             {unsynced && unsynced.pending > 0
               ? `${unsynced.pending} ta yozuv serverga yuborilmadi.`
-              : 'Sinxronizatsiya to‘liq bajarilmadi.'}{' '}
+              : 'Sinxronizatsiya töliq bajarilmadi.'}{' '}
             {unsynced?.reasonUz}
           </p>
           <InfoBanner tone="warn">
-            Hisobdan chiqsangiz, bu qurilmadagi ma’lumotlar o‘chiriladi — serverga yetmagan qismini tiklab bo‘lmaydi.
-            Internetni tekshirib, qayta urinib ko‘ring.
+            Hisobdan çiqsangiz, bu qurilmadagi ma’lumotlar öçiriladi — serverga yetmagan qismini tiklab bölmaydi.
+            Internetni tekşirib, qayta urinib köring.
           </InfoBanner>
           <div className="flex gap-2 justify-end">
             <Button variant="ghost" onClick={() => setUnsynced(null)}>
-              Qolish
+              Qoliş
             </Button>
             <Button variant="danger" onClick={doSignOut}>
-              Baribir chiqish
+              Baribir çiqiş
             </Button>
           </div>
         </div>

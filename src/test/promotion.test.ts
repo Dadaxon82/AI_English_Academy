@@ -27,45 +27,45 @@ const allFour = (score: number, n = MIN_EVIDENCE_PER_SKILL): SkillEvidence[] => 
   ev('speaking', score, n),
 ]
 
-describe('Daraja ko‘tarish — faqat ko‘p ko‘nikma dalili bilan', () => {
-  it('4 ta asosiy ko‘nikma yetarli → keyingi daraja tavsiya qilinadi', () => {
+describe('Daraja kötariş — faqat köp könikma dalili bilan', () => {
+  it('4 ta asosiy könikma yetarli → keyingi daraja tavsiya qilinadi', () => {
     const p = evaluateLevelPromotion('A1', allFour(PROMOTION_THRESHOLD))
     expect(p.recommendedLevel).toBe('A2')
     expect(p.readySkills).toHaveLength(SKILLS_REQUIRED_TO_PROMOTE)
     expect(p.reasonUz).toContain('tavsiya')
   })
 
-  it('bitta ko‘nikma zaif bo‘lsa — tavsiya YO‘Q', () => {
+  it('bitta könikma zaif bölsa — tavsiya YÖQ', () => {
     const mixed = [ev('reading', 90), ev('listening', 90), ev('writing', 90), ev('speaking', 30)]
     const p = evaluateLevelPromotion('A1', mixed)
     expect(p.recommendedLevel).toBeNull()
     expect(p.weakSkills).toContain('speaking')
   })
 
-  it('isbotlar soni yetarli bo‘lmasa — tavsiya yo‘q (XP emas, dalil muhim)', () => {
+  it('isbotlar soni yetarli bölmasa — tavsiya yöq (XP emas, dalil muhim)', () => {
     const p = evaluateLevelPromotion('A1', allFour(95, MIN_EVIDENCE_PER_SKILL - 1))
     expect(p.recommendedLevel).toBeNull()
   })
 
-  it('ball chegaradan 1 ga past bo‘lsa — tavsiya yo‘q', () => {
+  it('ball çegaradan 1 ga past bölsa — tavsiya yöq', () => {
     const p = evaluateLevelPromotion('A1', allFour(PROMOTION_THRESHOLD - 1))
     expect(p.recommendedLevel).toBeNull()
   })
 
-  it('C1 da tavsiya yo‘q (oxirgi daraja)', () => {
+  it('C1 da tavsiya yöq (oxirgi daraja)', () => {
     const p = evaluateLevelPromotion('C1', allFour(99))
     expect(p.recommendedLevel).toBeNull()
   })
 
-  it('isbotlar butunlay bo‘lmasa — tavsiya yo‘q (XP/daqiqa emas, dalil kerak)', () => {
+  it('isbotlar butunlay bölmasa — tavsiya yöq (XP/daqiqa emas, dalil kerak)', () => {
     const none = allFour(99, 0)
     const p = evaluateLevelPromotion('A1', none)
     expect(p.recommendedLevel).toBeNull()
   })
 })
 
-describe('weightedScore — yangi natijalar ko‘proq og‘irlikda', () => {
-  it('yaqindagi yuqori natija eski yuqori natijadan ko‘ra ballni ko‘proq ko‘taradi', () => {
+describe('weightedScore — yangi natijalar köproq oğirlikda', () => {
+  it('yaqindagi yuqori natija eski yuqori natijadan köra ballni köproq kötaradi', () => {
     const recentHigh = weightedScore(
       [
         { score: 100, at: NOW - 86_400_000, kind: 'practice' },
@@ -85,7 +85,7 @@ describe('weightedScore — yangi natijalar ko‘proq og‘irlikda', () => {
     expect(oldHigh).toBeLessThan(50)
   })
 
-  it('mock imtihon oddiy mashqqa qaraganda kuchliroq ta’sir qiladi', () => {
+  it('mock imtihon oddiy maşqqa qaraganda kuçliroq ta’sir qiladi', () => {
     const withPractice = weightedScore(
       [
         { score: 40, at: NOW - 86_400_000, kind: 'practice' },
@@ -104,8 +104,8 @@ describe('weightedScore — yangi natijalar ko‘proq og‘irlikda', () => {
   })
 })
 
-describe('XP va streak — motivatsiya, darajaga aloqasi yo‘q', () => {
-  it('to‘g‘ri javob xatodan ko‘ra ko‘proq XP beradi', () => {
+describe('XP va streak — motivatsiya, darajaga aloqasi yöq', () => {
+  it('töğri javob xatodan köra köproq XP beradi', () => {
     expect(xpForAttempt(true, 3, true)).toBeGreaterThan(xpForAttempt(false, 3, true))
   })
 

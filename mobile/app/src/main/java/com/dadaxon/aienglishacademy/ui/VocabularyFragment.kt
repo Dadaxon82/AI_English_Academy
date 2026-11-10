@@ -28,6 +28,7 @@ import com.google.android.material.card.MaterialCardView
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
+import com.dadaxon.aienglishacademy.domain.foldUzLatin
 
 /**
  * Lug'at ekrani — so'zlar ro'yxati + qidiruv + SRS filtrlari.
@@ -327,8 +328,8 @@ class VocabularyFragment : Fragment() {
     }
 
     /** Veb `flat()`: apostroflar olib tashlanadi, qolgan belgilar bo'shliq. */
-    private fun flat(s: String): String = s.lowercase(Locale.ROOT)
-        .replace("[‘’`´ʻ]".toRegex(), "")
+    private fun flat(s: String): String = foldUzLatin(s).lowercase(Locale.ROOT)
+        .replace("['‘’`´ʻ]".toRegex(), "")
         .replace("[^a-z0-9\\s-]".toRegex(), " ")
         .replace("\\s+".toRegex(), " ")
         .trim()

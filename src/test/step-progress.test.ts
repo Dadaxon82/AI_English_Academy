@@ -18,7 +18,7 @@ function att(exerciseId: string, correct: boolean, at: number): AttemptRecord {
 }
 
 describe('xarita — qadam darajasidagi progress', () => {
-  it('bo‘lim mashqlari hammasi to‘g‘ri yechilsa qadam "done", qolgan vazifalar 1 taga kamayadi', () => {
+  it('bölim maşqlari hammasi töğri yeçilsa qadam "done", qolgan vazifalar 1 taga kamayadi', () => {
     const d = emptyData('u')
     const before = buildPathLayout(chains(), 360, pathMilestoneSpecs('A1'), stepDoneChecker(d))
     d.attempts = gIds.map((id, i) => att(id, true, i + 1))
@@ -28,7 +28,7 @@ describe('xarita — qadam darajasidagi progress', () => {
     expect(after.units[0]!.stepsDone).toBe(1)
   })
 
-  it('bitta mashq xato bo‘lsa — qadam tugamagan; remix to‘g‘ri yechilsa asliga yoziladi', () => {
+  it('bitta maşq xato bölsa — qadam tugamagan; remix töğri yeçilsa asliga yoziladi', () => {
     const d = emptyData('u')
     d.attempts = gIds.map((id, i) => att(id, i !== 0, i + 1))
     expect(buildPathLayout(chains(), 360, [], stepDoneChecker(d)).nodes.find((n) => n.skill === 'grammar')!.status).toBe('current')
@@ -36,7 +36,7 @@ describe('xarita — qadam darajasidagi progress', () => {
     expect(buildPathLayout(chains(), 360, [], stepDoneChecker(d)).nodes.find((n) => n.skill === 'grammar')!.status).toBe('done')
   })
 
-  it('yozish qadami — shu topshiriq uchun javob saqlansa', () => {
+  it('yoziş qadami — şu topşiriq uçun javob saqlansa', () => {
     const d = emptyData('u')
     const wId = day1.sections.find((s) => s.skill === 'writing')!.itemIds[0]!
     const check = stepDoneChecker(d)
@@ -47,7 +47,7 @@ describe('xarita — qadam darajasidagi progress', () => {
     expect(stepDoneChecker(d)(wStep, day1)).toBe(true)
   })
 
-  it('qulflangan kun qadamlari signal bo‘lsa ham "done" bo‘lmaydi (qulf kun darajasida)', () => {
+  it('qulflangan kun qadamlari signal bölsa ham "done" bölmaydi (qulf kun darajasida)', () => {
     const d = emptyData('u')
     d.attempts = [att('x', true, 1)]
     const l = buildPathLayout(chains(), 360, [], stepDoneChecker(d))
@@ -55,8 +55,8 @@ describe('xarita — qadam darajasidagi progress', () => {
   })
 })
 
-describe('bo‘lim darsi natijasi (xaritadagi ball)', () => {
-  it('reducer: faqat step: kaliti, 0–100 ga qisiladi, eng yaxshisi saqlanadi', async () => {
+describe('bölim darsi natijasi (xaritadagi ball)', () => {
+  it('reducer: faqat step: kaliti, 0–100 ga qisiladi, eng yaxşisi saqlanadi', async () => {
     const { reducer } = await import('../lib/reducer')
     const { stepScoreKey } = await import('../lib/stepProgress')
     const k = stepScoreKey(day1.id, 'grammar')
@@ -71,7 +71,7 @@ describe('bo‘lim darsi natijasi (xaritadagi ball)', () => {
     expect(s.settings.currentLevel).toBe('A1')
   })
 
-  it('tugunda ball ko‘rinadi va qadam bajarilgan hisoblanadi; qulflangan kunda ko‘rsatilmaydi', async () => {
+  it('tugunda ball körinadi va qadam bajarilgan hisoblanadi; qulflangan kunda körsatilmaydi', async () => {
     const { stepScoreKey, stepScoreReader } = await import('../lib/stepProgress')
     const d = emptyData('u')
     d.path.passedTests[stepScoreKey(day1.id, 'grammar')] = 85

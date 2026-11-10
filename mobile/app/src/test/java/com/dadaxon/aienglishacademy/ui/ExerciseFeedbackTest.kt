@@ -40,28 +40,28 @@ class ExerciseFeedbackTest {
         val src = fragmentSource()
         val outcome = src.substringAfter("private fun showOutcome(out: CheckOutcome, xp: Int)")
         assertTrue(
-            "noto'g'ri javobda natija kartasi silkitilishi kerak (`Motion.shake`)",
+            "notöğri javobda natija kartasi silkitilişi kerak (`Motion.shake`)",
             outcome.contains("Motion.shake(b.resultCard)"),
         )
         assertTrue(
-            "silkinish FAQAT noto'g'ri tarmoqda bo'lishi kerak (to'g'ride — halqa/pop)",
+            "silkiniş FAQAT notöğri tarmoqda bölişi kerak (töğride — halqa/pop)",
             outcome.substringAfter("else {").contains("Motion.shake"),
         )
 
         val motion = motionSource()
         val shake = motion.substringAfter("fun shake(v: View)").substringBefore("/**")
         assertTrue(
-            "silkinish uzamligi YANGI SON EMAS — mavjud `outcomeMs` bo'linadi",
+            "silkiniş uzamligi YANGI SON EMAS — mavjud `outcomeMs` bölinadi",
             shake.contains("sp.outcomeMs / 5"),
         )
         assertTrue(
-            "harakat o'chirilganda view joyiga qaytishi kerak (translyatsiya qolib ketmaydi)",
+            "harakat öçirilganda view joyiga qaytişi kerak (translyatsiya qolib ketmaydi)",
             shake.contains("v.translationX = 0f"),
         )
         // Bosqich nisbatlari veb CSS'dagi `@keyframes shake` bilan bir xil:
         // -7, +6, -4, +2, 0.
         for (ratio in listOf("d * 6 / 7f", "-d * 4 / 7f", "d * 2 / 7f", "translationX(0f)")) {
-            assertTrue("silkinish bosqichi yo'q ($ratio) — veb bilan bir xil bo'lishi shart", shake.contains(ratio))
+            assertTrue("silkiniş bosqiçi yöq ($ratio) — veb bilan bir xil bölişi şart", shake.contains(ratio))
         }
     }
 
@@ -69,21 +69,21 @@ class ExerciseFeedbackTest {
     fun javobOvoziFaylEMASSintezQilinadiVaSozlamagaBoglangan() {
         val motion = motionSource()
         val play = motion.substringAfter("fun playFeedback(ctx: Context, correct: Boolean)")
-        assertTrue("ovoz `AudioTrack`da generatsiya qilinadi (fayl o'qilmaydi)", play.contains("AudioTrack"))
-        assertTrue("nota chastotalari e'lon qilingan (ixtir emas)", play.contains("NOTE_UP_1"))
+        assertTrue("ovoz `AudioTrack`da generatsiya qilinadi (fayl öqilmaydi)", play.contains("AudioTrack"))
+        assertTrue("nota çastotalari e'lon qilingan (ixtir emas)", play.contains("NOTE_UP_1"))
         assertTrue(
             "ova uzamligi YANGI SON EMAS — `popMs`/`outcomeMs` dan",
             play.contains("sp.popMs / notes.size") && play.contains("sp.outcomeMs"),
         )
         assertTrue(
-            "ovoz so'rovi bitta tugmadan: `settings.motionEnabled` (yangi sozlama/ustun qo'shilmagan)",
+            "ovoz sörovi bitta tugmadan: `settings.motionEnabled` (yangi sozlama/ustun qöşilmagan)",
             motion.substringAfter("fun soundEnabled(ctx: Context)").substringBefore("/**").contains("motionEnabled"),
         )
 
         val fragment = fragmentSource()
         val outcome = fragment.substringAfter("private fun showOutcome(out: CheckOutcome, xp: Int)")
         assertTrue(
-            "javob ovozi natija bilan bog'langan bo'lishi kerak",
+            "javob ovozi natija bilan boğlangan bölişi kerak",
             outcome.contains("Motion.playFeedback(ctx, out.correct)"),
         )
 
@@ -93,7 +93,7 @@ class ExerciseFeedbackTest {
         val audios = raw.listFiles()?.filter {
             it.name.endsWith(".mp3") || it.name.endsWith(".ogg") || it.name.endsWith(".wav")
         } ?: emptyList()
-        assertTrue("res/raw ga audio fayl qo'shilmasligi kerak: ${audios.map { it.name }}", audios.isEmpty())
+        assertTrue("res/raw ga audio fayl qöşilmasligi kerak: ${audios.map { it.name }}", audios.isEmpty())
     }
 
     @Test
@@ -101,27 +101,27 @@ class ExerciseFeedbackTest {
         val motion = motionSource()
         val press = motion.substringAfter("fun press(v: View)").substringBefore("/**")
         assertTrue(
-            "bosish uzamligi manifestdan (`pressMs`) — YANGI SON YO'Q",
+            "bosiş uzamligi manifestdan (`pressMs`) — YANGI SON YÖQ",
             press.contains("sp.pressMs"),
         )
         // Masshtablar veb CSS'dagi `@keyframes bump` bilan BIR XIL (0.97 → 1.03 → 1).
         for (literal in listOf("0.97f", "1.03f", "scaleX(1f)")) {
-            assertTrue("bosish masshtabi yo'q ($literal)", press.contains(literal))
+            assertTrue("bosiş masştabi yöq ($literal)", press.contains(literal))
         }
         assertTrue(
-            "harakat o'chirilganda masshtab 1 ga qaytadi",
+            "harakat öçirilganda masştab 1 ga qaytadi",
             press.contains("v.scaleX = 1f"),
         )
 
         val fragment = fragmentSource()
         val helpers = fragment.substringAfter("private fun pressOnTouch(v: View)")
         assertTrue(
-            "Android'ning o'z 'klik' ovozi o'chirilgan (tizim ovozi — brend shovqini)",
+            "Android'ning öz 'klik' ovozi öçirilgan (tizim ovozi — brend şovqini)",
             helpers.contains("v.isSoundEffectsEnabled = false"),
         )
         val applied = Regex("""pressOnTouch\(this\)""").findAll(fragment).toList()
         assertTrue(
-            "har bir javob tugmasida bosish bo'lishi kerak (topildi: ${applied.size}) — " +
+            "har bir javob tugmasida bosiş bölişi kerak (topildi: ${applied.size}) — " +
                 "variantlar, true/false, matching, gap banki, word-order banki",
             applied.size >= 5,
         )
@@ -130,27 +130,27 @@ class ExerciseFeedbackTest {
     @Test
     fun comboSatiriFaqatHaqiqiyHolatniKorsatadi() {
         val xml = File(app, "src/main/res/layout/fragment_exercise.xml").readText()
-        assertTrue("`exCombo` maydoni bo'lishi kerak", xml.contains("""android:id="@+id/exCombo"""))
+        assertTrue("`exCombo` maydoni bölişi kerak", xml.contains("""android:id="@+id/exCombo"""))
         assertTrue(
-            "maydon bo'sh holatda YASHIRILGAN (soxta son ko'rinmasin)",
+            "maydon böş holatda YAŞIRILGAN (soxta son körinmasin)",
             Regex("""android:id="@\+id/exCombo"[\s\S]{0,600}?android:visibility="gone"""").containsMatchIn(xml),
         )
 
         val src = fragmentSource()
         val combo = src.substringAfter("private fun showCombo()").substringBefore("/* ------------------------ jarayon")
         assertTrue("son store'dan olinadi (`data.game.combo`)", combo.contains("data.game.combo"))
-        assertTrue("combo < 2 bo'lsa satir yashiriladi", combo.contains("if (combo < 2)"))
+        assertTrue("combo < 2 bölsa satir yaşiriladi", combo.contains("if (combo < 2)"))
         assertTrue(
-            "yurak qaytish soni `GameConfig.HEART_COMBO_STREAK` dan (ixtir emas)",
+            "yurak qaytiş soni `GameConfig.HEART_COMBO_STREAK` dan (ixtir emas)",
             combo.contains("GameConfig.HEART_COMBO_STREAK"),
         )
         assertTrue(
-            "yurak allaqachon qaytgan bo'lsa 'yana N' deb aldashmaydi",
+            "yurak allaqaçon qaytgan bölsa 'yana N' deb aldaşmaydi",
             combo.contains("toHeart"),
         )
         val onCheck = src.substringAfter("private fun onCheck()").substringBefore("private fun showOutcome")
         assertTrue(
-            "combo dispatchdan KEYIN o'qiladi (`AppStore.dispatch` sinxron — yangi son darhol to'g'ri)",
+            "combo dispatchdan KEYIN öqiladi (`AppStore.dispatch` sinxron — yangi son darhol töğri)",
             onCheck.indexOf("showCombo()") > onCheck.indexOf("StoreAction.Attempt"),
         )
     }

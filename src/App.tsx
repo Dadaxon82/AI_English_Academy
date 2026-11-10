@@ -118,12 +118,12 @@ function FirstRunHint() {
   return (
     <InfoBanner>
       <div className="flex items-center gap-3">
-        <span>Boshlang‘ich sozlamalar to‘ldirilmagan.</span>
+        <span>Boşlanğiç sozlamalar töldirilmagan.</span>
         <span className="flex-1" />
         {/* Router orqali: Pages'da `/onboarding` to'g'ridan-to'g'ri havolasi
             bazani (`/AI_English_Academy/`) tashlab yuborib 404 beradi. */}
         <Button size="sm" onClick={() => nav('/onboarding')}>
-          Sozlamalarni to‘ldirish
+          Sozlamalarni töldiriş
         </Button>
         <Button size="sm" variant="ghost" onClick={() => setHidden(true)}>
           Keyin
@@ -139,7 +139,7 @@ function NotFound() {
       <h1 className="text-2xl font-bold">404</h1>
       <p className="muted">Bunday sahifa mavjud emas.</p>
       <Link to="/dashboard" className="inline-flex justify-center">
-        <Button>Dashboardga qaytish</Button>
+        <Button>Dashboardga qaytiş</Button>
       </Link>
     </div>
   )

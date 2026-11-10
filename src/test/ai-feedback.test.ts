@@ -14,10 +14,10 @@ import { emptyData, type SpeakingAnalysis, type WritingSubmission } from '../lib
 
 const goodWriting = {
   criteria: { task_achievement: 4, coherence: 3, lexical_resource: 3, grammatical_range: 2, accuracy: 7 },
-  errors: [{ excerpt: 'he go', kind: 'grammar', correction: 'he goes', whyUz: '3-shaxs birlikda -s qo‘shiladi.' }],
-  strengthsUz: ['Topshiriq bajarilgan.'],
-  weaknessesUz: ['Bog‘lovchilar kam.'],
-  suggestionsUz: ['“because”, “but” ishlating.'],
+  errors: [{ excerpt: 'he go', kind: 'grammar', correction: 'he goes', whyUz: '3-şaxs birlikda -s qöşiladi.' }],
+  strengthsUz: ['Topşiriq bajarilgan.'],
+  weaknessesUz: ['Boğlovçilar kam.'],
+  suggestionsUz: ['“because”, “but” işlating.'],
 }
 
 function deps(res: { status: number; body: unknown } | Error, token: string | null = 'jwt-1'): AiDeps & { calls: unknown[][] } {
@@ -38,7 +38,7 @@ function deps(res: { status: number; body: unknown } | Error, token: string | nu
 const req = { level: 'A1', taskPrompt: 'Write about your family.', text: 'My brother he go to school.' }
 
 describe('umumiy sxema (_shared/feedback)', () => {
-  it('so‘rovni tekshiradi', () => {
+  it('sörovni tekşiradi', () => {
     expect(parseFeedbackRequest({ kind: 'writing', ...req }).ok).toBe(true)
     expect(parseFeedbackRequest({ kind: 'essay', ...req }).ok).toBe(false)
     expect(parseFeedbackRequest({ kind: 'writing', ...req, level: 'Z9' }).ok).toBe(false)
@@ -46,10 +46,10 @@ describe('umumiy sxema (_shared/feedback)', () => {
     expect(parseFeedbackRequest({ kind: 'writing', ...req, text: 'a'.repeat(4001) }).ok).toBe(false)
   })
 
-  it('model javobi: ballar 0..5 ga qisiladi, tur xato bo‘lsa null', () => {
+  it('model javobi: ballar 0..5 ga qisiladi, tur xato bölsa null', () => {
     expect(parseWritingFeedback(goodWriting)?.criteria.accuracy).toBe(5)
-    expect(parseWritingFeedback({ ...goodWriting, criteria: { ...goodWriting.criteria, coherence: 'yaxshi' } })).toBeNull()
-    expect(parseWritingFeedback({ ...goodWriting, errors: 'yo‘q' })).toBeNull()
+    expect(parseWritingFeedback({ ...goodWriting, criteria: { ...goodWriting.criteria, coherence: 'yaxşi' } })).toBeNull()
+    expect(parseWritingFeedback({ ...goodWriting, errors: 'yöq' })).toBeNull()
     expect(parseSpeakingFeedback({ lexis: 3, grammar: -2, notesUz: ['ok'] })).toEqual({ lexis: 3, grammar: 0, notesUz: ['ok'] })
     expect(parseSpeakingFeedback({ lexis: 3, notesUz: [] })).toBeNull()
   })
@@ -60,7 +60,7 @@ describe('umumiy sxema (_shared/feedback)', () => {
     expect([...SPEAKING_SCHEMA.required].sort()).toEqual(Object.keys(SPEAKING_SCHEMA.properties).sort())
   })
 
-  it('ko‘rsatmada daraja, topshiriq va javob bor; limit standarti 20', () => {
+  it('körsatmada daraja, topşiriq va javob bor; limit standarti 20', () => {
     const p = userPrompt({ kind: 'writing', ...req })
     expect(p).toContain('A1')
     expect(p).toContain(req.taskPrompt)
@@ -72,7 +72,7 @@ describe('umumiy sxema (_shared/feedback)', () => {
 })
 
 describe('mijoz (src/lib/ai.ts) — fetch mock', () => {
-  it('muvaffaqiyat: JWT bilan POST va tekshirilgan javob', async () => {
+  it('muvaffaqiyat: JWT bilan POST va tekşirilgan javob', async () => {
     const d = deps({ status: 200, body: { kind: 'writing', model: 'm', feedback: goodWriting } })
     const r = await requestWritingFeedback(req, d)
     expect(r.ok).toBe(true)
@@ -87,27 +87,27 @@ describe('mijoz (src/lib/ai.ts) — fetch mock', () => {
     expect(r).toEqual({ ok: false, reasonUz: 'Bugungi AI limiti (20 ta) tugadi' })
   })
 
-  it('sxemaga mos bo‘lmagan javob — rad etiladi (soxta baho yo‘q)', async () => {
+  it('sxemaga mos bölmagan javob — rad etiladi (soxta baho yöq)', async () => {
     const r = await requestWritingFeedback(req, deps({ status: 200, body: { feedback: { criteria: {} } } }))
     expect(r.ok).toBe(false)
   })
 
-  it('tarmoq xatosi va sessiyasiz holat — fetch chaqirilmaydi yoki xato qaytadi', async () => {
+  it('tarmoq xatosi va sessiyasiz holat — fetch çaqirilmaydi yoki xato qaytadi', async () => {
     expect((await requestWritingFeedback(req, deps(new TypeError('Failed to fetch')))).ok).toBe(false)
     const noTok = deps({ status: 200, body: {} }, null)
     expect((await requestSpeakingFeedback(req, noTok)).ok).toBe(false)
     expect(noTok.calls).toHaveLength(0)
   })
 
-  it('gapirish: AI lug‘at/grammatika, ravonlik qurilmadagi o‘lchovdan', () => {
+  it('gapiriş: AI luğat/grammatika, ravonlik qurilmadagi ölçovdan', () => {
     const measured: SpeakingAnalysis = { engine: 'rule-based', mode: 'audio', fluency: 4, lexis: 1, grammar: 1, length: 3, wordCount: 30, wpm: 95, notesUz: ['x'], disclaimerUz: 'd' }
-    const a = speakingAnalysisFromAi({ lexis: 4, grammar: 3, notesUz: ['Yaxshi'] }, measured)
-    expect(a).toMatchObject({ engine: 'ai', fluency: 4, wpm: 95, lexis: 4, grammar: 3, notesUz: ['Yaxshi'] })
+    const a = speakingAnalysisFromAi({ lexis: 4, grammar: 3, notesUz: ['Yaxşi'] }, measured)
+    expect(a).toMatchObject({ engine: 'ai', fluency: 4, wpm: 95, lexis: 4, grammar: 3, notesUz: ['Yaxşi'] })
   })
 })
 
 describe('reducer: writing-analysis', () => {
-  it('faqat o‘sha yozuvning tahlili almashtiriladi', () => {
+  it('faqat öşa yozuvning tahlili almaştiriladi', () => {
     const base = emptyData('u1')
     const sub: WritingSubmission = { id: 'wr-1', taskId: 't', text: 'x', wordCount: 1, secondsSpent: 1, analysis: null, supersedesId: null, createdAt: 1 }
     const s1 = reducer(base, { type: 'writing-add', sub })

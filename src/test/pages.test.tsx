@@ -74,15 +74,15 @@ afterEach(() => {
 })
 
 const finishExam = () => {
-  fireEvent.click(screen.getByRole('button', { name: 'Imtihonni yakunlash' }))
-  fireEvent.click(screen.getByRole('button', { name: 'Ha, yakunlash' }))
+  fireEvent.click(screen.getByRole('button', { name: 'Imtihonni yakunlaş' }))
+  fireEvent.click(screen.getByRole('button', { name: 'Ha, yakunlaş' }))
 }
 
-describe('Mock imtihon — kundalik hisobga faqat ochiq turgan bo‘lim vaqti yoziladi', () => {
-  it('erta yakunlansa ochilmagan bo‘limlar vaqt olmaydi (eski: har biri butun vaqtni olardi)', async () => {
+describe('Mock imtihon — kundalik hisobga faqat oçiq turgan bölim vaqti yoziladi', () => {
+  it('erta yakunlansa oçilmagan bölimlar vaqt olmaydi (eski: har biri butun vaqtni olardi)', async () => {
     renderPage(<MockExam />)
     await advance()
-    fireEvent.click(screen.getByRole('button', { name: 'Imtihonni boshlash' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Imtihonni boşlaş' }))
     await advance(5 * 60_000)
     finishExam()
     await advance()
@@ -93,21 +93,21 @@ describe('Mock imtihon — kundalik hisobga faqat ochiq turgan bo‘lim vaqti yo
     expect(weak).not.toHaveTextContent(/writing|speaking/)
   })
 
-  it('bo‘sh yozish javobi saqlanmaydi (soxta past ball dalili qo‘shilmaydi)', async () => {
+  it('böş yoziş javobi saqlanmaydi (soxta past ball dalili qöşilmaydi)', async () => {
     renderPage(<MockExam />)
     await advance()
-    fireEvent.click(screen.getByRole('button', { name: 'Imtihonni boshlash' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Imtihonni boşlaş' }))
     fireEvent.click(screen.getByRole('button', { name: 'Writing' }))
     await advance()
-    fireEvent.click(screen.getByRole('button', { name: 'Javobsiz yakunlash' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Javobsiz yakunlaş' }))
     await advance()
     expect(screen.getByTestId('writing-count')).toHaveTextContent('0')
   })
 
-  it('bo‘limlar orasida o‘tish vaqtni ikki marta yozmaydi va bo‘lim taymerini qayta boshlamaydi', async () => {
+  it('bölimlar orasida ötiş vaqtni ikki marta yozmaydi va bölim taymerini qayta boşlamaydi', async () => {
     renderPage(<MockExam />)
     await advance()
-    fireEvent.click(screen.getByRole('button', { name: 'Imtihonni boshlash' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Imtihonni boşlaş' }))
     await advance(2 * 60_000) // Reading: 2 daq
     fireEvent.click(screen.getByRole('button', { name: 'Listening' }))
     await advance(60_000) // Listening: 1 daq
@@ -122,37 +122,37 @@ describe('Mock imtihon — kundalik hisobga faqat ochiq turgan bo‘lim vaqti yo
   })
 })
 
-describe('Yozish — AI ulanmagan bo‘lsa "AI" deb ko‘rsatilmaydi', () => {
-  it('standart sozlamada (AI bayrog‘i yoqiq, internet bor) tahlil "qoidaviy" deb yoziladi', async () => {
+describe('Yoziş — AI ulanmagan bölsa "AI" deb körsatilmaydi', () => {
+  it('standart sozlamada (AI bayroği yoqiq, internet bor) tahlil "qoidaviy" deb yoziladi', async () => {
     renderPage(<Writing />)
     await advance()
     expect(screen.getByText('qoidaviy dvigatel')).toBeInTheDocument()
     expect(screen.queryByText(/\+ AI/)).toBeNull()
   })
 
-  it('solishtirish paneli: bitta javobda yo‘q, ikkitada ochiladi va yopiladi', async () => {
+  it('soliştiriş paneli: bitta javobda yöq, ikkitada oçiladi va yopiladi', async () => {
     renderPage(<Writing />)
     await advance()
     const write = async (text: string) => {
-      fireEvent.change(screen.getByLabelText('Yozish maydoni'), { target: { value: text } })
-      fireEvent.click(screen.getByRole('button', { name: 'Tahlil qilish' }))
+      fireEvent.change(screen.getByLabelText('Yoziş maydoni'), { target: { value: text } })
+      fireEvent.click(screen.getByRole('button', { name: 'Tahlil qiliş' }))
       await advance()
     }
     await write('Hello! My name is Aziz. I am a student.')
     // ESKI BUG: bitta javob o'zi bilan solishtirilib turardi
     expect(screen.queryByText('Eski javob')).toBeNull()
-    expect(screen.queryByRole('button', { name: 'Oldingi javob bilan solishtirish' })).toBeNull()
+    expect(screen.queryByRole('button', { name: 'Oldingi javob bilan soliştiriş' })).toBeNull()
 
     await write('Hello! My name is Aziz. I am a student and I like my school because my teacher is kind.')
     expect(screen.queryByText('Eski javob')).toBeNull()
-    fireEvent.click(screen.getByRole('button', { name: 'Oldingi javob bilan solishtirish' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Oldingi javob bilan soliştiriş' }))
     expect(screen.getByText('Eski javob')).toBeInTheDocument()
     // ESKI BUG: "yopish" paneli yopmasdi
-    fireEvent.click(screen.getByRole('button', { name: 'Solishtirishni yopish' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Soliştirişni yopiş' }))
     expect(screen.queryByText('Eski javob')).toBeNull()
   })
 
-  it('"ulangan" faqat VITE_AI_ENABLED=true + foydalanuvchi bayrog‘i + internet + Supabase bo‘lganda', () => {
+  it('"ulangan" faqat VITE_AI_ENABLED=true + foydalanuvçi bayroği + internet + Supabase bölganda', () => {
     expect(aiRuntimeEnabled(true, true, true)).toBe(false)
     vi.stubEnv('VITE_AI_ENABLED', 'true')
     expect(aiRuntimeEnabled(true, true, true)).toBe(true)
@@ -164,21 +164,21 @@ describe('Yozish — AI ulanmagan bo‘lsa "AI" deb ko‘rsatilmaydi', () => {
   })
 })
 
-describe('Onboarding — diagnostikani o‘tkazib yuborish ham yakunlash hisoblanadi', () => {
-  it('“Hozir o‘tkazmayman” dan keyin "sozlamalar to‘ldirilmagan" belgisi qolmaydi', async () => {
+describe('Onboarding — diagnostikani ötkazib yuboriş ham yakunlaş hisoblanadi', () => {
+  it('“Hozir ötkazmayman” dan keyin "sozlamalar töldirilmagan" belgisi qolmaydi', async () => {
     renderPage(<Onboarding />)
     await advance()
     expect(screen.getByTestId('onboarded')).toHaveTextContent('no')
-    fireEvent.click(screen.getByRole('button', { name: 'Davom etish' })) // maqsadlar
-    fireEvent.click(screen.getByRole('button', { name: 'Davom etish' })) // kundalik reja
-    fireEvent.click(screen.getByRole('button', { name: /Hozir o.tkazmayman/ }))
+    fireEvent.click(screen.getByRole('button', { name: 'Davom etiş' })) // maqsadlar
+    fireEvent.click(screen.getByRole('button', { name: 'Davom etiş' })) // kundalik reja
+    fireEvent.click(screen.getByRole('button', { name: /Hozir ötkazmayman/ }))
     await advance()
     expect(screen.getByTestId('onboarded')).toHaveTextContent('yes')
   })
 })
 
 describe('Store — sarlavhadagi kunlik progress va keraksiz renderlar', () => {
-  it('kunlik progress bugungi BUTUN vaqtni ko‘rsatadi (eski: faqat joriy taymer)', async () => {
+  it('kunlik progress bugungi BUTUN vaqtni körsatadi (eski: faqat joriy taymer)', async () => {
     const seeded = {
       ...emptyData(UID),
       onboardedAt: 1,
@@ -193,7 +193,7 @@ describe('Store — sarlavhadagi kunlik progress va keraksiz renderlar', () => {
     expect(screen.getByTestId('day-progress')).toHaveTextContent('22')
   })
 
-  it('taymer yurmaganda ilova har soniyada qayta chizilmaydi', async () => {
+  it('taymer yurmaganda ilova har soniyada qayta çizilmaydi', async () => {
     // act() bitta qadamdagi bir nechta yangilanishni bitta renderga jamlaydi —
     // shuning uchun soniyama-soniya suriladi.
     const seconds = async (n: number) => {
@@ -212,8 +212,8 @@ describe('Store — sarlavhadagi kunlik progress va keraksiz renderlar', () => {
   })
 })
 
-describe('Gapirish — mikrofonsiz matnli javob ham tahlil qilinadi', () => {
-  it('matnli javob saqlanadi, baholanadi va ravonlik "—" deb ko‘rsatiladi', async () => {
+describe('Gapiriş — mikrofonsiz matnli javob ham tahlil qilinadi', () => {
+  it('matnli javob saqlanadi, baholanadi va ravonlik "—" deb körsatiladi', async () => {
     renderPage(<Speaking />)
     await advance()
     fireEvent.change(screen.getByLabelText('Matnli javob'), {
@@ -223,13 +223,13 @@ describe('Gapirish — mikrofonsiz matnli javob ham tahlil qilinadi', () => {
           'Yesterday I went to the park with my friends and we played football.',
       },
     })
-    fireEvent.click(screen.getByRole('button', { name: 'Saqlash va tahlil' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Saqlaş va tahlil' }))
     await advance()
     expect(screen.getByText(/Javob saqlandi va tahlil qilindi/)).toBeInTheDocument()
     expect(screen.getByText('Hajm')).toBeInTheDocument()
     expect(screen.getByText('Ravonlik').nextElementSibling).toHaveTextContent('—')
   })
-  it('SpeechRecognition yo‘q brauzerda (jsdom ~ Safari/Firefox) oldindan ochiq aytiladi', async () => {
+  it('SpeechRecognition yöq brauzerda (jsdom ~ Safari/Firefox) oldindan oçiq aytiladi', async () => {
     renderPage(<Speaking />)
     await advance()
     expect(screen.getByText(/Bu brauzer nutqni matnga aylantirmaydi/)).toBeInTheDocument()
@@ -253,7 +253,7 @@ describe('Sozlama — «Double or Nothing» garovi (mobil SettingsFragment bilan
     expect(screen.getByTestId('gems')).toHaveTextContent(String(gems))
   }
 
-  it('gem yetarli bo‘lsa: garov tikiladi, gem yechiladi va ochiq garov ko‘rsatiladi', async () => {
+  it('gem yetarli bölsa: garov tikiladi, gem yeçiladi va oçiq garov körsatiladi', async () => {
     await openSettings(BET_COST_GEMS)
     expect(screen.getByTestId('bet')).toHaveTextContent('yoq')
     // `findByText` bu faylda ishlamaydi: soxta soatda kutish oldinga
@@ -263,22 +263,22 @@ describe('Sozlama — «Double or Nothing» garovi (mobil SettingsFragment bilan
     expect(screen.getByText(`Garov tikildi — ${BET_COST_GEMS} gem sarflandi.`)).toBeInTheDocument()
     expect(screen.getByTestId('gems')).toHaveTextContent('0')
     expect(screen.getByTestId('bet')).toHaveTextContent(`${todayKey()}:${BET_COST_GEMS}`)
-    expect(screen.getByText(`Garov ochiq: ${todayKey()} kunidan ${BET_COST_GEMS} gem tikilgan`)).toBeInTheDocument()
+    expect(screen.getByText(`Garov oçiq: ${todayKey()} kunidan ${BET_COST_GEMS} gem tikilgan`)).toBeInTheDocument()
   })
 
-  it('gem yetmasa: garov tikilmaydi va SABAB ochiq yoziladi (son ixtir qilinmaydi)', async () => {
+  it('gem yetmasa: garov tikilmaydi va SABAB oçiq yoziladi (son ixtir qilinmaydi)', async () => {
     await openSettings(BET_COST_GEMS - 1)
     fireEvent.click(betButton())
-    expect(screen.getByText(`Garov uchun ${BET_COST_GEMS} gem kerak.`)).toBeInTheDocument()
+    expect(screen.getByText(`Garov uçun ${BET_COST_GEMS} gem kerak.`)).toBeInTheDocument()
     expect(screen.getByTestId('gems')).toHaveTextContent(String(BET_COST_GEMS - 1))
     expect(screen.getByTestId('bet')).toHaveTextContent('yoq')
   })
 
-  it('shartlar matni `gameConfig` sonlari bilan yoziladi (ixtira son yo‘q)', async () => {
+  it('şartlar matni `gameConfig` sonlari bilan yoziladi (ixtira son yöq)', async () => {
     await openSettings(0)
     expect(betButton().textContent).toBe(
       `Garov: ${BET_COST_GEMS} gem tikib, zanjirni ${BET_STREAK_DAYS} kunga uzaytirsak ${BET_WIN_GEMS} gem qaytadi`,
     )
-    expect(screen.getByText(new RegExp(`${BET_DAYS} kun o‘tsa va zanjir kamida ${BET_STREAK_DAYS} kunga`))).toBeInTheDocument()
+    expect(screen.getByText(new RegExp(`${BET_DAYS} kun ötsa va zanjir kamida ${BET_STREAK_DAYS} kunga`))).toBeInTheDocument()
   })
 })

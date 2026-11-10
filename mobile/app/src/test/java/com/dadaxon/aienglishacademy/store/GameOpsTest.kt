@@ -65,7 +65,7 @@ class GameOpsTest {
         val r = GameOps.settle(d, T0 + 61 * MIN, DAY)
         // 30 daqiqa oralig'i: 61 daqiqada 2 ta yurak qaytadi.
         assertEquals(3, r.game.hearts)
-        assertFalse("holat o'zgargan bo'lishi kerak edi", d === r)
+        assertFalse("holat özgargan bölişi kerak edi", d === r)
     }
 
     /* -------------------------------- Mashq (attempt) -------------------------------- */
@@ -77,7 +77,7 @@ class GameOpsTest {
         val plain = xpForAttempt(true, 1, true)
         assertEquals(plain, r.xp)
         assertEquals(plain, r.game.today.xp)
-        assertEquals("umumiy XP bilan kundalik XP BIR XIL o'sishi shart", r.xp, r.game.today.xp)
+        assertEquals("umumiy XP bilan kundalik XP BIR XIL ösişi şart", r.xp, r.game.today.xp)
         val act = checkNotNull(r.activity[DAY])
         assertEquals(1, act.attempts)
         assertEquals(1, act.correct)
@@ -116,7 +116,7 @@ class GameOpsTest {
         // Sozlamada o'chirilgan yuraklar darsni TO'XMAYDI (veb: `blocked =
         // hearts.blocked && !heartFree`, `heartsBlocked` `heartsEnabled`ni o'qiydi).
         val drained = base().copy(game = emptyGame(DAY, T0).copy(hearts = 0, heartsAt = T0))
-        assertTrue("yurak 0 — darvoza yopiq bo'lishi kerak", GameLogic.heartsBlocked(drained.game, drained, T0))
+        assertTrue("yurak 0 — darvoza yopiq bölişi kerak", GameLogic.heartsBlocked(drained.game, drained, T0))
         val off = drained.copy(settings = UserSettings(heartsEnabled = false))
         assertFalse(GameLogic.heartsBlocked(off.game, off, T0))
         // Darvozadan o'tgach mashq baribir qabul qilinadi.
@@ -211,7 +211,7 @@ class GameOpsTest {
         // Juda qisqa «dars» bonus olmaydi (veb: `LESSON_MIN_EXERCISES`).
         val tiny = GameOps.lesson(d, exercises = GameConfig.LESSON_MIN_EXERCISES - 1, mistakes = 0, key = DAY, now = T0)
         assertEquals(0, tiny.game.perfectLessonsTotal)
-        assertEquals("bonus berilmagan bo'lishi kerak edi", d.xp, tiny.xp)
+        assertEquals("bonus berilmagan bölişi kerak edi", d.xp, tiny.xp)
     }
 
     /* ------------------------------ Do'kon / garov ------------------------------ */
@@ -230,7 +230,7 @@ class GameOpsTest {
     fun boughtFreezeSettlesTheDayAroundIt() {
         val rich = base().copy(game = emptyGame(DAY, T0).copy(gems = 5_000))
         val res = GameOps.buy(rich, "freeze", DAY, T0)
-        assertTrue(res.reasonUz ?: "sotib olinishi kerak edi", res.ok)
+        assertTrue(res.reasonUz ?: "sotib olinişi kerak edi", res.ok)
         assertEquals(1, res.data.game.freezes)
         assertEquals(5_000 - GameConfig.priceOf("freeze"), res.data.game.gems)
         // Muvaffaqiyatdan keyin holat YIG'ILGAN (`settle`) bo'ladi — xom holat
@@ -242,13 +242,13 @@ class GameOpsTest {
     fun betIsRejectedHonestlyWhenAlreadyOpen() {
         val rich = base().copy(game = emptyGame(DAY, T0).copy(gems = 5_000))
         val first = GameOps.bet(rich, DAY, T0)
-        assertTrue(first.reasonUz ?: "garov ochilishi kerak edi", first.ok)
+        assertTrue(first.reasonUz ?: "garov oçilişi kerak edi", first.ok)
         assertEquals(GameConfig.BET_COST_GEMS, checkNotNull(first.data.game.bet).gems)
         assertEquals(DAY, checkNotNull(first.data.game.bet).startDay)
 
         val again = GameOps.bet(first.data, DAY, T0)
         assertFalse(again.ok)
-        assertTrue((again.reasonUz ?: "").contains("allaqachon"))
+        assertTrue((again.reasonUz ?: "").contains("allaqaçon"))
         assertSame(first.data, again.data)
 
         // Gem yetmasa — sabab ochiq, son ixtir qilinmaydi.
@@ -275,8 +275,8 @@ class GameOpsTest {
         val touched = quests.filter { q ->
             GameLogic.questProgressOf(q, r.game.today, act, r.game.questsDone.map { it.id }).value > 0
         }
-        assertTrue("mashqdan keyin kamida bitta quest mezoni o'sishi kerak", touched.isNotEmpty())
-        assertEquals("quest hovuzi kunga bog'langan — tartib o'zgarmasin", quests.map { q -> q.id }, GameLogic.questsForDay(DAY).map { q -> q.id })
+        assertTrue("maşqdan keyin kamida bitta quest mezoni ösişi kerak", touched.isNotEmpty())
+        assertEquals("quest hovuzi kunga boğlangan — tartib özgarmasin", quests.map { q -> q.id }, GameLogic.questsForDay(DAY).map { q -> q.id })
     }
 
     @Test

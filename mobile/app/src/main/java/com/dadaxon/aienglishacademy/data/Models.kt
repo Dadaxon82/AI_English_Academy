@@ -130,9 +130,9 @@ object Criterion {
     val ALL = listOf(TASK_ACHIEVEMENT, COHERENCE, LEXICAL_RESOURCE, GRAMMATICAL_RANGE, ACCURACY)
 
     fun labelUz(k: String): String = when (k) {
-        TASK_ACHIEVEMENT -> "Vazifa bajarilishi"
-        COHERENCE -> "Mantiqiy bog'liqlik"
-        LEXICAL_RESOURCE -> "Lug'at boyligi"
+        TASK_ACHIEVEMENT -> "Vazifa bajarilişi"
+        COHERENCE -> "Mantiqiy boğliqlik"
+        LEXICAL_RESOURCE -> "Luğat boyligi"
         GRAMMATICAL_RANGE -> "Grammatik qamrov"
         ACCURACY -> "Aniqlik"
         else -> k
@@ -324,7 +324,7 @@ data class LeagueRow(val userId: String, val name: String, val xp: Int)
 
 /** Liga tablalarining SAQLANGAN nusxasi — internet bo'lmasa oxirgi holat ko'rsatiladi. */
 data class LeagueSnapshot(
-    /** Hafta boshi (poneshanba) — serverdagi `week_start` bilan bir xil. */
+    /** Hafta boshi (dushanba) — serverdagi `week_start` bilan bir xil. */
     val weekStart: String,
     val leagueId: String,
     /** Bizning o'rnimiz (1 dan sanaladi) — jadvalda biz yo'q bo'lsak 0. */

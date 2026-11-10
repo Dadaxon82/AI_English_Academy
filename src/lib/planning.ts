@@ -45,7 +45,7 @@ export function computeAllocation(
     base.speaking = Math.max(5, base.speaking - 5)
     base.vocabulary = Math.max(5, base.vocabulary - 5)
     base.reading += 10
-    reasons2.push('Yakshanba — o‘qishga ko‘proq vaqt, yengil kun.')
+    reasons2.push('Yakşanba — öqişga köproq vaqt, yengil kun.')
   }
 
   // 3) Imtihon yaqinlashsa — Mock Examga yaqin ko'nikmalar ustunligi
@@ -60,7 +60,7 @@ export function computeAllocation(
       base.reading = Math.min(25, base.reading + 5)
       base.vocabulary = Math.max(5, base.vocabulary - 5)
       base.grammar = Math.max(5, base.grammar - 5)
-      reasons2.push(`Imtihonga ${daysToExam} kun qoldi — Reading va Writing kuchaytirildi.`)
+      reasons2.push(`Imtihonga ${daysToExam} kun qoldi — Reading va Writing kuçaytirildi.`)
     }
   }
 
@@ -106,14 +106,14 @@ export function computeAllocation(
     const others = SKILL_ORDER.filter((s) => !weak.includes(s)).map((s) => minutes[s])
     const baseline = others.length ? Math.max(...others) : 0
     const boosted = weak.filter((w) => minutes[w] > baseline)
-    if (boosted.length) reasons2.push(`Zaif ko‘nikmalar kuchaytirildi: ${boosted.join(', ')}.`)
+    if (boosted.length) reasons2.push(`Zaif könikmalar kuçaytirildi: ${boosted.join(', ')}.`)
   }
 
   return {
     minutes,
     total: SKILL_ORDER.reduce((a, s) => a + minutes[s], 0),
     reasonUz: [
-      'Boshlang‘ich taqsimot 90 daqiqaga asoslangan.',
+      'Boşlanğiç taqsimot 90 daqiqaga asoslangan.',
       ...reasons2,
       ...reasons,
     ],
@@ -150,12 +150,12 @@ export function buildDayTasks(
 
 export function skillLabelUz(s: Skill): string {
   const map: Record<Skill, string> = {
-    vocabulary: 'Lug‘at',
+    vocabulary: 'Luğat',
     grammar: 'Grammatika',
-    reading: 'O‘qish',
-    listening: 'Tinglash',
-    writing: 'Yozish',
-    speaking: 'Gapirish',
+    reading: 'Öqiş',
+    listening: 'Tinglaş',
+    writing: 'Yoziş',
+    speaking: 'Gapiriş',
   }
   return map[s]
 }

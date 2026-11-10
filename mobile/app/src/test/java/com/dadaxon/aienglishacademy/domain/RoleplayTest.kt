@@ -32,7 +32,7 @@ class RoleplayTest {
         assertNull(parseRoleplayTurn(JsonParser.parseString(good.replace("\"done\":false", "\"done\":\"no\""))))
         assertNull(parseRoleplayTurn(JsonParser.parseString(good.replace("Sure! Anything to eat?", ""))))
         val same = parseRoleplayTurn(JsonParser.parseString(good.replace("I would like a tea, please", "I want a tea")))!!
-        assertTrue("o'zgarmagan tuzatish tashlanadi", same.corrections.isEmpty())
+        assertTrue("özgarmagan tuzatiş taşlanadi", same.corrections.isEmpty())
     }
 
     @Test
@@ -94,7 +94,7 @@ class RoleplayTest {
         }
         val auth = AuthStore(MemKv(), null)
         val client = RoleplayClient(SupabaseConfig("https://x.supabase.co", "anon"), auth, t)
-        assertTrue("mehmon — so'rov yuborilmaydi", client.request(roleplayRequestJson("A1", "s", "a", "b", emptyList())) is RoleplayClient.Result.Fail)
+        assertTrue("mehmon — sörov yuborilmaydi", client.request(roleplayRequestJson("A1", "s", "a", "b", emptyList())) is RoleplayClient.Result.Fail)
         assertTrue(urls.isEmpty())
         auth.save(Session("jwt", "r", System.currentTimeMillis() / 1000 + 3600, "u"))
         val ok = client.request(roleplayRequestJson("A1", "s", "a", "b", emptyList()))

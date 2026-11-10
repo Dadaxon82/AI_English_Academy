@@ -27,7 +27,7 @@ describe('Suhbatlar — kontent auditi', () => {
   })
 
   for (const d of DIALOGUES) {
-    it(`${d.id}: 3 ta bo‘shliq, javob variantlarda bir marta, tarjima va izoh bor`, () => {
+    it(`${d.id}: 3 ta böşliq, javob variantlarda bir marta, tarjima va izoh bor`, () => {
       expect(d.situationUz.trim()).not.toBe('')
       expect(d.roles.a.trim()).not.toBe('')
       expect(d.roles.b.trim()).not.toBe('')
@@ -54,17 +54,17 @@ describe('Suhbatlar — kontent auditi', () => {
     })
   }
 
-  it('to‘g‘ri javob o‘rni bir xil emas (hammasi 1-variant emas)', () => {
+  it('töğri javob örni bir xil emas (hammasi 1-variant emas)', () => {
     const positions = new Set(allDialogueExercises().map((e) => e.answerIndex))
     expect(positions.size).toBeGreaterThan(1)
   })
 })
 
-describe('Suhbat → mashq', () => {
+describe('Suhbat → maşq', () => {
   const d = DIALOGUES[0]!
   const i = gapLineIndexes(d)[0]!
 
-  it('id’dan qayta tiklanadi (Xatolar daftari uchun) va to‘g‘ri javob tekshiriladi', () => {
+  it('id’dan qayta tiklanadi (Xatolar daftari uçun) va töğri javob tekşiriladi', () => {
     const ex = dialogueExercise(d, i)!
     expect(ex.id).toBe(dialogueExerciseId(d, i))
     expect(findDialogueExercise(ex.id)).toEqual(ex)
@@ -75,12 +75,12 @@ describe('Suhbat → mashq', () => {
     expect(ex.question.startsWith(`${d.roles.b}:`)).toBe(true)
   })
 
-  it('noma’lum id — undefined (soxta mashq yasalmaydi)', () => {
+  it('noma’lum id — undefined (soxta maşq yasalmaydi)', () => {
     expect(findExercise('dlg-yoq-suhbat-1')).toBeUndefined()
     expect(findExercise(`dlg-${d.id}-0`)).toBeUndefined() // 0-qator bo'shliqsiz
   })
 
-  it('xato javob Xatolar daftariga tushadi', () => {
+  it('xato javob Xatolar daftariga tuşadi', () => {
     const ex = dialogueExercise(d, i)!
     const a: AttemptRecord = {
       id: 'x', exerciseId: ex.id, skill: ex.skill, level: 'A1', correct: false, partial: 0, difficulty: 1,
@@ -89,7 +89,7 @@ describe('Suhbat → mashq', () => {
     expect(unresolvedMistakes([a], findExercise).map((m) => m.exercise.id)).toEqual([ex.id])
   })
 
-  it('dars: o‘qish → 3 bo‘shliq (suhbat qayta ochiladi) → «Nega shunday?»', () => {
+  it('dars: öqiş → 3 böşliq (suhbat qayta oçiladi) → «Nega şunday?»', () => {
     const steps = dialogueLesson(d)
     expect(steps.map((s) => s.type)).toEqual(['info', 'exercise', 'exercise', 'exercise', 'info'])
     expect(steps.filter((s) => s.type === 'exercise').every((s) => s.type === 'exercise' && s.context === 'passage')).toBe(true)
@@ -97,14 +97,14 @@ describe('Suhbat → mashq', () => {
     expect(last.type === 'info' && last.info).toBe('rule')
   })
 
-  it('holat urinishlardan: har bo‘shliqning OXIRGI urinishi', () => {
+  it('holat urinişlardan: har böşliqning OXIRGI urinişi', () => {
     const ids = gapLineIndexes(d).map((k) => dialogueExerciseId(d, k))
     const mk = (exerciseId: string, correct: boolean, at: number): AttemptRecord => ({
       id: `${exerciseId}${at}`, exerciseId, skill: 'grammar', level: 'A1', correct, partial: 0, difficulty: 1,
       secondsSpent: 1, source: 'practice', answerGiven: '', at,
     })
     expect(dialogueProgress(d, [])).toEqual({ correct: 0, tried: 0, total: 3 })
-    const atts = [mk(ids[0]!, false, 1), mk(ids[0]!, true, 2), mk(ids[1]!, true, 3), mk(ids[1]!, false, 4), mk('boshqa', true, 5)]
+    const atts = [mk(ids[0]!, false, 1), mk(ids[0]!, true, 2), mk(ids[1]!, true, 3), mk(ids[1]!, false, 4), mk('boşqa', true, 5)]
     expect(dialogueProgress(d, atts)).toEqual({ correct: 1, tried: 2, total: 3 })
   })
 })

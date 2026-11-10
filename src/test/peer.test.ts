@@ -87,38 +87,38 @@ beforeEach(() => {
   configured = true
 })
 
-describe('tekshiruvlar (SQL CHECK bilan bir xil chegaralar)', () => {
+describe('tekşiruvlar (SQL CHECK bilan bir xil çegaralar)', () => {
   it('izoh: baho 1–5, matn 10–1000', () => {
-    expect(peer.validateReview(0, 'yaxshi yozilgan matn')).toMatch(/1 dan 5/)
+    expect(peer.validateReview(0, 'yaxşi yozilgan matn')).toMatch(/1 dan 5/)
     expect(peer.validateReview(4, 'qisqa')).toMatch(/kamida 10/)
     expect(peer.validateReview(4, 'x'.repeat(1001))).toMatch(/juda uzun/)
-    expect(peer.validateReview(5, '  Juda yaxshi, rahmat!  ')).toBeNull()
+    expect(peer.validateReview(5, '  Juda yaxşi, rahmat!  ')).toBeNull()
   })
-  it('javob: bo‘sh va 4000 dan uzun rad etiladi', () => {
-    expect(peer.validateSubmissionBody('   ')).toMatch(/Bo‘sh/)
+  it('javob: böş va 4000 dan uzun rad etiladi', () => {
+    expect(peer.validateSubmissionBody('   ')).toMatch(/Böş/)
     expect(peer.validateSubmissionBody('a'.repeat(4001))).toMatch(/juda uzun/)
     expect(peer.validateSubmissionBody('Hello')).toBeNull()
   })
 })
 
-describe('xatolar → tushunarli sabab', () => {
-  it('kunlik chegara, migratsiya yo‘q, takror, ruxsat, internet', () => {
-    expect(peer.peerErrorUz({ code: 'P0001', message: 'peer_daily_limit' })).toMatch(/kunlik chegara/)
+describe('xatolar → tuşunarli sabab', () => {
+  it('kunlik çegara, migratsiya yöq, takror, ruxsat, internet', () => {
+    expect(peer.peerErrorUz({ code: 'P0001', message: 'peer_daily_limit' })).toMatch(/kunlik çegara/)
     expect(peer.peerErrorUz({ code: 'PGRST205', message: "Could not find the table 'public.peer_submissions' in the schema cache" })).toMatch(/0006_peer_review/)
-    expect(peer.peerErrorUz({ code: '23505', message: 'duplicate key' })).toMatch(/allaqachon/)
-    expect(peer.peerErrorUz({ code: '42501', message: 'new row violates row-level security policy' })).toMatch(/ruxsat yo‘q/)
+    expect(peer.peerErrorUz({ code: '23505', message: 'duplicate key' })).toMatch(/allaqaçon/)
+    expect(peer.peerErrorUz({ code: '42501', message: 'new row violates row-level security policy' })).toMatch(/ruxsat yöq/)
     expect(peer.peerErrorUz({ message: 'TypeError: Failed to fetch' })).toMatch(/Internet/)
   })
 })
 
-describe('ulanish', () => {
-  it('server sozlanmagan — sabab, so‘rov yuborilmaydi', async () => {
+describe('ulaniş', () => {
+  it('server sozlanmagan — sabab, sörov yuborilmaydi', async () => {
     configured = false
     const r = await peer.claimPeerSubmission()
     expect(r).toEqual({ ok: false, reasonUz: expect.stringMatching(/Supabase/) })
     expect(calls).toEqual([])
   })
-  it('mehmon (sessiya yo‘q) — hisobga kirish so‘raladi', async () => {
+  it('mehmon (sessiya yöq) — hisobga kiriş söraladi', async () => {
     session = null
     const r = await peer.submitForPeerReview({ kind: 'writing', taskId: 't', level: 'A1', prompt: '', body: 'Hello' })
     expect(r.ok).toBe(false)
@@ -128,7 +128,7 @@ describe('ulanish', () => {
 })
 
 describe('amallar', () => {
-  it('yuborish: matn kesiladi, muallif id’si yuborilmaydi (server auth.uid() qo‘yadi)', async () => {
+  it('yuboriş: matn kesiladi, muallif id’si yuborilmaydi (server auth.uid() qöyadi)', async () => {
     const r = await peer.submitForPeerReview({ kind: 'speaking', taskId: 'a1-s-01', level: 'A1', prompt: 'p'.repeat(1200), body: '  my name is Aziz  ' })
     expect(r.ok).toBe(true)
     const payload = calls[0]!.payload as Record<string, unknown>
@@ -137,19 +137,19 @@ describe('amallar', () => {
     expect((payload.prompt as string).length).toBe(1000)
     expect(payload).not.toHaveProperty('author_id')
   })
-  it('noto‘g‘ri izoh serverga yuborilmaydi', async () => {
+  it('notöğri izoh serverga yuborilmaydi', async () => {
     const r = await peer.submitPeerReview('s1', 4, 'qisqa')
     expect(r.ok).toBe(false)
     expect(calls).toEqual([])
   })
-  it('izoh va shikoyat to‘g‘ri jadvalga', async () => {
-    expect((await peer.submitPeerReview('s1', 4, 'Yaxshi, lekin gaplarni bog‘lang.')).ok).toBe(true)
+  it('izoh va şikoyat töğri jadvalga', async () => {
+    expect((await peer.submitPeerReview('s1', 4, 'Yaxşi, lekin gaplarni boğlang.')).ok).toBe(true)
     expect(calls[0]).toMatchObject({ op: 'insert', table: 'peer_reviews', payload: { submission_id: 's1', score: 4 } })
     expect((await peer.reportPeer({ reviewId: 'r1' }, 'offensive')).ok).toBe(true)
     expect(calls[1]).toMatchObject({ op: 'insert', table: 'peer_reports', payload: { review_id: 'r1', reason: 'offensive' } })
     expect(calls[1]!.payload).not.toHaveProperty('submission_id')
   })
-  it('tayinlov: rpc peer_claim; bo‘sh natija — null', async () => {
+  it('tayinlov: rpc peer_claim; böş natija — null', async () => {
     expect(await peer.claimPeerSubmission()).toEqual({ ok: true, data: null })
     expect(calls[0]).toMatchObject({ op: 'rpc', table: 'peer_claim', payload: { p_kind: null } })
     rpcRows = [{ id: 's9', kind: 'writing' }]
@@ -158,12 +158,12 @@ describe('amallar', () => {
   it('server xatosi sabab bilan qaytadi', async () => {
     nextError = { code: 'P0001', message: 'peer_daily_limit' }
     const r = await peer.submitForPeerReview({ kind: 'writing', taskId: 't', level: 'A1', prompt: '', body: 'Hello' })
-    expect(r).toEqual({ ok: false, reasonUz: expect.stringMatching(/kunlik chegara/) })
+    expect(r).toEqual({ ok: false, reasonUz: expect.stringMatching(/kunlik çegara/) })
   })
   it('mening javoblarim: izohlar javobga biriktiriladi', async () => {
     selectRows = {
       peer_submissions: [{ id: 'a' }, { id: 'b' }],
-      peer_reviews: [{ id: 'r1', submission_id: 'b', score: 5, comment: 'zo‘r ish' }],
+      peer_reviews: [{ id: 'r1', submission_id: 'b', score: 5, comment: 'zör iş' }],
     }
     const r = await peer.myPeerSubmissions()
     expect(r.ok && r.data.map((x) => [x.submission.id, x.reviews.length])).toEqual([['a', 0], ['b', 1]])

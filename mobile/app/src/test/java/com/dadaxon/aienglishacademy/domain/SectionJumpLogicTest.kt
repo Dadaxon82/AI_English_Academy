@@ -54,9 +54,9 @@ class SectionJumpLogicTest {
         val ex = jumpTestExercises("a1-2", AppData().path, ::daysOf)
         val ids = ex.map { it.id }
         val all = ids.associateWith { out(true) }
-        assertEquals("hammasi to'g'ri — 100", 100, jumpScore(ex, all))
+        assertEquals("hammasi töğri — 100", 100, jumpScore(ex, all))
         val none = ids.associateWith { out(false) }
-        assertEquals("hech biri to'g'ri emas — 0", 0, jumpScore(ex, none))
+        assertEquals("heç biri töğri emas — 0", 0, jumpScore(ex, none))
         // Yarmi: `partial` hissa hisobga olinadi (veb `r.correct ? 1 : r.partial`).
         val half = ids.mapIndexed { i, id -> id to out(i % 2 == 0) }.toMap()
         val expected = Math.round(ids.size / 2.0 / ids.size * 100.0).toInt()
@@ -70,8 +70,8 @@ class SectionJumpLogicTest {
         assertEquals(50, jumpScore(two, mapOf(two[0].id to out(true), two[1].id to out(false))))
         val three = jumpTestExercises("a1-2", AppData().path, ::daysOf).take(3)
         assertEquals(33, jumpScore(three, mapOf(three[0].id to out(true))))
-        assertTrue("33% o'tish emas", !jumpPassed(33))
-        assertTrue("80% o'tish", jumpPassed(JUMP_PASS_SCORE))
+        assertTrue("33% ötiş emas", !jumpPassed(33))
+        assertTrue("80% ötiş", jumpPassed(JUMP_PASS_SCORE))
     }
 
     @Test

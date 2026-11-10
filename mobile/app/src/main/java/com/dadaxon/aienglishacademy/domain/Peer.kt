@@ -15,10 +15,10 @@ object PeerLimits {
 
 /** Shikoyat sabablari — veb `PEER_REPORT_REASONS` bilan bir xil id va matn. */
 val PEER_REPORT_REASONS: List<Pair<String, String>> = listOf(
-    "offensive" to "Haqoratli yoki qo‘pol",
+    "offensive" to "Haqoratli yoki qöpol",
     "spam" to "Mavzuga aloqasiz / spam",
-    "personal" to "Shaxsiy ma’lumot bor",
-    "other" to "Boshqa sabab",
+    "personal" to "Şaxsiy ma’lumot bor",
+    "other" to "Boşqa sabab",
 )
 
 data class PeerSubmission(
@@ -42,29 +42,29 @@ data class PeerReview(
 
 fun validateSubmissionBody(body: String): String? {
     val t = body.trim()
-    if (t.isEmpty()) return "Bo‘sh javobni yuborib bo‘lmaydi."
-    if (t.length > PeerLimits.BODY_MAX) return "Matn juda uzun (${t.length} belgi, ko‘pi bilan ${PeerLimits.BODY_MAX})."
+    if (t.isEmpty()) return "Böş javobni yuborib bölmaydi."
+    if (t.length > PeerLimits.BODY_MAX) return "Matn juda uzun (${t.length} belgi, köpi bilan ${PeerLimits.BODY_MAX})."
     return null
 }
 
 fun validateReview(score: Int, comment: String): String? {
-    if (score < 1 || score > 5) return "Bahoni 1 dan 5 gacha tanlang."
+    if (score < 1 || score > 5) return "Bahoni 1 dan 5 gaça tanlang."
     val n = comment.trim().length
-    if (n < PeerLimits.COMMENT_MIN) return "Izoh kamida ${PeerLimits.COMMENT_MIN} belgi bo‘lsin — nimasi yaxshi va nimani tuzatish kerakligini yozing."
-    if (n > PeerLimits.COMMENT_MAX) return "Izoh juda uzun (ko‘pi bilan ${PeerLimits.COMMENT_MAX} belgi)."
+    if (n < PeerLimits.COMMENT_MIN) return "Izoh kamida ${PeerLimits.COMMENT_MIN} belgi bölsin — nimasi yaxşi va nimani tuzatiş kerakligini yozing."
+    if (n > PeerLimits.COMMENT_MAX) return "Izoh juda uzun (köpi bilan ${PeerLimits.COMMENT_MAX} belgi)."
     return null
 }
 
 /** Server/tarmoq xatosi → tushunarli sabab (veb `peerErrorUz` bilan bir xil). */
 fun peerErrorUz(code: String?, message: String?): String {
     val msg = (message ?: "").lowercase()
-    if (msg.contains("peer_daily_limit")) return "Bugun ${PeerLimits.DAILY_SUBMISSIONS} ta javob yuborildi — bu kunlik chegara. Ertaga yana yuborishingiz mumkin."
+    if (msg.contains("peer_daily_limit")) return "Bugun ${PeerLimits.DAILY_SUBMISSIONS} ta javob yuborildi — bu kunlik çegara. Ertaga yana yuborişingiz mumkin."
     if (code == "PGRST205" || code == "42P01" || code == "PGRST202" || msg.contains("schema cache"))
-        return "Serverda hamjamiyat jadvallari hali yo‘q: `supabase/migrations/0006_peer_review.sql` migratsiyasini qo‘llang."
-    if (code == "23505") return "Bu amal allaqachon bajarilgan (bir javobga bitta izoh / bitta shikoyat)."
-    if (code == "23514") return "Matn uzunligi yoki baho chegaradan tashqarida."
-    if (code == "42501" || msg.contains("row-level security")) return "Bu amalga ruxsat yo‘q (javob sizga tayinlanmagan yoki yashirilgan)."
+        return "Serverda hamjamiyat jadvallari hali yöq: `supabase/migrations/0006_peer_review.sql` migratsiyasini qöllang."
+    if (code == "23505") return "Bu amal allaqaçon bajarilgan (bir javobga bitta izoh / bitta şikoyat)."
+    if (code == "23514") return "Matn uzunligi yoki baho çegaradan taşqarida."
+    if (code == "42501" || msg.contains("row-level security")) return "Bu amalga ruxsat yöq (javob sizga tayinlanmagan yoki yaşirilgan)."
     if (code == null && (msg.contains("failed to fetch") || msg.contains("network") || msg.contains("unable to resolve") || msg.contains("timeout") || msg.contains("connect")))
-        return "Internet aloqasi yo‘q. Ulanishni tekshirib, qayta urinib ko‘ring."
-    return "Server xatosi. Birozdan keyin qayta urinib ko‘ring."
+        return "Internet aloqasi yöq. Ulanişni tekşirib, qayta urinib köring."
+    return "Server xatosi. Birozdan keyin qayta urinib köring."
 }

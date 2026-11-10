@@ -30,7 +30,7 @@ function DialogueView({ d, filled }: { d: Dialogue; filled: boolean }) {
     <div className="grid gap-2">
       <div className="flex justify-end">
         <button type="button" className="text-xs font-semibold underline" onClick={() => setShowUz((v) => !v)} aria-pressed={showUz}>
-          {showUz ? 'Tarjimani yashirish' : 'O‘zbekcha tarjimani ko‘rsatish'}
+          {showUz ? 'Tarjimani yaşiriş' : 'Özbekça tarjimani körsatiş'}
         </button>
       </div>
       <ol className="grid gap-2">
@@ -47,7 +47,7 @@ function DialogueView({ d, filled }: { d: Dialogue; filled: boolean }) {
                 <span className="text-[11px] font-extrabold uppercase tracking-wider muted">{d.roles[l.speaker]}</span>
                 <span className="flex items-start gap-2">
                   <span className="text-sm leading-relaxed">{text}</span>
-                  {(filled || !l.gap) && <SpeakButton text={filledLine(l)} label="Tinglash" />}
+                  {(filled || !l.gap) && <SpeakButton text={filledLine(l)} label="Tinglaş" />}
                 </span>
                 {showUz && <span className="text-xs muted">{l.uz}</span>}
               </div>
@@ -73,7 +73,7 @@ function NoteView({ d }: { d: Dialogue }) {
       <ul className="grid gap-2">
         {d.note.examples.map((e, i) => (
           <li key={i} className="flex items-start gap-2 rounded-2xl border-2 px-3 py-2">
-            <SpeakButton text={e.en} label="Tinglash" />
+            <SpeakButton text={e.en} label="Tinglaş" />
             <span className="min-w-0 grid">
               <span className="text-sm font-semibold">{e.en}</span>
               <span className="text-xs muted">{e.uz}</span>
@@ -81,7 +81,7 @@ function NoteView({ d }: { d: Dialogue }) {
           </li>
         ))}
       </ul>
-      <p className="text-sm font-bold">To‘liq suhbat</p>
+      <p className="text-sm font-bold">Töliq suhbat</p>
       <DialogueView d={d} filled />
     </div>
   )
@@ -110,7 +110,7 @@ export default function Dialogues() {
               <>
                 <p className="text-sm leading-relaxed">{active.situationUz}</p>
                 <p className="text-xs muted">
-                  Siz — <b>{active.roles.b}</b>. Suhbatni o‘qing: keyingi qadamlarda bo‘sh joylarni to‘ldirasiz.
+                  Siz — <b>{active.roles.b}</b>. Suhbatni öqing: keyingi qadamlarda böş joylarni töldirasiz.
                 </p>
                 <DialogueView d={active} filled={false} />
               </>
@@ -129,16 +129,16 @@ export default function Dialogues() {
           <div className="grid gap-1.5">
             <h1 className="text-xl sm:text-2xl font-extrabold">Real hayot suhbatlari</h1>
             <p className="text-sm muted">
-              Kafe, vokzal, shifokor, ish suhbati — kundalik vaziyatlarda kerak bo‘ladigan iboralar. Har suhbat kun mavzusiga mos;
-              oxirida «Nega shunday?» izohi bor. Xato qilingan bo‘shliqlar Xatolar daftaridagi Takrorlash menejeriga tushadi.
+              Kafe, vokzal, şifokor, iş suhbati — kundalik vaziyatlarda kerak böladigan iboralar. Har suhbat kun mavzusiga mos;
+              oxirida «Nega şunday?» izohi bor. Xato qilingan böşliqlar Xatolar daftaridagi Takrorlaş menejeriga tuşadi.
             </p>
           </div>
           <MascotFigure maxHeight="max-h-24" alt="" />
         </div>
         <p className="text-sm">
-          Erkin gaplashmoqchimisiz?{' '}
+          Erkin gaplaşmoqçimisiz?{' '}
           <Link to="/conversation" className="font-semibold underline">
-            Suhbatdosh bilan gaplashish →
+            Suhbatdoş bilan gaplaşiş →
           </Link>
         </p>
         <div className="flex flex-wrap gap-2" role="group" aria-label="Daraja">
@@ -160,7 +160,7 @@ export default function Dialogues() {
                 <div className="flex flex-wrap items-center gap-1.5">
                   <Chip>{d.dayNumber}-kun</Chip>
                   <Chip tone={done ? 'ok' : p.tried > 0 ? 'warn' : 'default'}>
-                    {p.tried === 0 ? 'Hali boshlanmagan' : `${p.correct}/${p.total} to‘g‘ri`}
+                    {p.tried === 0 ? 'Hali boşlanmagan' : `${p.correct}/${p.total} töğri`}
                   </Chip>
                 </div>
                 <h2 className="font-bold">{d.titleUz}</h2>
@@ -174,7 +174,7 @@ export default function Dialogues() {
                     setActive(d)
                   }}
                 >
-                  {p.tried === 0 ? 'Boshlash' : 'Qayta o‘tish'}
+                  {p.tried === 0 ? 'Boşlaş' : 'Qayta ötiş'}
                 </Button>
               </div>
             </Card>
@@ -183,7 +183,7 @@ export default function Dialogues() {
       </div>
 
       <p className="text-xs muted">
-        Xatolaringizni bir joyda takrorlash: <Link to="/errors" className="underline font-semibold">Xatolar daftari → Takrorlash menejeri</Link>
+        Xatolaringizni bir joyda takrorlaş: <Link to="/errors" className="underline font-semibold">Xatolar daftari → Takrorlaş menejeri</Link>
       </p>
     </div>
   )

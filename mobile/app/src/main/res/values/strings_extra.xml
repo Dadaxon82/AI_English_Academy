@@ -23,26 +23,26 @@
          `LearningPathFragment` (kunlar zanjiri kartasi),
          `ExerciseFragment` (natija + XP). -->
     <string name="settings_motion_title">Harakatlar</string>
-    <string name="settings_motion_on">Yoniq — ekranlar jonli chiziladi</string>
-    <string name="settings_motion_off">O‘chiq — hammasi darhol ko‘rinadi</string>
+    <string name="settings_motion_on">Yoniq — ekranlar jonli çiziladi</string>
+    <string name="settings_motion_off">Öçiq — hammasi darhol körinadi</string>
     <!-- Byudjet ochiq yoziladi: raqamlar `res/raw/motion_manifest.json`dan -->
-    <string name="settings_motion_hint">Byudjet: o‘tish 260 ms, qahramon 380 ms, XP 620 ms. Telefon sozlamalarida animatsiyalar o‘chirilgan bo‘lsa harakat chizilmaydi.</string>
-    <string name="settings_motion_scale_off">Telefonda animatsiya masshtabi 0 — harakat avtomatik o‘chiq.</string>
+    <string name="settings_motion_hint">Byudjet: ötiş 260 ms, qahramon 380 ms, XP 620 ms. Telefon sozlamalarida animatsiyalar öçirilgan bölsa harakat çizilmaydi.</string>
+    <string name="settings_motion_scale_off">Telefonda animatsiya masştabi 0 — harakat avtomatik öçiq.</string>
 
     <!-- O'quv yo'lidagi kunlar zanjiri kartasi (DULO `hardcoded_sessions`
          ketma-ketligining bizdagi ko'rinishi — `domain/LessonChain.kt`). -->
     <string name="path_chain_title">Kunlar zanjiri</string>
-    <string name="path_chain_hint">Darslar ketma-ketligi: bo‘limlar reja tartibida (test oxirida), mashqlar esa tur almashinuvi bilan qayta tartiblanadi — aralash turlarda bir xil tur qo‘shni kelmaydi. Yagona turli bo‘limda (masalan lug‘at testi) ajratishning iloji yo‘q, bu holda takror majburiy.</string>
+    <string name="path_chain_hint">Darslar ketma-ketligi: bölimlar reja tartibida (test oxirida), maşqlar esa tur almaşinuvi bilan qayta tartiblanadi — aralaş turlarda bir xil tur qöşni kelmaydi. Yagona turli bölimda (masalan luğat testi) ajratişning iloji yöq, bu holda takror majburiy.</string>
     <string name="path_chain_steps">%1$d qadam</string>
     <string name="path_chain_minutes">%1$d daq</string>
     <string name="path_chain_state_done">Bajarildi</string>
     <string name="path_chain_state_current">Davom etayapti</string>
     <string name="path_chain_state_locked">Qulflangan</string>
-    <string name="path_chain_test">Bo‘lim testi</string>
+    <string name="path_chain_test">Bölim testi</string>
     <!-- Audit sonlari `chainAudit()`dan olinadi (ixtira EMAS). "majburiy" —
          yagona turli bo'lim tufayli ajratib bo'lmaydigan qo'shnilar (DULO
          `math_l0_lessons.json` 38 mashq bitta tur — majburiy 37). -->
-    <string name="path_chain_audit">Zanjir bo‘yicha: %1$d mashq qadami (+%2$d takrorlash) · bir xil tur qo‘shni: %3$d (majburiy: %4$d) · eng qisqa tur masofasi: %5$d</string>
+    <string name="path_chain_audit">Zanjir böyiça: %1$d maşq qadami (+%2$d takrorlaş) · bir xil tur qöşni: %3$d (majburiy: %4$d) · eng qisqa tur masofasi: %5$d</string>
     <string name="path_xp_fly">+ %1$d XP</string>
 
     <!-- O‘yin qatlami bloki — 2026-11-08 qo‘shildi, veb `Settings.tsx`
@@ -51,26 +51,26 @@
          `GameConfig`dan beriladi, shuning uchun bir joy o‘zgarsa matndagi son
          ham o‘zgaradi (ixtira yo‘q). Duolingoga tegishli sonlar (350/200 gem)
          esa izohda ochiq aytilgan manba. -->
-    <string name="settings_game_title">O‘yin qatlami</string>
+    <string name="settings_game_title">Öyin qatlami</string>
     <string name="settings_hearts_on">Yuraklar tizimi (har xato javobda bitta yurak ketadi)</string>
     <string name="settings_hearts_state_on">Yuraklar yoqilgan</string>
-    <string name="settings_hearts_state_off">Yuraklar o‘chiq</string>
-    <string name="settings_hearts_hint">Yuraklar soni %1$d ta, har xato javob uchun %2$d tasi ketadi va %3$d daqiqada bittasi qaytadi. Yuraklar tugasa takrorlash darsi ochiladi — %4$d ta so‘z takrorlansa bitta yurak qaytadi. Ketma-ket %5$d ta to‘g‘ri javob uchun ham bitta yurak qaytariladi. Mock imtihon, diagnostika va bo‘lim testlarida yurak jarima qilinmaydi. O‘chirilsa — hech qanday jarima darvozasi qolmaydi. Bu sozlama veb bilan ham sinxronlanadi.</string>
+    <string name="settings_hearts_state_off">Yuraklar öçiq</string>
+    <string name="settings_hearts_hint">Yuraklar soni %1$d ta, har xato javob uçun %2$d tasi ketadi va %3$d daqiqada bittasi qaytadi. Yuraklar tugasa takrorlaş darsi oçiladi — %4$d ta söz takrorlansa bitta yurak qaytadi. Ketma-ket %5$d ta töğri javob uçun ham bitta yurak qaytariladi. Mock imtihon, diagnostika va bölim testlarida yurak jarima qilinmaydi. Öçirilsa — heç qanday jarima darvozasi qolmaydi. Bu sozlama veb bilan ham sinxronlanadi.</string>
     <string name="settings_hearts_count">%1$d / %2$d yurak</string>
     <string name="settings_hearts_next"> · keyingi yurak: %1$d daqiqa</string>
     <string name="settings_goal_today">Bugun %1$d/%2$d XP</string>
     <string name="settings_xp_goal_title">Kunlik XP maqsadi</string>
     <string name="settings_xp_goal_row">%1$s — %2$d XP</string>
-    <string name="settings_xp_goal_hint">Bosqichlar Duolingo‘ning 5 pog‘onasi (Basic/Casual/Regular/Serious/Intense) — bizning XP masshtabimizga moslab 10 marta kattalashtirilgan. Maqsadga yetilsa %1$d gem beriladi; kunlik daqiqa rejasi (%2$d daqiqa) alohida maqsad bo‘lib qoladi.</string>
-    <string name="settings_shop_title">Do‘kon (gemlar: %1$d)</string>
+    <string name="settings_xp_goal_hint">Bosqiçlar Duolingöning 5 poğonasi (Basic/Casual/Regular/Serious/Intense) — bizning XP masştabimizga moslab 10 marta kattalaştirilgan. Maqsadga yetilsa %1$d gem beriladi; kunlik daqiqa rejasi (%2$d daqiqa) alohida maqsad bölib qoladi.</string>
+    <string name="settings_shop_title">Dökon (gemlar: %1$d)</string>
     <string name="settings_shop_price">%1$d gem</string>
-    <string name="settings_shop_buy">Sotib olish</string>
-    <string name="settings_shop_hint">Narxlar Duolingo do‘konidan olindi (yuraklarni to‘ldirish 350 gem, streak qalqoni 200 gem); bitta yurak va XP byusti narxi — bizning qarorimiz. Omborda eng ko‘p %1$d ta qalqon saqlanadi.</string>
+    <string name="settings_shop_buy">Sotib oliş</string>
+    <string name="settings_shop_hint">Narxlar Duolingo dökonidan olindi (yuraklarni töldiriş 350 gem, streak qalqoni 200 gem); bitta yurak va XP byusti narxi — bizning qarorimiz. Omborda eng köp %1$d ta qalqon saqlanadi.</string>
     <string name="settings_shop_ok">%1$s olindi — %2$d gem sarflandi.</string>
     <string name="settings_shop_freezes">Omborda: %1$d qalqon</string>
     <string name="settings_boost_active">2× XP byusti faol — %1$d daqiqa qoldi</string>
-    <string name="settings_boost_none">XP byusti hozir yo‘q</string>
-    <string name="settings_bet_open">Garov ochiq: %1$s kunidan %2$d gem tikilgan</string>
+    <string name="settings_boost_none">XP byusti hozir yöq</string>
+    <string name="settings_bet_open">Garov oçiq: %1$s kunidan %2$d gem tikilgan</string>
     <string name="settings_bet_button">Garov: %1$d gem tikib, zanjirni %2$d kunga uzaytirsak %3$d gem qaytadi</string>
     <string name="settings_bet_ok">Garov tikildi — %1$d gem sarflandi.</string>
 
@@ -79,18 +79,18 @@
          «Bugungi questlar» kartalari). Sonlar `GameLogic`/`GameConfig`dan
          format argumanti bilan beriladi — kalitda son yo‘q. -->
     <string name="dash_stat_hearts">Yuraklar</string>
-    <string name="dash_hearts_short_off">o‘chiq</string>
-    <string name="dash_hearts_off">Sozlamada o‘chirilgan — jarima darvozasi yo‘q</string>
+    <string name="dash_hearts_short_off">öçiq</string>
+    <string name="dash_hearts_off">Sozlamada öçirilgan — jarima darvozasi yöq</string>
     <string name="dash_hearts_blocked">Tugadi — %1$d ta takror bilan qaytariladi</string>
     <string name="dash_hearts_next">Keyingi yurak: %1$d daqiqa</string>
-    <string name="dash_hearts_full">To‘la</string>
+    <string name="dash_hearts_full">Töla</string>
     <string name="dash_stat_goal">Kunlik XP maqsadi</string>
     <string name="dash_goal_done">Maqsadga yetildi (+gem)</string>
     <string name="dash_goal_left">Yana %1$d XP kerak</string>
     <string name="dash_stat_gems">Gem</string>
     <string name="dash_quests_done">%1$d/%2$d bugungi quest bajarildi</string>
     <string name="dash_stat_freezes">Qalqonlar</string>
-    <string name="dash_freezes_hint">Uzilgan kunni qoplaydi (do‘kondan)</string>
+    <string name="dash_freezes_hint">Uzilgan kunni qoplaydi (dökondan)</string>
     <string name="dash_quests_title">Bugungi questlar</string>
     <string name="dash_quests_total">%1$d ta quest jami</string>
     <string name="dash_quest_row">%1$s — %2$d/%3$d</string>
@@ -102,159 +102,159 @@
          `heartsView`) — ixtira yo‘q. -->
     <string name="hearts_blocked_title">Yuraklar tugadi</string>
     <string name="hearts_blocked_next"> · %1$d daqiqada bittasi qaytadi</string>
-    <string name="hearts_blocked_hint">Mashqni davom ettirish uchun yurak kerak. %1$d ta so‘zni takrorlab bittasini qaytarib oling (ketma-ket %2$d ta to‘g‘ri javob ham bitta yurak qaytaradi). Mock imtihon, diagnostika va bo‘lim testlarida yurak talab qilinmaydi.</string>
-    <string name="hearts_blocked_practice">Takrorlash darsini ochish</string>
-    <string name="hearts_blocked_settings">Yuraklarni sozlamada o‘chirish</string>
+    <string name="hearts_blocked_hint">Maşqni davom ettiriş uçun yurak kerak. %1$d ta sözni takrorlab bittasini qaytarib oling (ketma-ket %2$d ta töğri javob ham bitta yurak qaytaradi). Mock imtihon, diagnostika va bölim testlarida yurak talab qilinmaydi.</string>
+    <string name="hearts_blocked_practice">Takrorlaş darsini oçiş</string>
+    <string name="hearts_blocked_settings">Yuraklarni sozlamada öçiriş</string>
     <!-- «5 daqiqa» tezkor sessiya — veb `src/pages/QuickSession.tsx` va
          Dashboard kartasi bilan BIR XIL matnlar. Sonlar format argumenti
          (`domain/QuickSession.kt`, store) — ixtira yo‘q. -->
     <string name="quick_title">⚡ 5 daqiqa — tezkor takror</string>
-    <string name="quick_intro">Qisqa, har kungi odat: avval takrorlash navbatidagi so‘zlar, keyin bitta mavzudan yangi so‘zlar. Kartani o‘ngga suring — «Bilaman», chapga — «Yana».</string>
-    <string name="quick_counts">%1$d ta takror · %2$d ta yangi so‘z · Daraja: %3$s</string>
+    <string name="quick_intro">Qisqa, har kungi odat: avval takrorlaş navbatidagi sözlar, keyin bitta mavzudan yangi sözlar. Kartani öngga suring — «Bilaman», çapga — «Yana».</string>
+    <string name="quick_counts">%1$d ta takror · %2$d ta yangi söz · Daraja: %3$s</string>
     <string name="quick_topic">Mavzu: %1$s</string>
-    <string name="quick_note">Bu kunlik %1$d daqiqalik rejaning o‘rnini bosmaydi — band kunlar uchun «minimal kun». Sarflangan vaqt bugungi faollikka yoziladi va ketma-ket kun zanjirini saqlaydi.</string>
-    <string name="quick_empty">Hozir kartalar yo‘q: takrorlash navbati bo‘sh va bu darajaning barcha so‘zlari allaqachon lug‘atingizda. Lug‘at bo‘limida boshqa mashqlarni sinab ko‘ring.</string>
-    <string name="quick_start">Boshlash (%1$s)</string>
+    <string name="quick_note">Bu kunlik %1$d daqiqalik rejaning örnini bosmaydi — band kunlar uçun «minimal kun». Sarflangan vaqt bugungi faollikka yoziladi va ketma-ket kun zanjirini saqlaydi.</string>
+    <string name="quick_empty">Hozir kartalar yöq: takrorlaş navbati böş va bu darajaning barça sözlari allaqaçon luğatingizda. Luğat bölimida boşqa maşqlarni sinab köring.</string>
+    <string name="quick_start">Boşlaş (%1$s)</string>
     <string name="quick_resume_title">⚡ Bugungi 5 daqiqa davom etmoqda</string>
     <string name="quick_resume_body">Qolgan vaqt: %1$s. Takror navbati hozirgi holatdan qayta tuziladi.</string>
-    <string name="quick_resume">Davom etish</string>
-    <string name="quick_finish">Sessiyani yakunlash</string>
+    <string name="quick_resume">Davom etiş</string>
+    <string name="quick_finish">Sessiyani yakunlaş</string>
     <string name="quick_paused">Sessiya pauzada — qolgan vaqt saqlangan.</string>
-    <string name="quick_badge_new">Yangi so‘z</string>
+    <string name="quick_badge_new">Yangi söz</string>
     <string name="quick_badge_review">Takror</string>
-    <string name="quick_flip">Ma’nosi uchun bosing</string>
+    <string name="quick_flip">Ma’nosi uçun bosing</string>
     <string name="quick_again">← Yana</string>
     <string name="quick_good">Bilaman →</string>
-    <string name="quick_swipe_hint">O‘ngga suring — Bilaman, chapga — Yana. Bosilsa — ma’nosi.</string>
+    <string name="quick_swipe_hint">Öngga suring — Bilaman, çapga — Yana. Bosilsa — ma’nosi.</string>
     <string name="quick_time_left">Qolgan vaqt %1$s</string>
     <string name="quick_done_title">Sessiya yakunlandi</string>
-    <string name="quick_done_summary">%1$d ta karta: %2$d tasini bildingiz, %3$d tasi qayta takrorlanadi. Yangi o‘rganilgan: %4$d ta so‘z.</string>
+    <string name="quick_done_summary">%1$d ta karta: %2$d tasini bildingiz, %3$d tasi qayta takrorlanadi. Yangi örganilgan: %4$d ta söz.</string>
     <string name="quick_done_none">Bu safar birorta karta baholanmadi.</string>
     <string name="quick_streak">Ketma-ket kun: %1$d</string>
     <string name="quick_more">Yana 5 daqiqa</string>
-    <string name="quick_home">Bosh sahifa</string>
+    <string name="quick_home">Boş sahifa</string>
     <string name="quick_dash_title">Vaqtingiz kammi? 5 daqiqa yetadi</string>
-    <string name="quick_dash_body">%1$d ta takror + bitta mavzudan yangi so‘zlar. Kunlik zanjir saqlanadi.</string>
-    <string name="quick_dash_body_empty">Takror navbati bo‘sh + bitta mavzudan yangi so‘zlar. Kunlik zanjir saqlanadi.</string>
-    <string name="quick_dash_start">5 daqiqa boshlash</string>
+    <string name="quick_dash_body">%1$d ta takror + bitta mavzudan yangi sözlar. Kunlik zanjir saqlanadi.</string>
+    <string name="quick_dash_body_empty">Takror navbati böş + bitta mavzudan yangi sözlar. Kunlik zanjir saqlanadi.</string>
+    <string name="quick_dash_start">5 daqiqa boşlaş</string>
     <!-- Real hayot suhbatlari va Takrorlash menejeri (2-bosqich) — veb
          `src/pages/Dialogues.tsx` va `ErrorLog.tsx` bilan bir xil matnlar. -->
     <string name="dlg_title">Real hayot suhbatlari</string>
-    <string name="dlg_intro">Kafe, vokzal, shifokor, ish suhbati — kundalik vaziyatlarda kerak bo‘ladigan iboralar. Har suhbat kun mavzusiga mos; oxirida «Nega shunday?» izohi bor. Xato qilingan bo‘shliqlar Xatolar daftaridagi Takrorlash menejeriga tushadi.</string>
+    <string name="dlg_intro">Kafe, vokzal, şifokor, iş suhbati — kundalik vaziyatlarda kerak böladigan iboralar. Har suhbat kun mavzusiga mos; oxirida «Nega şunday?» izohi bor. Xato qilingan böşliqlar Xatolar daftaridagi Takrorlaş menejeriga tuşadi.</string>
     <string name="dlg_day">%1$d-kun</string>
-    <string name="dlg_not_started">Hali boshlanmagan</string>
-    <string name="dlg_progress">%1$d/%2$d to‘g‘ri</string>
-    <string name="dlg_open">Suhbatni ochish</string>
-    <string name="dlg_you_are">Siz — %1$s. Suhbatni o‘qing, so‘ng bo‘sh joylarni to‘ldiring.</string>
-    <string name="dlg_show_uz">O‘zbekcha tarjimani ko‘rsatish</string>
-    <string name="dlg_hide_uz">Tarjimani yashirish</string>
-    <string name="dlg_start">Bo‘shliqlarni to‘ldirish (%1$d ta)</string>
-    <string name="dlg_note_title">Nega shunday? %1$s</string>
-    <string name="dlg_full">To‘liq suhbat</string>
-    <string name="dlg_back">← Suhbatlar ro‘yxati</string>
+    <string name="dlg_not_started">Hali boşlanmagan</string>
+    <string name="dlg_progress">%1$d/%2$d töğri</string>
+    <string name="dlg_open">Suhbatni oçiş</string>
+    <string name="dlg_you_are">Siz — %1$s. Suhbatni öqing, söng böş joylarni töldiring.</string>
+    <string name="dlg_show_uz">Özbekça tarjimani körsatiş</string>
+    <string name="dlg_hide_uz">Tarjimani yaşiriş</string>
+    <string name="dlg_start">Böşliqlarni töldiriş (%1$d ta)</string>
+    <string name="dlg_note_title">Nega şunday? %1$s</string>
+    <string name="dlg_full">Töliq suhbat</string>
+    <string name="dlg_back">← Suhbatlar röyxati</string>
     <string name="dlg_dash_title">Real hayot suhbatlari</string>
-    <string name="dlg_dash_body">Kafe, vokzal, shifokor — har kunga bitta suhbat.</string>
-    <string name="review_title">Takrorlash menejeri</string>
-    <string name="review_counts">Bugungi takror: %1$d ta xato + %2$d ta so‘z</string>
-    <string name="review_none">Hozircha takrorlanadigan narsa yo‘q</string>
-    <string name="review_body">Tuzatilmagan xatolar va takrorlash vaqti kelgan so‘zlar bitta navbatda (ko‘pi bilan %1$d ta). So‘z bilan bog‘liq xato ikki marta sanalmaydi: bitta javob ham xatoni, ham so‘z takrorini yangilaydi.</string>
-    <string name="review_start">Takrorlashni boshlash</string>
+    <string name="dlg_dash_body">Kafe, vokzal, şifokor — har kunga bitta suhbat.</string>
+    <string name="review_title">Takrorlaş menejeri</string>
+    <string name="review_counts">Bugungi takror: %1$d ta xato + %2$d ta söz</string>
+    <string name="review_none">Hozirça takrorlanadigan narsa yöq</string>
+    <string name="review_body">Tuzatilmagan xatolar va takrorlaş vaqti kelgan sözlar bitta navbatda (köpi bilan %1$d ta). Söz bilan boğliq xato ikki marta sanalmaydi: bitta javob ham xatoni, ham söz takrorini yangilaydi.</string>
+    <string name="review_start">Takrorlaşni boşlaş</string>
     <!-- Hamjamiyat tekshiruvi, «Men qila olaman» dalili va guvohnoma (3-bosqich) —
          veb `Community.tsx`, `SelfAssessment.tsx`, `CertificateCard.tsx` bilan bir xil. -->
-    <string name="com_title">Hamjamiyat tekshiruvi</string>
-    <string name="com_intro">Yozma javobingizni yoki nutqingiz matnini boshqa o‘quvchiga yuboring — u baho (1–5) va izoh yozadi. Siz ham boshqalarni tekshirasiz: server sizga bittasini tayinlaydi. Ismingiz ko‘rsatilmaydi, audio hech qachon yuborilmaydi.</string>
-    <string name="com_checking">Tekshirilmoqda…</string>
-    <string name="com_send_title">Javobimni tekshiruvga yuborish</string>
-    <string name="com_send_empty">Yuboriladigan javob yo‘q — avval Yozish yoki Gapirish topshirig‘ini bajaring.</string>
-    <string name="com_consent">Roziman: tanlagan matnim (ismimsiz) boshqa o‘quvchiga ko‘rsatiladi. Shaxsiy ma’lumot yozmaganman. Kuniga ko‘pi bilan %1$d ta.</string>
-    <string name="com_send">Yuborish</string>
+    <string name="com_title">Hamjamiyat tekşiruvi</string>
+    <string name="com_intro">Yozma javobingizni yoki nutqingiz matnini boşqa öquvçiga yuboring — u baho (1–5) va izoh yozadi. Siz ham boşqalarni tekşirasiz: server sizga bittasini tayinlaydi. Ismingiz körsatilmaydi, audio heç qaçon yuborilmaydi.</string>
+    <string name="com_checking">Tekşirilmoqda…</string>
+    <string name="com_send_title">Javobimni tekşiruvga yuboriş</string>
+    <string name="com_send_empty">Yuboriladigan javob yöq — avval Yoziş yoki Gapiriş topşiriğini bajaring.</string>
+    <string name="com_consent">Roziman: tanlagan matnim (ismimsiz) boşqa öquvçiga körsatiladi. Şaxsiy ma’lumot yozmaganman. Kuniga köpi bilan %1$d ta.</string>
+    <string name="com_send">Yuboriş</string>
     <string name="com_sent">Yuborilgan</string>
-    <string name="com_sent_ok">Javob tekshiruvga yuborildi. Izohlar kelganda «Mening javoblarim»da ko‘rinadi.</string>
-    <string name="com_kind_writing">Yozish</string>
-    <string name="com_kind_speaking">Gapirish (matn)</string>
+    <string name="com_sent_ok">Javob tekşiruvga yuborildi. Izohlar kelganda «Mening javoblarim»da körinadi.</string>
+    <string name="com_kind_writing">Yoziş</string>
+    <string name="com_kind_speaking">Gapiriş (matn)</string>
     <string name="com_mine_title">Mening javoblarim</string>
     <string name="com_mine_empty">Hali javob yubormagansiz.</string>
-    <string name="com_hidden">Shikoyatlar sababli yashirildi</string>
+    <string name="com_hidden">Şikoyatlar sababli yaşirildi</string>
     <string name="com_reviews">%1$d/%2$d izoh</string>
-    <string name="com_report">Shikoyat qilish</string>
-    <string name="com_report_ok">Shikoyat qabul qilindi.</string>
-    <string name="com_delete">O‘chirish</string>
-    <string name="com_deleted">Javob o‘chirildi.</string>
-    <string name="com_review_title">Boshqalarni tekshirish</string>
-    <string name="com_claim">Tekshirish uchun javob olish</string>
-    <string name="com_review_none">Hozircha tekshiriladigan javob yo‘q — keyinroq qayta urinib ko‘ring.</string>
-    <string name="com_comment_hint">Izoh (kamida %1$d belgi): nimasi yaxshi, qaysi xatoni qanday tuzatish kerak?</string>
-    <string name="com_review_send">Izohni yuborish</string>
+    <string name="com_report">Şikoyat qiliş</string>
+    <string name="com_report_ok">Şikoyat qabul qilindi.</string>
+    <string name="com_delete">Öçiriş</string>
+    <string name="com_deleted">Javob öçirildi.</string>
+    <string name="com_review_title">Boşqalarni tekşiriş</string>
+    <string name="com_claim">Tekşiriş uçun javob oliş</string>
+    <string name="com_review_none">Hozirça tekşiriladigan javob yöq — keyinroq qayta urinib köring.</string>
+    <string name="com_comment_hint">Izoh (kamida %1$d belgi): nimasi yaxşi, qaysi xatoni qanday tuzatiş kerak?</string>
+    <string name="com_review_send">Izohni yuboriş</string>
     <string name="com_review_ok">Rahmat! Izohingiz muallifga yetkaziladi.</string>
-    <string name="com_dash_body">Javobingizni boshqa o‘quvchi tekshiradi, siz ham boshqalarni tekshirasiz.</string>
-    <string name="cando_none">Dalil yo‘q — %1$s %2$s mashqlari natijasi hali yo‘q.</string>
+    <string name="com_dash_body">Javobingizni boşqa öquvçi tekşiradi, siz ham boşqalarni tekşirasiz.</string>
+    <string name="cando_none">Dalil yöq — %1$s %2$s maşqlari natijasi hali yöq.</string>
     <string name="cando_few">Dalil yetarli emas: %1$d ta natija (%2$d%%) — yana %3$d ta kerak.</string>
-    <string name="cando_practice">Hali mashq kerak: %1$d ta natija, %2$d%%.</string>
+    <string name="cando_practice">Hali maşq kerak: %1$d ta natija, %2$d%%.</string>
     <string name="cando_confirmed">Natija bilan tasdiqlandi: %1$d ta natija, %2$d%%.</string>
-    <string name="cert_title">Yakunlash guvohnomasi</string>
-    <string name="cert_disclaimer">Bu rasmiy sertifikat emas: AI English Academy platformasidagi mashq natijalari asosida avtomatik yaratilgan yakunlash guvohnomasi.</string>
-    <string name="cert_stats">%1$d/%2$d kun · %3$d ta mashq · %4$s · %5$d ta so‘z · «Men qila olaman»: %6$d/%7$d</string>
-    <string name="cert_locked">Guvohnoma %1$s darajasining barcha %2$d kuni O‘quv yo‘lida yakunlangach ochiladi (yana %3$d kun).</string>
-    <string name="cert_make">Guvohnomani yaratish</string>
-    <string name="cert_save">Rasmlarga saqlash</string>
+    <string name="cert_title">Yakunlaş guvohnomasi</string>
+    <string name="cert_disclaimer">Bu rasmiy sertifikat emas: AI English Academy platformasidagi maşq natijalari asosida avtomatik yaratilgan yakunlaş guvohnomasi.</string>
+    <string name="cert_stats">%1$d/%2$d kun · %3$d ta maşq · %4$s · %5$d ta söz · «Men qila olaman»: %6$d/%7$d</string>
+    <string name="cert_locked">Guvohnoma %1$s darajasining barça %2$d kuni Öquv yölida yakunlangaç oçiladi (yana %3$d kun).</string>
+    <string name="cert_make">Guvohnomani yaratiş</string>
+    <string name="cert_save">Rasmlarga saqlaş</string>
     <string name="cert_saved">Guvohnoma «Rasmlar» papkasiga saqlandi.</string>
-    <string name="cert_save_old">Saqlash Android 10 va yangisida ishlaydi — rasmni ekran surati bilan saqlang.</string>
-    <string name="cert_save_fail">Rasmni saqlab bo‘lmadi.</string>
+    <string name="cert_save_old">Saqlaş Android 10 va yangisida işlaydi — rasmni ekran surati bilan saqlang.</string>
+    <string name="cert_save_fail">Rasmni saqlab bölmadi.</string>
     <string name="cert_no_accuracy">aniqlik —</string>
     <string name="cert_accuracy">aniqlik %1$d%%</string>
     <!-- AI suhbatdosh (4-bosqich) — veb `src/pages/Conversation.tsx` bilan bir xil. -->
-    <string name="conv_title">Suhbatdosh</string>
-    <string name="conv_intro">Vaziyatni tanlang va hamsuhbat bilan ingliz tilida gaplashing — yozib yoki gapirib. Javoblaringizdagi xatolar suhbat oxirida mashqqa aylanadi.</string>
+    <string name="conv_title">Suhbatdoş</string>
+    <string name="conv_intro">Vaziyatni tanlang va hamsuhbat bilan ingliz tilida gaplaşing — yozib yoki gapirib. Javoblaringizdagi xatolar suhbat oxirida maşqqa aylanadi.</string>
     <string name="conv_ai_on">AI ulangan: hamsuhbat erkin javob beradi va xatolaringizni tuzatadi (kunlik AI limiti hisoblanadi).</string>
-    <string name="conv_ai_off">AI ulanmagan — suhbat oldindan yozilgan stsenariy bo‘yicha boradi: har javobingiz namuna bilan solishtiriladi.</string>
+    <string name="conv_ai_off">AI ulanmagan — suhbat oldindan yozilgan stsenariy böyiça boradi: har javobingiz namuna bilan soliştiriladi.</string>
     <string name="conv_roles">Hamsuhbat: %1$s · Siz: %2$s</string>
     <string name="conv_engine_ai">AI hamsuhbat</string>
     <string name="conv_engine_script">Oldindan yozilgan stsenariy</string>
     <string name="conv_back">← Vaziyatlar</string>
     <string name="conv_no_errors">Xato topilmadi.</string>
     <string name="conv_model">Namuna: %1$s</string>
-    <string name="conv_compare">Namunadagi so‘zlardan %1$d/%2$d tasi bor (bir ma’noni boshqa so‘z bilan ham aytish mumkin — bu baho emas)</string>
+    <string name="conv_compare">Namunadagi sözlardan %1$d/%2$d tasi bor (bir ma’noni boşqa söz bilan ham aytiş mumkin — bu baho emas)</string>
     <string name="conv_typing">%1$s yozmoqda…</string>
-    <string name="conv_hint">Aytmoqchi bo‘lgan fikringiz: %1$s</string>
-    <string name="conv_input">Inglizcha javobingiz…</string>
-    <string name="conv_send">Yuborish</string>
-    <string name="conv_speak">🎤 Gapirish</string>
-    <string name="conv_finish">Suhbatni yakunlash</string>
-    <string name="conv_to_script">Oldindan yozilgan stsenariy bilan boshidan</string>
+    <string name="conv_hint">Aytmoqçi bölgan fikringiz: %1$s</string>
+    <string name="conv_input">Inglizça javobingiz…</string>
+    <string name="conv_send">Yuboriş</string>
+    <string name="conv_speak">🎤 Gapiriş</string>
+    <string name="conv_finish">Suhbatni yakunlaş</string>
+    <string name="conv_to_script">Oldindan yozilgan stsenariy bilan boşidan</string>
     <string name="conv_done">Suhbat yakunlandi</string>
-    <string name="conv_done_script">Stsenariy yakunlandi. Har javobingiz namuna bilan solishtirildi. Xatolar tahlili uchun AI kerak.</string>
+    <string name="conv_done_script">Stsenariy yakunlandi. Har javobingiz namuna bilan soliştirildi. Xatolar tahlili uçun AI kerak.</string>
     <string name="conv_done_clean">AI javoblaringizda xato topmadi.</string>
-    <string name="conv_done_fixes">AI %1$d ta tuzatish berdi.</string>
-    <string name="conv_fix_lesson">Xatolar ustida ishlash (%1$d ta mashq)</string>
-    <string name="conv_words_save">Lug‘atimga saqlash (%1$d ta)</string>
-    <string name="conv_words_saved">Lug‘atga saqlandi (%1$d ta)</string>
-    <string name="conv_words_none">Bu so‘zlar lug‘atimizda yo‘q — takrorlash jadvaliga qo‘shilmaydi.</string>
+    <string name="conv_done_fixes">AI %1$d ta tuzatiş berdi.</string>
+    <string name="conv_fix_lesson">Xatolar ustida işlaş (%1$d ta maşq)</string>
+    <string name="conv_words_save">Luğatimga saqlaş (%1$d ta)</string>
+    <string name="conv_words_saved">Luğatga saqlandi (%1$d ta)</string>
+    <string name="conv_words_none">Bu sözlar luğatimizda yöq — takrorlaş jadvaliga qöşilmaydi.</string>
     <string name="conv_again">Qaytadan</string>
-    <string name="conv_dash_body">Kafe, vokzal, shifokor — hamsuhbat bilan gaplashing.</string>
+    <string name="conv_dash_body">Kafe, vokzal, şifokor — hamsuhbat bilan gaplaşing.</string>
     <!-- Talaffuz mashqi, Immersion (5-bosqich) va foydalanish o'lchovi (6-bosqich) —
          veb `Pronunciation.tsx`, Sozlamalar, `UsageCard.tsx` bilan bir xil. -->
-    <string name="pron_title">Talaffuz mashqi</string>
-    <string name="pron_intro">Gapni tinglang, so‘ng ovoz chiqarib ayting. Tanilgan so‘zlar namuna bilan solishtiriladi: yashil — to‘g‘ri tanildi, qizil — tanilmadi. Bu taxminiy moslik, rasmiy talaffuz bahosi emas. Audio hech qayerga yuborilmaydi.</string>
-    <string name="pron_tally">Bu sessiyada %1$d urinish · o‘rtacha %2$d%%</string>
-    <string name="pron_listen">Namunani tinglash</string>
-    <string name="pron_say">🎤 Aytish</string>
-    <string name="pron_say_again">🎤 Qayta aytish</string>
+    <string name="pron_title">Talaffuz maşqi</string>
+    <string name="pron_intro">Gapni tinglang, söng ovoz çiqarib ayting. Tanilgan sözlar namuna bilan soliştiriladi: yaşil — töğri tanildi, qizil — tanilmadi. Bu taxminiy moslik, rasmiy talaffuz bahosi emas. Audio heç qayerga yuborilmaydi.</string>
+    <string name="pron_tally">Bu sessiyada %1$d uriniş · örtaça %2$d%%</string>
+    <string name="pron_listen">Namunani tinglaş</string>
+    <string name="pron_say">🎤 Aytiş</string>
+    <string name="pron_say_again">🎤 Qayta aytiş</string>
     <string name="pron_prev">← Oldingi</string>
     <string name="pron_next">Keyingi →</string>
-    <string name="pron_unsupported">Bu qurilmada nutqni tanish vositasi yo‘q — tinglash baribir ishlaydi.</string>
+    <string name="pron_unsupported">Bu qurilmada nutqni taniş vositasi yöq — tinglaş baribir işlaydi.</string>
     <string name="pron_score">Taxminiy moslik: %1$d%%</string>
-    <string name="pron_confidence">tizim ishonchi %1$d%%</string>
+    <string name="pron_confidence">tizim işonçi %1$d%%</string>
     <string name="pron_heard">Tizim tanigani: “%1$s”</string>
-    <string name="pron_extra">Namunada yo‘q so‘zlar: %1$s</string>
-    <string name="pron_tip">Qizil so‘zni avval tinglang, keyin sekinroq va aniqroq ayting. Shovqinli joyda tizim so‘zni noto‘g‘ri tanishi mumkin.</string>
-    <string name="pron_dash_body">Gapni tinglang, ayting — so‘zma-so‘z solishtiriladi.</string>
+    <string name="pron_extra">Namunada yöq sözlar: %1$s</string>
+    <string name="pron_tip">Qizil sözni avval tinglang, keyin sekinroq va aniqroq ayting. Şovqinli joyda tizim sözni notöğri tanişi mumkin.</string>
+    <string name="pron_dash_body">Gapni tinglang, ayting — sözma-söz soliştiriladi.</string>
     <string name="imm_title">Immersion rejimi</string>
-    <string name="imm_on">Yoqilgan — o‘zbekcha tarjimalar yashirin (bosib o‘chirish)</string>
-    <string name="imm_off">O‘chiq — o‘zbekcha tarjimalar ko‘rinadi (bosib yoqish)</string>
-    <string name="imm_hint">Lug‘at kartalari, «5 daqiqa» va Talaffuz mashqida tarjima yashiriladi — so‘z ma’nosi inglizcha izoh orqali; istalgan paytda «Tarjimani ko‘rsatish» bilan ochiladi. B1 dan tavsiya etiladi. Bu sozlama faqat shu qurilmada saqlanadi.</string>
-    <string name="imm_reveal">Tarjimani ko‘rsatish</string>
-    <string name="usage_title">Yangi funksiyalardan foydalanish</string>
-    <string name="usage_hint">Faqat shu qurilmada: sonlar hech qayerga yuborilmaydi va javoblaringiz saqlanmaydi — faqat necha marta boshlangan va oxirigacha yetkazilgani.</string>
-    <string name="usage_row">Boshlangan %1$d · yakunlangan %2$d (yakunlangan = %3$s)</string>
-    <string name="usage_clear">Tozalash</string>
+    <string name="imm_on">Yoqilgan — özbekça tarjimalar yaşirin (bosib öçiriş)</string>
+    <string name="imm_off">Öçiq — özbekça tarjimalar körinadi (bosib yoqiş)</string>
+    <string name="imm_hint">Luğat kartalari, «5 daqiqa» va Talaffuz maşqida tarjima yaşiriladi — söz ma’nosi inglizça izoh orqali; istalgan paytda «Tarjimani körsatiş» bilan oçiladi. B1 dan tavsiya etiladi. Bu sozlama faqat şu qurilmada saqlanadi.</string>
+    <string name="imm_reveal">Tarjimani körsatiş</string>
+    <string name="usage_title">Yangi funksiyalardan foydalaniş</string>
+    <string name="usage_hint">Faqat şu qurilmada: sonlar heç qayerga yuborilmaydi va javoblaringiz saqlanmaydi — faqat neça marta boşlangan va oxirigaça yetkazilgani.</string>
+    <string name="usage_row">Boşlangan %1$d · yakunlangan %2$d (yakunlangan = %3$s)</string>
+    <string name="usage_clear">Tozalaş</string>
 </resources>

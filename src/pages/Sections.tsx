@@ -21,7 +21,7 @@ import { CHUNKY, CHUNKY_ALT, CHUNKY_GO, CHUNKY_PLAIN } from '../components/chunk
 
 const STATUS_CHIP: Record<SectionCard['status'], { text: string; tone: 'ok' | 'brand' | 'warn' | 'default' }> = {
   done: { text: '✓ Yakunlangan', tone: 'ok' },
-  current: { text: 'Joriy bo‘lim', tone: 'brand' },
+  current: { text: 'Joriy bölim', tone: 'brand' },
   locked: { text: 'Qulflangan', tone: 'warn' },
   empty: { text: 'Tayyorlanmoqda', tone: 'default' },
 }
@@ -37,7 +37,7 @@ export default function Sections() {
   const sections = useMemo(() => buildSections(data), [data])
   const [jumpId, setJumpId] = useState<string | null>(null)
 
-  if (!ready) return <LoadingBlock label="Bo‘limlar yuklanmoqda…" />
+  if (!ready) return <LoadingBlock label="Bölimlar yuklanmoqda…" />
 
   const withContent = sections.filter((s) => s.status !== 'empty')
   const doneCount = withContent.filter((s) => s.status === 'done').length
@@ -47,24 +47,24 @@ export default function Sections() {
       <header className="grid grid-cols-[auto_1fr_auto] items-center gap-2">
         <Link
           to="/path"
-          aria-label="O‘quv yo‘liga qaytish"
+          aria-label="Öquv yöliga qaytiş"
           className="inline-flex h-10 w-10 items-center justify-center rounded-xl hover:bg-[var(--panel-2)] text-navy-700 dark:text-navy-300"
         >
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" aria-hidden>
             <path d="M15 5l-7 7 7 7" />
           </svg>
         </Link>
-        <h1 className="text-xl sm:text-2xl font-extrabold text-center">Bo‘limlar</h1>
+        <h1 className="text-xl sm:text-2xl font-extrabold text-center">Bölimlar</h1>
         <span className="text-xs font-bold muted tabular-nums whitespace-nowrap">
           {doneCount}/{withContent.length} ✓
         </span>
       </header>
       <p className="muted text-sm text-center -mt-2">
-        Har CEFR darajasida ikki bo‘lim. Bilsangiz — sakrash testi bilan oldinga o‘ting (darajangiz o‘zgarmaydi: u
-        faqat bir nechta ko‘nikma bo‘yicha dalil bilan ko‘tariladi).
+        Har CEFR darajasida ikki bölim. Bilsangiz — sakraş testi bilan oldinga öting (darajangiz özgarmaydi: u
+        faqat bir neçta könikma böyiça dalil bilan kötariladi).
       </p>
 
-      <ol className="grid gap-4" aria-label="Bo‘limlar ro‘yxati">
+      <ol className="grid gap-4" aria-label="Bölimlar röyxati">
         {sections.map((s) => (
           <li key={s.id}>
             <SectionCardView
@@ -108,7 +108,7 @@ function SectionCardView({
   return (
     <article
       className={`panel rounded-3xl border-2 border-b-4 p-4 sm:p-6 grid gap-4 ${accent} ${empty ? 'border-dashed' : ''}`}
-      aria-label={`${s.label}-bo‘lim`}
+      aria-label={`${s.label}-bölim`}
     >
       <div className="grid sm:grid-cols-[1fr_auto] gap-4 items-center">
         <div className="grid gap-2.5 min-w-0">
@@ -116,14 +116,14 @@ function SectionCardView({
             {s.level} · {lvl.titleUz}
           </p>
           <div className="flex flex-wrap items-center gap-2">
-            <h2 className="text-2xl font-extrabold">{s.label}-bo‘lim</h2>
+            <h2 className="text-2xl font-extrabold">{s.label}-bölim</h2>
             <Chip tone={chip.tone}>{chip.text}</Chip>
           </div>
 
           {s.status === 'done' && (
             <p className="text-sm font-bold text-amber-700 dark:text-amber-400">
-              ✓ Barcha {total} kun yakunlangan
-              {s.jumpScore !== null && s.jumpScore >= JUMP_PASS_SCORE ? ` · sakrash testi ${s.jumpScore}%` : ''}
+              ✓ Barça {total} kun yakunlangan
+              {s.jumpScore !== null && s.jumpScore >= JUMP_PASS_SCORE ? ` · sakraş testi ${s.jumpScore}%` : ''}
             </p>
           )}
           {(s.status === 'current' || s.status === 'locked') && (
@@ -143,11 +143,11 @@ function SectionCardView({
           )}
           {s.status === 'locked' && (
             <p className="text-sm font-semibold">
-              {s.label} ga sakrab o‘tasizmi?
-              {s.jumpScore !== null && <span className="muted font-normal"> Oxirgi urinish: {s.jumpScore}%.</span>}
+              {s.label} ga sakrab ötasizmi?
+              {s.jumpScore !== null && <span className="muted font-normal"> Oxirgi uriniş: {s.jumpScore}%.</span>}
             </p>
           )}
-          {empty && <p className="text-sm muted">Bu bo‘lim darslari hali tayyorlanmoqda — hozircha ochib bo‘lmaydi.</p>}
+          {empty && <p className="text-sm muted">Bu bölim darslari hali tayyorlanmoqda — hozirça oçib bölmaydi.</p>}
 
           {!empty && (
             <button
@@ -156,7 +156,7 @@ function SectionCardView({
               aria-expanded={open}
               className="justify-self-start text-sm font-extrabold uppercase tracking-wide text-navy-700 dark:text-navy-300 hover:underline"
             >
-              {open ? 'Yopish ▴' : 'Batafsil ▾'}
+              {open ? 'Yopiş ▴' : 'Batafsil ▾'}
             </button>
           )}
         </div>
@@ -194,17 +194,17 @@ function SectionCardView({
 
       {s.status === 'current' && (
         <button type="button" className={chunkyGreen} onClick={() => nav('/path')}>
-          Davom etish
+          Davom etiş
         </button>
       )}
       {s.status === 'done' && (
         <button type="button" className={chunkyPlain} onClick={() => nav('/path')}>
-          Takrorlash
+          Takrorlaş
         </button>
       )}
       {s.canJump && !jumping && (
         <button type="button" className={chunkyBlue} onClick={onJump}>
-          {s.label} ga sakrash testi
+          {s.label} ga sakraş testi
         </button>
       )}
 
@@ -228,7 +228,7 @@ function JumpTest({ section, onClose }: { section: SectionCard; onClose: () => v
   const total = exercises.length
 
   if (total === 0) {
-    return <InfoBanner tone="warn">O‘tkazib yuboriladigan kunlarda test savollari topilmadi — sakrash mumkin emas.</InfoBanner>
+    return <InfoBanner tone="warn">Ötkazib yuboriladigan kunlarda test savollari topilmadi — sakraş mumkin emas.</InfoBanner>
   }
 
   const start = () => {
@@ -262,20 +262,20 @@ function JumpTest({ section, onClose }: { section: SectionCard; onClose: () => v
 
   return (
     <div className="grid gap-3 rounded-2xl border p-3 sm:p-4">
-      <h3 className="font-bold">{section.label} ga sakrash testi</h3>
+      <h3 className="font-bold">{section.label} ga sakraş testi</h3>
       {phase === 'idle' && (
         <>
           <p className="text-sm muted">
-            {total} ta savol, oldingi {skippedCount} ta kunning yakuniy testlaridan. O‘tish uchun {JUMP_PASS_SCORE}% kerak.
-            O‘tsangiz, o‘tkazib yuborilgan kunlar yakunlangan deb belgilanadi va {section.label} ochiladi. Yuraklar
-            sarflanmaydi, darajangiz o‘zgarmaydi.
+            {total} ta savol, oldingi {skippedCount} ta kunning yakuniy testlaridan. Ötiş uçun {JUMP_PASS_SCORE}% kerak.
+            Ötsangiz, ötkazib yuborilgan kunlar yakunlangan deb belgilanadi va {section.label} oçiladi. Yuraklar
+            sarflanmaydi, darajangiz özgarmaydi.
           </p>
           <div className="flex flex-wrap gap-2">
             <Button size="sm" onClick={start}>
-              Testni boshlash
+              Testni boşlaş
             </Button>
             <Button size="sm" variant="ghost" onClick={onClose}>
-              Bekor qilish
+              Bekor qiliş
             </Button>
           </div>
         </>
@@ -297,26 +297,26 @@ function JumpTest({ section, onClose }: { section: SectionCard; onClose: () => v
         <>
           {score >= JUMP_PASS_SCORE ? (
             <SuccessBanner>
-              Sakrash testi topshirildi: <b>{score}%</b> ≥ {JUMP_PASS_SCORE}% — {section.label} ochildi.
+              Sakraş testi topşirildi: <b>{score}%</b> ≥ {JUMP_PASS_SCORE}% — {section.label} oçildi.
             </SuccessBanner>
           ) : (
             <InfoBanner tone="warn">
-              Natija: <b>{score}%</b> &lt; {JUMP_PASS_SCORE}% — sakrash uchun yetarli emas. Joriy bo‘limni davom ettiring yoki
+              Natija: <b>{score}%</b> &lt; {JUMP_PASS_SCORE}% — sakraş uçun yetarli emas. Joriy bölimni davom ettiring yoki
               keyinroq qayta urining.
             </InfoBanner>
           )}
           <div className="flex flex-wrap gap-2">
             {score >= JUMP_PASS_SCORE ? (
               <Button size="sm" onClick={() => nav('/path')}>
-                O‘quv yo‘liga o‘tish
+                Öquv yöliga ötiş
               </Button>
             ) : (
               <Button size="sm" variant="secondary" onClick={start}>
-                Qayta urinish
+                Qayta uriniş
               </Button>
             )}
             <Button size="sm" variant="ghost" onClick={onClose}>
-              Yopish
+              Yopiş
             </Button>
           </div>
         </>

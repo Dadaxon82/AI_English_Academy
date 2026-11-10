@@ -38,7 +38,7 @@ export function DropdownInput({
                 type="button"
                 disabled={locked}
                 onClick={() => setActive(i)}
-                aria-label={`${i + 1}-bo‘shliq: ${arr[i] || 'tanlanmagan'}`}
+                aria-label={`${i + 1}-böşliq: ${arr[i] || 'tanlanmagan'}`}
                 aria-pressed={active === i}
                 className={`mx-1 inline-flex items-center gap-1 rounded-xl border-2 border-b-4 px-3 py-0.5 font-bold align-middle ${
                   active === i && !locked
@@ -56,7 +56,7 @@ export function DropdownInput({
       </p>
       {!locked && (
         <div className="grid gap-1.5">
-          <p className="text-xs font-bold muted text-center">{active + 1}-bo‘shliq uchun tanlang:</p>
+          <p className="text-xs font-bold muted text-center">{active + 1}-böşliq uçun tanlang:</p>
           <div className="flex flex-wrap justify-center gap-2">
             {(exercise.choices[active] ?? []).map((c) => (
               <button
@@ -104,7 +104,7 @@ export function SequenceInput({
                   disabled={locked}
                   onClick={() => onChange(chosen.filter((x) => x !== it))}
                   className={`${cardCls} hover:bg-[var(--panel-2)]`}
-                  title="Olib tashlash"
+                  title="Olib taşlaş"
                 >
                   <span lang="en">{it}</span>
                 </button>
@@ -161,7 +161,7 @@ export function CategorizeInput({
   }
   return (
     <div className="grid gap-4">
-      <p className="text-xs font-bold muted text-center">So‘zni bosing, so‘ng uning guruhini bosing.</p>
+      <p className="text-xs font-bold muted text-center">Sözni bosing, söng uning guruhini bosing.</p>
       <div className={`grid gap-2.5 ${exercise.categories.length === 3 ? 'grid-cols-3' : 'grid-cols-2'}`}>
         {exercise.categories.map((c, ci) => (
           <div
@@ -187,7 +187,7 @@ export function CategorizeInput({
                   disabled={locked}
                   onClick={() => remove(it.text)}
                   className="rounded-xl border-2 px-2 py-1 text-sm font-semibold bg-[var(--panel-2)] break-words"
-                  title="Qaytarish"
+                  title="Qaytariş"
                 >
                   {it.text}
                 </button>

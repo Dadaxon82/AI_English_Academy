@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-10T02:54:50.530Z",
+  "generatedAt": "2026-11-10T18:16:18.553Z",
   "source": "web/src/content",
   "levels": [
     {
@@ -7,14 +7,14 @@
       "days": 7,
       "vocab": 84,
       "exercises": 246,
-      "bytes": 316912
+      "bytes": 314902
     },
     {
       "level": "A2",
       "days": 7,
       "vocab": 84,
       "exercises": 238,
-      "bytes": 286051
+      "bytes": 284335
     }
   ]
 }

@@ -336,7 +336,7 @@ class SyncEngineTest {
         assertFalse(st.ok)
         assertEquals(1, st.done)
         assertEquals(1, st.failed)
-        assertEquals(0, st.rejected) // "jadval yo'q" — qabul qilmadi emas, kutadi
+        assertEquals(0, st.rejected) // "jadval yöq" — qabul qilmadi emas, kutadi
         val q = h.local.loadQueue("u-1")
         assertEquals(1, q.size)
         assertEquals("weekly_xp", q[0].table) // qator NAVBATDA qoldi (izi yozilmadi)
@@ -373,7 +373,7 @@ class SyncEngineTest {
         assertNotNull(last.third)
         assertTrue(last.third!!.contains("daily_minutes"))
         for (col in listOf("motion_enabled", "xp_goal_xp", "hearts_enabled")) {
-            assertFalse("$col tushirilishi kerak", last.third!!.contains(col))
+            assertFalse("$col tuşirilişi kerak", last.third!!.contains(col))
         }
         // Sabab konkret: migratsiya fayllari va ustun nomlari.
         assertNotNull(st.reasonUz)

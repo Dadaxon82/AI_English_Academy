@@ -13,7 +13,7 @@ import { canDoEvidence } from './canDoEvidence'
 import type { AppData } from './types'
 
 export const CERTIFICATE_DISCLAIMER_UZ =
-  'Bu rasmiy sertifikat emas: AI English Academy platformasidagi mashq natijalari asosida avtomatik yaratilgan yakunlash guvohnomasi.'
+  'Bu rasmiy sertifikat emas: AI English Academy platformasidagi maşq natijalari asosida avtomatik yaratilgan yakunlaş guvohnomasi.'
 
 export interface CertificateInfo {
   eligible: boolean

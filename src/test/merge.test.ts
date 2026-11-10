@@ -43,8 +43,8 @@ const day = (date: string, seconds: number, skills: DayActivity['skills']): DayA
 
 const used = (): AppData => ({ ...emptyData(UID), attempts: [attempt('a-local', 1000)] })
 
-describe('mergeRemote — server va qurilma holatini birlashtirish', () => {
-  it('urinishlar id bo‘yicha birlashadi; ikki marta birlashtirish hech narsani ikkilamaydi', () => {
+describe('mergeRemote — server va qurilma holatini birlaştiriş', () => {
+  it('urinişlar id böyiça birlaşadi; ikki marta birlaştiriş heç narsani ikkilamaydi', () => {
     const remote = snap({ attempts: [attempt('a-remote', 500), attempt('a-local', 1000)] })
     const once = mergeRemote(used(), remote)
     const twice = mergeRemote(once, remote)
@@ -52,7 +52,7 @@ describe('mergeRemote — server va qurilma holatini birlashtirish', () => {
     expect(twice.attempts).toEqual(once.attempts)
   })
 
-  it('SRS: ko‘proq takrorlangan holat ustun', () => {
+  it('SRS: köproq takrorlangan holat ustun', () => {
     const local = { ...used(), srs: { w: { ...initialSrsState(0), reps: 1 } } }
     const remote = snap({ srs: { w: { ...initialSrsState(0), reps: 4, intervalDays: 9 } } })
     expect(mergeRemote(local, remote).srs.w?.reps).toBe(4)
@@ -60,7 +60,7 @@ describe('mergeRemote — server va qurilma holatini birlashtirish', () => {
     expect(mergeRemote(newerLocal, remote).srs.w?.reps).toBe(5)
   })
 
-  it('kunlik faollik: maydonlar maksimumi (bir kun ikki marta o‘qilsa vaqt ikkilanmaydi)', () => {
+  it('kunlik faollik: maydonlar maksimumi (bir kun ikki marta öqilsa vaqt ikkilanmaydi)', () => {
     const local = { ...used(), activity: { '2026-11-01': day('2026-11-01', 600, { grammar: 600 }) } }
     const remote = snap({ activity: { '2026-11-01': day('2026-11-01', 900, { grammar: 300, reading: 600 }) } })
     const merged = mergeRemote(mergeRemote(local, remote), remote)
@@ -68,7 +68,7 @@ describe('mergeRemote — server va qurilma holatini birlashtirish', () => {
     expect(merged.activity['2026-11-01']?.skills).toEqual({ grammar: 600, reading: 600 })
   })
 
-  it('sozlamalar: bo‘sh qurilmada serverdagisi olinadi, ishlatilgan qurilmada o‘zinikida qoladi', () => {
+  it('sozlamalar: böş qurilmada serverdagisi olinadi, işlatilgan qurilmada özinikida qoladi', () => {
     const remote = snap({ settings: { dailyMinutes: 150, theme: 'dark' } })
     const fresh = emptyData(UID)
     expect(isPristine(fresh)).toBe(true)
@@ -76,7 +76,7 @@ describe('mergeRemote — server va qurilma holatini birlashtirish', () => {
     expect(mergeRemote(used(), remote).settings.dailyMinutes).toBe(90)
   })
 
-  it('o‘quv yo‘li: tugatilgan kunlar birlashadi, test ballari maksimumi, joriy kun qayta hisoblanadi', () => {
+  it('öquv yöli: tugatilgan kunlar birlaşadi, test ballari maksimumi, joriy kun qayta hisoblanadi', () => {
     const local = { ...used(), path: { completedDays: ['a1-day-01'], passedTests: { t1: 60 }, currentDayId: 'a1-day-02' } }
     const remote = snap({
       plan: { path: { completedDays: ['a1-day-01', 'a1-day-02'], passedTests: { t1: 90, t2: 75 }, currentDayId: 'a1-day-03' }, xp: 40 },
@@ -88,14 +88,14 @@ describe('mergeRemote — server va qurilma holatini birlashtirish', () => {
     expect(merged.xp).toBe(100)
   })
 
-  it('diagnostika: yangirog‘i ustun', () => {
+  it('diagnostika: yangiroği ustun', () => {
     const older = { at: 1, level: 'A1' as const, labelUz: 'eski', confidence: 0.4 }
     const newer = { at: 2, level: 'A2' as const, labelUz: 'yangi', confidence: 0.6 }
     expect(mergeRemote({ ...used(), diagnostic: older }, snap({ plan: { diagnostic: newer } })).diagnostic).toEqual(newer)
     expect(mergeRemote({ ...used(), diagnostic: newer }, snap({ plan: { diagnostic: older } })).diagnostic).toEqual(newer)
   })
 
-  it('onboarding: istalgan qurilmada yakunlangan bo‘lsa yetarli (eng birinchisi saqlanadi)', () => {
+  it('onboarding: istalgan qurilmada yakunlangan bölsa yetarli (eng birinçisi saqlanadi)', () => {
     expect(mergeRemote(used(), snap({ plan: { onboardedAt: 50 } })).onboardedAt).toBe(50)
     expect(mergeRemote({ ...used(), onboardedAt: 40 }, snap({ plan: { onboardedAt: 50 } })).onboardedAt).toBe(40)
     expect(mergeRemote({ ...used(), onboardedAt: 40 }, snap()).onboardedAt).toBe(40)
@@ -103,7 +103,7 @@ describe('mergeRemote — server va qurilma holatini birlashtirish', () => {
     expect(isPristine({ ...emptyData(UID), onboardedAt: 1 })).toBe(false)
   })
 
-  it('serverda hech narsa bo‘lmasa qurilmadagi holat o‘zgarmaydi', () => {
+  it('serverda heç narsa bölmasa qurilmadagi holat özgarmaydi', () => {
     const local = { ...used(), xp: 12, activity: { '2026-11-01': day('2026-11-01', 60, { grammar: 60 }) } }
     const merged = mergeRemote(local, snap())
     expect(merged.attempts).toEqual(local.attempts)

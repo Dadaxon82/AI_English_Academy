@@ -14,7 +14,7 @@ import { DashboardSkeleton } from './Skeleton'
 export default function AdminRoute({ children }: { children: ReactNode }) {
   const userId = useAuthActions()?.userId ?? null
   const check = useIsAdmin(userId)
-  if (check === 'checking') return <DashboardSkeleton label="Ruxsat tekshirilmoqda…" />
+  if (check === 'checking') return <DashboardSkeleton label="Ruxsat tekşirilmoqda…" />
   if (check !== 'admin') return <Navigate to="/dashboard" replace />
   return <>{children}</>
 }

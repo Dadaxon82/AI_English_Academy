@@ -55,15 +55,15 @@ class ExerciseAnswerKeyWiringTest {
     @Test
     fun `tfng kalitlari uchta va domen kalitlari bilan teng`() {
         val keys = tfngKeys()
-        assertEquals("uch javob bo'lishi kerak: $keys", 3, keys.size)
+        assertEquals("uç javob bölişi kerak: $keys", 3, keys.size)
         assertEquals(
-            "interfeys kalitlari domen bilan bir xil bo'lishi shart",
+            "interfeys kalitlari domen bilan bir xil bölişi şart",
             listOf("true", "false", "notgiven"),
             keys.map { it.first },
         )
         // Har bir kalit o'z string resursiga bog'langan (nomlar mos).
         for ((k, res) in keys) {
-            assertEquals("kalit '$k' o'z resursiga bog'lansin", "R.string.ex_tf_$k", res)
+            assertEquals("kalit '$k' öz resursiga boğlansin", "R.string.ex_tf_$k", res)
         }
     }
 
@@ -83,7 +83,7 @@ class ExerciseAnswerKeyWiringTest {
         )
         // Kalit ro'yxat INDEKS bo'yicha o'qiladi.
         assertTrue(
-            "`keys[it]` ko'rinishi kutiladi: $block",
+            "`keys[it]` körinişi kutiladi: $block",
             Regex("""keys\[\s*(it|index|i)\s*\]""").containsMatchIn(block),
         )
     }
@@ -101,7 +101,7 @@ class ExerciseAnswerKeyWiringTest {
                 answer = k,
             )
             val ok = checkAnswer(e, k)
-            assertTrue("$k qabul qilinishi kerak", ok.correct)
+            assertTrue("$k qabul qilinişi kerak", ok.correct)
             // `expected` — o'quvchiga ko'rsatiladigan nom (veb `check.ts` bilan bir xil).
             val label = mapOf("true" to "True", "false" to "False", "notgiven" to "Not Given").getValue(k)
             assertEquals("$k — kutilgan javob nomi", label, ok.expected)

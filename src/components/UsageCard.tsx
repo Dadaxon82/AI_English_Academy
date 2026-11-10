@@ -12,24 +12,24 @@ export default function UsageCard() {
   return (
     <Card className="grid gap-3">
       <div className="flex flex-wrap items-center gap-2">
-        <h2 className="font-bold">Yangi funksiyalardan foydalanish</h2>
-        <Chip>faqat shu qurilmada</Chip>
+        <h2 className="font-bold">Yangi funksiyalardan foydalaniş</h2>
+        <Chip>faqat şu qurilmada</Chip>
         <span className="flex-1" />
         <Button size="sm" variant="ghost" disabled={!any} onClick={clearUsage}>
-          Tozalash
+          Tozalaş
         </Button>
       </div>
       <p className="text-xs muted">
-        Sonlar hech qayerga yuborilmaydi va javoblaringiz saqlanmaydi — faqat necha marta boshlangan va oxirigacha yetkazilgani.
+        Sonlar heç qayerga yuborilmaydi va javoblaringiz saqlanmaydi — faqat neça marta boşlangan va oxirigaça yetkazilgani.
         «Yakunlangan»ning ma’nosi har qatorda yozilgan.
       </p>
       {/* Tor ekranda jadval gorizontal aylanadi — klaviatura bilan ham aylantirish uchun fokuslanadigan hudud (axe: scrollable-region-focusable). */}
-      <div className="overflow-x-auto" tabIndex={0} role="region" aria-label="Funksiyalardan foydalanish jadvali">
+      <div className="overflow-x-auto" tabIndex={0} role="region" aria-label="Funksiyalardan foydalaniş jadvali">
         <table className="w-full text-sm">
           <thead>
             <tr className="text-left text-xs muted">
               <th className="py-1.5 pr-2 font-semibold">Funksiya</th>
-              <th className="py-1.5 pr-2 font-semibold tabular-nums">Boshlangan</th>
+              <th className="py-1.5 pr-2 font-semibold tabular-nums">Boşlangan</th>
               <th className="py-1.5 pr-2 font-semibold tabular-nums">Yakunlangan</th>
               <th className="py-1.5 font-semibold tabular-nums">Foiz</th>
             </tr>

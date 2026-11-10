@@ -40,7 +40,7 @@ export function TileBuilder({
             disabled={locked}
             onClick={() => onChange(chosen.filter((_, j) => j !== i))}
             className={`${tileCls} hover:bg-[var(--panel-2)]`}
-            title="Olib tashlash"
+            title="Olib taşlaş"
           >
             {w}
           </button>
@@ -117,7 +117,7 @@ export function MatchingInput({
 
   return (
     <div className="grid gap-2">
-      <p className="text-xs muted text-center">Chapdan so‘zni, so‘ng o‘ngdan uning juftini bosing. Juftni bekor qilish uchun yana bosing.</p>
+      <p className="text-xs muted text-center">Çapdan sözni, söng öngdan uning juftini bosing. Juftni bekor qiliş uçun yana bosing.</p>
       <div className="grid grid-cols-2 gap-2.5">
         <div className="grid gap-2.5 content-start">
           {lefts.map((l) => (
@@ -187,7 +187,7 @@ export function TranslationInput({
           value={text}
           disabled={locked}
           aria-label="Tarjima"
-          placeholder={exercise.sourceLang === 'uz' ? 'Write in English…' : "O'zbekcha yozing…"}
+          placeholder={exercise.sourceLang === 'uz' ? 'Write in English…' : "Özbekça yozing…"}
           onChange={(e) => onChange([e.target.value])}
         />
       ) : (
@@ -202,7 +202,7 @@ export function TranslationInput({
             onChange([''])
           }}
         >
-          {typing ? 'So‘z plitkalari bilan' : 'Klaviatura bilan yozish'}
+          {typing ? 'Söz plitkalari bilan' : 'Klaviatura bilan yoziş'}
         </button>
       )}
     </div>

@@ -25,15 +25,15 @@ export default function Login({ onAuth, authState }: { onAuth: (s: AuthState) =>
     setNotice(null)
     const sb = await getSupabase()
     if (!sb) {
-      setErr('Supabase sozlanmagan. “Mehmon sifatida davom etish” tugmasidan foydalaning.')
+      setErr('Supabase sozlanmagan. “Mehmon sifatida davom etiş” tugmasidan foydalaning.')
       return
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
-      setErr('Email manzil noto‘g‘ri ko‘rinmoqda.')
+      setErr('Email manzil notöğri körinmoqda.')
       return
     }
     if (password.length < 6) {
-      setErr('Parol kamida 6 belgi bo‘lishi kerak.')
+      setErr('Parol kamida 6 belgi bölişi kerak.')
       return
     }
     setBusy(true)
@@ -42,7 +42,7 @@ export default function Login({ onAuth, authState }: { onAuth: (s: AuthState) =>
         const { data, error } = await sb.auth.signUp({ email, password, options: { data: { display_name: name } } })
         if (error) throw error
         if (!data.session) {
-          setNotice('Hisob yaratildi. Emailingizdagi tasdiq havolasini oching, so‘ng qaytadan kiring.')
+          setNotice('Hisob yaratildi. Emailingizdagi tasdiq havolasini oçing, söng qaytadan kiring.')
           setMode('sign-in')
         } else {
           onAuth({ kind: 'signed-in', userId: data.user!.id, email: data.user!.email ?? null })
@@ -74,12 +74,12 @@ export default function Login({ onAuth, authState }: { onAuth: (s: AuthState) =>
           <h1 className="text-2xl font-bold">
             AI English <span className="text-navy-700 dark:text-navy-300">Academy</span>
           </h1>
-          <p className="muted text-sm">A1 dan C1 gacha — CEFR asosida shaxsiy ingliz tili platformasi</p>
+          <p className="muted text-sm">A1 dan C1 gaça — CEFR asosida şaxsiy ingliz tili platformasi</p>
         </header>
 
         {!supabaseConfigured && (
           <InfoBanner tone="warn">
-            <b>Supabase ulanmagan.</b> Ilova to‘liq ishlaydi, ma’lumotlar shu qurilmada saqlanadi. Hisob yaratish
+            <b>Supabase ulanmagan.</b> Ilova töliq işlaydi, ma’lumotlar şu qurilmada saqlanadi. Hisob yaratiş
             istalsangiz <code>.env</code> faylga <code>VITE_SUPABASE_URL</code> va <code>VITE_SUPABASE_ANON_KEY</code>{' '}
             kiriting.
           </InfoBanner>
@@ -95,7 +95,7 @@ export default function Login({ onAuth, authState }: { onAuth: (s: AuthState) =>
                   onClick={() => setMode(m)}
                   className={`flex-1 py-2 rounded-lg text-sm font-semibold ${mode === m ? 'bg-[var(--panel)] shadow-sm' : 'muted'}`}
                 >
-                  {m === 'sign-in' ? 'Kirish' : "Ro'yxatdan o'tish"}
+                  {m === 'sign-in' ? 'Kiriş' : "Röyxatdan ötiş"}
                 </button>
               ))}
             </div>
@@ -116,11 +116,11 @@ export default function Login({ onAuth, authState }: { onAuth: (s: AuthState) =>
             {notice && <InfoBanner>{notice}</InfoBanner>}
 
             <Button type="submit" busy={busy} size="lg" disabled={!supabaseConfigured}>
-              {mode === 'sign-in' ? 'Kirish' : 'Hisob yaratish'}
+              {mode === 'sign-in' ? 'Kiriş' : 'Hisob yaratiş'}
             </Button>
             {!supabaseConfigured && (
               <Button type="button" onClick={guest} variant="secondary" size="lg">
-                Mehmon sifatida davom etish
+                Mehmon sifatida davom etiş
               </Button>
             )}
           </form>
@@ -132,11 +132,11 @@ export default function Login({ onAuth, authState }: { onAuth: (s: AuthState) =>
             // Mavjud hisob — o'qishni davom ettirish (onboarding'ni qayta boshlamaydi;
             // tugallanmagan bo'lsa Dashboard o'zi taklif qiladi).
             <Button variant="secondary" onClick={() => nav('/dashboard')}>
-              Davom etish (mavjud mahalliy hisob)
+              Davom etiş (mavjud mahalliy hisob)
             </Button>
           )}
           <p className="text-[11px] muted">
-            Ma’lumotlaringiz RLS bilan himoyalanadi va faqat sizga ochiladi. Hisobingizni sozlamalardan o‘chirishingiz
+            Ma’lumotlaringiz RLS bilan himoyalanadi va faqat sizga oçiladi. Hisobingizni sozlamalardan öçirişingiz
             mumkin.
           </p>
         </div>

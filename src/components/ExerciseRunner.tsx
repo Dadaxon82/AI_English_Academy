@@ -193,7 +193,7 @@ export default function ExerciseRunner({
       {/* ---- Ketma-ket to'g'ri javoblar (dars ichida) ---- */}
       {streak >= 3 && (
         <p className="-mb-3 text-center text-[11px] font-extrabold uppercase tracking-wider text-amber-700 dark:text-amber-400 animate-[var(--animate-pop)]">
-          {streak} ta ketma-ket to‘g‘ri javob
+          {streak} ta ketma-ket töğri javob
         </p>
       )}
       {/* ---- Tepa qator: chiqish · progress · yuraklar ---- */}
@@ -202,7 +202,7 @@ export default function ExerciseRunner({
           <button
             type="button"
             onClick={onExit}
-            aria-label="Darsdan chiqish"
+            aria-label="Darsdan çiqiş"
             className="shrink-0 inline-grid place-items-center w-9 h-9 rounded-xl muted hover:bg-[var(--panel-2)]"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" aria-hidden>
@@ -215,11 +215,11 @@ export default function ExerciseRunner({
         <div
           className={`aea-step-bar flex-1 ${streak >= 3 ? 'aea-step-bar-gold' : ''}`}
           role="progressbar"
-          aria-label="Mashq jarayoni"
+          aria-label="Maşq jarayoni"
           aria-valuemin={0}
           aria-valuemax={total}
           aria-valuenow={answeredCount}
-          aria-valuetext={`${answeredCount} / ${total} mashq yakunlandi`}
+          aria-valuetext={`${answeredCount} / ${total} maşq yakunlandi`}
         >
           <span style={{ width: `${progressPct}%` }} />
         </div>
@@ -241,11 +241,11 @@ export default function ExerciseRunner({
           {showCombo && (
             <Chip tone="brand">
               <GameIcon name="flame" size={12} />
-              {combo} ketma-ket to‘g‘ri
+              {combo} ketma-ket töğri
               {hearts.enabled && !heartFree && hearts.count < hearts.max && !toHeart && <> · yana {comboNeeded} — yurak qaytadi</>}
             </Chip>
           )}
-          {heartFree && <Chip tone="ok">Yurak jarimasi yo‘q</Chip>}
+          {heartFree && <Chip tone="ok">Yurak jarimasi yöq</Chip>}
           {hearts.boostActive && (
             <Chip tone="brand">
               <GameIcon name="bolt" size={12} /> 2× XP · {hearts.boostMinutesLeft} daq
@@ -264,15 +264,15 @@ export default function ExerciseRunner({
               {hearts.minutesLeft > 0 && <span>· {hearts.minutesLeft} daqiqada bittasi qaytadi</span>}
             </div>
             <p>
-              Mashqni davom ettirish uchun yurak kerak. <b>{hearts.practiceNeeded}</b> ta so'zni takrlab bittasini
-              qaytarib oling (ketma-ket {HEART_COMBO_STREAK} ta to'g'ri javob ham bitta yurak qaytaradi).
+              Maşqni davom ettiriş uçun yurak kerak. <b>{hearts.practiceNeeded}</b> ta sözni takrlab bittasini
+              qaytarib oling (ketma-ket {HEART_COMBO_STREAK} ta töğri javob ham bitta yurak qaytaradi).
             </p>
             <div className="flex flex-wrap gap-2">
               <Link to="/vocabulary" className="chip">
-                Takrorlash darsini ochish
+                Takrorlaş darsini oçiş
               </Link>
               <Link to="/settings" className="chip">
-                Yuraklarni sozlamada o‘chirish
+                Yuraklarni sozlamada öçiriş
               </Link>
             </div>
           </div>
@@ -281,7 +281,7 @@ export default function ExerciseRunner({
 
       {prevResult && !prevResult.correct && (
         <InfoBanner tone="warn">
-          Oldingi savolda xato bor edi — shu mavzuni mustahkamlash uchun keyingi mashq tanlandi.
+          Oldingi savolda xato bor edi — şu mavzuni mustahkamlaş uçun keyingi maşq tanlandi.
         </InfoBanner>
       )}
 
@@ -368,7 +368,7 @@ export default function ExerciseRunner({
               onClick={() => doCheck(true)}
               disabled={blocked}
             >
-              O‘tkazib yuborish
+              Ötkazib yuboriş
             </button>
           )}
           {state === 'idle' && !skippable && (
@@ -378,7 +378,7 @@ export default function ExerciseRunner({
               onClick={() => setAnswer(initialAnswer(exercise))}
               disabled={!canCheck}
             >
-              Javobni tozalash
+              Javobni tozalaş
             </button>
           )}
           <span className="flex-1" />
@@ -393,7 +393,7 @@ export default function ExerciseRunner({
                   : CHUNKY_OFF
               }`}
             >
-              Tekshirish
+              Tekşiriş
             </button>
           ) : (
             <button
@@ -401,15 +401,15 @@ export default function ExerciseRunner({
               onClick={onNext}
               className={`${chunkyBtn} ${result?.correct ? CHUNKY_GO : CHUNKY_NO}`}
             >
-              {index + 1 < total ? 'Keyingi mashq' : 'Yakunlash'}
+              {index + 1 < total ? 'Keyingi maşq' : 'Yakunlaş'}
             </button>
           )}
         </div>
         <p className="text-[11px] muted hidden sm:block">
-          Klaviatura: <b>Enter</b> — {state === 'idle' ? 'tekshirish' : 'davom etish'}
+          Klaviatura: <b>Enter</b> — {state === 'idle' ? 'tekşiriş' : 'davom etiş'}
           {state === 'idle' && optionCount > 0 && (
             <>
-              , <b>1–{optionCount}</b> — variant tanlash
+              , <b>1–{optionCount}</b> — variant tanlaş
             </>
           )}
           .

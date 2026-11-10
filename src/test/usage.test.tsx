@@ -7,7 +7,7 @@ import UsageCard from '../components/UsageCard'
 import { USAGE_MAX, bumpUsage, clearUsage, completionPct, parseUsage, trackUsage } from '../lib/usage'
 
 describe('usage — sof funksiyalar', () => {
-  it('boshlangan/yakunlangan; yakunlangan boshlangandan oshmaydi', () => {
+  it('boşlangan/yakunlangan; yakunlangan boşlangandan oşmaydi', () => {
     let s = bumpUsage({}, 'quick', 'started', 10)
     s = bumpUsage(s, 'quick', 'started', 20)
     s = bumpUsage(s, 'quick', 'finished', 30)
@@ -16,7 +16,7 @@ describe('usage — sof funksiyalar', () => {
     expect(bumpUsage({}, 'dialogue', 'finished', 1).dialogue).toEqual({ started: 1, finished: 1, lastAt: 1 })
     expect(completionPct(undefined)).toBeNull()
   })
-  it('buzilgan saqlov xavfsiz o‘qiladi: noma’lum kalit va noto‘g‘ri son tashlanadi', () => {
+  it('buzilgan saqlov xavfsiz öqiladi: noma’lum kalit va notöğri son taşlanadi', () => {
     expect(parseUsage('{bu json emas')).toEqual({})
     expect(parseUsage(JSON.stringify({ hack: { started: 5 }, quick: { started: -3, finished: 'x', lastAt: 1e30 } }))).toEqual({
       quick: { started: 0, finished: 0, lastAt: USAGE_MAX },
@@ -31,7 +31,7 @@ describe('UsageCard', () => {
     cleanup()
     localStorage.clear()
   })
-  it('hodisalar darhol ko‘rinadi, foiz hisoblanadi, tozalash ishlaydi', () => {
+  it('hodisalar darhol körinadi, foiz hisoblanadi, tozalaş işlaydi', () => {
     render(<UsageCard />)
     expect(screen.getByTestId('usage-quick').textContent).toContain('—')
     act(() => {
@@ -41,7 +41,7 @@ describe('UsageCard', () => {
     })
     const row = screen.getByTestId('usage-quick')
     expect(row.textContent).toMatch(/2\s*1\s*50%/)
-    fireEvent.click(screen.getByRole('button', { name: 'Tozalash' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Tozalaş' }))
     expect(screen.getByTestId('usage-quick').textContent).toContain('—')
     act(() => clearUsage())
   })

@@ -18,7 +18,7 @@ vi.mock('../lib/ai', async (orig) => ({
 }))
 vi.mock('../lib/roleplay', async (orig) => ({
   ...(await orig<typeof import('../lib/roleplay')>()),
-  requestRoleplayTurn: vi.fn(async () => turns.shift() ?? { ok: false, reasonUz: 'navbat bo‘sh' }),
+  requestRoleplayTurn: vi.fn(async () => turns.shift() ?? { ok: false, reasonUz: 'navbat böş' }),
 }))
 
 const word = getBundle('A1').vocab.find((v) => v.word === 'sandwich') ?? getBundle('A1').vocab[0]!
@@ -52,11 +52,11 @@ function renderPage() {
 
 const say = (text: string) => {
   fireEvent.change(screen.getByLabelText('Javobingiz'), { target: { value: text } })
-  fireEvent.click(screen.getByRole('button', { name: 'Yuborish' }))
+  fireEvent.click(screen.getByRole('button', { name: 'Yuboriş' }))
 }
 
 const openCafe = () => {
-  const card = screen.getByRole('heading', { name: 'Kafeda buyurtma berish' }).closest('article')!
+  const card = screen.getByRole('heading', { name: 'Kafeda buyurtma beriş' }).closest('article')!
   fireEvent.click(card.querySelector('button')!)
 }
 
@@ -73,8 +73,8 @@ afterEach(() => {
   vi.unstubAllGlobals()
 })
 
-describe('Suhbatdosh — stsenariy (AI ulanmagan)', () => {
-  it('rejim ochiq aytiladi; javob namuna bilan solishtiriladi; oxirida yakun', async () => {
+describe('Suhbatdoş — stsenariy (AI ulanmagan)', () => {
+  it('rejim oçiq aytiladi; javob namuna bilan soliştiriladi; oxirida yakun', async () => {
     renderPage()
     await advance(50)
     expect(screen.getByText(/AI ulanmagan/)).toBeTruthy()
@@ -82,11 +82,11 @@ describe('Suhbatdosh — stsenariy (AI ulanmagan)', () => {
     await advance(0)
     expect(screen.getByText('Oldindan yozilgan stsenariy')).toBeTruthy()
     expect(screen.getByText('Hello! What would you like?')).toBeTruthy()
-    expect(screen.getByText('Bir piyola choy olsam bo‘ladimi?')).toBeTruthy()
+    expect(screen.getByText('Bir piyola çoy olsam böladimi?')).toBeTruthy()
     say('Can I have tea please')
     await advance(0)
     expect(screen.getByText('Can I have a cup of tea, please?')).toBeTruthy()
-    expect(screen.getByText(/Namunadagi so‘zlardan 5\/8 tasi bor/)).toBeTruthy()
+    expect(screen.getByText(/Namunadagi sözlardan 5\/8 tasi bor/)).toBeTruthy()
     say('I would like a sandwich')
     await advance(0)
     say('How much is it')
@@ -98,16 +98,16 @@ describe('Suhbatdosh — stsenariy (AI ulanmagan)', () => {
   })
 })
 
-describe('Suhbatdosh — AI rejimi', () => {
-  it('AI javobi, tuzatish mashqqa aylanadi, lug‘atdagi so‘z saqlanadi', async () => {
+describe('Suhbatdoş — AI rejimi', () => {
+  it('AI javobi, tuzatiş maşqqa aylanadi, luğatdagi söz saqlanadi', async () => {
     aiMode.on = true
     turns.push({
       ok: true,
       model: 'm',
       feedback: {
         reply: 'Of course. Anything to eat?',
-        corrections: [{ original: 'I want a tea', corrected: 'I would like a tea', whyUz: 'Muloyim so‘rov.' }],
-        newWords: [{ word: word.word, translationUz: word.translationUz }, { word: 'zzqx', translationUz: 'yo‘q' }],
+        corrections: [{ original: 'I want a tea', corrected: 'I would like a tea', whyUz: 'Muloyim sörov.' }],
+        newWords: [{ word: word.word, translationUz: word.translationUz }, { word: 'zzqx', translationUz: 'yöq' }],
         done: true,
       },
     })
@@ -121,15 +121,15 @@ describe('Suhbatdosh — AI rejimi', () => {
     expect(screen.getByText('Of course. Anything to eat?')).toBeTruthy()
     expect(screen.getByText('I would like a tea')).toBeTruthy()
     expect(screen.getByRole('heading', { name: 'Suhbat yakunlandi' })).toBeTruthy()
-    fireEvent.click(screen.getByRole('button', { name: 'Lug‘atimga saqlash (1 ta)' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Luğatimga saqlaş (1 ta)' }))
     await advance(0)
     expect(screen.getByTestId('srs').textContent).toBe('saved')
-    fireEvent.click(screen.getByRole('button', { name: 'Xatolar ustida ishlash (1 ta mashq)' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Xatolar ustida işlaş (1 ta maşq)' }))
     await advance(0)
-    expect(screen.getByText(/Suhbatda shunday dedingiz: “I want a tea”/)).toBeTruthy()
+    expect(screen.getByText(/Suhbatda şunday dedingiz: “I want a tea”/)).toBeTruthy()
   })
 
-  it('AI xatosi: replika qaytariladi, sabab va stsenariyga o‘tish taklif qilinadi', async () => {
+  it('AI xatosi: replika qaytariladi, sabab va stsenariyga ötiş taklif qilinadi', async () => {
     aiMode.on = true
     turns.push({ ok: false, reasonUz: 'Bugungi AI limiti tugadi' })
     renderPage()
@@ -140,7 +140,7 @@ describe('Suhbatdosh — AI rejimi', () => {
     await advance(0)
     expect(screen.getByText('Bugungi AI limiti tugadi')).toBeTruthy()
     expect((screen.getByLabelText('Javobingiz') as HTMLTextAreaElement).value).toBe('I want a tea')
-    fireEvent.click(screen.getByRole('button', { name: 'Oldindan yozilgan stsenariy bilan boshidan' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Oldindan yozilgan stsenariy bilan boşidan' }))
     await advance(0)
     expect(screen.getByText('Oldindan yozilgan stsenariy')).toBeTruthy()
   })

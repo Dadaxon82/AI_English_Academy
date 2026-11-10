@@ -28,7 +28,7 @@ class GameManifestTest {
 
     private fun manifestText(): String {
         val f = File(repoDir(), "src/main/res/raw/game_manifest.json")
-        assertTrue("`res/raw/game_manifest.json` yo'q: ${f.absolutePath}", f.isFile)
+        assertTrue("`res/raw/game_manifest.json` yöq: ${f.absolutePath}", f.isFile)
         return f.readText()
     }
 
@@ -37,15 +37,15 @@ class GameManifestTest {
     @Test
     fun shippedManifestParsesAndMatchesTheCode() {
         val text = manifestText()
-        assertTrue("manifest bo'sh", text.isNotBlank())
+        assertTrue("manifest böş", text.isNotBlank())
         val m = parseGameManifest(text)
-        assertNotNull("manifest parse bo'lmadi (maydon yo'q yoki turi buzilgan)", m)
+        assertNotNull("manifest parse bölmadi (maydon yöq yoki turi buzilgan)", m)
         assertEquals(
             "manifest sonlari `GameConfig` bilan mos emas",
             emptyList<String>(),
             m!!.mismatches(),
         )
-        assertEquals("manifest sonlarining manbasi ko'rsatilmagan", emptyList<String>(), m.missingSources())
+        assertEquals("manifest sonlarining manbasi körsatilmagan", emptyList<String>(), m.missingSources())
     }
 
     @Test
@@ -53,21 +53,21 @@ class GameManifestTest {
         val raw = parsed()
         // `_comment` majburiy — Duolingo mexanikasi va BIZNING qarorlar shu
         // faylning o'zida ochiq yozilgan (ixtir sonlarga qarshi himoya).
-        assertTrue("`_comment` yo'q", raw.has("_comment"))
+        assertTrue("`_comment` yöq", raw.has("_comment"))
         val comment = raw.get("_comment").asString
         assertTrue("izohda Duolingo manbasi aytilmagan", comment.contains("Duolingo"))
         assertTrue("izohda bizning qarorlar ajratilmagan", comment.lowercase().contains("biznik"))
         for (key in GameManifest.SOURCE_KEYS) {
             val e = raw.get("${key}Source")
-            assertTrue("`$key` sonining manbasi (`$key`Source) yo'q", e != null && e.isJsonPrimitive && !e.isJsonNull)
-            assertTrue("`$key`Source bo'sh", e.asString.isNotBlank())
+            assertTrue("`$key` sonining manbasi (`$key`Source) yöq", e != null && e.isJsonPrimitive && !e.isJsonNull)
+            assertTrue("`$key`Source böş", e.asString.isNotBlank())
         }
         // Ro'yxatning o'zi ham to'liq — veb testi bilan bir xil kalitlar.
         assertEquals(24, GameManifest.SOURCE_KEYS.size)
         // `freezeSearchDays` — BIZNING qarorimiz (Duolingo aniq aytmagan),
         // shuning uchun manbasida shu so'z bo'lishi shart.
         assertTrue(
-            "`freezeSearchDays` manbasida «biznik» deyilishi kerak",
+            "`freezeSearchDays` manbasida «biznik» deyilişi kerak",
             raw.get("freezeSearchDaysSource").asString.lowercase().contains("biznik"),
         )
         // Har bir qatorning `src` izohi ham bor (test `missingSources` orqali
@@ -77,10 +77,10 @@ class GameManifestTest {
         assertEquals(6, raw.getAsJsonArray("achievements").size())
         assertEquals(10, raw.getAsJsonArray("leagues").size())
         for (e in raw.getAsJsonArray("questPool")) {
-            assertTrue("quest satrida `src` yo'q", e.asJsonObject.get("src").asString.isNotBlank())
+            assertTrue("quest satrida `src` yöq", e.asJsonObject.get("src").asString.isNotBlank())
         }
         for (e in raw.getAsJsonArray("achievements")) {
-            assertTrue("yutuq satrida `src` yo'q", e.asJsonObject.get("src").asString.isNotBlank())
+            assertTrue("yutuq satrida `src` yöq", e.asJsonObject.get("src").asString.isNotBlank())
         }
     }
 
@@ -89,7 +89,7 @@ class GameManifestTest {
         val m = parseGameManifest(manifestText())!!
         // Foydalanuvchi tanlovi: imtihon, diagnostika va bo'lim testida yurak
         // jarima QILINMAYDI.
-        assertTrue("bo'lim testi yurak jarimasidan holmiq", m.sectionTestIsFree())
+        assertTrue("bölim testi yurak jarimasidan holmiq", m.sectionTestIsFree())
         assertEquals(listOf("mock_exam", "diagnostic", "section_test"), m.heartFreeSources)
         assertEquals(5, m.heartsMax)
         assertEquals(1, m.heartsCostWrong)
@@ -123,7 +123,7 @@ class GameManifestTest {
         val noPrize = parsed().also { it.remove("leaguePrizeGems") }
         assertNull(parseGameManifest(noPrize.toString()))
         // Turi buzilsa (son o'rniga satr) — ham rad etiladi.
-        val badHearts = parsed().also { it.addProperty("heartsMax", "besh") }
+        val badHearts = parsed().also { it.addProperty("heartsMax", "beş") }
         assertNull(parseGameManifest(badHearts.toString()))
         // Izoh (`*Source`) yetishmasa parse YARAYDI, lekin `missingSources()`
         // jimgina o'tib ketmaydi.

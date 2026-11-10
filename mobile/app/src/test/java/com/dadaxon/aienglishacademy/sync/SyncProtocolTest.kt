@@ -148,7 +148,7 @@ class SyncProtocolTest {
         assertEquals("2024-10-27T03:33:20.000Z", IsoTime.of(1730000000000L))
         assertEquals(1730000000000L, IsoTime.parse("2024-10-27T03:33:20.000Z"))
         assertEquals(1730000000000L, IsoTime.parse("2024-10-27T03:33:20Z"))
-        assertNull(IsoTime.parse("kecha"))
+        assertNull(IsoTime.parse("keça"))
         assertNull(IsoTime.parse(null))
     }
 

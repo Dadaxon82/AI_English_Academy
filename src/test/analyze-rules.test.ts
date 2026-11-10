@@ -32,15 +32,15 @@ const stubTask: WritingTask = {
   mustInclude: [{ pattern: 'my family', whyUz: 'Oilangizni titlang.' }],
 }
 
-describe('analyzeWriting — to‘g‘ri matn jazolanmasin', () => {
-  it('toza A1 matnida soxta kelishuv (agreement) xatosi chiqmaydi', () => {
+describe('analyzeWriting — töğri matn jazolanmasin', () => {
+  it('toza A1 matnida soxta kelişuv (agreement) xatosi çiqmaydi', () => {
     const a = analyzeWriting(cleanA1, stubTask)
     const agreement = a.errors.filter((e) => e.kind === 'agreement')
     expect(agreement, `topildi: ${JSON.stringify(agreement.map((e) => e.correction))}`).toEqual([])
     expect(a.criteriaScores.accuracy).toBe(5)
   })
 
-  it('haqiqiy kelishuv xatosi esa topiladi („he go“)', () => {
+  it('haqiqiy kelişuv xatosi esa topiladi („he go“)', () => {
     const a = analyzeWriting(cleanA1 + ' He go to the market.', stubTask)
     const agreement = a.errors.filter((e) => e.kind === 'agreement')
     expect(agreement).toHaveLength(1)
@@ -49,7 +49,7 @@ describe('analyzeWriting — to‘g‘ri matn jazolanmasin', () => {
 })
 
 describe('analyzeWriting — mustInclude qidiruvi', () => {
-  it('naqsh matn o‘rtasida bo‘lsa ham topiladi', () => {
+  it('naqş matn örtasida bölsa ham topiladi', () => {
     const text = 'Yesterday my family and friends went out last weekend because it was sunny. ' + cleanA1
     const a = analyzeWriting(text, {
       ...stubTask,
@@ -60,7 +60,7 @@ describe('analyzeWriting — mustInclude qidiruvi', () => {
     expect(a.criteriaScores.task_achievement).toBeGreaterThanOrEqual(4)
   })
 
-  it('loyihadagi barcha yozish topshiriqlarida ko‘p so‘zli naqshlar topiladi (model javob)', () => {
+  it('loyihadagi barça yoziş topşiriqlarida köp sözli naqşlar topiladi (model javob)', () => {
     const bad: string[] = []
     for (const task of a1.writing) {
       if (!task.modelAnswerEn) continue
@@ -72,10 +72,10 @@ describe('analyzeWriting — mustInclude qidiruvi', () => {
   })
 })
 
-describe('analyzeSpeaking — baho va izoh bir-biriga zid bo‘lmasin', () => {
+describe('analyzeSpeaking — baho va izoh bir-biriga zid bölmasin', () => {
   const task = { minSeconds: 30, targetSeconds: 60 }
 
-  it('juda sekin gapirish (wpm < 60) „ravon“ deb 5 ball olmaydi', () => {
+  it('juda sekin gapiriş (wpm < 60) „ravon“ deb 5 ball olmaydi', () => {
     // 20 sekundda 20 so‘z → 60 wpm emas, ~? hisoblab tekshiramiz.
     const transcript = 'I like my cat. My cat is small. I feed my cat. I love my cat.'
     const a = analyzeSpeaking(transcript, 25, task)
@@ -84,7 +84,7 @@ describe('analyzeSpeaking — baho va izoh bir-biriga zid bo‘lmasin', () => {
     expect(a.notesUz.some((n) => n.includes('sekin'))).toBe(true)
   })
 
-  it('me‘yordagi tezlik (100 wpm) yuqori ravonlik oladi', () => {
+  it('me’yordagi tezlik (100 wpm) yuqori ravonlik oladi', () => {
     const transcript = Array(12).fill('I go to school every day and I learn English words').join('. ')
     const a = analyzeSpeaking(transcript, 60, task)
     expect(a.wpm).toBeGreaterThan(90)
@@ -99,7 +99,7 @@ describe('analyzeSpeakingText — matnli muqobil javob ham baholanadi', () => {
     'I am twelve years old. I usually go to school by bus because it is far. I can read and write English. ' +
     'Yesterday I went to the park with my friends and we played football.'
 
-  it('ravonlik o‘lchanmaydi va bahoga kirmaydi; lug‘at va grammatika baholanadi', () => {
+  it('ravonlik ölçanmaydi va bahoga kirmaydi; luğat va grammatika baholanadi', () => {
     const a = analyzeSpeakingText(text, task)
     expect(a.mode).toBe('text')
     expect(a.fluency).toBe(0)
@@ -109,13 +109,13 @@ describe('analyzeSpeakingText — matnli muqobil javob ham baholanadi', () => {
     expect(speakingScore(a)).toBe(Math.round(((a.grammar + a.lexis) / 2 / 5) * 100))
   })
 
-  it('qisqa matn uchun hajm past va izoh beriladi', () => {
+  it('qisqa matn uçun hajm past va izoh beriladi', () => {
     const a = analyzeSpeakingText('I like cats.', task)
     expect(a.length).toBe(0)
     expect(a.notesUz.some((n) => n.includes('qisqa'))).toBe(true)
   })
 
-  it('matnli javob gapirish dalili sifatida hisobga olinadi (eski: hech qachon)', () => {
+  it('matnli javob gapiriş dalili sifatida hisobga olinadi (eski: heç qaçon)', () => {
     const a = analyzeSpeakingText(text, task)
     const data = {
       ...emptyData('u1'),
@@ -128,7 +128,7 @@ describe('analyzeSpeakingText — matnli muqobil javob ham baholanadi', () => {
     expect(sp.score).toBe(speakingScore(a))
   })
 
-  it('ovozli javob bahosi avvalgidek: ravonlik, grammatika, lug‘at o‘rtachasi', () => {
+  it('ovozli javob bahosi avvalgidek: ravonlik, grammatika, luğat örtaçasi', () => {
     const a = analyzeSpeaking('I go to school every day. I can read. I like it because it is fun.', 20, task)
     expect(speakingScore(a)).toBe(Math.round(((a.fluency + a.grammar + a.lexis) / 3 / 5) * 100))
   })

@@ -28,9 +28,9 @@ class MotionManifestTest {
     @Test
     fun shippedManifestExistsAndParses() {
         val f = File(repoDir(), "src/main/res/raw/motion_manifest.json")
-        assertTrue("`res/raw/motion_manifest.json` yo'q: ${f.absolutePath}", f.isFile)
+        assertTrue("`res/raw/motion_manifest.json` yöq: ${f.absolutePath}", f.isFile)
         val spec = MotionSpec.parse(f.readText())
-        assertNotNull("manifest parse bo'lmadi", spec)
+        assertNotNull("manifest parse bölmadi", spec)
         assertEquals(MotionSpec.defaults(), spec)
     }
 
@@ -87,7 +87,7 @@ class MotionManifestTest {
     fun defaultsStayWithinShortDurations() {
         val d = MotionSpec.defaults()
         for (v in listOf(d.stepMs, d.outcomeMs, d.popMs, d.staggerMs, d.xpMs, d.chainMs)) {
-            assertTrue("bu son foydalanuvchini kutdirmaydi: $v", v in MotionSpec.MIN_MS..MotionSpec.MAX_MS)
+            assertTrue("bu son foydalanuvçini kutdirmaydi: $v", v in MotionSpec.MIN_MS..MotionSpec.MAX_MS)
         }
         assertTrue(d.staggerMaxItems in 1..24)
     }

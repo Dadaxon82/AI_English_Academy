@@ -13,7 +13,7 @@ describe('clock', () => {
     expect(nowMs()).toBe(Date.parse('2026-01-01T00:00:00Z'))
   })
 
-  it('secondsSince — yaxlitlangan soniyalar va minimal chegara', () => {
+  it('secondsSince — yaxlitlangan soniyalar va minimal çegara', () => {
     const start = nowMs()
     vi.advanceTimersByTime(2_400)
     expect(secondsSince(start)).toBe(2)

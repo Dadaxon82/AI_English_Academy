@@ -45,10 +45,10 @@ object GameLogic {
     /** `day` (YYYY-MM-DD) dan `n` kun keyin/oldingi sana (veb: `shiftDay`). */
     fun shiftDay(day: String, n: Long): String = dayKeyAddDays(day, n)
 
-    /** Hafta boshi — PONESHANBA (liga haftasi shu yerda boshlanadi). */
+    /** Hafta boshi — DUSHANBA (liga haftasi shu yerda boshlanadi). */
     fun weekStartOf(day: String): String {
-        // JS `getUTCDay()`: yakshanba = 0; `(kun + 6) % 7` → poneshanba = 0.
-        // Kotlin `dayOfWeek.value`: poneshanba = 1 … yakshanba = 7 — formula bir xil.
+        // JS `getUTCDay()`: yakshanba = 0; `(kun + 6) % 7` → dushanba = 0.
+        // Kotlin `dayOfWeek.value`: dushanba = 1 … yakshanba = 7 — formula bir xil.
         val wd = (LocalDate.parse(day).dayOfWeek.value + 6) % 7
         return shiftDay(day, -wd.toLong())
     }
@@ -592,13 +592,13 @@ object GameLogic {
             return BuyOutcome(data, false, "Gem yetmadi: $price kerak, sizda ${g.gems}.")
         }
         if ((item == "heart" || item == "refill") && g.hearts >= GameConfig.HEARTS_MAX) {
-            return BuyOutcome(data, false, "Yuraklar allaqachon to‘la (${GameConfig.HEARTS_MAX}).")
+            return BuyOutcome(data, false, "Yuraklar allaqaçon töla (${GameConfig.HEARTS_MAX}).")
         }
         if (item == "freeze" && g.freezes >= GameConfig.MAX_FREEZES) {
-            return BuyOutcome(data, false, "Omborda allaqachon ${GameConfig.MAX_FREEZES} ta qalqon bor.")
+            return BuyOutcome(data, false, "Omborda allaqaçon ${GameConfig.MAX_FREEZES} ta qalqon bor.")
         }
         if (item == "xpBoost" && boostActive(g, now)) {
-            return BuyOutcome(data, false, "Byust allaqachon faol.")
+            return BuyOutcome(data, false, "Byust allaqaçon faol.")
         }
         val base = g.copy(gems = g.gems - price)
         val next = when (item) {
@@ -614,9 +614,9 @@ object GameLogic {
     /** "Double or Nothing" garovi (narxlar/kunlar `GameConfig` da — Duolingo 50→100). */
     fun placeBet(data: AppData, streakDays: Int): BuyOutcome {
         val g = data.game
-        if (g.bet != null) return BuyOutcome(data, false, "Garov allaqachon ochiq.")
+        if (g.bet != null) return BuyOutcome(data, false, "Garov allaqaçon oçiq.")
         if (g.gems < GameConfig.BET_COST_GEMS) {
-            return BuyOutcome(data, false, "Garov uchun ${GameConfig.BET_COST_GEMS} gem kerak.")
+            return BuyOutcome(data, false, "Garov uçun ${GameConfig.BET_COST_GEMS} gem kerak.")
         }
         return BuyOutcome(
             data.copy(

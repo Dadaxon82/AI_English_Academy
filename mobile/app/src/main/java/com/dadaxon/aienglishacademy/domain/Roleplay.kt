@@ -174,10 +174,10 @@ fun roleplayFixExercise(id: String): Exercise? {
     return Exercise(
         id = id,
         kind = Kinds.WORD_ORDER,
-        instructionUz = "Suhbatda shunday dedingiz: “$orig”. To‘g‘ri gapni so‘zlardan tuzing.",
+        instructionUz = "Suhbatda şunday dedingiz: “$orig”. Töğri gapni sözlardan tuzing.",
         level = level,
         skill = Skills.GRAMMAR,
-        explanationUz = "$why To‘g‘ri: “$corr”.",
+        explanationUz = "$why Töğri: “$corr”.",
         difficulty = 2,
         tags = listOf("roleplay"),
         answers = answer,

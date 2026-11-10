@@ -13,7 +13,7 @@ beforeEach(() => localStorage.clear())
 afterEach(() => cleanup())
 
 describe('SignOutButton', () => {
-  it('mehmon: bosilganda signOut chaqiriladi va /login ochiladi', async () => {
+  it('mehmon: bosilganda signOut çaqiriladi va /login oçiladi', async () => {
     const signOut = vi.fn()
     render(
       <AuthContext.Provider value={{ signOut, userId: null }}>
@@ -21,18 +21,18 @@ describe('SignOutButton', () => {
           <StoreProvider userId="local-test-guest">
             <Routes>
               <Route path="/dashboard" element={<SignOutButton compact />} />
-              <Route path="/login" element={<p>KIRISH SAHIFASI</p>} />
+              <Route path="/login" element={<p>KIRIŞ SAHIFASI</p>} />
             </Routes>
           </StoreProvider>
         </MemoryRouter>
       </AuthContext.Provider>,
     )
-    const btn = await screen.findByRole('button', { name: 'Chiqish (ma’lumot saqlanadi)' })
-    expect(btn.textContent).toContain('Chiqish')
+    const btn = await screen.findByRole('button', { name: 'Çiqiş (ma’lumot saqlanadi)' })
+    expect(btn.textContent).toContain('Çiqiş')
     await act(async () => {
       fireEvent.click(btn)
     })
     expect(signOut).toHaveBeenCalledTimes(1)
-    expect(await screen.findByText('KIRISH SAHIFASI')).toBeTruthy()
+    expect(await screen.findByText('KIRIŞ SAHIFASI')).toBeTruthy()
   })
 })

@@ -45,7 +45,7 @@ class ExportedContentParityTest {
         for (k in kinds) {
             val list = all.filter { it.kind == k }
             assertEquals("$k soni", 7, list.size)
-            for (ex in list) assertTrue("${ex.id} yechilmadi", checkAnswer(ex, right(ex)).correct)
+            for (ex in list) assertTrue("${ex.id} yeçilmadi", checkAnswer(ex, right(ex)).correct)
         }
         val dc = all.first { it.kind == Kinds.DROPDOWN_CLOZE }
         assertEquals(dc.answers!!.size, dc.choices!!.size)

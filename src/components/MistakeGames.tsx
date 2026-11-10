@@ -12,29 +12,29 @@ const MODES: { mode: MistakeMode; icon: string; title: string; body: string; ton
   {
     mode: 'fix',
     icon: '🛠️',
-    title: 'Xatolarni tuzatish',
-    body: 'Hali to‘g‘rilanmagan xatolaringiz — eng yangisidan boshlab.',
+    title: 'Xatolarni tuzatiş',
+    body: 'Hali töğrilanmagan xatolaringiz — eng yangisidan boşlab.',
     tone: 'border-emerald-300 dark:border-emerald-700',
   },
   {
     mode: 'hard',
     icon: '🎯',
     title: 'Eng qiyinlari',
-    body: 'Ikki va undan ko‘p marta xato qilgan mashqlaringiz.',
+    body: 'Ikki va undan köp marta xato qilgan maşqlaringiz.',
     tone: 'border-rose-300 dark:border-rose-700',
   },
   {
     mode: 'remix',
     icon: '🔄',
-    title: 'Boshqa ko‘rinishda',
-    body: 'O‘sha bilim — yangi formatda: bo‘shliq → ro‘yxat, tanlov → eslab yozish, tarjima → so‘zlardan tuzish.',
+    title: 'Boşqa körinişda',
+    body: 'Öşa bilim — yangi formatda: böşliq → röyxat, tanlov → eslab yoziş, tarjima → sözlardan tuziş.',
     tone: 'border-violet-300 dark:border-violet-700',
   },
   {
     mode: 'timed',
     icon: '⏱️',
-    title: `Vaqtga qarshi (${TIMED_SECONDS} soniya)`,
-    body: 'Vaqt tugaguncha iloji boricha ko‘p xatoni tuzating!',
+    title: `Vaqtga qarşi (${TIMED_SECONDS} soniya)`,
+    body: 'Vaqt tugagunça iloji boriça köp xatoni tuzating!',
     tone: 'border-sky-300 dark:border-sky-700',
   },
 ]
@@ -50,12 +50,12 @@ export default function MistakeGames({
     <Card className="grid gap-4 p-4 sm:p-6 border-2 border-emerald-300 dark:border-emerald-700">
       <div className="grid sm:grid-cols-[1fr_auto] items-center gap-3">
         <div className="grid gap-1.5">
-          <p className="text-[11px] font-extrabold uppercase tracking-wider text-violet-600 dark:text-violet-400">Xatolar ustida ishlash</p>
+          <p className="text-[11px] font-extrabold uppercase tracking-wider text-violet-600 dark:text-violet-400">Xatolar ustida işlaş</p>
           <h2 className="text-xl sm:text-2xl font-extrabold">
-            {mistakes.length > 0 ? `${mistakes.length} ta xato tuzatishni kutmoqda` : 'Tuzatiladigan xato yo‘q — ofarin!'}
+            {mistakes.length > 0 ? `${mistakes.length} ta xato tuzatişni kutmoqda` : 'Tuzatiladigan xato yöq — ofarin!'}
           </h2>
           <p className="text-sm muted">
-            To‘g‘ri yechilgan mashq ro‘yxatdan o‘zi chiqadi. Har javob XP va yuraklar hisobiga yoziladi; xato qilingani dars oxirida
+            Töğri yeçilgan maşq röyxatdan özi çiqadi. Har javob XP va yuraklar hisobiga yoziladi; xato qilingani dars oxirida
             yana bir marta beriladi.
           </p>
         </div>
@@ -76,9 +76,9 @@ export default function MistakeGames({
                 <p className="text-sm muted">{m.body}</p>
               </div>
               <div className="flex items-center justify-between gap-2">
-                <span className="text-xs font-bold muted">{n > 0 ? `${n} ta mashq` : 'Hozircha mos xato yo‘q'}</span>
+                <span className="text-xs font-bold muted">{n > 0 ? `${n} ta maşq` : 'Hozirça mos xato yöq'}</span>
                 <button type="button" className={`${chunkyGreen} !px-4 !py-2`} disabled={n === 0} onClick={() => onStart(m.mode)}>
-                  Boshlash
+                  Boşlaş
                 </button>
               </div>
             </div>

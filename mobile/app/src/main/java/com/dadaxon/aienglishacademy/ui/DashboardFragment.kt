@@ -150,7 +150,7 @@ class DashboardFragment : Fragment() {
         /* 2b) O'yin qatlami plitkalari — veb `Dashboard.tsx`dagi ikkinchi
                qatorning moslamasi (yurak / kunlik XP / gem / qalqon).
                Sonlar `GameLogic.heartsView` va `goalView`dan olinadi,
-               sozlamada yuraklar o'chirilgan bo'lsa plitka halol "o'chiq"
+               sozlamada yuraklar o'chirilgan bo'lsa plitka halol "öçiq"
                deyadi — son ixtir qilinmaydi. */
         val now = System.currentTimeMillis()
         val hearts = GameLogic.heartsView(d, now)

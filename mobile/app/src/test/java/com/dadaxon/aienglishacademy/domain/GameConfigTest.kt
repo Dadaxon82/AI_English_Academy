@@ -73,10 +73,10 @@ class GameConfigTest {
             for (ch in s) h = (h xor ch.code) * 0x0193
             return h
         }
-        assertNotEquals("prime 0x01000193 bo'lishi shart", oldHash("2026-11-07"), GameLogic.dayHash("2026-11-07"))
+        assertNotEquals("prime 0x01000193 bölişi şart", oldHash("2026-11-07"), GameLogic.dayHash("2026-11-07"))
         // Belgili Int — PIN jadvalidagi bilan BIR XIL son (`h >>> 0` = 0x6F1E1E56).
         assertEquals(1_864_244_822L, GameLogic.dayHashUnsigned("2026-11-07"))
-        assertTrue("belgili Int manfiy ham bo'lishi mumkin", GameLogic.dayHash("2026-09-09") < 0)
+        assertTrue("belgili Int manfiy ham bölişi mumkin", GameLogic.dayHash("2026-09-09") < 0)
     }
 
     @Test
@@ -86,7 +86,7 @@ class GameConfigTest {
         for (q in GameConfig.QUEST_POOL) {
             assertTrue("${q.id} turi noma'lum", GameConfig.QUEST_KINDS.contains(q.kind))
             assertTrue("${q.id} maqsadi musbat", q.target > 0)
-            assertTrue("${q.id} izohi yo'q", q.titleUz.isNotBlank())
+            assertTrue("${q.id} izohi yöq", q.titleUz.isNotBlank())
         }
         // Tanlov hovuzi kamida `QUESTS_PER_DAY` ta bo'lishi shart.
         assertTrue(GameConfig.QUEST_POOL.size >= GameConfig.QUESTS_PER_DAY)
@@ -108,14 +108,14 @@ class GameConfigTest {
         assertEquals("liga id'lari takrorlanmasligi kerak", ids.size, ids.toSet().size)
         var prevXp = -1
         for (l in GameConfig.LEAGUES) {
-            assertTrue("${l.id} chegarasi kamaymasligi kerak", l.minXp > prevXp)
+            assertTrue("${l.id} çegarasi kamaymasligi kerak", l.minXp > prevXp)
             prevXp = l.minXp
             assertTrue("${l.id} promoteTop manfiy", l.promoteTop >= 0)
-            assertEquals("liga id'si bo'sh", l.id, GameConfig.leagueById(l.id).id)
+            assertEquals("liga id'si böş", l.id, GameConfig.leagueById(l.id).id)
         }
         // Oxirgi ligaga ko'tarilish YO'Q (Duolingo: Diamond — eng yuqori).
         assertEquals(0, GameConfig.LEAGUES.last().promoteTop)
-        assertEquals("bronze", GameConfig.leagueById("yo'q-liga").id)
+        assertEquals("bronze", GameConfig.leagueById("yöq-liga").id)
     }
 
     @Test
@@ -126,7 +126,7 @@ class GameConfigTest {
         }
         assertEquals(0, GameConfig.priceOf("noma'lum"))
         assertEquals(
-            "do'kon ro'yxati `SHOP` xaritasini to'liq qamrab olishi kerak",
+            "dökon röyxati `SHOP` xaritasini töliq qamrab olişi kerak",
             GameConfig.SHOP.keys.toSet(),
             GameConfig.SHOP_ITEMS.map { it.id }.toSet(),
         )

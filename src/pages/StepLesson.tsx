@@ -45,7 +45,7 @@ export default function StepLesson() {
     const pool = found.bundle.vocab.filter((v) => section.itemIds.includes(v.id))
     if (pool.length < 4) return null
     return buildWordGame(pool, data.srs).map(
-      (g, i): LessonStep => ({ type: 'exercise', id: `${g.exercise.id}#${i}`, exercise: g.exercise, badge: g.isNew ? 'Yangi so‘z' : undefined, icons: g.icons, vocabIds: g.vocabIds }),
+      (g, i): LessonStep => ({ type: 'exercise', id: `${g.exercise.id}#${i}`, exercise: g.exercise, badge: g.isNew ? 'Yangi söz' : undefined, icons: g.icons, vocabIds: g.vocabIds }),
     )
   })
 
@@ -59,11 +59,11 @@ export default function StepLesson() {
   if (!found || !sk || !section) {
     return (
       <EmptyState
-        title="Bo‘lim topilmadi"
-        body="Bu tugun uchun dars topilmadi — o‘quv yo‘liga qaytib, boshqa bo‘limni tanlang."
+        title="Bölim topilmadi"
+        body="Bu tugun uçun dars topilmadi — öquv yöliga qaytib, boşqa bölimni tanlang."
         action={
           <Link to="/path" className="underline font-semibold">
-            O‘quv yo‘li
+            Öquv yöli
           </Link>
         }
       />
@@ -106,7 +106,7 @@ export default function StepLesson() {
     <div className="grid gap-3">
       <div className="flex flex-wrap items-center gap-2 text-sm">
         <Link to="/path" className="font-semibold underline">
-          ← O‘quv yo‘li
+          ← Öquv yöli
         </Link>
         <span className="muted">
           {found.day.dayNumber}-kun · {skillLabelUz(sk)} · {section.titleUz}
@@ -116,7 +116,7 @@ export default function StepLesson() {
       {body ? (
         <Card className="p-3 sm:p-5">{body}</Card>
       ) : (
-        <EmptyState title="Bu bo‘limda dars yo‘q" body="Kontent topilmadi — o‘quv yo‘lidagi boshqa bo‘limni tanlang." />
+        <EmptyState title="Bu bölimda dars yöq" body="Kontent topilmadi — öquv yölidagi boşqa bölimni tanlang." />
       )}
     </div>
   )

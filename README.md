@@ -931,6 +931,32 @@ yo'naltiriladi), `admin-page.test.tsx` (KPI, rolni o'zgartirish va toast, qidiru
 tasdiqlash, server xatosi), SQL `admin.test.sql`. Brauzerda soxta server javoblari bilan light/dark, 1280/375 px
 holatlarida axe xato topmadi va gorizontal siljish yo'q.
 
+## 5r. O'zbek lotin yozuvining yangi alifbosi: ö, ğ, ş, ç (2026-11-10)
+
+Ilovadagi barcha o'zbekcha matnlar (veb, mobil, kontent, AI xabarlari) yangi alifboga o'tkazildi:
+`o‘ → ö`, `g‘ → ğ`, `sh → ş`, `ch → ç`. Tutuq belgisi (`ma’lumot`) saqlanadi.
+
+**Qanday o'tkazildi.** Matnlar TypeScript AST orqali o'tkazildi: faqat satr qiymatlari, JSX matni va
+regexlar. Izohlar, CSS klasslari, id'lar va kod nomlari (`matchMedia`, `checkAnswer`) tegilmadi.
+Inglizcha so'z va gaplar (`teacher`, `fish`, `o’clock`, `Laylo’s`, inglizcha o'qish matnlari) ham
+o'zgarmadi. Ismlar inglizcha gap ichida inglizcha yozilishida qoldi (`Tashkent`, `Dilshod`).
+Mobilda `strings.xml`, Kotlin satrlari va o'yin manifesti o'tkazildi; kontent esa
+`scripts/export-content-mobile.mjs` bilan vebdan qayta eksport qilindi.
+
+**O'quvchi eski yozuvda yozsa ham to'g'ri.** Javob tekshiruvi va lug'at qidiruvi ikkala yozuvni teng
+ko'radi: veb `src/lib/uzAlphabet.ts` (`foldUzLatin`), mobil `AnswerChecker.kt`. «öqituvçi» ham,
+«o'qituvchi» ham, «oʻqituvchi» ham to'g'ri. AI funksiyalarining system prompt'lari endi yangi alifboni
+so'raydi.
+
+**Imlo tuzatishlari (shu bilan birga):** Hayrli → **Xayrli**, xola, hola → xola, **amma**,
+Birinci → **Birinçi**, Beket → **Bekat**, Samarkandga → **Samarqandga**, paragrafta → **paragrafda**,
+bu yerde → bu **yerda**, «fe’l olga -s … qöşadi» → «**fe’lga** -s … **qöşiladi**», poneshanba →
+**dushanba** (izohlarda). Tutuq belgisi noto'g'ri turdagi apostrof bilan yozilgan joylar tuzatildi
+(fe‘l → fe’l, ma‘no → ma’no). 300 dan ortiq yopilmagan qo'shtirnoq tuzatildi (“can“ → “can”).
+
+**Testlar:** `uz-alphabet.test.ts` (yozuvlar tengligi, kontentda eski «o‘/g‘» qolmagani), `check.test.ts`
+va Kotlin `AnswerCheckerTest` (har xil apostrof va yangi alifbo bilan javob).
+
 ## 6. Arxitektura qisqacha
 
 ```

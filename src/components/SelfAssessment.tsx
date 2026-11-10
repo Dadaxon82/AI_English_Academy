@@ -37,18 +37,18 @@ export default function SelfAssessment() {
   return (
     <Card className="grid gap-3.5">
       <div className="flex flex-wrap items-center gap-2">
-        <h2 className="font-bold">O‘zingizni baholang</h2>
+        <h2 className="font-bold">Özingizni baholang</h2>
         <Chip>{rated.length}/{items.length} baholangan</Chip>
-        {avg !== null && <Chip tone={avg >= 4 ? 'ok' : avg >= 3 ? 'brand' : 'warn'}>o‘rtacha {avg.toFixed(1)} / 5</Chip>}
+        {avg !== null && <Chip tone={avg >= 4 ? 'ok' : avg >= 3 ? 'brand' : 'warn'}>örtaça {avg.toFixed(1)} / 5</Chip>}
         <Chip tone={confirmed > 0 ? 'ok' : 'default'}>
           {confirmed}/{items.length} natija bilan tasdiqlangan
         </Chip>
       </div>
       <p className="text-sm muted">
-        Har da’voga 1 dan 5 gacha baho bering: 1 — {LIKERT_LABELS[0]!.toLowerCase()}, 5 — {LIKERT_LABELS[4]!.toLowerCase()}. Bu baho
-        darajangizni o‘zgartirmaydi va XP bermaydi — faqat o‘zingizni qanday his qilishingizni ko‘rsatadi. Haqiqiy natija
-        yuqoridagi “Ko‘nikma isbotlari”da. Har da’vo ostida — shu daraja va ko‘nikma bo‘yicha haqiqiy mashq natijalari: kamida {MIN_EVIDENCE_PER_SKILL} ta
-        natija va {PROMOTION_THRESHOLD}% dan yuqori ball bo‘lsa «natija bilan tasdiqlandi» (daraja qoidasi bilan bir xil chegaralar).
+        Har da’voga 1 dan 5 gaça baho bering: 1 — {LIKERT_LABELS[0]!.toLowerCase()}, 5 — {LIKERT_LABELS[4]!.toLowerCase()}. Bu baho
+        darajangizni özgartirmaydi va XP bermaydi — faqat özingizni qanday his qilişingizni körsatadi. Haqiqiy natija
+        yuqoridagi “Könikma isbotlari”da. Har da’vo ostida — şu daraja va könikma böyiça haqiqiy maşq natijalari: kamida {MIN_EVIDENCE_PER_SKILL} ta
+        natija va {PROMOTION_THRESHOLD}% dan yuqori ball bölsa «natija bilan tasdiqlandi» (daraja qoidasi bilan bir xil çegaralar).
       </p>
       <div className="flex flex-wrap gap-1.5" role="tablist" aria-label="Daraja">
         {CEFR_LEVELS.map((l) => (
@@ -101,10 +101,10 @@ export default function SelfAssessment() {
                 <Chip tone={ev.status === 'confirmed' ? 'ok' : ev.status === 'practice' ? 'warn' : 'default'}>{CAN_DO_STATUS_UZ[ev.status]}</Chip>
                 <span className="muted">
                   {ev.status === 'none'
-                    ? `${s.level} ${skillLabelUz(s.skill).toLowerCase()} mashqlari natijasi hali yo‘q.`
+                    ? `${s.level} ${skillLabelUz(s.skill).toLowerCase()} maşqlari natijasi hali yöq.`
                     : ev.status === 'few'
-                      ? `${ev.count} ta natija (${ev.score}%) — tasdiqlash uchun yana ${ev.needed} ta kerak.`
-                      : `${ev.count} ta natija, og‘irlikli ball ${ev.score}%.`}
+                      ? `${ev.count} ta natija (${ev.score}%) — tasdiqlaş uçun yana ${ev.needed} ta kerak.`
+                      : `${ev.count} ta natija, oğirlikli ball ${ev.score}%.`}
                 </span>
               </p>
             </li>

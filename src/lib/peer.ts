@@ -21,10 +21,10 @@ export type PeerKind = 'writing' | 'speaking'
 export type PeerReportReason = 'offensive' | 'spam' | 'personal' | 'other'
 
 export const PEER_REPORT_REASONS: { id: PeerReportReason; labelUz: string }[] = [
-  { id: 'offensive', labelUz: 'Haqoratli yoki qo‘pol' },
+  { id: 'offensive', labelUz: 'Haqoratli yoki qöpol' },
   { id: 'spam', labelUz: 'Mavzuga aloqasiz / spam' },
-  { id: 'personal', labelUz: 'Shaxsiy ma’lumot bor' },
-  { id: 'other', labelUz: 'Boshqa sabab' },
+  { id: 'personal', labelUz: 'Şaxsiy ma’lumot bor' },
+  { id: 'other', labelUz: 'Boşqa sabab' },
 ]
 
 /** `0006_peer_review.sql` dagi CHECK va triggerlar bilan BIR XIL. */
@@ -62,16 +62,16 @@ export type PeerResult<T> = { ok: true; data: T } | { ok: false; reasonUz: strin
 
 export function validateSubmissionBody(body: string): string | null {
   const t = body.trim()
-  if (t.length === 0) return 'Bo‘sh javobni yuborib bo‘lmaydi.'
-  if (t.length > PEER_LIMITS.bodyMax) return `Matn juda uzun (${t.length} belgi, ko‘pi bilan ${PEER_LIMITS.bodyMax}).`
+  if (t.length === 0) return 'Böş javobni yuborib bölmaydi.'
+  if (t.length > PEER_LIMITS.bodyMax) return `Matn juda uzun (${t.length} belgi, köpi bilan ${PEER_LIMITS.bodyMax}).`
   return null
 }
 
 export function validateReview(score: number, comment: string): string | null {
-  if (!Number.isInteger(score) || score < 1 || score > 5) return 'Bahoni 1 dan 5 gacha tanlang.'
+  if (!Number.isInteger(score) || score < 1 || score > 5) return 'Bahoni 1 dan 5 gaça tanlang.'
   const n = comment.trim().length
-  if (n < PEER_LIMITS.commentMin) return `Izoh kamida ${PEER_LIMITS.commentMin} belgi bo‘lsin — nimasi yaxshi va nimani tuzatish kerakligini yozing.`
-  if (n > PEER_LIMITS.commentMax) return `Izoh juda uzun (ko‘pi bilan ${PEER_LIMITS.commentMax} belgi).`
+  if (n < PEER_LIMITS.commentMin) return `Izoh kamida ${PEER_LIMITS.commentMin} belgi bölsin — nimasi yaxşi va nimani tuzatiş kerakligini yozing.`
+  if (n > PEER_LIMITS.commentMax) return `Izoh juda uzun (köpi bilan ${PEER_LIMITS.commentMax} belgi).`
   return null
 }
 
@@ -79,14 +79,14 @@ export function validateReview(score: number, comment: string): string | null {
 export function peerErrorUz(err: unknown): string {
   const e = (err ?? {}) as { code?: string; message?: string }
   const msg = (e.message ?? '').toLowerCase()
-  if (msg.includes('peer_daily_limit')) return `Bugun ${PEER_LIMITS.dailySubmissions} ta javob yuborildi — bu kunlik chegara. Ertaga yana yuborishingiz mumkin.`
+  if (msg.includes('peer_daily_limit')) return `Bugun ${PEER_LIMITS.dailySubmissions} ta javob yuborildi — bu kunlik çegara. Ertaga yana yuborişingiz mumkin.`
   if (e.code === 'PGRST205' || e.code === '42P01' || e.code === 'PGRST202' || msg.includes('schema cache'))
-    return 'Serverda hamjamiyat jadvallari hali yo‘q: `supabase/migrations/0006_peer_review.sql` migratsiyasini qo‘llang.'
-  if (e.code === '23505') return 'Bu amal allaqachon bajarilgan (bir javobga bitta izoh / bitta shikoyat).'
-  if (e.code === '23514') return 'Matn uzunligi yoki baho chegaradan tashqarida.'
-  if (e.code === '42501' || msg.includes('row-level security')) return 'Bu amalga ruxsat yo‘q (javob sizga tayinlanmagan yoki yashirilgan).'
-  if (msg.includes('failed to fetch') || msg.includes('network')) return 'Internet aloqasi yo‘q. Ulanishni tekshirib, qayta urinib ko‘ring.'
-  return 'Server xatosi. Birozdan keyin qayta urinib ko‘ring.'
+    return 'Serverda hamjamiyat jadvallari hali yöq: `supabase/migrations/0006_peer_review.sql` migratsiyasini qöllang.'
+  if (e.code === '23505') return 'Bu amal allaqaçon bajarilgan (bir javobga bitta izoh / bitta şikoyat).'
+  if (e.code === '23514') return 'Matn uzunligi yoki baho çegaradan taşqarida.'
+  if (e.code === '42501' || msg.includes('row-level security')) return 'Bu amalga ruxsat yöq (javob sizga tayinlanmagan yoki yaşirilgan).'
+  if (msg.includes('failed to fetch') || msg.includes('network')) return 'Internet aloqasi yöq. Ulanişni tekşirib, qayta urinib köring.'
+  return 'Server xatosi. Birozdan keyin qayta urinib köring.'
 }
 
 /* ------------------------------ ulanish ------------------------------ */
@@ -95,14 +95,14 @@ type Ready = { ok: true; client: SupabaseClient; userId: string } | { ok: false;
 
 /** Hamjamiyat ishlay oladimi: server sozlanganmi va foydalanuvchi kirganmi. */
 export async function peerReady(): Promise<Ready> {
-  if (!supabaseConfigured) return { ok: false, reasonUz: 'Server (Supabase) ulanmagan — hamjamiyat tekshiruvi faqat server bilan ishlaydi.' }
+  if (!supabaseConfigured) return { ok: false, reasonUz: 'Server (Supabase) ulanmagan — hamjamiyat tekşiruvi faqat server bilan işlaydi.' }
   const client = await getSupabase()
   if (!client) return { ok: false, reasonUz: 'Server (Supabase) ulanmagan.' }
   try {
     const { data, error } = await client.auth.getSession()
     if (error) return { ok: false, reasonUz: peerErrorUz(error) }
     const userId = data.session?.user?.id
-    if (!userId) return { ok: false, reasonUz: 'Hamjamiyat tekshiruvi uchun hisobingizga kiring (mehmon rejimida javoblar boshqalarga yuborilmaydi).' }
+    if (!userId) return { ok: false, reasonUz: 'Hamjamiyat tekşiruvi uçun hisobingizga kiring (mehmon rejimida javoblar boşqalarga yuborilmaydi).' }
     return { ok: true, client, userId }
   } catch (err) {
     return { ok: false, reasonUz: peerErrorUz(err) }

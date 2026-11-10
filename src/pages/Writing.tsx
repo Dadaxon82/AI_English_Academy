@@ -82,10 +82,10 @@ export default function Writing() {
 
   // BUG: ma'lumotlar yuklanmasa sahifa "topshiriq topilmadi" deb yalgan
   // bo'sh holat ko'rsatardi. Avval yuklanish holati ko'rsatiladi.
-  if (!ready) return <LoadingBlock label="Yozish ma'lumotlari yuklanmoqda…" />
+  if (!ready) return <LoadingBlock label="Yoziş ma'lumotlari yuklanmoqda…" />
 
   if (tasks.length === 0) {
-    return <EmptyState title="Yozish topshiriqlari topilmadi" body="Ushbu daraja uchun yozish kontenti hali yuklanmagan." />
+    return <EmptyState title="Yoziş topşiriqlari topilmadi" body="Uşbu daraja uçun yoziş kontenti hali yuklanmagan." />
   }
 
   const prior = data.writing.filter((w) => w.taskId === selectedId)
@@ -103,9 +103,9 @@ export default function Writing() {
   return (
     <div className="grid gap-4">
       <Card className="grid gap-3">
-        <h1 className="text-xl font-bold">Yozish</h1>
+        <h1 className="text-xl font-bold">Yoziş</h1>
         <p className="muted text-sm">
-          Javobingiz shu brauzerda saqlanadi (qoralama) va sinxronlashda Supabase’ga yuboriladi. Tahlil{' '}
+          Javobingiz şu brauzerda saqlanadi (qoralama) va sinxronlaşda Supabase’ga yuboriladi. Tahlil{' '}
           <b>{aiRuntimeEnabled(data.settings.aiEnabled, netOnline) ? 'qoidaviy + AI' : 'qoidaviy'} dvigatel</b> bilan bajariladi.
         </p>
         <div className="flex flex-wrap gap-1.5">
@@ -125,9 +125,9 @@ export default function Writing() {
 
       {task && (
         <LessonStartCard
-          kicker="Yozish darsi"
+          kicker="Yoziş darsi"
           title={`${genreLabelUz(task.genre)}: tayyorgarlik`}
-          body="Namuna javob gaplarini plitkalardan tuzing, so‘ng o‘zingiz yozing"
+          body="Namuna javob gaplarini plitkalardan tuzing, söng özingiz yozing"
           steps={writingLesson(task)}
           onStart={() => setLesson(true)}
         />
@@ -136,9 +136,9 @@ export default function Writing() {
       {task && (
         <Card className="grid gap-3.5">
           <div className="flex flex-wrap items-center gap-2">
-            <h2 className="font-bold">{genreLabelUz(task.genre)} — topshiriq</h2>
+            <h2 className="font-bold">{genreLabelUz(task.genre)} — topşiriq</h2>
             <Chip>{task.level}</Chip>
-            <Chip>{task.minWords}–{task.maxWords} so‘z</Chip>
+            <Chip>{task.minWords}–{task.maxWords} söz</Chip>
             <Chip>{task.minutes}′</Chip>
           </div>
           <p className="text-sm">{task.promptEn}</p>
@@ -150,12 +150,12 @@ export default function Writing() {
             rows={12}
             placeholder="Write your answer in English…"
             className="w-full rounded-xl border bg-[var(--panel)] p-3.5 text-sm leading-6 outline-none focus:border-[var(--accent)] font-[inherit]"
-            aria-label="Yozish maydoni"
+            aria-label="Yoziş maydoni"
           />
 
           <div className="flex flex-wrap items-center gap-3 text-xs muted">
             <span className={`tabular-nums font-semibold ${words > task.maxWords ? 'text-[var(--bad)]' : 'text-[var(--text)]'}`}>
-              {words} so‘z
+              {words} söz
             </span>
             <span className="tabular-nums">⏱ {formatDuration(seconds)}</span>
             <span>{saveNote}</span>
@@ -169,16 +169,16 @@ export default function Writing() {
                 actions.addWriting(task.id, draft, seconds, newest?.id ?? null)
               }}
             >
-              Tahlil qilish
+              Tahlil qiliş
             </Button>
             <Button size="sm" variant="ghost" onClick={() => actions.stopTimer()}>
-              Taymerni to‘xtatish
+              Taymerni töxtatiş
             </Button>
           </div>
 
           {task.checklistUz && (
             <details className="text-sm">
-              <summary className="cursor-pointer font-semibold muted">Tekshiruv ro'yxati</summary>
+              <summary className="cursor-pointer font-semibold muted">Tekşiruv röyxati</summary>
               <ul className="mt-2 grid gap-1 list-disc pl-5">
                 {task.checklistUz.map((c) => (
                   <li key={c} className="muted">{c}</li>
@@ -193,7 +193,7 @@ export default function Writing() {
       <Card className="grid gap-3.5">
         <h2 className="font-bold">Natijalar va tahlil</h2>
         {submitted.length === 0 ? (
-          <EmptyState title="Hali javob yuborilmadi" body="Matn yozing va “Tahlil qilish” tugmasini bosing — tahlil darhol ko‘rsatiladi." />
+          <EmptyState title="Hali javob yuborilmadi" body="Matn yozing va “Tahlil qiliş” tugmasini bosing — tahlil darhol körsatiladi." />
         ) : (
           [...submitted].reverse().map((sub, i) => (
             <div key={sub.id} className="grid gap-3 rounded-xl border p-3.5">
@@ -201,11 +201,11 @@ export default function Writing() {
                 <Chip tone={sub.analysis?.engine === 'ai' ? 'brand' : 'default'}>
                   {sub.analysis?.engine === 'ai' ? 'AI tahlil' : 'Qoidaviy tahlil'}
                 </Chip>
-                <Chip>{sub.wordCount} so‘z</Chip>
+                <Chip>{sub.wordCount} söz</Chip>
                 <span className="muted">{new Date(sub.createdAt).toLocaleString('uz')}</span>
                 {i === 0 && previous && (
                   <Button size="sm" variant="ghost" aria-pressed={showCompare} onClick={() => setShowCompare((v) => !v)}>
-                    {showCompare ? 'Solishtirishni yopish' : 'Oldingi javob bilan solishtirish'}
+                    {showCompare ? 'Soliştirişni yopiş' : 'Oldingi javob bilan soliştiriş'}
                   </Button>
                 )}
               </div>
@@ -236,7 +236,7 @@ export default function Writing() {
 
                   <div className="grid sm:grid-cols-2 gap-3">
                     <div>
-                      <h3 className="text-sm font-semibold text-[var(--ok)]">Kuchli jihatlar</h3>
+                      <h3 className="text-sm font-semibold text-[var(--ok)]">Kuçli jihatlar</h3>
                       <ul className="text-sm list-disc pl-5 mt-1">
                         {sub.analysis.strengthsUz.map((s) => <li key={s}>{s}</li>)}
                       </ul>
@@ -271,7 +271,7 @@ export default function Writing() {
             <div className="rounded-xl border p-3">
               <h3 className="text-sm font-semibold mb-2">Eski javob</h3>
               <p className="text-sm whitespace-pre-wrap">{compareTarget.text}</p>
-              <p className="text-[11px] muted mt-1">{compareTarget.wordCount} so‘z</p>
+              <p className="text-[11px] muted mt-1">{compareTarget.wordCount} söz</p>
             </div>
             <div className="rounded-xl border p-3">
               <h3 className="text-sm font-semibold mb-2">Yangi javob</h3>
@@ -279,12 +279,12 @@ export default function Writing() {
                   tartibda saqlangani uchun [0] ENG KOGIRGI javob edi. Endi
                   solishtiruv paneli haqiqatan oxirgi (eng yangi) javobni ko'rsatadi. */}
               <p className="text-sm whitespace-pre-wrap">{newest?.text}</p>
-              <p className="text-[11px] muted mt-1">{newest?.wordCount} so‘z</p>
+              <p className="text-[11px] muted mt-1">{newest?.wordCount} söz</p>
             </div>
             {compareTarget.analysis && newest?.analysis && (
               <SuccessBanner>
-                O‘rtacha ball: {avg(compareTarget.analysis)}/5 → <b>{avg(newest.analysis)}/5</b>
-                {avg(newest.analysis) > avg(compareTarget.analysis) ? ' — o‘sish bor 👏' : ''}
+                Örtaça ball: {avg(compareTarget.analysis)}/5 → <b>{avg(newest.analysis)}/5</b>
+                {avg(newest.analysis) > avg(compareTarget.analysis) ? ' — ösiş bor 👏' : ''}
               </SuccessBanner>
             )}
           </div>
@@ -302,7 +302,7 @@ function genreLabelUz(g: WritingTask['genre']): string {
   return {
     email: 'Email',
     message: 'Xabar',
-    essay: 'Insho',
+    essay: 'Inşo',
     story: 'Hikoya',
     form: 'Anketa',
     paragraph: 'Paragraf',

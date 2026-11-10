@@ -27,12 +27,12 @@ const DEPTH = 7
 
 /** Tugun ostidagi bo'lim nomi. */
 const SKILL_NAME: Record<string, string> = {
-  vocabulary: 'Lug‘at',
+  vocabulary: 'Luğat',
   grammar: 'Grammatika',
-  reading: 'O‘qish',
-  listening: 'Tinglash',
-  writing: 'Yozish',
-  speaking: 'Gapirish',
+  reading: 'Öqiş',
+  listening: 'Tinglaş',
+  writing: 'Yoziş',
+  speaking: 'Gapiriş',
 }
 
 const TOP: Record<PathNode['status'], string> = {
@@ -89,12 +89,12 @@ function NextGoal({ m }: { m: PathMilestone }) {
           <span aria-hidden>🏁 </span>Keyingi maqsad: <span className="text-amber-700 dark:text-amber-400">{m.label}</span>
         </p>
         <p className="text-xs font-extrabold tabular-nums text-amber-700 dark:text-amber-300">
-          {m.remaining > 0 ? `${m.remaining} ta vazifa qoldi` : 'Ochildi!'}
+          {m.remaining > 0 ? `${m.remaining} ta vazifa qoldi` : 'Oçildi!'}
         </p>
       </div>
       <div className="flex items-center gap-2">
         <span aria-hidden className="text-lg">🚩</span>
-        <div className="relative flex-1 h-4 rounded-full bg-[var(--panel-2)] border overflow-hidden" role="progressbar" aria-label={`${m.label}gacha bajarilgan vazifalar`} aria-valuemin={0} aria-valuemax={m.total} aria-valuenow={done} aria-valuetext={`${done} / ${m.total} vazifa`}>
+        <div className="relative flex-1 h-4 rounded-full bg-[var(--panel-2)] border overflow-hidden" role="progressbar" aria-label={`${m.label}gaça bajarilgan vazifalar`} aria-valuemin={0} aria-valuemax={m.total} aria-valuenow={done} aria-valuetext={`${done} / ${m.total} vazifa`}>
           <div className="h-full rounded-full bg-amber-400 transition-[width] duration-500" style={{ width: `${pct}%` }} />
           <span className="absolute inset-0 flex items-center justify-center text-[10px] font-extrabold tabular-nums">
             {done} / {m.total}
@@ -161,7 +161,7 @@ export default function DuoPathMap({ layout, selectedId, onSelect, focusId }: Du
           className="block mx-auto"
           style={{ maxWidth: Math.round(layout.width * 1.25) }}
           role="group"
-          aria-label="O'quv yo'li xaritasi"
+          aria-label="Öquv yöli xaritasi"
         >
           {/* ---- Kun ajratgichlari: "——— 2-kun · Oila va egalik ———" ---- */}
           {layout.units.map((u) => {
@@ -192,7 +192,7 @@ export default function DuoPathMap({ layout, selectedId, onSelect, focusId }: Du
 
           {/* ---- Bo'lim chegarasi: sovrin tuguni ---- */}
           {layout.milestones.map((m) => (
-            <g key={`ms-${m.afterDayId}`} transform={`translate(${m.x} ${m.y})`} role="img" aria-label={`${m.label}: ${m.remaining > 0 ? `${m.remaining} ta vazifa qoldi` : 'ochildi'}`}>
+            <g key={`ms-${m.afterDayId}`} transform={`translate(${m.x} ${m.y})`} role="img" aria-label={`${m.label}: ${m.remaining > 0 ? `${m.remaining} ta vazifa qoldi` : 'oçildi'}`}>
               <circle r={40} cy={DEPTH} fill={m.reached ? 'var(--map-done-edge)' : 'var(--map-locked-edge)'} />
               <circle r={40} fill={m.reached ? 'var(--map-done)' : 'var(--map-locked)'} stroke={m.reached ? 'var(--map-done-edge)' : 'var(--map-locked-ink)'} strokeWidth={3} strokeDasharray={m.reached ? undefined : '7 5'} />
               <text y={13} textAnchor="middle" fontSize="38" opacity={m.reached ? 1 : 0.55}>
@@ -203,7 +203,7 @@ export default function DuoPathMap({ layout, selectedId, onSelect, focusId }: Du
                 {m.label}
               </text>
               <text y={93} textAnchor="middle" fontSize="11.5" fontWeight="700" fill={m.reached ? 'var(--map-done-ink)' : 'var(--muted)'}>
-                {m.reached ? 'Ochildi!' : `${m.remaining} ta vazifa qoldi`}
+                {m.reached ? 'Oçildi!' : `${m.remaining} ta vazifa qoldi`}
               </text>
             </g>
           ))}
@@ -299,7 +299,7 @@ export default function DuoPathMap({ layout, selectedId, onSelect, focusId }: Du
                     <path d="M-7 13 L0 21 L7 13 Z" fill="var(--panel)" stroke="var(--border)" strokeWidth={2} />
                     <rect x={-8} y={10} width={16} height={5} fill="var(--panel)" />
                     <text x={bubbleShift(node)} y={4} textAnchor="middle" fontSize="12" fontWeight="900" fill="var(--map-current-ink)" letterSpacing="0.5">
-                      BOSHLASH
+                      BOŞLAŞ
                     </text>
                     </g>
                   </g>

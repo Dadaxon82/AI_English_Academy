@@ -149,7 +149,7 @@ class QuickSessionTest {
         }
         // Veb faylidagi har bir qator o'qilganini tekshirish (regex yozuvni o'tkazib yubormasin).
         val lines = body.lines().count { Regex("""^\s*\S.*:\s*'[^']+',""").containsMatchIn(it) }
-        assertEquals("veb faylidagi barcha yozuvlar o'qildi", lines, web.size)
+        assertEquals("veb faylidagi barça yozuvlar öqildi", lines, web.size)
         assertEquals(web.size, VocabEmoji.MAP.size)
         assertEquals(web, VocabEmoji.MAP)
         assertEquals("🍞", VocabEmoji.of(" Bread "))

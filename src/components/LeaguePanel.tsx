@@ -30,16 +30,16 @@ export default function LeaguePanel() {
           <h2 className="font-bold text-sm">{cur.titleUz} ligasi</h2>
         </div>
         <p className="text-xs muted">
-          Bu hafta <b className="text-[var(--text)] tabular-nums">{league.xp} XP</b> to'pladingiz.
+          Bu hafta <b className="text-[var(--text)] tabular-nums">{league.xp} XP</b> töpladingiz.
           {cur.promoteTop > 0
-            ? ` Top ${cur.promoteTop} ichida qolsangiz keyingi ligaga ko'tarilasiz.`
-            : ' Eng yuqori liga — ko‘tarilish yo‘q.'}
+            ? ` Top ${cur.promoteTop} içida qolsangiz keyingi ligaga kötarilasiz.`
+            : ' Eng yuqori liga — kötariliş yöq.'}
         </p>
         <Link
           to="/progress"
           className="text-xs font-semibold text-navy-700 dark:text-navy-300 hover:underline"
         >
-          Progressni ko'rish →
+          Progressni köriş →
         </Link>
       </Card>
 

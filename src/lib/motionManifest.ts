@@ -148,15 +148,15 @@ export function motionSpecToJson(s: MotionSpec): string {
  * manifestdagi har bir son haqiqatan bir joyda ishlatiladi).
  */
 export const MOTION_USAGE: { key: keyof MotionSpec; whereUz: string }[] = [
-  { key: 'stepMs', whereUz: 'mashqdan mashqqa o‘tish (--aea-step)' },
+  { key: 'stepMs', whereUz: 'maşqdan maşqqa ötiş (--aea-step)' },
   { key: 'outcomeMs', whereUz: 'natija kartasi (--aea-outcome)' },
-  { key: 'popMs', whereUz: 'qahramon sakrashi (--aea-pop)' },
-  { key: 'popScale', whereUz: 'sakrashning eng katta masshtabi (--aea-pop-scale)' },
-  { key: 'staggerMs', whereUz: 'ro‘yxat elementlari kechikishi (--aea-stagger)' },
-  { key: 'staggerMaxItems', whereUz: 'kechiktiriladigan elementlar chegarasi' },
-  { key: 'xpMs', whereUz: 'XP sonining ko‘tarilishi (--aea-xp)' },
-  { key: 'chainMs', whereUz: 'zanjir katakchalarining to‘lishi (--aea-chain)' },
-  { key: 'pressMs', whereUz: 'javob tugmasining bosilishi (--aea-press)' },
+  { key: 'popMs', whereUz: 'qahramon sakraşi (--aea-pop)' },
+  { key: 'popScale', whereUz: 'sakraşning eng katta masştabi (--aea-pop-scale)' },
+  { key: 'staggerMs', whereUz: 'röyxat elementlari keçikişi (--aea-stagger)' },
+  { key: 'staggerMaxItems', whereUz: 'keçiktiriladigan elementlar çegarasi' },
+  { key: 'xpMs', whereUz: 'XP sonining kötarilişi (--aea-xp)' },
+  { key: 'chainMs', whereUz: 'zanjir katakçalarining tölişi (--aea-chain)' },
+  { key: 'pressMs', whereUz: 'javob tugmasining bosilişi (--aea-press)' },
 ]
 
 /**

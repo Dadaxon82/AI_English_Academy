@@ -95,6 +95,6 @@ export const StoreContext = createContext<StoreValue | null>(null)
 
 export function useStore(): StoreValue {
   const v = useContext(StoreContext)
-  if (!v) throw new Error('useStore StoreProvider ichida chaqirilishi kerak')
+  if (!v) throw new Error('useStore StoreProvider içida çaqirilişi kerak')
   return v
 }

@@ -64,11 +64,11 @@ function manifest(): Record<string, unknown> {
   return JSON.parse(readFileSync(mobileManifest, 'utf8')) as Record<string, unknown>
 }
 
-describe('O‘yin sonlari — veb ↔ mobil manifest BIR XIL', () => {
+describe('Öyin sonlari — veb ↔ mobil manifest BIR XIL', () => {
   it('mobil manifest mavjud va izoh bilan (_comment)', () => {
     const raw = manifest()
     expect(typeof raw._comment).toBe('string')
-    expect((raw._comment as string).length, 'manifestda izoh bo‘lishi kerak').toBeGreaterThan(50)
+    expect((raw._comment as string).length, 'manifestda izoh bölişi kerak').toBeGreaterThan(50)
   })
 
   it('yuraklar, byust va dars bonuslari teng', () => {
@@ -86,12 +86,12 @@ describe('O‘yin sonlari — veb ↔ mobil manifest BIR XIL', () => {
     expect(m.lessonMinExercises).toBe(LESSON_MIN_EXERCISES)
   })
 
-  it('yurak jarimasi bo‘lmagan manbalar ikkala tomonda BIR XIL', () => {
+  it('yurak jarimasi bölmagan manbalar ikkala tomonda BIR XIL', () => {
     // `section_test` 2026-11-07 qo'shildi — bo'lim testi ham yurak olmaydi.
     expect(manifest().heartFreeSources).toEqual([...HEART_FREE_SOURCES])
   })
 
-  it('XP maqsad bosqichlari (sonlar va tartib) teng', () => {
+  it('XP maqsad bosqiçlari (sonlar va tartib) teng', () => {
     const m = manifest()
     const tiers = m.xpGoalTiers as { id: string; titleUz: string; xp: number }[]
     expect(tiers.map((t) => t.id)).toEqual(XP_GOAL_TIERS.map((t) => t.id))
@@ -139,7 +139,7 @@ describe('O‘yin sonlari — veb ↔ mobil manifest BIR XIL', () => {
     expect(m.betDays).toBe(BET_DAYS)
   })
 
-  it('do‘kon narxlari teng (Duolingo narxlari — manba bilan belgilangan)', () => {
+  it('dökon narxlari teng (Duolingo narxlari — manba bilan belgilangan)', () => {
     const m = manifest()
     const shop = m.shop as Record<string, unknown>
     expect(shop.heart).toBe(SHOP.heart)
@@ -170,12 +170,12 @@ describe('O‘yin sonlari — veb ↔ mobil manifest BIR XIL', () => {
     expect(m.leaguePrizeGems).toEqual([...LEAGUE_PRIZE_GEMS])
   })
 
-  it('har bir sonning MANBASI manifestda ochiq yozilgan (ixtirga qarshi)', () => {
+  it('har bir sonning MANBASI manifestda oçiq yozilgan (ixtirga qarşi)', () => {
     // Har bir `*Source` maydoni majburiy — "biznik" yoki manba URL'i.
     const m = manifest()
     for (const key of ['heartRefillMinutes', 'heartPracticeReviews', 'heartComboStreak', 'heartFreeSources', 'heartGateMin', 'xpBoost', 'lessonBonusXp', 'perfectLessonBonusXp', 'lessonMinExercises', 'questsPerDay', 'questGemReward', 'goalGemReward', 'chestGemReward', 'chestMinActiveDays', 'achievementCount', 'freezeGemCost', 'maxFreezes', 'streakMilestones', 'freezeMilestones', 'bet', 'leagues', 'leaguePrize', 'gameDataVersion']) {
       const src = m[`${key}Source`]
-      expect(typeof src, `manifestda ${key}Source bo‘lishi kerak`).toBe('string')
+      expect(typeof src, `manifestda ${key}Source bölişi kerak`).toBe('string')
       expect((src as string).length).toBeGreaterThan(3)
     }
     // XP bosqichlarida ham har bir satrda `src` bor.
@@ -191,7 +191,7 @@ describe('O‘yin sonlari — veb ↔ mobil manifest BIR XIL', () => {
     for (const host of ['duolingo.com', 'lingoly.io', 'cherishstudy.com', 'duolingoguides.com']) {
       expect(src.includes(host), `gameConfig.ts da ${host} manbasi qolmagan`).toBe(true)
     }
-    expect(src.includes('BIZNING qarorimiz'), 'biznik sonlar ochiq belgilanishi kerak').toBe(true)
+    expect(src.includes('BIZNING qarorimiz'), 'biznik sonlar oçiq belgilanişi kerak').toBe(true)
   })
 
   it('manifest versiyasi veb GAME_DATA_VERSION bilan bir xil', () => {
@@ -201,8 +201,8 @@ describe('O‘yin sonlari — veb ↔ mobil manifest BIR XIL', () => {
   })
 })
 
-describe('Son yordamchilari (chegara va liga jadvali)', () => {
-  it('clampNumber — chegaraga keltiradi, NaN eng pastga', () => {
+describe('Son yordamçilari (çegara va liga jadvali)', () => {
+  it('clampNumber — çegaraga keltiradi, NaN eng pastga', () => {
     expect(clampNumber(12, 0, 5)).toBe(5)
     expect(clampNumber(-3, 0, 5)).toBe(0)
     expect(clampNumber(Number.NaN, 0, 5)).toBe(0)
@@ -210,7 +210,7 @@ describe('Son yordamchilari (chegara va liga jadvali)', () => {
     expect(clampNumber(Number.POSITIVE_INFINITY, 0, 5)).toBe(0)
   })
 
-  it('leagueFor — chegaralar bo‘yicha siljiydi, Diamond dan yuqori YO‘Q', () => {
+  it('leagueFor — çegaralar böyiça siljiydi, Diamond dan yuqori YÖQ', () => {
     expect(leagueFor(0).id).toBe('bronze')
     expect(leagueFor(99).id).toBe('bronze')
     expect(leagueFor(100).id).toBe('silver')
@@ -218,12 +218,12 @@ describe('Son yordamchilari (chegara va liga jadvali)', () => {
     expect(leagueFor(999_999).id).toBe('diamond')
   })
 
-  it('leagueById — nomaʼlum id eng pastgidan ochiq boshlanadi (ixtir yo‘q)', () => {
+  it('leagueById — nomaʼlum id eng pastgidan oçiq boşlanadi (ixtir yöq)', () => {
     expect(leagueById('gold').id).toBe('gold')
     expect(leagueById('platina').id).toBe('bronze')
   })
 
-  it('xpGoalFor — nomaʼlum bosqich standartga qaytadi', () => {
+  it('xpGoalFor — nomaʼlum bosqiç standartga qaytadi', () => {
     expect(xpGoalFor('serious')).toBe(300)
     expect(xpGoalFor('juda-jiddiy')).toBe(200)
   })

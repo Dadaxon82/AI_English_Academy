@@ -1,9 +1,9 @@
 {
  "labels": [
   "Umuman qila olmayman",
-  "Qiyinchilik bilan",
+  "Qiyinçilik bilan",
   "Qisman",
-  "Ancha yaxshi",
+  "Ança yaxşi",
   "Bemalol qila olaman"
  ],
  "statements": [
@@ -11,49 +11,49 @@
    "id": "cd-a1-speak",
    "level": "A1",
    "skill": "speaking",
-   "textUz": "O‘zimni tanishtira olaman: ismim, yoshim, qayerda yashashim."
+   "textUz": "Özimni taniştira olaman: ismim, yoşim, qayerda yaşaşim."
   },
   {
    "id": "cd-a1-listen",
    "level": "A1",
    "skill": "listening",
-   "textUz": "Sekin va aniq aytilgan oddiy savollarni (ism, yosh, soat) tushunaman."
+   "textUz": "Sekin va aniq aytilgan oddiy savollarni (ism, yoş, soat) tuşunaman."
   },
   {
    "id": "cd-a1-read",
    "level": "A1",
    "skill": "reading",
-   "textUz": "Oila, uy, maktab haqidagi qisqa va oddiy matnni tushunaman."
+   "textUz": "Oila, uy, maktab haqidagi qisqa va oddiy matnni tuşunaman."
   },
   {
    "id": "cd-a1-write",
    "level": "A1",
    "skill": "writing",
-   "textUz": "O‘zim va oilam haqida 3–5 ta oddiy gap yoza olaman."
+   "textUz": "Özim va oilam haqida 3–5 ta oddiy gap yoza olaman."
   },
   {
    "id": "cd-a1-vocab",
    "level": "A1",
    "skill": "vocabulary",
-   "textUz": "Sonlar, ranglar, ovqat va uy-ro‘zg‘or buyumlarining nomlarini bilaman."
+   "textUz": "Sonlar, ranglar, ovqat va uy-rözğor buyumlarining nomlarini bilaman."
   },
   {
    "id": "cd-a1-grammar",
    "level": "A1",
    "skill": "grammar",
-   "textUz": "“am / is / are”, “have got” va “there is / are”ni to‘g‘ri ishlataman."
+   "textUz": "“am / is / are”, “have got” va “there is / are”ni töğri işlataman."
   },
   {
    "id": "cd-a2-speak",
    "level": "A2",
    "skill": "speaking",
-   "textUz": "Do‘konda xarid qilish yoki yo‘l so‘rash kabi oddiy vaziyatlarda gaplasha olaman."
+   "textUz": "Dökonda xarid qiliş yoki yöl söraş kabi oddiy vaziyatlarda gaplaşa olaman."
   },
   {
    "id": "cd-a2-listen",
    "level": "A2",
    "skill": "listening",
-   "textUz": "Kundalik mavzudagi qisqa e’lon va xabarlarning asosiy ma’nosini tushunaman."
+   "textUz": "Kundalik mavzudagi qisqa e’lon va xabarlarning asosiy ma’nosini tuşunaman."
   },
   {
    "id": "cd-a2-read",
@@ -65,13 +65,13 @@
    "id": "cd-a2-write",
    "level": "A2",
    "skill": "writing",
-   "textUz": "Do‘stimga dam olish kunlari haqida qisqa xabar yoza olaman."
+   "textUz": "Döstimga dam oliş kunlari haqida qisqa xabar yoza olaman."
   },
   {
    "id": "cd-a2-vocab",
    "level": "A2",
    "skill": "vocabulary",
-   "textUz": "Sayohat, ish, sog‘liq kabi kundalik mavzular so‘zlarini bilaman."
+   "textUz": "Sayohat, iş, soğliq kabi kundalik mavzular sözlarini bilaman."
   },
   {
    "id": "cd-a2-grammar",
@@ -89,85 +89,85 @@
    "id": "cd-b1-listen",
    "level": "B1",
    "skill": "listening",
-   "textUz": "Tanish mavzudagi radio yoki video asosiy fikrlarini tushunaman."
+   "textUz": "Taniş mavzudagi radio yoki video asosiy fikrlarini tuşunaman."
   },
   {
    "id": "cd-b1-read",
    "level": "B1",
    "skill": "reading",
-   "textUz": "Kundalik mavzudagi maqolaning asosiy g‘oyasi va tafsilotlarini tushunaman."
+   "textUz": "Kundalik mavzudagi maqolaning asosiy ğoyasi va tafsilotlarini tuşunaman."
   },
   {
    "id": "cd-b1-write",
    "level": "B1",
    "skill": "writing",
-   "textUz": "Tanish mavzuda bog‘langan matn (insho, xat) yoza olaman."
+   "textUz": "Taniş mavzuda boğlangan matn (inşo, xat) yoza olaman."
   },
   {
    "id": "cd-b1-vocab",
    "level": "B1",
    "skill": "vocabulary",
-   "textUz": "Notanish so‘z ma’nosini kontekstdan taxmin qila olaman."
+   "textUz": "Notaniş söz ma’nosini kontekstdan taxmin qila olaman."
   },
   {
    "id": "cd-b1-grammar",
    "level": "B1",
    "skill": "grammar",
-   "textUz": "Present Perfect va shart gaplarni (if …) ishlata olaman."
+   "textUz": "Present Perfect va şart gaplarni (if …) işlata olaman."
   },
   {
    "id": "cd-b2-speak",
    "level": "B2",
    "skill": "speaking",
-   "textUz": "Ona tilida so‘zlashuvchi bilan erkin, tabiiy suhbat qura olaman."
+   "textUz": "Ona tilida sözlaşuvçi bilan erkin, tabiiy suhbat qura olaman."
   },
   {
    "id": "cd-b2-listen",
    "level": "B2",
    "skill": "listening",
-   "textUz": "Ma’ruza va yangiliklardagi murakkab fikrlarni tushunaman."
+   "textUz": "Ma’ruza va yangiliklardagi murakkab fikrlarni tuşunaman."
   },
   {
    "id": "cd-b2-read",
    "level": "B2",
    "skill": "reading",
-   "textUz": "Muallif nuqtai nazarini bildiruvchi maqolalarni tushunaman."
+   "textUz": "Muallif nuqtai nazarini bildiruvçi maqolalarni tuşunaman."
   },
   {
    "id": "cd-b2-write",
    "level": "B2",
    "skill": "writing",
-   "textUz": "Dalillar bilan “tarafdor / qarshi” insho yoza olaman."
+   "textUz": "Dalillar bilan “tarafdor / qarşi” inşo yoza olaman."
   },
   {
    "id": "cd-b2-vocab",
    "level": "B2",
    "skill": "vocabulary",
-   "textUz": "Bir fikrni turli so‘z va iboralar bilan ifoda eta olaman."
+   "textUz": "Bir fikrni turli söz va iboralar bilan ifoda eta olaman."
   },
   {
    "id": "cd-b2-grammar",
    "level": "B2",
    "skill": "grammar",
-   "textUz": "Majhul nisbat (passive) va murakkab zamonlarni xatosiz ishlataman."
+   "textUz": "Majhul nisbat (passive) va murakkab zamonlarni xatosiz işlataman."
   },
   {
    "id": "cd-c1-speak",
    "level": "C1",
    "skill": "speaking",
-   "textUz": "Murakkab mavzularda ravon va aniq, so‘z izlamasdan gapiraman."
+   "textUz": "Murakkab mavzularda ravon va aniq, söz izlamasdan gapiraman."
   },
   {
    "id": "cd-c1-listen",
    "level": "C1",
    "skill": "listening",
-   "textUz": "Aniq tuzilmagan, tez nutqni ham qiyinchiliksiz tushunaman."
+   "textUz": "Aniq tuzilmagan, tez nutqni ham qiyinçiliksiz tuşunaman."
   },
   {
    "id": "cd-c1-read",
    "level": "C1",
    "skill": "reading",
-   "textUz": "Uzun va murakkab matnlardagi yashirin ma’nolarni ilg‘ayman."
+   "textUz": "Uzun va murakkab matnlardagi yaşirin ma’nolarni ilğayman."
   },
   {
    "id": "cd-c1-write",
@@ -179,7 +179,7 @@
    "id": "cd-c1-vocab",
    "level": "C1",
    "skill": "vocabulary",
-   "textUz": "Idioma va so‘zlashuv iboralarini o‘rinli ishlataman."
+   "textUz": "Idioma va sözlaşuv iboralarini örinli işlataman."
   },
   {
    "id": "cd-c1-grammar",

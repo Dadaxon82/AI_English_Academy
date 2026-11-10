@@ -57,7 +57,7 @@ fun computeAllocation(
         base[Skills.SPEAKING] = Math.max(5, (base[Skills.SPEAKING] ?: 0) - 5)
         base[Skills.VOCABULARY] = Math.max(5, (base[Skills.VOCABULARY] ?: 0) - 5)
         base[Skills.READING] = (base[Skills.READING] ?: 0) + 10
-        reasons2.add("Yakshanba — o‘qishga ko‘proq vaqt, yengil kun.")
+        reasons2.add("Yakşanba — öqişga köproq vaqt, yengil kun.")
     }
 
     // 3) Imtihon yaqinlashsa — Mock Examga yaqin ko'nikmalar ustunligi
@@ -72,7 +72,7 @@ fun computeAllocation(
             base[Skills.READING] = Math.min(25, (base[Skills.READING] ?: 0) + 5)
             base[Skills.VOCABULARY] = Math.max(5, (base[Skills.VOCABULARY] ?: 0) - 5)
             base[Skills.GRAMMAR] = Math.max(5, (base[Skills.GRAMMAR] ?: 0) - 5)
-            reasons2.add("Imtihonga $daysToExam kun qoldi — Reading va Writing kuchaytirildi.")
+            reasons2.add("Imtihonga $daysToExam kun qoldi — Reading va Writing kuçaytirildi.")
         }
     }
 
@@ -118,13 +118,13 @@ fun computeAllocation(
         val others = SKILL_ORDER.filter { !weak.contains(it) }.map { minutes[it] ?: 0 }
         val baseline = if (others.isNotEmpty()) others.maxOrNull() ?: 0 else 0
         val boosted = weak.filter { (minutes[it] ?: 0) > baseline }
-        if (boosted.isNotEmpty()) reasons2.add("Zaif ko‘nikmalar kuchaytirildi: ${boosted.joinToString(", ")}.")
+        if (boosted.isNotEmpty()) reasons2.add("Zaif könikmalar kuçaytirildi: ${boosted.joinToString(", ")}.")
     }
 
     return Allocation(
         minutes = minutes,
         total = SKILL_ORDER.sumOf { minutes[it] ?: 0 },
-        reasonUz = listOf("Boshlang‘ich taqsimot 90 daqiqaga asoslangan.") + reasons2 + reasons,
+        reasonUz = listOf("Boşlanğiç taqsimot 90 daqiqaga asoslangan.") + reasons2 + reasons,
     )
 }
 
@@ -158,12 +158,12 @@ fun buildDayTasks(
 
 fun skillLabelUz(s: String): String =
     when (s) {
-        Skills.VOCABULARY -> "Lug‘at"
+        Skills.VOCABULARY -> "Luğat"
         Skills.GRAMMAR -> "Grammatika"
-        Skills.READING -> "O‘qish"
-        Skills.LISTENING -> "Tinglash"
-        Skills.WRITING -> "Yozish"
-        Skills.SPEAKING -> "Gapirish"
+        Skills.READING -> "Öqiş"
+        Skills.LISTENING -> "Tinglaş"
+        Skills.WRITING -> "Yoziş"
+        Skills.SPEAKING -> "Gapiriş"
         else -> s
     }
 

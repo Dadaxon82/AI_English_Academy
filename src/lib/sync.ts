@@ -40,14 +40,14 @@ export async function syncNow(userId: string, opts: { maxItems?: number } = {}):
     return { ok: false, ...empty, reasonUz: 'Supabase sozlanmagan — ma’lumotlar qurilmada saqlanmoqda.' }
   }
   if (networkStatus() === 'offline') {
-    return { ok: false, ...empty, reasonUz: 'Internet yo‘q. Navbat saqlandi, ulanish qaytganda yuboriladi.' }
+    return { ok: false, ...empty, reasonUz: 'Internet yöq. Navbat saqlandi, ulaniş qaytganda yuboriladi.' }
   }
   const sb = await getSupabase()
-  if (!sb) return { ok: false, ...empty, reasonUz: 'Supabase mijoziga ulanib bo‘lmadi.' }
+  if (!sb) return { ok: false, ...empty, reasonUz: 'Supabase mijoziga ulanib bölmadi.' }
 
   const { data: sess, error: authErr } = await sb.auth.getSession()
   if (authErr || !sess.session) {
-    return { ok: false, ...empty, reasonUz: 'Tizimga kirilmagan — sinxronlash to‘xtatildi.' }
+    return { ok: false, ...empty, reasonUz: 'Tizimga kirilmagan — sinxronlaş töxtatildi.' }
   }
 
   const queue = await loadQueue(userId)
@@ -194,7 +194,7 @@ export async function syncNow(userId: string, opts: { maxItems?: number } = {}):
   if (rejected) reasons.push(`${rejected} ta yozuvni server qabul qilmadi (ma’lumot yoki ruxsat xatosi).`)
   // Sabab ochiq aytiladi: "qabul qilinmadi" yetarli emas — foydalanuvchi
   // nimani qilishi kerakligini bilishi kerak (SQL Editor'da migratsiya).
-  if (!notes.empty) reasons.push(`Baza eski sxemada — ${notes.text()}. Supabase SQL Editor’ida shu skriptni bir marta bajaring.`)
+  if (!notes.empty) reasons.push(`Baza eski sxemada — ${notes.text()}. Supabase SQL Editor’ida şu skriptni bir marta bajaring.`)
   return { ok: failed === 0 && rejected === 0, attempted: batch.length, done, failed, rejected, reasonUz: reasons.length ? reasons.join(' ') : null }
 }
 
@@ -246,12 +246,12 @@ const PERSONAL_TABLES = [
  */
 export async function deleteRemoteData(userId: string): Promise<{ ok: boolean; reasonUz: string | null }> {
   if (!supabaseConfigured) return { ok: true, reasonUz: null }
-  if (networkStatus() === 'offline') return { ok: false, reasonUz: 'Internet yo‘q — serverdagi ma’lumot o‘chirilmadi.' }
+  if (networkStatus() === 'offline') return { ok: false, reasonUz: 'Internet yöq — serverdagi ma’lumot öçirilmadi.' }
   const sb = await getSupabase()
-  if (!sb) return { ok: false, reasonUz: 'Supabase mijoziga ulanib bo‘lmadi.' }
+  if (!sb) return { ok: false, reasonUz: 'Supabase mijoziga ulanib bölmadi.' }
   const { data: sess, error: authErr } = await sb.auth.getSession()
   if (authErr || !sess.session || sess.session.user.id !== userId) {
-    return { ok: false, reasonUz: 'Tizimga kirilmagan — serverdagi ma’lumot o‘chirilmadi.' }
+    return { ok: false, reasonUz: 'Tizimga kirilmagan — serverdagi ma’lumot öçirilmadi.' }
   }
   // 2026-11-08: `weekly_xp` jadvali bazada bo'lmasa (0004 qo'llanmagan) DELETE
   // 404 PGRST205 beradi — chaqiruvchi buni "o'chirib bo'lmadi" deb Butun
@@ -267,20 +267,20 @@ export async function deleteRemoteData(userId: string): Promise<{ ok: boolean; r
         notes.noteTable(table)
         continue
       }
-      return { ok: false, reasonUz: 'Serverdagi ma’lumotni o‘chirib bo‘lmadi. Keyinroq qayta urinib ko‘ring.' }
+      return { ok: false, reasonUz: 'Serverdagi ma’lumotni öçirib bölmadi. Keyinroq qayta urinib köring.' }
     } catch (err) {
       const code = (err as { code?: string }).code
       if (isSchemaMissing(code) && TABLE_REQUIRES_MIGRATION[table]) {
         notes.noteTable(table)
         continue
       }
-      return { ok: false, reasonUz: 'Serverdagi ma’lumotni o‘chirib bo‘lmadi. Internetni tekshiring.' }
+      return { ok: false, reasonUz: 'Serverdagi ma’lumotni öçirib bölmadi. Internetni tekşiring.' }
     }
   }
   if (notes.empty) return { ok: true, reasonUz: null }
   return {
     ok: true,
-    reasonUz: `Ma’lumot o‘chirildi, lekin baza eski sxemada — ${notes.text()}. O‘chiriladigan yozuv bu jadvalda yo‘q edi.`,
+    reasonUz: `Ma’lumot öçirildi, lekin baza eski sxemada — ${notes.text()}. Öçiriladigan yozuv bu jadvalda yöq edi.`,
   }
 }
 
@@ -293,15 +293,15 @@ export interface PullResult {
 /** Foydalanuvchining serverdagi ma'lumotini o'qish (RLS: faqat o'z qatorlari). */
 export async function pullRemote(userId: string): Promise<PullResult> {
   if (!supabaseConfigured) return { ok: false, snapshot: null, reasonUz: 'Supabase sozlanmagan.' }
-  if (networkStatus() === 'offline') return { ok: false, snapshot: null, reasonUz: 'Internet yo‘q.' }
+  if (networkStatus() === 'offline') return { ok: false, snapshot: null, reasonUz: 'Internet yöq.' }
   const sb = await getSupabase()
-  if (!sb) return { ok: false, snapshot: null, reasonUz: 'Supabase mijoziga ulanib bo‘lmadi.' }
+  if (!sb) return { ok: false, snapshot: null, reasonUz: 'Supabase mijoziga ulanib bölmadi.' }
   const { data: sess, error: authErr } = await sb.auth.getSession()
   // Boshqa foydalanuvchining sessiyasi bilan o'qilgan ma'lumot bu holatga aralashmasin.
   if (authErr || !sess.session || sess.session.user.id !== userId) {
     return { ok: false, snapshot: null, reasonUz: 'Tizimga kirilmagan.' }
   }
-  const failRead: PullResult = { ok: false, snapshot: null, reasonUz: 'Serverdagi ma’lumotni o‘qib bo‘lmadi.' }
+  const failRead: PullResult = { ok: false, snapshot: null, reasonUz: 'Serverdagi ma’lumotni öqib bölmadi.' }
   try {
     const own = (table: string) => sb.from(table).select('*').eq('user_id', userId)
     const [settings, plan, attempts, vocabulary, activity, writing, speaking, mocks, profile, ownWeekly] = await Promise.all([

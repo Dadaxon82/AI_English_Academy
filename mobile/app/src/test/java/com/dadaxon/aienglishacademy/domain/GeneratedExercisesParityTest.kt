@@ -74,7 +74,7 @@ class GeneratedExercisesParityTest {
         val arr = parity.getAsJsonArray("exercises")
         val web = arr.map { el -> el.deepCopy().also { fixWordOrder(it) } }.map { Gson().fromJson(it, Exercise::class.java) }
             .filter { e -> generatedPrefixes.any { e.id.startsWith(it) } }
-        assertTrue("fixture bo‘sh emas", web.size > 500)
+        assertTrue("fixture böş emas", web.size > 500)
         val bad = mutableListOf<String>()
         for (w in web) {
             val k = generatedExercise(w.id, lookup)

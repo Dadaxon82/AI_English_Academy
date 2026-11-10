@@ -40,7 +40,7 @@ export default function Pronunciation() {
     setTally((t) => ({ tries: t.tries + 1, sum: t.sum + res.score }))
   })
 
-  if (!ready) return <LoadingBlock label="Talaffuz mashqi tayyorlanmoqda…" />
+  if (!ready) return <LoadingBlock label="Talaffuz maşqi tayyorlanmoqda…" />
 
   const go = (n: number) => {
     speech.stop()
@@ -52,10 +52,10 @@ export default function Pronunciation() {
   return (
     <div className="grid content-start gap-4">
       <Card className="grid gap-2">
-        <h1 className="text-xl sm:text-2xl font-extrabold">Talaffuz mashqi</h1>
+        <h1 className="text-xl sm:text-2xl font-extrabold">Talaffuz maşqi</h1>
         <p className="text-sm muted">
-          Gapni tinglang, so‘ng ovoz chiqarib ayting. Brauzer tanigan so‘zlar namuna bilan solishtiriladi: yashil — to‘g‘ri tanildi,
-          qizil — tanilmadi. Bu taxminiy moslik, rasmiy talaffuz bahosi emas. Audio hech qayerga yuborilmaydi.
+          Gapni tinglang, söng ovoz çiqarib ayting. Brauzer tanigan sözlar namuna bilan soliştiriladi: yaşil — töğri tanildi,
+          qizil — tanilmadi. Bu taxminiy moslik, rasmiy talaffuz bahosi emas. Audio heç qayerga yuborilmaydi.
         </p>
         <div className="flex flex-wrap items-center gap-2" role="group" aria-label="Daraja">
           {LEVELS.map((l) => (
@@ -76,11 +76,11 @@ export default function Pronunciation() {
           ))}
           {tally.tries > 0 && (
             <Chip>
-              Bu sessiyada {tally.tries} urinish · o‘rtacha {Math.round(tally.sum / tally.tries)}%
+              Bu sessiyada {tally.tries} uriniş · örtaça {Math.round(tally.sum / tally.tries)}%
             </Chip>
           )}
         </div>
-        {!speech.supported && <InfoBanner tone="warn">{SPEECH_UNSUPPORTED_UZ} Tinglash baribir ishlaydi.</InfoBanner>}
+        {!speech.supported && <InfoBanner tone="warn">{SPEECH_UNSUPPORTED_UZ} Tinglaş baribir işlaydi.</InfoBanner>}
       </Card>
 
       {target && (
@@ -90,7 +90,7 @@ export default function Pronunciation() {
               {idx + 1} / {sentences.length}
             </Chip>
             <span className="flex-1" />
-            <SpeakButton text={target.en} label="Namunani tinglash" size="md" />
+            <SpeakButton text={target.en} label="Namunani tinglaş" size="md" />
           </div>
 
           <p className="text-xl sm:text-2xl font-bold leading-snug" aria-live="polite">
@@ -110,7 +110,7 @@ export default function Pronunciation() {
 
           <div className="flex flex-wrap gap-2">
             <Button size="lg" disabled={!speech.supported} onClick={speech.listening ? speech.stop : speech.start} aria-pressed={speech.listening}>
-              {speech.listening ? '■ Tinglayapman…' : result ? '🎤 Qayta aytish' : '🎤 Aytish'}
+              {speech.listening ? '■ Tinglayapman…' : result ? '🎤 Qayta aytiş' : '🎤 Aytiş'}
             </Button>
             <Button variant="secondary" onClick={() => go(idx - 1)}>
               ← Oldingi
@@ -125,14 +125,14 @@ export default function Pronunciation() {
             <div className="rounded-2xl border-2 p-3 grid gap-1.5" data-testid="pron-result">
               <p className="text-sm">
                 Taxminiy moslik: <b>{result.score}%</b>
-                {said.confidence !== null && <span className="muted"> · brauzer ishonchi {Math.round(said.confidence * 100)}%</span>}
+                {said.confidence !== null && <span className="muted"> · brauzer işonçi {Math.round(said.confidence * 100)}%</span>}
               </p>
               <p className="text-sm">
                 Brauzer tanigani: <i>“{said.text}”</i>
               </p>
-              {result.extra.length > 0 && <p className="text-xs muted">Namunada yo‘q so‘zlar: {result.extra.join(', ')}</p>}
+              {result.extra.length > 0 && <p className="text-xs muted">Namunada yöq sözlar: {result.extra.join(', ')}</p>}
               <p className="text-xs muted">
-                Qizil so‘zni avval tinglang, keyin sekinroq va aniqroq ayting. Shovqinli joyda brauzer so‘zni noto‘g‘ri tanishi mumkin.
+                Qizil sözni avval tinglang, keyin sekinroq va aniqroq ayting. Şovqinli joyda brauzer sözni notöğri tanişi mumkin.
               </p>
             </div>
           )}

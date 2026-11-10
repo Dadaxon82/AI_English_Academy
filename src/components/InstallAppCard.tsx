@@ -24,11 +24,11 @@ export default function InstallAppCard() {
       <div className="flex-1 min-w-52 grid gap-1">
         <div className="flex flex-wrap items-center gap-2">
           <h2 className="font-bold">Mobil ilova</h2>
-          {kind === 'installed' && <Chip tone="ok">O‘rnatildi</Chip>}
+          {kind === 'installed' && <Chip tone="ok">Örnatildi</Chip>}
         </div>
         <p className="text-sm muted">{describe(kind)}</p>
         {dismissed && kind === 'manual' && (
-          <p className="text-xs muted">O‘rnatish bekor qilindi — keyinroq brauzer menyusidan ham o‘rnatishingiz mumkin.</p>
+          <p className="text-xs muted">Örnatiş bekor qilindi — keyinroq brauzer menyusidan ham örnatişingiz mumkin.</p>
         )}
       </div>
       {kind === 'prompt' && (
@@ -37,7 +37,7 @@ export default function InstallAppCard() {
             void promptInstall().then((outcome) => setDismissed(outcome === 'dismissed'))
           }}
         >
-          Ilovani o‘rnatish
+          Ilovani örnatiş
         </Button>
       )}
     </Card>
@@ -47,12 +47,12 @@ export default function InstallAppCard() {
 function describe(kind: Exclude<ReturnType<typeof getInstallKind>, 'standalone'>): string {
   switch (kind) {
     case 'prompt':
-      return 'AI English Academy’ni telefon yoki kompyuteringizga ilova sifatida o‘rnating: bosh ekrandan alohida oynada ochiladi va cheklangan offline rejimda ham ishlaydi. APK fayl shart emas.'
+      return 'AI English Academy’ni telefon yoki kompyuteringizga ilova sifatida örnating: boş ekrandan alohida oynada oçiladi va çeklangan offline rejimda ham işlaydi. APK fayl şart emas.'
     case 'installed':
-      return 'Ilova o‘rnatildi — uni bosh ekran yoki ilovalar ro‘yxatidan oching.'
+      return 'Ilova örnatildi — uni boş ekran yoki ilovalar röyxatidan oçing.'
     case 'ios':
-      return 'iPhone/iPad: Safari’da «Ulashish» tugmasini (kvadrat va yuqoriga strelka) bosing, so‘ng «Bosh ekranga qo‘shish» (Add to Home Screen)ni tanlang.'
+      return 'iPhone/iPad: Safari’da «Ulaşiş» tugmasini (kvadrat va yuqoriga strelka) bosing, söng «Boş ekranga qöşiş» (Add to Home Screen)ni tanlang.'
     case 'manual':
-      return 'Brauzer menyusidan (⋮) «Ilovani o‘rnatish» yoki «Bosh ekranga qo‘shish»ni tanlang. Android’da Chrome, kompyuterda Chrome yoki Edge tavsiya etiladi. APK fayl shart emas.'
+      return 'Brauzer menyusidan (⋮) «Ilovani örnatiş» yoki «Boş ekranga qöşiş»ni tanlang. Android’da Chrome, kompyuterda Chrome yoki Edge tavsiya etiladi. APK fayl şart emas.'
   }
 }

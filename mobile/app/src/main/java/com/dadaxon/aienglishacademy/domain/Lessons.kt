@@ -57,7 +57,7 @@ fun writingLesson(task: WritingTask): List<LessonStep> {
     val steps = mutableListOf<LessonStep>()
     val n = shortSentences(task.modelAnswerEn ?: "").size
     for (i in 0 until n) writingSentenceExercise(task, i)?.let { steps.add(LessonStep.Ex(it.id, it)) }
-    steps.add(LessonStep.Info("${task.id}:write", "write-cta", "Endi o‘zingiz yozing"))
+    steps.add(LessonStep.Info("${task.id}:write", "write-cta", "Endi özingiz yozing"))
     return steps
 }
 
@@ -175,7 +175,7 @@ fun buildMistakeLesson(mode: String, list: List<Mistake>, rand: () -> Double = M
                 .take(8)
                 .mapIndexed { i, m -> step(m.exercise, i, "${m.wrongCount} marta xato qilingan") }
         MistakeModes.REMIX ->
-            list.mapNotNull { remixExercise(it.exercise, it.lastGiven) }.take(8).mapIndexed { i, e -> step(e, i, "Boshqa ko‘rinishda", "new") }
+            list.mapNotNull { remixExercise(it.exercise, it.lastGiven) }.take(8).mapIndexed { i, e -> step(e, i, "Boşqa körinişda", "new") }
         MistakeModes.TIMED -> {
             val arr = list.toMutableList()
             for (i in arr.size - 1 downTo 1) {
@@ -184,7 +184,7 @@ fun buildMistakeLesson(mode: String, list: List<Mistake>, rand: () -> Double = M
                 arr[i] = arr[j]
                 arr[j] = t
             }
-            arr.take(15).mapIndexed { i, m -> step(m.exercise, i, "Vaqtga qarshi") }
+            arr.take(15).mapIndexed { i, m -> step(m.exercise, i, "Vaqtga qarşi") }
         }
         else -> emptyList()
     }

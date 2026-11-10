@@ -15,12 +15,12 @@ export default function SectionBanner() {
   const { section, unitNumber, day } = info
   return (
     <section
-      aria-label="Joriy bo‘lim"
+      aria-label="Joriy bölim"
       className="flex items-center gap-3 rounded-2xl px-4 py-3 sm:px-5 sm:py-4 text-white bg-emerald-700 border-b-4 border-emerald-900 shadow-sm"
     >
       <div className="flex-1 min-w-0">
         <p className="text-[11px] sm:text-xs font-extrabold uppercase tracking-wider text-emerald-100">
-          {section.label}-bo‘lim · {unitNumber}-kun
+          {section.label}-bölim · {unitNumber}-kun
         </p>
         <p className="font-extrabold text-base sm:text-lg leading-tight truncate">{day.titleUz}</p>
       </div>
@@ -31,7 +31,7 @@ export default function SectionBanner() {
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden>
           <path d="M4 5h16v4H4zM4 11h16v4H4zM4 17h10v3H4z" />
         </svg>
-        Bo‘limlar
+        Bölimlar
       </Link>
     </section>
   )

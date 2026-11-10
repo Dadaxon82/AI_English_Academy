@@ -80,7 +80,7 @@ class StringFormatArgsTest {
                 }
             }
         }
-        assertTrue("string resurslari o'qilmadi", out.isNotEmpty())
+        assertTrue("string resurslari öqilmadi", out.isNotEmpty())
         return out
     }
 
@@ -164,7 +164,7 @@ class StringFormatArgsTest {
     fun everyGetStringCallMatchesItsResourceFormat() {
         val specs = strings()
         val found = calls()
-        assertTrue("getString chaqiruvlari topilmadi", found.isNotEmpty())
+        assertTrue("getString çaqiruvlari topilmadi", found.isNotEmpty())
 
         val problems = ArrayList<String>()
         for (call in found) {
@@ -175,7 +175,7 @@ class StringFormatArgsTest {
             }
             if (call.args.size != s.needed) {
                 problems += "${call.at}: ${call.resource} da ${s.needed} ta format joyi bor, " +
-                    "chaqiruvda ${call.args.size} ta argument: ${call.args}"
+                    "çaqiruvda ${call.args.size} ta argument: ${call.args}"
                 continue
             }
             for ((n, arg) in call.args.withIndex()) {
@@ -185,8 +185,8 @@ class StringFormatArgsTest {
                 // `%s` ga son berilishi esa xato emas (Formatter qabul qiladi),
                 // shuning uchun u tekshirilmaydi.
                 if (numeric && looksText(arg) && !looksNumber(arg)) {
-                    problems += "${call.at}: ${call.resource} %$conv (${n + 1}-argument) son bo'lishi " +
-                        "kerak, lekin matn ko'rinadi: $arg"
+                    problems += "${call.at}: ${call.resource} %$conv (${n + 1}-argument) son bölişi " +
+                        "kerak, lekin matn körinadi: $arg"
                 }
             }
         }
@@ -208,7 +208,7 @@ class StringFormatArgsTest {
         assertTrue(specOf("%d va %s").needed == 2)
         assertTrue(specOf("%d va %s").convAt(1) == 'd')
         assertTrue(specOf("%2\$s va %1\$d").convAt(1) == 'd')
-        assertTrue(specOf("hech narsa yo'q").needed == 0)
+        assertTrue(specOf("heç narsa yöq").needed == 0)
         assertTrue(specOf("100% tasdiq").needed == 0)
     }
 }

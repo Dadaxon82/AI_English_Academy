@@ -11,8 +11,8 @@ export function SpeakIcon({ text }: { text: string }) {
   return (
     <button
       type="button"
-      aria-label={`Tinglash: ${text}`}
-      title="Tinglash"
+      aria-label={`Tinglaş: ${text}`}
+      title="Tinglaş"
       onClick={() => {
         const u = new SpeechSynthesisUtterance(text)
         u.lang = 'en-US'
@@ -130,7 +130,7 @@ export function AnswerInput({
                     className="inline-block w-28 mx-1 px-2 py-0.5 text-center font-bold bg-transparent border-0 border-b-2 border-[var(--border)] focus:border-[var(--accent)] outline-none"
                     value={arr[i] ?? ''}
                     disabled={locked}
-                    aria-label={`${i + 1}-bo‘shliq`}
+                    aria-label={`${i + 1}-böşliq`}
                     onChange={(e) => {
                       const next = [...arr]
                       next[i] = e.target.value
@@ -187,8 +187,8 @@ export function AnswerInput({
     case 'multi-select': {
       const chosen = Array.isArray(answer) ? (answer as number[]) : []
       return (
-        <div className="grid gap-2.5" role="group" aria-label="Javob variantlari (bir nechtasi)">
-          <p className="text-xs font-bold muted text-center">Barcha to‘g‘ri javoblarni belgilang — bittadan ko‘p bo‘ladi.</p>
+        <div className="grid gap-2.5" role="group" aria-label="Javob variantlari (bir neçtasi)">
+          <p className="text-xs font-bold muted text-center">Barça töğri javoblarni belgilang — bittadan köp böladi.</p>
           {exercise.options.map((label, i) => {
             const on = chosen.includes(i)
             return (
@@ -233,7 +233,7 @@ export function AnswerInput({
             aria-label="Qisqa javob"
             autoComplete="off"
             spellCheck={false}
-            placeholder={exercise.maxWords ? `Javob (${exercise.maxWords} so‘zgacha)…` : 'Javobingiz…'}
+            placeholder={exercise.maxWords ? `Javob (${exercise.maxWords} sözgaça)…` : 'Javobingiz…'}
             onChange={(e) => onChange([e.target.value])}
           />
         </div>

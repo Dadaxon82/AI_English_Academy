@@ -10,14 +10,14 @@ import com.google.gson.JsonParser
 data class UsageFeature(val id: String, val titleUz: String, val finishedUz: String)
 
 val USAGE_FEATURES: List<UsageFeature> = listOf(
-    UsageFeature("quick", "«5 daqiqa» sessiya", "vaqt yoki kartalar tugaguncha"),
-    UsageFeature("dialogue", "Real hayot suhbatlari", "dars oxirigacha"),
-    UsageFeature("review", "Takrorlash menejeri", "navbat oxirigacha"),
-    UsageFeature("conversation", "Suhbatdosh", "kamida bitta javob bilan yakunlandi"),
-    UsageFeature("pronunciation", "Talaffuz mashqi", "moslik 80% va undan yuqori"),
-    UsageFeature("community_submit", "Hamjamiyatga yuborish", "serverga yetdi"),
-    UsageFeature("community_review", "Hamjamiyatda tekshirish", "izoh yuborildi"),
-    UsageFeature("certificate", "Yakunlash guvohnomasi", "rasm yaratildi"),
+    UsageFeature("quick", "«5 daqiqa» sessiya", "vaqt yoki kartalar tugagunça"),
+    UsageFeature("dialogue", "Real hayot suhbatlari", "dars oxirigaça"),
+    UsageFeature("review", "Takrorlaş menejeri", "navbat oxirigaça"),
+    UsageFeature("conversation", "Suhbatdoş", "kamida bitta javob bilan yakunlandi"),
+    UsageFeature("pronunciation", "Talaffuz maşqi", "moslik 80% va undan yuqori"),
+    UsageFeature("community_submit", "Hamjamiyatga yuboriş", "serverga yetdi"),
+    UsageFeature("community_review", "Hamjamiyatda tekşiriş", "izoh yuborildi"),
+    UsageFeature("certificate", "Yakunlaş guvohnomasi", "rasm yaratildi"),
 )
 
 data class UsageStats(val started: Int = 0, val finished: Int = 0, val lastAt: Long = 0)

@@ -91,19 +91,19 @@ function KpiRow({ s }: { s: AdminStats }) {
   const g = growthPct(s.new_this_week, s.new_prev_week)
   const trend =
     g === null ? (
-      <span>Bu hafta +{fmt(s.new_this_week)} (o‘tgan hafta yangi yo‘q)</span>
+      <span>Bu hafta +{fmt(s.new_this_week)} (ötgan hafta yangi yöq)</span>
     ) : (
       <span className={`inline-flex items-center gap-1 font-semibold ${g >= 0 ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-700 dark:text-rose-400'}`}>
         {g >= 0 ? <TrendingUp aria-hidden="true" className="h-3.5 w-3.5" /> : <TrendingDown aria-hidden="true" className="h-3.5 w-3.5" />}
         {g >= 0 ? '+' : ''}
-        {g}% o‘tgan haftaga nisbatan
+        {g}% ötgan haftaga nisbatan
         <span className="font-normal muted"> (+{fmt(s.new_this_week)})</span>
       </span>
     )
   return (
     <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 xl:grid-cols-4">
       <Kpi
-        label="Jami foydalanuvchilar"
+        label="Jami foydalanuvçilar"
         value={fmt(s.total_users)}
         hint={trend}
         icon={<Users aria-hidden="true" className="h-5 w-5" />}
@@ -114,16 +114,16 @@ function KpiRow({ s }: { s: AdminStats }) {
         value={fmt(s.dau)}
         hint={
           <span className="inline-flex items-center gap-1">
-            <Flame aria-hidden="true" className="h-3.5 w-3.5 text-orange-700 dark:text-orange-300" /> O‘rtacha streak: {s.avg_streak} kun
+            <Flame aria-hidden="true" className="h-3.5 w-3.5 text-orange-700 dark:text-orange-300" /> Örtaça streak: {s.avg_streak} kun
           </span>
         }
         icon={<Activity aria-hidden="true" className="h-5 w-5" />}
         accent="bg-violet-100 text-violet-700 dark:bg-violet-950/60 dark:text-violet-300"
       />
       <Kpi
-        label="To‘plangan jami XP"
+        label="Töplangan jami XP"
         value={fmt(s.total_xp)}
-        hint="Mashq urinishlaridan (liga hisobi)"
+        hint="Maşq urinişlaridan (liga hisobi)"
         icon={<Sparkles aria-hidden="true" className="h-5 w-5" />}
         accent="bg-purple-100 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300"
       />
@@ -162,7 +162,7 @@ function StatusBadge({ status }: { status: UserStatus }) {
 function RoleSelect({ u, busy, onChange }: { u: AdminUser; busy: boolean; onChange: (r: AdminRole) => void }) {
   return (
     <select
-      aria-label={`${u.full_name || u.email || 'Foydalanuvchi'} roli`}
+      aria-label={`${u.full_name || u.email || 'Foydalanuvçi'} roli`}
       value={u.role}
       disabled={busy}
       onChange={(e) => onChange(e.target.value as AdminRole)}
@@ -234,7 +234,7 @@ export default function AdminDashboard() {
   const changeRole = async (u: AdminUser, next: AdminRole) => {
     if (next === u.role) return
     const self = u.id === currentUserId
-    if (self && next !== 'admin' && !window.confirm('O‘z admin rolingizni olib tashlaysizmi? Shundan keyin admin panelga kira olmaysiz.')) return
+    if (self && next !== 'admin' && !window.confirm('Öz admin rolingizni olib taşlaysizmi? Şundan keyin admin panelga kira olmaysiz.')) return
     setBusyRow(u.id)
     const r = await setUserRole(u.id, next)
     setBusyRow(null)
@@ -242,7 +242,7 @@ export default function AdminDashboard() {
       push('error', r.reasonUz)
       return
     }
-    push('ok', `${u.full_name || u.email || 'Foydalanuvchi'} endi — ${ROLES.find((x) => x.id === next)?.labelUz}.`)
+    push('ok', `${u.full_name || u.email || 'Foydalanuvçi'} endi — ${ROLES.find((x) => x.id === next)?.labelUz}.`)
     if (self && next !== 'admin') {
       resetAdminCache()
       nav('/dashboard', { replace: true })
@@ -266,10 +266,10 @@ export default function AdminDashboard() {
         <div>
           <p className="text-xs font-semibold uppercase tracking-wider text-violet-700 dark:text-violet-300">AI English Academy</p>
           <h1 className="text-2xl font-bold">Admin panel</h1>
-          <p className="text-sm muted">Platforma statistikasi va foydalanuvchilarni boshqarish.</p>
+          <p className="text-sm muted">Platforma statistikasi va foydalanuvçilarni boşqariş.</p>
         </div>
         <Button variant="secondary" size="sm" onClick={refresh} busy={statsLoading || usersLoading}>
-          <RefreshCw aria-hidden="true" className="h-4 w-4" /> Yangilash
+          <RefreshCw aria-hidden="true" className="h-4 w-4" /> Yangilaş
         </Button>
       </header>
 
@@ -304,14 +304,14 @@ export default function AdminDashboard() {
       <section aria-labelledby={`${id}-users`} className="panel p-4 grid gap-4 min-w-0">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 id={`${id}-users`} className="font-bold text-lg">
-            Foydalanuvchilar
+            Foydalanuvçilar
           </h2>
           {usersData && <span className="text-sm muted">{fmt(total)} ta</span>}
         </div>
 
         <div className="grid gap-2 sm:grid-cols-[1fr_auto_auto]">
           <label className="relative">
-            <span className="sr-only">Ism yoki email bo‘yicha qidirish</span>
+            <span className="sr-only">Ism yoki email böyiça qidiriş</span>
             <Search aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 muted" />
             <input
               type="search"
@@ -322,13 +322,13 @@ export default function AdminDashboard() {
             />
           </label>
           <label>
-            <span className="sr-only">Rol bo‘yicha filtr</span>
+            <span className="sr-only">Rol böyiça filtr</span>
             <select
               className={inputCls}
               value={role ?? ''}
               onChange={(e) => setFilter(() => setRole((e.target.value || null) as AdminRole | null))}
             >
-              <option value="">Barcha rollar</option>
+              <option value="">Barça rollar</option>
               {ROLES.map((r) => (
                 <option key={r.id} value={r.id}>
                   {r.labelUz}
@@ -337,13 +337,13 @@ export default function AdminDashboard() {
             </select>
           </label>
           <label>
-            <span className="sr-only">Holat bo‘yicha filtr</span>
+            <span className="sr-only">Holat böyiça filtr</span>
             <select
               className={inputCls}
               value={status ?? ''}
               onChange={(e) => setFilter(() => setStatus((e.target.value || null) as UserStatus | null))}
             >
-              <option value="">Barcha holatlar</option>
+              <option value="">Barça holatlar</option>
               {STATUSES.map((s) => (
                 <option key={s.id} value={s.id}>
                   {s.labelUz}
@@ -358,18 +358,18 @@ export default function AdminDashboard() {
         ) : !users.result.ok ? (
           <ErrorState message={users.result.reasonUz} retry={refresh} />
         ) : users.result.data.rows.length === 0 ? (
-          <EmptyState title="Foydalanuvchi topilmadi" body={search || role || status ? 'Qidiruv yoki filtrni o‘zgartirib ko‘ring.' : undefined} />
+          <EmptyState title="Foydalanuvçi topilmadi" body={search || role || status ? 'Qidiruv yoki filtrni özgartirib köring.' : undefined} />
         ) : (
-          <div className="relative overflow-x-auto min-w-0 -mx-4 px-4" tabIndex={0} role="region" aria-label="Foydalanuvchilar jadvali">
+          <div className="relative overflow-x-auto min-w-0 -mx-4 px-4" tabIndex={0} role="region" aria-label="Foydalanuvçilar jadvali">
             <table className="w-full text-sm min-w-[760px]">
               <thead>
                 <tr className="text-left text-[11px] uppercase tracking-wider muted border-b">
-                  <th scope="col" className="py-2 pr-3 font-semibold">Foydalanuvchi</th>
+                  <th scope="col" className="py-2 pr-3 font-semibold">Foydalanuvçi</th>
                   <th scope="col" className="py-2 pr-3 font-semibold">Rol</th>
                   <th scope="col" className="py-2 pr-3 font-semibold text-right">XP</th>
                   <th scope="col" className="py-2 pr-3 font-semibold text-right">Streak</th>
                   <th scope="col" className="py-2 pr-3 font-semibold">Holat</th>
-                  <th scope="col" className="py-2 pr-3 font-semibold">Ro‘yxatdan o‘tgan</th>
+                  <th scope="col" className="py-2 pr-3 font-semibold">Röyxatdan ötgan</th>
                   <th scope="col" className="py-2 font-semibold">
                     <span className="sr-only">Amallar</span>
                   </th>
@@ -405,8 +405,8 @@ export default function AdminDashboard() {
                     </td>
                     <td className="py-2.5 pr-3 tabular-nums">{fmtDate(u.created_at)}</td>
                     <td className="py-2.5 text-right">
-                      <Button size="sm" variant="ghost" onClick={() => setEditing(u)} aria-label={`${u.full_name || u.email || 'Foydalanuvchi'}ni tahrirlash`}>
-                        <Pencil aria-hidden="true" className="h-4 w-4" /> Tahrirlash
+                      <Button size="sm" variant="ghost" onClick={() => setEditing(u)} aria-label={`${u.full_name || u.email || 'Foydalanuvçi'}ni tahrirlaş`}>
+                        <Pencil aria-hidden="true" className="h-4 w-4" /> Tahrirlaş
                       </Button>
                     </td>
                   </tr>

@@ -312,7 +312,7 @@ export function StoreProvider({
   const sync = useCallback(async (): Promise<SyncOutcome> => {
     if (syncInFlight.current) return syncInFlight.current
     const run = async (): Promise<SyncOutcome> => {
-      if (!netOnline) return { ok: false, reasonUz: 'Internet yo‘q — navbat saqlandi.', done: 0, pulled: false }
+      if (!netOnline) return { ok: false, reasonUz: 'Internet yöq — navbat saqlandi.', done: 0, pulled: false }
       // Supabase sozlanmagan bo'lsa navbatga yozish behuda — yuboradigan joy yo'q.
       if (!supabaseConfigured) {
         const res = await syncNow(userId)
@@ -329,7 +329,7 @@ export function StoreProvider({
           dispatch({ type: 'merge-remote', userId, remote: pr.snapshot })
           pulled = true
         } else if (isPristine(data)) {
-          return { ok: false, reasonUz: pr.reasonUz ?? 'Serverdagi ma’lumotni o‘qib bo‘lmadi.', done: 0, pulled: false }
+          return { ok: false, reasonUz: pr.reasonUz ?? 'Serverdagi ma’lumotni öqib bölmadi.', done: 0, pulled: false }
         }
       }
       await queueAllData(base)
@@ -384,7 +384,7 @@ export function StoreProvider({
     return Object.entries(data.srs).filter(([id, s]) => s.dueAt <= now && known.has(id)).length
   }, [data.srs, minuteNow])
   const totalVocab = useMemo(() => totalVocabCount(), [])
-  const vocabSummary = `${learnedCount}/${totalVocab}${learnedExtraCount > 0 ? ` +${learnedExtraCount} matn so‘zi` : ''}`
+  const vocabSummary = `${learnedCount}/${totalVocab}${learnedExtraCount > 0 ? ` +${learnedExtraCount} matn sözi` : ''}`
 
   const todaySeconds = data.activity[todayKey()]?.seconds ?? 0
   const timerView = useMemo(() => {

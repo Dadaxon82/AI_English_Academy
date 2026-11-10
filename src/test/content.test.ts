@@ -21,15 +21,15 @@ describe('Kontent — kunlar va 90 daqiqalik reja', () => {
       expect(bundle.days.length).toBeGreaterThanOrEqual(7)
     })
 
-    it(`${level}: har kun bo'limlari yig'indisi ANIQ ${DAILY_PLAN_TOTAL} daqiqa`, () => {
+    it(`${level}: har kun bölimlari yiğindisi ANIQ ${DAILY_PLAN_TOTAL} daqiqa`, () => {
       for (const day of bundle.days) {
         const sum = day.sections.reduce((a, s) => a + s.minutes, 0)
-        expect(sum, `${day.id} yig'indisi ${sum} ≠ ${DAILY_PLAN_TOTAL}`).toBe(DAILY_PLAN_TOTAL)
+        expect(sum, `${day.id} yiğindisi ${sum} ≠ ${DAILY_PLAN_TOTAL}`).toBe(DAILY_PLAN_TOTAL)
         for (const s of day.sections) expect(s.minutes, `${day.id}/${s.skill} manfiy yoki nol`).toBeGreaterThan(0)
       }
     })
 
-    it(`${level}: nisbat saqlangan — kattaroq bo'lim kichigidan kam emas`, () => {
+    it(`${level}: nisbat saqlangan — kattaroq bölim kiçigidan kam emas`, () => {
       // Normalizatsiya tartibni buzmasligi kerak: qaysi bo'lim oldin ko'proq
       // vaqt olgan bo'lsa, keyin ham kam olmagan bo'lsin.
       const raw = getBundleRaw(level).days
@@ -39,7 +39,7 @@ describe('Kontent — kunlar va 90 daqiqalik reja', () => {
         for (let i = 0; i < before.length; i++)
           for (let j = 0; j < before.length; j++)
             if (before[i] > before[j])
-              expect(after[i], `${bundle.days[d].id}: ${bundle.days[d].sections[i].skill} ≥ ${bundle.days[d].sections[j].skill} bo'lishi kerak edi`).toBeGreaterThanOrEqual(after[j])
+              expect(after[i], `${bundle.days[d].id}: ${bundle.days[d].sections[i].skill} ≥ ${bundle.days[d].sections[j].skill} bölişi kerak edi`).toBeGreaterThanOrEqual(after[j])
       }
     })
   }
@@ -64,7 +64,7 @@ describe('Kontent — kunlar va 90 daqiqalik reja', () => {
     expect(by.vocabulary).toBe(Math.min(...Object.values(by)))
   })
 
-  it('IDlar takrorlanmagan (barcha kontent turlari bo\'yicha)', () => {
+  it('IDlar takrorlanmagan (barça kontent turlari bo\'yiça)', () => {
     for (const level of LEVELS) {
       const b = getBundle(level)
       const seen = new Set<string>()
@@ -94,7 +94,7 @@ describe('Kontent — kunlar va 90 daqiqalik reja', () => {
   it('kun ID formati bitta xil (a1-day-NN) va store’dagi standartga mos', () => {
     for (const level of LEVELS) {
       for (const day of getBundle(level).days) {
-        expect(day.id, `${day.id} formati noto'g'ri`).toMatch(/^(a1|a2|b1|b2|c1)-day-\d\d$/)
+        expect(day.id, `${day.id} formati notöğri`).toMatch(/^(a1|a2|b1|b2|c1)-day-\d\d$/)
       }
     }
     // emptyData() standarti birinchi kunga mos kelishi shart

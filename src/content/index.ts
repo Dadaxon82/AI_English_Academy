@@ -164,7 +164,7 @@ export function allGlossaryVocab(levels: readonly CefrLevel[] = LOADED_LEVELS): 
           id: glossaryVocabId(g.word),
           word: g.word,
           translationUz: g.uz,
-          explanationEn: `Bu so‘z “${p.title}” matnining glossariyidan olindi.`,
+          explanationEn: `Bu söz “${p.title}” matnining glossariyidan olindi.`,
           exampleEn: '',
           exampleUz: '',
           pos: 'noun',
@@ -262,7 +262,7 @@ export function vocabQuizExercise(v: VocabularyItem, options: string[] = [v.tran
   return {
     id: `${VOCAB_QUIZ_PREFIX}${v.id}`,
     kind: 'multiple-choice',
-    instructionUz: `“${v.word}” so‘zining o‘zbekcha ma’nosini tanlang.`,
+    instructionUz: `“${v.word}” sözining özbekça ma’nosini tanlang.`,
     level: v.level,
     skill: 'vocabulary',
     explanationUz: `${v.word} — ${v.translationUz}. ${v.explanationEn}`,
@@ -285,7 +285,7 @@ export function vocabPictureExercise(v: VocabularyItem, options: string[] = [v.w
   return {
     id: `${VOCAB_PIC_PREFIX}${v.id}`,
     kind: 'multiple-choice',
-    instructionUz: `«${v.translationUz.split(/[,;]/)[0]!.trim()}» so‘zini tanlang`,
+    instructionUz: `«${v.translationUz.split(/[,;]/)[0]!.trim()}» sözini tanlang`,
     level: v.level,
     skill: 'vocabulary',
     explanationUz: `${v.translationUz} — ${v.word}.`,
@@ -302,7 +302,7 @@ export function vocabSentenceExercise(v: VocabularyItem, from: 'en' | 'uz'): Tra
   return {
     id: `${VOCAB_SENT_PREFIX}${from}-${v.id}`,
     kind: 'translation',
-    instructionUz: from === 'en' ? 'O‘zbekchaga tarjima qiling' : 'Inglizchaga tarjima qiling',
+    instructionUz: from === 'en' ? 'Özbekçaga tarjima qiling' : 'Inglizçaga tarjima qiling',
     level: v.level,
     skill: 'vocabulary',
     explanationUz: `${v.exampleEn} — ${v.exampleUz}`,
@@ -366,7 +366,7 @@ export function grammarExampleExercise(topic: GrammarTopic, i: number): Translat
   return {
     id: `${LESSON_GRAMMAR_PREFIX}${topic.id}-${i}`,
     kind: 'translation',
-    instructionUz: 'Inglizchaga tarjima qiling',
+    instructionUz: 'Inglizçaga tarjima qiling',
     level: topic.level,
     skill: 'grammar',
     explanationUz: `${ex.uz} — ${ex.en}`,
@@ -410,7 +410,7 @@ function wordOrder(id: string, sentence: string, level: CefrLevel, skill: 'writi
 export function writingSentenceExercise(task: WritingTask, i: number): WordOrderExercise | undefined {
   const s = shortSentences(task.modelAnswerEn ?? '')[i]
   if (!s) return undefined
-  return wordOrder(`${LESSON_WRITING_PREFIX}${task.id}-${i}`, s, task.level, 'writing', 'Gapni to‘g‘ri tartibda tuzing', `Namuna javobdan: “${s}”`)
+  return wordOrder(`${LESSON_WRITING_PREFIX}${task.id}-${i}`, s, task.level, 'writing', 'Gapni töğri tartibda tuzing', `Namuna javobdan: “${s}”`)
 }
 
 /** Gapirish darsi gaplari: savol va qo'shimcha savollar (qisqalari). */
@@ -519,10 +519,10 @@ export function roleplayFixExercise(id: string): WordOrderExercise | undefined {
   return {
     id,
     kind: 'word-order',
-    instructionUz: `Suhbatda shunday dedingiz: “${v.o}”. To‘g‘ri gapni so‘zlardan tuzing.`,
+    instructionUz: `Suhbatda şunday dedingiz: “${v.o}”. Töğri gapni sözlardan tuzing.`,
     level: v.l as CefrLevel,
     skill: 'grammar',
-    explanationUz: `${v.w} To‘g‘ri: “${v.c}”.`,
+    explanationUz: `${v.w} Töğri: “${v.c}”.`,
     difficulty: 2,
     tags: ['roleplay'],
     answer,

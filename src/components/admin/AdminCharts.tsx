@@ -27,9 +27,9 @@ export function SignupsChart({ data }: { data: AdminStats['signups_30d'] }) {
   const peak = data.reduce((best, r) => (r.count > best.count ? r : best), { day: '', count: 0 })
   return (
     <figure className="grid gap-2">
-      <figcaption className="font-semibold">So‘nggi 30 kunda ro‘yxatdan o‘tganlar</figcaption>
+      <figcaption className="font-semibold">Sönggi 30 kunda röyxatdan ötganlar</figcaption>
       <p className="text-xs muted">
-        Jami {total} ta{peak.count > 0 ? `, eng ko‘p — ${shortDay(peak.day)} (${peak.count} ta)` : ''}.
+        Jami {total} ta{peak.count > 0 ? `, eng köp — ${shortDay(peak.day)} (${peak.count} ta)` : ''}.
       </p>
       <div className="h-60" aria-hidden="true">
         <ResponsiveContainer width="100%" height="100%">
@@ -50,7 +50,7 @@ export function LevelsChart({ levels }: { levels: AdminStats['levels'] }) {
   const data = bucketLevels(levels)
   return (
     <figure className="grid gap-2">
-      <figcaption className="font-semibold">Darajalar bo‘yicha taqsimot</figcaption>
+      <figcaption className="font-semibold">Darajalar böyiça taqsimot</figcaption>
       <p className="text-xs muted">{data.map((d) => `${d.name}: ${d.value}`).join(' · ')}</p>
       <div className="h-60" aria-hidden="true">
         <ResponsiveContainer width="100%" height="100%">
@@ -58,7 +58,7 @@ export function LevelsChart({ levels }: { levels: AdminStats['levels'] }) {
             <CartesianGrid stroke="currentColor" strokeOpacity={0.12} horizontal={false} />
             <XAxis type="number" allowDecimals={false} tick={tick} />
             <YAxis type="category" dataKey="name" tick={tick} width={92} />
-            <Tooltip contentStyle={tooltipStyle} cursor={{ fillOpacity: 0.08 }} formatter={(v) => [v, 'O‘quvchi']} />
+            <Tooltip contentStyle={tooltipStyle} cursor={{ fillOpacity: 0.08 }} formatter={(v) => [v, 'Öquvçi']} />
             <Bar dataKey="value" radius={[0, 8, 8, 0]} barSize={28} isAnimationActive={false}>
               {data.map((d, i) => (
                 <Cell key={d.name} fill={BUCKET_COLORS[i]} />
