@@ -223,6 +223,10 @@ class ContentRepository {
     }
 
     fun findExercise(id: String): Exercise? {
+        // AI suhbatdosh tuzatishlari (`rpfix-…`, ma'lumot ID ichida) — veb bilan bir xil.
+        if (id.startsWith(com.dadaxon.aienglishacademy.domain.ROLEPLAY_FIX_PREFIX)) {
+            return com.dadaxon.aienglishacademy.domain.roleplayFixExercise(id)
+        }
         // Suhbat bo'shliqlari (`dlg-<suhbat>-<qator>`) — veb `findExercise` bilan bir xil.
         if (id.startsWith(com.dadaxon.aienglishacademy.domain.DIALOGUE_PREFIX)) {
             return com.dadaxon.aienglishacademy.domain.findDialogueExercise(id, dialogues())

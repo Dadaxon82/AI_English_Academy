@@ -36,6 +36,11 @@ class AppContainer(ctx: Context) {
 
     val local: LocalStore by lazy { LocalStore(keyValue) }
 
+    /** AI suhbatdosh (4-bosqich) — `ai-roleplay` edge funksiyasi. */
+    val roleplay: com.dadaxon.aienglishacademy.data.RoleplayClient by lazy {
+        com.dadaxon.aienglishacademy.data.RoleplayClient(SupabaseConfig.fromBuildConfig(), auth)
+    }
+
     /** Hamjamiyat tekshiruvi (3-bosqich) — Supabase + sessiya. */
     val peer: com.dadaxon.aienglishacademy.data.PeerRepository by lazy {
         com.dadaxon.aienglishacademy.data.PeerRepository(supabase, auth)

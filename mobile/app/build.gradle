@@ -29,6 +29,9 @@ android {
         // e'lon qilingan — anon/publishable kalit, maxfiy emas).
         buildConfigField "String", "SUPABASE_URL", '"https://igrzbfnsunedgyivmqlz.supabase.co"'
         buildConfigField "String", "SUPABASE_ANON_KEY", '"sb_publishable_0n4Y_0BurWokN7_c2ZWGRQ_jnogS1mb"'
+        // AI suhbatdosh (`ai-roleplay` edge funksiyasi) — veb `VITE_AI_ENABLED` bilan
+        // bir xil: joylangan funksiya va kalit bo'lmaguncha O'CHIQ (stsenariy rejimi).
+        buildConfigField "boolean", "AI_ENABLED", "false"
     }
 
     signingConfigs {

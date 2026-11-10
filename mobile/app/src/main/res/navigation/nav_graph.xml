@@ -76,6 +76,12 @@
         android:name="com.dadaxon.aienglishacademy.ui.CommunityFragment"
         android:label="@string/com_title" />
 
+    <!-- AI suhbatdosh (veb `/conversation`). -->
+    <fragment
+        android:id="@+id/conversationFragment"
+        android:name="com.dadaxon.aienglishacademy.ui.ConversationFragment"
+        android:label="@string/conv_title" />
+
     <fragment
         android:id="@+id/vocabReviewFragment"
         android:name="com.dadaxon.aienglishacademy.ui.VocabReviewFragment"

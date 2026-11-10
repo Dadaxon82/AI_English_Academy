@@ -136,6 +136,11 @@ class DashboardFragment : Fragment() {
                 findNavController().navigate(R.id.communityFragment)
             },
         )
+        b.rows.addView(
+            Rows.row(ctx, getString(R.string.conv_title), getString(R.string.conv_dash_body), null) {
+                findNavController().navigate(R.id.conversationFragment)
+            },
+        )
 
         /* 2b) O'yin qatlami plitkalari — veb `Dashboard.tsx`dagi ikkinchi
                qatorning moslamasi (yurak / kunlik XP / gem / qalqon).

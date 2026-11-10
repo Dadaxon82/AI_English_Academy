@@ -202,4 +202,33 @@
     <string name="cert_save_fail">Rasmni saqlab bo‘lmadi.</string>
     <string name="cert_no_accuracy">aniqlik —</string>
     <string name="cert_accuracy">aniqlik %1$d%%</string>
+    <!-- AI suhbatdosh (4-bosqich) — veb `src/pages/Conversation.tsx` bilan bir xil. -->
+    <string name="conv_title">Suhbatdosh</string>
+    <string name="conv_intro">Vaziyatni tanlang va hamsuhbat bilan ingliz tilida gaplashing — yozib yoki gapirib. Javoblaringizdagi xatolar suhbat oxirida mashqqa aylanadi.</string>
+    <string name="conv_ai_on">AI ulangan: hamsuhbat erkin javob beradi va xatolaringizni tuzatadi (kunlik AI limiti hisoblanadi).</string>
+    <string name="conv_ai_off">AI ulanmagan — suhbat oldindan yozilgan stsenariy bo‘yicha boradi: har javobingiz namuna bilan solishtiriladi.</string>
+    <string name="conv_roles">Hamsuhbat: %1$s · Siz: %2$s</string>
+    <string name="conv_engine_ai">AI hamsuhbat</string>
+    <string name="conv_engine_script">Oldindan yozilgan stsenariy</string>
+    <string name="conv_back">← Vaziyatlar</string>
+    <string name="conv_no_errors">Xato topilmadi.</string>
+    <string name="conv_model">Namuna: %1$s</string>
+    <string name="conv_compare">Namunadagi so‘zlardan %1$d/%2$d tasi bor (bir ma’noni boshqa so‘z bilan ham aytish mumkin — bu baho emas)</string>
+    <string name="conv_typing">%1$s yozmoqda…</string>
+    <string name="conv_hint">Aytmoqchi bo‘lgan fikringiz: %1$s</string>
+    <string name="conv_input">Inglizcha javobingiz…</string>
+    <string name="conv_send">Yuborish</string>
+    <string name="conv_speak">🎤 Gapirish</string>
+    <string name="conv_finish">Suhbatni yakunlash</string>
+    <string name="conv_to_script">Oldindan yozilgan stsenariy bilan boshidan</string>
+    <string name="conv_done">Suhbat yakunlandi</string>
+    <string name="conv_done_script">Stsenariy yakunlandi. Har javobingiz namuna bilan solishtirildi. Xatolar tahlili uchun AI kerak.</string>
+    <string name="conv_done_clean">AI javoblaringizda xato topmadi.</string>
+    <string name="conv_done_fixes">AI %1$d ta tuzatish berdi.</string>
+    <string name="conv_fix_lesson">Xatolar ustida ishlash (%1$d ta mashq)</string>
+    <string name="conv_words_save">Lug‘atimga saqlash (%1$d ta)</string>
+    <string name="conv_words_saved">Lug‘atga saqlandi (%1$d ta)</string>
+    <string name="conv_words_none">Bu so‘zlar lug‘atimizda yo‘q — takrorlash jadvaliga qo‘shilmaydi.</string>
+    <string name="conv_again">Qaytadan</string>
+    <string name="conv_dash_body">Kafe, vokzal, shifokor — hamsuhbat bilan gaplashing.</string>
 </resources>
