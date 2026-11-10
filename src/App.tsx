@@ -1,4 +1,4 @@
-import { Suspense, lazy, useCallback, useEffect, useState } from 'react'
+import { Suspense, lazy, useCallback, useEffect, useMemo, useState } from 'react'
 import { BrowserRouter, HashRouter, Link, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { AuthContext } from './lib/authContext'
 import Layout from './components/Layout'
@@ -8,6 +8,7 @@ import { getSupabase, localGuestId, supabaseConfigured, type AuthState } from '.
 import { LoadingBlock, InfoBanner, Button } from './components/ui'
 import Login from './pages/Login'
 import { signOutCurrent } from './lib/auth'
+import AdminRoute from './components/admin/AdminRoute'
 
 // Sahifalar alohida chunk'larda — birinchi ochilishda faqat kerakli sahifa
 // yuklanadi (PWA service worker barchasini oflayn uchun oldindan keshlaydi).
@@ -31,6 +32,8 @@ const Dialogues = lazy(() => import('./pages/Dialogues'))
 const Community = lazy(() => import('./pages/Community'))
 const Conversation = lazy(() => import('./pages/Conversation'))
 const Pronunciation = lazy(() => import('./pages/Pronunciation'))
+// Admin panel — alohida chunk (grafik kutubxonasi faqat adminga yuklanadi).
+const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'))
 
 /**
  * Router tanlovi:
@@ -92,6 +95,14 @@ function Shell({ auth, onAuth }: { auth: AuthState; onAuth: (s: AuthState) => vo
           <Route path="/errors" element={<ErrorLog />} />
           <Route path="/progress" element={<Progress />} />
           <Route path="/settings" element={<Settings />} />
+          <Route
+            path="/admin"
+            element={
+              <AdminRoute>
+                <AdminDashboard />
+              </AdminRoute>
+            }
+          />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
@@ -195,6 +206,9 @@ export default function App() {
     })()
   }, [auth.kind, userId])
 
+  const signedInId = auth.kind === 'signed-in' ? auth.userId : null
+  const authValue = useMemo(() => ({ signOut, userId: signedInId }), [signOut, signedInId])
+
   // BrowserRouter uchun base (masalan custom domain ostidagi `/aea/`).
   // HashRouter o'zi ham `/AI_English_Academy/#/dashboard` dan ishlaydi.
   const base = (import.meta.env.BASE_URL || '/').replace(/\/+$/, '')
@@ -202,7 +216,7 @@ export default function App() {
 
   return (
     <Router {...routerProps}>
-      <AuthContext.Provider value={{ signOut }}>
+      <AuthContext.Provider value={authValue}>
         <StoreProvider userId={userId} remoteSync={auth.kind === 'signed-in'}>
           <Shell auth={auth} onAuth={setAuth} />
         </StoreProvider>

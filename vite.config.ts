@@ -64,7 +64,9 @@ export default defineConfig({
         // tinglashdan keyin faylni keshlaydi → keyingi safar offline ishlaydi.
         globPatterns: ['**/*.{js,css,html,ico,png,svg,webmanifest,json}'],
         // Ulashish rasmlari oflayn kerak emas — precache'ni og'irlashtirmaydi.
-        globIgnores: ['**/og-image.png', '**/screenshots/**'],
+        // Admin panel (grafiklar ~400 KB) oflayn keshga KIRMAYDI: u faqat
+        // server bilan ishlaydi va o'quvchilarga kerak emas.
+        globIgnores: ['**/og-image.png', '**/screenshots/**', '**/assets/admin-vendor-*.js', '**/assets/AdminDashboard-*.js'],
         navigateFallback: `${APP_BASE}index.html`,
         navigateFallbackDenylist: [/^\/api\//],
         runtimeCaching: [
@@ -120,6 +122,10 @@ export default defineConfig({
           if (!id.includes('node_modules')) return undefined
           if (/node_modules\/(react|react-dom|scheduler|react-router|react-router-dom|cookie|set-cookie-parser)\//.test(id)) return 'react'
           if (id.includes('@supabase')) return 'supabase'
+          // Faqat admin panel ishlatadi — boshlang'ich yuklanishga kirmasin
+          // (Recharts + uning bog'liqliklari, ikonkalar).
+          if (/node_modules\/(recharts|victory-vendor|d3-[a-z-]+|internmap|@reduxjs|redux|react-redux|reselect|immer|es-toolkit|decimal\.js-light|eventemitter3|tiny-invariant|clsx|use-sync-external-store|react-is|lucide-react)\//.test(id))
+            return 'admin-vendor'
           return 'vendor'
         },
       },

@@ -8,6 +8,8 @@ import { createContext, useContext } from 'react'
 export interface AuthActions {
   /** Supabase sessiyasi + mahalliy kesh + SW keshlarini tozalaydi. */
   signOut(): void
+  /** Supabase'ga kirgan foydalanuvchi id'si (mehmon rejimida — null). */
+  userId?: string | null
 }
 
 export const AuthContext = createContext<AuthActions | null>(null)
