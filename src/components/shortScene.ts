@@ -1,16 +1,18 @@
 /** Short sahnalari va personajlari (suhbat id'si va rol nomi bo'yicha). */
 
+// Faqat BITTA belgili emoji: ZWJ birikmalari (🧑‍⚕️ kabi) Windows'da ikki
+// bo'lak bo'lib chiqadi (👦 + ⚕). Rol nomi personaj ostida yoziladi.
 const ROLE_EMOJI: Record<string, string> = {
-  Teacher: '🧑‍🏫',
-  Classmate: '🧑‍🎓',
-  Colleague: '🧑‍💻',
-  Doctor: '🧑‍⚕️',
-  Friend: '🧑',
+  Teacher: '👩',
+  Classmate: '👦',
+  Colleague: '🧔',
+  Doctor: '👨',
+  Friend: '🧒',
   'New friend': '🙋',
   Landlord: '👴',
-  Manager: '🧑‍💼',
+  Manager: '👨',
   'Passer-by': '🚶',
-  'Shop assistant': '👩‍💼',
+  'Shop assistant': '👩',
   'Ticket clerk': '💁',
   Waiter: '🤵',
 }
@@ -38,6 +40,25 @@ export function sceneOf(dialogueId: string) {
 }
 
 
+/** Rol → personaj emojisi (har doim bitta belgi, ZWJ'siz). */
 export function roleEmoji(role: string): string {
   return ROLE_EMOJI[role] ?? '🙂'
+}
+
+/**
+ * Personaj rasmlari (`public/characters/`, foydalanuvchi bergan qahramonlar
+ * asosida). Rasmi yo'q rol — emoji bilan (keyin rasm qo'shilsa shu yerga yoziladi).
+ */
+const ROLE_ART: Record<string, string> = {
+  Teacher: 'characters/teacher.webp',
+  Doctor: 'characters/doctor.webp',
+  Friend: 'characters/traveler.webp',
+  'New friend': 'characters/traveler.webp',
+  Classmate: 'characters/traveler.webp',
+}
+
+export const LEARNER_ART = 'characters/learner.webp'
+
+export function roleArt(role: string): string | null {
+  return ROLE_ART[role] ?? null
 }

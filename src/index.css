@@ -60,6 +60,10 @@
 }
 
 /* Video short: gapirayotgan personaj (faqat motion-safe) */
+@keyframes short-bob {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-2.5%) rotate(-1.2deg); }
+}
 @keyframes short-talk {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.07); }

@@ -47,7 +47,7 @@ export default function Shorts() {
 
   return (
     <div className="grid content-start gap-4">
-      <Card className="grid gap-4 sm:grid-cols-[1fr_auto] items-start">
+      <Card className="grid gap-4">
         <div className="grid gap-2">
           <h1 className="text-xl sm:text-2xl font-extrabold">Video shortlar</h1>
           <p className="text-sm muted">
@@ -73,7 +73,7 @@ export default function Shorts() {
           </p>
         </div>
         {preview && (
-          <div className="justify-self-center">
+          <div>
             <ShortPlayer key={preview.id} short={preview} revealed />
           </div>
         )}

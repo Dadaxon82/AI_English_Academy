@@ -966,7 +966,7 @@ foydalanilmadi (mualliflik huquqi) va «haqiqiy odam» deb soxta video ko'rsatil
 | Qism | Fayl |
 |---|---|
 | Shortlar: 14 ta real hayot suhbatining har replikasi (85 ta: A1 — 43, A2 — 42), mashqlar `short-<suhbat>-<qator>-<m\|l>` (`findExercise` tiklaydi, Xatolar daftariga tushadi) | `src/content/shorts.ts` |
-| Pleyer: vertikal 9:16 sahna (kafe, vokzal, shifoxona…), personajlar (gapirayotgani oldinda), ovoz — qurilmaning ingliz TTS'i, aytilayotgan so'z subtitrda yonadi, «🐢 Sekin», qayta ko'rish | `src/components/ShortPlayer.tsx`, `src/lib/shortPlayback.ts`, `src/components/shortScene.ts` |
+| Pleyer: gorizontal 16:9 oyna (dars ustuni kengligida), sahna (kafe, vokzal, shifoxona…), personajlar (gapirayotgani oldinda), ovoz — qurilmaning ingliz TTS'i, aytilayotgan so'z subtitrda yonadi, «🐢 Sekin», qayta ko'rish | `src/components/ShortPlayer.tsx`, `src/lib/shortPlayback.ts`, `src/components/shortScene.ts` |
 | Mashq oqimi: suhbat darsiga 2 ta short (suhbatdoshning replikalari — bo'shliq javoblarini oshkor qilmaydi), `/shorts` sahifasida suhbat bo'yicha playlistlar | `src/lib/lessons.ts`, `src/pages/Shorts.tsx`, `ExerciseRunner` |
 
 **Mashq (Memrise uslubi):** avval tomosha → savol. **Eshitish** («Qaysi gapni eshitdingiz?») va **ma'no**
@@ -985,6 +985,12 @@ qabul qilinmaydi.
 **Testlar:** `shorts.test.ts` (kontent qoidalari, id tiklash, takrorsiz variantlar), `short-player.test.tsx` (TTS va
 so'z yonishi, subtitr javobdan keyin, TTS yo'q holati, video manifesti, sahifa). `dialogues*.test` dars
 tuzilmasi bilan, e2e: playlist oxirigacha va `/shorts` axe (light/dark, 1280/375).
+
+**Personajlar (2026-11-10):** loyiha egasi bergan qahramon rasmlaridan fonsiz qirqib olingan:
+`public/characters/teacher.webp` (Teacher), `doctor.webp` (Doctor), `traveler.webp` (Friend, New friend, Classmate),
+`learner.webp` (o'quvchi, maskot). Sahnada ikkalasi butun bo'yi bilan turadi, gapirayotgani tebranadi va «•••» pufagi
+chiqadi. Rasmi yo'q rollar (Waiter, Shop assistant, Ticket clerk, Landlord, Manager, Colleague, Passer-by) hozircha
+emoji bilan ko'rsatiladi. Rasm qo'shilsa, `src/components/shortScene.ts` dagi `ROLE_ART`ga yoziladi.
 
 **Hali qilinmagan:** mobil ilovada shortlar yo'q. Haqiqiy video kliplar ham yo'q, ularni yozib olish kerak.
 
