@@ -1,5 +1,9 @@
 package com.dadaxon.aienglishacademy.ui.runner
 
+import com.dadaxon.aienglishacademy.data.VOCAB_QUIZ_PREFIX
+import com.dadaxon.aienglishacademy.domain.SrsGrade
+import com.dadaxon.aienglishacademy.domain.vocabIdOfExercise
+import com.dadaxon.aienglishacademy.domain.withQuizOptions
 import android.content.Context
 import android.os.Bundle
 import android.os.SystemClock
@@ -106,6 +110,9 @@ class ExerciseFragment : Fragment() {
      */
     private var jumpSectionId: String? = null
 
+    /** Takrorlash menejeri: so'z mashqi javobi SRS'ga ham yoziladi (`Nav.ARG_GRADE_VOCAB`). */
+    private var gradeVocab = false
+
     /**
      * Sakrash testida har mashqning natijasi — veb `acc.current[ex.id]`
      * moslamasi. Pleyer `nextExerciseIndex` bilan mashqni qayta ko'rsatsa,
@@ -124,13 +131,16 @@ class ExerciseFragment : Fragment() {
         source = Nav.stringArg(this, Nav.ARG_SOURCE) ?: Source.PRACTICE
         jumpSectionId = Nav.stringArg(this, Nav.ARG_SECTION_ID)
 
+        gradeVocab = Nav.stringArg(this, Nav.ARG_GRADE_VOCAB) == "1"
         val ids = Nav.stringListArg(this, Nav.ARG_EXERCISE_IDS)
         val cr = container().content
         val resolved = ArrayList<Exercise>(ids.size)
         var miss = 0
+        // Lug'at savoli id'dan variantsiz tiklanadi — havuzdan to'ldiriladi (veb Takrorlash menejeri kabi).
+        val quizPool by lazy { runCatching { cr.allVocab() }.getOrElse { emptyList() } }
         for (id in ids) {
             val e = cr.findExercise(id)
-            if (e == null) miss++ else resolved.add(e)
+            if (e == null) miss++ else resolved.add(withQuizOptions(e, if (id.startsWith(VOCAB_QUIZ_PREFIX)) quizPool else emptyList()))
         }
         pool = resolved
         missingCount = miss
@@ -828,6 +838,13 @@ class ExerciseFragment : Fragment() {
         val seconds = ((SystemClock.elapsedRealtime() - exerciseStart) / 1000L).toInt().coerceAtLeast(0)
         val firstTry = tried.add(e.id)
         val gain = xpForAttempt(out.correct, e.difficulty, firstTry)
+        // Takrorlash menejeri: so'z bilan bog'liq mashq — SRS bahosi ham, faqat BIRINCHI urinishda
+        // (dars oxiridagi qayta urinish ikkinchi baho bermaydi; veb `ErrorLog.tsx` bilan bir xil).
+        if (gradeVocab && firstTry) {
+            vocabIdOfExercise(e.id)?.let { vid ->
+                container().store.dispatch(StoreAction.Srs(vid, if (out.correct) SrsGrade.GOOD else SrsGrade.AGAIN))
+            }
+        }
         xpGained += gain
 
         container().store.dispatch(

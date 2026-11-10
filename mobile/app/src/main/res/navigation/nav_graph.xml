@@ -64,6 +64,12 @@
         android:name="com.dadaxon.aienglishacademy.ui.QuickSessionFragment"
         android:label="@string/quick_dash_start" />
 
+    <!-- Real hayot suhbatlari (veb `/dialogues`). -->
+    <fragment
+        android:id="@+id/dialoguesFragment"
+        android:name="com.dadaxon.aienglishacademy.ui.DialoguesFragment"
+        android:label="@string/dlg_title" />
+
     <fragment
         android:id="@+id/vocabReviewFragment"
         android:name="com.dadaxon.aienglishacademy.ui.VocabReviewFragment"

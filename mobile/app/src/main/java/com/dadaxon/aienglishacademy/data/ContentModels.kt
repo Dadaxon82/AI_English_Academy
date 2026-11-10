@@ -334,3 +334,45 @@ data class ContentLevelInfo(
     val exercises: Int = 0,
     val bytes: Int = 0,
 )
+
+/* ------------------------ REAL HAYOT SUHBATLARI ------------------------ */
+
+/**
+ * `assets/content/dialogues.json` — veb `src/content/dialogues.ts`
+ * (`DIALOGUES`) ning eksporti (bitta manba). Maydonlar veb tiplari bilan bir xil.
+ */
+data class DialogueGap(
+    val answer: String = "",
+    val options: List<String> = emptyList(),
+    val skill: String = Skills.VOCABULARY,
+    val whyUz: String = "",
+)
+
+data class DialogueLine(
+    /** "a" — hamsuhbat, "b" — o'quvchi. */
+    val speaker: String = "a",
+    val en: String = "",
+    val uz: String = "",
+    val gap: DialogueGap? = null,
+)
+
+data class DialogueRoles(val a: String = "", val b: String = "")
+
+data class DialogueExample(val en: String = "", val uz: String = "")
+
+data class DialogueNote(
+    val titleUz: String = "",
+    val pointsUz: List<String> = emptyList(),
+    val examples: List<DialogueExample> = emptyList(),
+)
+
+data class Dialogue(
+    val id: String = "",
+    val level: String = Levels.A1,
+    val dayNumber: Int = 0,
+    val titleUz: String = "",
+    val situationUz: String = "",
+    val roles: DialogueRoles = DialogueRoles(),
+    val lines: List<DialogueLine> = emptyList(),
+    val note: DialogueNote = DialogueNote(),
+)

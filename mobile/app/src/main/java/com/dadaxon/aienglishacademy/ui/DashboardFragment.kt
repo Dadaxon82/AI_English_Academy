@@ -126,6 +126,11 @@ class DashboardFragment : Fragment() {
 
         /* 2a) «5 daqiqa» tezkor sessiya — veb `Dashboard.tsx` kartasi. */
         addQuickCard(countDue(srs))
+        b.rows.addView(
+            Rows.row(ctx, getString(R.string.dlg_dash_title), getString(R.string.dlg_dash_body), null) {
+                findNavController().navigate(R.id.dialoguesFragment)
+            },
+        )
 
         /* 2b) O'yin qatlami plitkalari — veb `Dashboard.tsx`dagi ikkinchi
                qatorning moslamasi (yurak / kunlik XP / gem / qalqon).

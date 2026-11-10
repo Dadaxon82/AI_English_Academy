@@ -137,4 +137,26 @@
     <string name="quick_dash_body">%1$d ta takror + bitta mavzudan yangi so‘zlar. Kunlik zanjir saqlanadi.</string>
     <string name="quick_dash_body_empty">Takror navbati bo‘sh + bitta mavzudan yangi so‘zlar. Kunlik zanjir saqlanadi.</string>
     <string name="quick_dash_start">5 daqiqa boshlash</string>
+    <!-- Real hayot suhbatlari va Takrorlash menejeri (2-bosqich) — veb
+         `src/pages/Dialogues.tsx` va `ErrorLog.tsx` bilan bir xil matnlar. -->
+    <string name="dlg_title">Real hayot suhbatlari</string>
+    <string name="dlg_intro">Kafe, vokzal, shifokor, ish suhbati — kundalik vaziyatlarda kerak bo‘ladigan iboralar. Har suhbat kun mavzusiga mos; oxirida «Nega shunday?» izohi bor. Xato qilingan bo‘shliqlar Xatolar daftaridagi Takrorlash menejeriga tushadi.</string>
+    <string name="dlg_day">%1$d-kun</string>
+    <string name="dlg_not_started">Hali boshlanmagan</string>
+    <string name="dlg_progress">%1$d/%2$d to‘g‘ri</string>
+    <string name="dlg_open">Suhbatni ochish</string>
+    <string name="dlg_you_are">Siz — %1$s. Suhbatni o‘qing, so‘ng bo‘sh joylarni to‘ldiring.</string>
+    <string name="dlg_show_uz">O‘zbekcha tarjimani ko‘rsatish</string>
+    <string name="dlg_hide_uz">Tarjimani yashirish</string>
+    <string name="dlg_start">Bo‘shliqlarni to‘ldirish (%1$d ta)</string>
+    <string name="dlg_note_title">Nega shunday? %1$s</string>
+    <string name="dlg_full">To‘liq suhbat</string>
+    <string name="dlg_back">← Suhbatlar ro‘yxati</string>
+    <string name="dlg_dash_title">Real hayot suhbatlari</string>
+    <string name="dlg_dash_body">Kafe, vokzal, shifokor — har kunga bitta suhbat.</string>
+    <string name="review_title">Takrorlash menejeri</string>
+    <string name="review_counts">Bugungi takror: %1$d ta xato + %2$d ta so‘z</string>
+    <string name="review_none">Hozircha takrorlanadigan narsa yo‘q</string>
+    <string name="review_body">Tuzatilmagan xatolar va takrorlash vaqti kelgan so‘zlar bitta navbatda (ko‘pi bilan %1$d ta). So‘z bilan bog‘liq xato ikki marta sanalmaydi: bitta javob ham xatoni, ham so‘z takrorini yangilaydi.</string>
+    <string name="review_start">Takrorlashni boshlash</string>
 </resources>

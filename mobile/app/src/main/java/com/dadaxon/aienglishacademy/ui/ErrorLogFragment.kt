@@ -1,5 +1,8 @@
 package com.dadaxon.aienglishacademy.ui
 
+import com.dadaxon.aienglishacademy.domain.Mistake
+import com.dadaxon.aienglishacademy.domain.REVIEW_MAX
+import com.dadaxon.aienglishacademy.domain.buildReviewPlan
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -102,6 +105,7 @@ class ErrorLogFragment : Fragment() {
         val list = runCatching {
             unresolvedMistakes(c.store.attempts()) { id -> c.content.findExercise(id) }
         }.getOrElse { emptyList() }
+        renderReview(ctx, list)
         b.rows.addView(Rows.sectionTitle(ctx, getString(R.string.errlog_games_title, list.size)))
         if (list.isEmpty()) {
             b.rows.addView(Rows.small(ctx, getString(R.string.errlog_games_none)))
@@ -123,6 +127,36 @@ class ErrorLogFragment : Fragment() {
             }
             b.rows.addView(btn)
         }
+    }
+
+    /**
+     * Takrorlash menejeri (2-bosqich) — veb `ErrorLog.tsx` kartasi: xatolar va
+     * muddati kelgan so'zlar bitta navbatda; javob SRS'ga ham yoziladi.
+     */
+    private fun renderReview(ctx: Context, list: List<Mistake>) {
+        val c = container()
+        val vocab = runCatching { c.content.allVocab() + c.content.allGlossaryVocab() }.getOrElse { emptyList() }
+        val plan = buildReviewPlan(list, c.store.state.value.data.srs, vocab, System.currentTimeMillis())
+        b.rows.addView(Rows.sectionTitle(ctx, getString(R.string.review_title)))
+        b.rows.addView(
+            Rows.body(
+                ctx,
+                if (plan.exerciseIds.isEmpty()) getString(R.string.review_none)
+                else getString(R.string.review_counts, plan.mistakes, plan.words),
+            ),
+        )
+        b.rows.addView(Rows.small(ctx, getString(R.string.review_body, REVIEW_MAX)))
+        b.rows.addView(
+            Rows.primaryButton(ctx, getString(R.string.review_start)).apply {
+                isEnabled = plan.exerciseIds.isNotEmpty()
+                setOnClickListener {
+                    Nav.openExercises(
+                        this@ErrorLogFragment, plan.exerciseIds, contentId = "review", dayId = null,
+                        source = Source.PRACTICE, title = getString(R.string.review_title), reorder = false, gradeVocab = true,
+                    )
+                }
+            },
+        )
     }
 
     /** Ko'nikma filtri — bitta tanlov (`ChipGroup` bir tanlovli). */

@@ -210,7 +210,23 @@ class ContentRepository {
      * (ESKI KAMCHILIK: Xatolar daftari ularda to'g'ri javob o'rniga "—"
      * ko'rsatardi).
      */
+    private var dialoguesCache: List<Dialogue>? = null
+
+    /** Real hayot suhbatlari (`content/dialogues.json`); fayl yo'q bo'lsa — bo'sh (soxta suhbat yo'q). */
+    fun dialogues(): List<Dialogue> {
+        dialoguesCache?.let { return it }
+        val path = "content/dialogues.json"
+        val made: List<Dialogue> = if (!src().exists(path)) emptyList()
+        else gson.fromJson(src().read(path), Array<Dialogue>::class.java)?.toList() ?: emptyList()
+        dialoguesCache = made
+        return made
+    }
+
     fun findExercise(id: String): Exercise? {
+        // Suhbat bo'shliqlari (`dlg-<suhbat>-<qator>`) — veb `findExercise` bilan bir xil.
+        if (id.startsWith(com.dadaxon.aienglishacademy.domain.DIALOGUE_PREFIX)) {
+            return com.dadaxon.aienglishacademy.domain.findDialogueExercise(id, dialogues())
+        }
         // Veb yasagan (id'dan tiklanadigan) mashqlar: lug'at o'yini, dars, remix.
         generatedExercise(id, generatedLookup)?.let { return it }
         if (id.startsWith(VOCAB_QUIZ_PREFIX)) {
