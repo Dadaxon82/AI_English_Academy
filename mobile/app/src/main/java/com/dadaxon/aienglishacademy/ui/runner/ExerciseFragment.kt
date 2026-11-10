@@ -913,7 +913,7 @@ class ExerciseFragment : Fragment() {
                `.aea-outcome-wrong` sinfi (`src/index.css` dagi `@keyframes shake`):
                bosqichlar (-7, +6, -4, +2 dp) ikkala tomonda BIR XIL, vaqt esa
                mavjud `outcomeMs`dan (`res/raw/motion_manifest.json`) — YANGI SON
-               YO'Q. Qahramon esa "umidlanish" kayfiyatida (`moodFromCorrect`) —
+               YO'Q. Qahramon esa "umidlaniş" kayfiyatida (`moodFromCorrect`) —
                masxaralama harakati qasddan yo'q. */
             Motion.shake(b.resultCard)
         }

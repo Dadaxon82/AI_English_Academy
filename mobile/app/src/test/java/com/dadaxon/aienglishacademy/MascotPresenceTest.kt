@@ -42,7 +42,7 @@ class MascotPresenceTest {
 
         val missing = layouts.filter { !it.readText().contains("MascotView") }.map { it.name }
         assertTrue(
-            "Qahramon bo'lmagan ekranlar:\n" + missing.joinToString("\n"),
+            "Qahramon bölmagan ekranlar:\n" + missing.joinToString("\n"),
             missing.isEmpty(),
         )
     }
@@ -96,13 +96,13 @@ class MascotPresenceTest {
         val src = File(appDir(), "src/main/java/com/dadaxon/aienglishacademy/ui/MascotView.kt").readText()
         assertTrue(
             "MascotView `contentDescription` bermaydi — dialog qahramoni ekran " +
-                "o'quvchisi uchun ko'rinmas",
+                "öquvçisi uçun körinmas",
             src.contains("contentDescription ="),
         )
         for (m in MascotView.Mood.entries) {
             val key = "mascot_mood_" + m.name.lowercase()
             assertTrue(
-                "$m kayfiyati uchun matn (`$key`) yo'q",
+                "$m kayfiyati uçun matn (`$key`) yöq",
                 Regex("""<string\s+name="$key"""").containsMatchIn(
                     File(appDir(), "src/main/res/values/strings.xml").readText(),
                 ),
@@ -122,8 +122,8 @@ class MascotPresenceTest {
                 val body = enclosingFun(src, m.range.first)
                 if (!Regex("""Rows\.row\(""").containsMatchIn(body)) continue
                 if (!body.contains(".dismiss()")) {
-                    problems += "$name: `${m.groupValues[1]}` ro'yxati bilan qurilgan dialog " +
-                        "`dismiss()` chaqirmaydi — tanlovdan keyin dialog yangi ekranning " +
+                    problems += "$name: `${m.groupValues[1]}` röyxati bilan qurilgan dialog " +
+                        "`dismiss()` çaqirmaydi — tanlovdan keyin dialog yangi ekranning " +
                         "ustida qoladi"
                 }
             }

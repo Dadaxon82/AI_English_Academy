@@ -50,26 +50,26 @@ export const MAX_LINE_CHARS = 400
 const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1']
 
 export function parseRoleplayRequest(body: unknown): { ok: true; req: RoleplayRequest } | { ok: false; reasonUz: string } {
-  if (!body || typeof body !== 'object') return { ok: false, reasonUz: 'So‘rov tanasi JSON obyekt bo‘lishi kerak.' }
+  if (!body || typeof body !== 'object') return { ok: false, reasonUz: 'Sörov tanasi JSON obyekt bölişi kerak.' }
   const b = body as Record<string, unknown>
   if (typeof b.level !== 'string' || !LEVELS.includes(b.level)) return { ok: false, reasonUz: 'level: A1–C1.' }
   for (const k of ['situation', 'partnerRole', 'learnerRole'] as const) {
-    if (typeof b[k] !== 'string' || !(b[k] as string).trim()) return { ok: false, reasonUz: `${k} bo‘sh.` }
+    if (typeof b[k] !== 'string' || !(b[k] as string).trim()) return { ok: false, reasonUz: `${k} böş.` }
     if ((b[k] as string).length > 600) return { ok: false, reasonUz: `${k} juda uzun.` }
   }
-  if (!Array.isArray(b.history)) return { ok: false, reasonUz: 'history ro‘yxat bo‘lishi kerak.' }
-  if (b.history.length > MAX_TURNS) return { ok: false, reasonUz: `Suhbat juda uzun (${MAX_TURNS} replikagacha).` }
+  if (!Array.isArray(b.history)) return { ok: false, reasonUz: 'history röyxat bölişi kerak.' }
+  if (b.history.length > MAX_TURNS) return { ok: false, reasonUz: `Suhbat juda uzun (${MAX_TURNS} replikagaça).` }
   const history: RoleplayLine[] = []
   for (const h of b.history) {
     const l = h as Record<string, unknown>
     if ((l.speaker !== 'partner' && l.speaker !== 'learner') || typeof l.text !== 'string' || !l.text.trim()) {
-      return { ok: false, reasonUz: 'history qatori noto‘g‘ri.' }
+      return { ok: false, reasonUz: 'history qatori notöğri.' }
     }
-    if (l.text.length > MAX_LINE_CHARS) return { ok: false, reasonUz: `Replika juda uzun (${MAX_LINE_CHARS} belgigacha).` }
+    if (l.text.length > MAX_LINE_CHARS) return { ok: false, reasonUz: `Replika juda uzun (${MAX_LINE_CHARS} belgigaça).` }
     history.push({ speaker: l.speaker, text: l.text.trim() })
   }
   if (history.length === 0 || history[history.length - 1]!.speaker !== 'learner') {
-    return { ok: false, reasonUz: 'Oxirgi replika o‘quvchiniki bo‘lishi kerak.' }
+    return { ok: false, reasonUz: 'Oxirgi replika öquvçiniki bölişi kerak.' }
   }
   return {
     ok: true,
@@ -88,7 +88,7 @@ export function parseRoleplayRequest(body: unknown): { ok: true; req: RoleplayRe
 export const ROLEPLAY_SYSTEM_PROMPT = `You are a friendly English conversation partner for Uzbek learners.
 Stay in the role you are given and keep the scene realistic.
 Use vocabulary and grammar suitable for the learner's CEFR level; keep each reply to one or two short sentences and usually end with a question or prompt so the learner keeps talking.
-In "corrections", list only real mistakes from the learner's LAST message (quote "original" exactly, give "corrected", explain briefly in Uzbek, Latin script); return an empty list if there are none. Do not correct punctuation or capitalisation of a speech transcript.
+In "corrections", list only real mistakes from the learner's LAST message (quote "original" exactly, give "corrected", explain briefly in Uzbek, Latin script); return an empty list if there are none. Do not correct punctuation or capitalisation of a speech transcript. Write Uzbek in the NEW Latin alphabet: use ö, ğ, ş, ç instead of o‘, g‘, sh, ch (for example "töğri", "şu", "çiroyli", "öqituvçi"); keep the apostrophe ’ only for the glottal stop (ma’lumot).
 In "newWords", give up to three useful words or phrases from this exchange with an Uzbek translation.
 Set "done" to true only when the scene has reached a natural end. Never mention that you are an AI.`
 

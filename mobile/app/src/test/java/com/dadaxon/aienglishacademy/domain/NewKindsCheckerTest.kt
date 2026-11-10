@@ -52,7 +52,7 @@ class NewKindsCheckerTest {
         val r = checkAnswer(ms, listOf(0, 1, 2))
         assertFalse(r.correct)
         assertEquals(0.5, r.partial, 1e-9)
-        assertTrue(r.whyUz.contains("ortiqcha"))
+        assertTrue(r.whyUz.contains("ortiqça"))
         assertEquals(0.0, checkAnswer(ms, listOf(0, 1, 2, 3)).partial, 1e-9)
         assertFalse(checkAnswer(ms, emptyList<Int>()).correct)
     }
@@ -61,7 +61,7 @@ class NewKindsCheckerTest {
         assertTrue(checkAnswer(dc, listOf("is", "are")).correct)
         val r = checkAnswer(dc, listOf("are", "are"))
         assertEquals(0.5, r.partial, 1e-9)
-        assertTrue(r.whyUz.contains("1-bo‘shliq"))
+        assertTrue(r.whyUz.contains("1-böşliq"))
     }
 
     @Test fun `sequence togri va notogri tartib`() {
@@ -69,7 +69,7 @@ class NewKindsCheckerTest {
         val r = checkAnswer(sq, listOf("Hello!", "Fine, thanks.", "Hi, how are you?"))
         assertFalse(r.correct)
         assertEquals(1.0 / 3, r.partial, 1e-9)
-        assertTrue(r.whyUz.contains("2-o‘rinda"))
+        assertTrue(r.whyUz.contains("2-örinda"))
         assertFalse(checkAnswer(sq, listOf("Hello!")).correct)
     }
 

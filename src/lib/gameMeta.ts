@@ -121,9 +121,9 @@ export interface BuyOutcome {
 
 /** Do'kon ro'yxati — narxlar `SHOP` da (mobil tomonda bir xil jadval). */
 export const SHOP_ITEMS: { id: ShopItemId; titleUz: string; price: number; noteUz: string }[] = [
-  { id: 'refill', titleUz: 'Yuraklarni to‘ldirish', price: SHOP.refill, noteUz: `Barcha yuraklar darhol ${HEARTS_MAX} tagacha qaytadi.` },
-  { id: 'heart', titleUz: 'Bitta yurak', price: SHOP.heart, noteUz: 'Bitta yurak qo‘shiladi (keyingi xatoga bardosh).' },
-  { id: 'freeze', titleUz: 'Streak qalqoni', price: SHOP.freeze, noteUz: `1 kun uzilishni saqlaydi. Omborda eng ko‘p ${MAX_FREEZES} ta.` },
+  { id: 'refill', titleUz: 'Yuraklarni töldiriş', price: SHOP.refill, noteUz: `Barça yuraklar darhol ${HEARTS_MAX} tagaça qaytadi.` },
+  { id: 'heart', titleUz: 'Bitta yurak', price: SHOP.heart, noteUz: 'Bitta yurak qöşiladi (keyingi xatoga bardoş).' },
+  { id: 'freeze', titleUz: 'Streak qalqoni', price: SHOP.freeze, noteUz: `1 kun uzilişni saqlaydi. Omborda eng köp ${MAX_FREEZES} ta.` },
   {
     id: 'xpBoost',
     titleUz: '2× XP byusti',
@@ -144,13 +144,13 @@ export function buy(data: AppData, item: ShopItemId, now = Date.now()): BuyOutco
     return { data, ok: false, reasonUz: `Gem yetmadi: ${price} kerak, sizda ${g.gems}.` }
   }
   if ((item === 'heart' || item === 'refill') && g.hearts >= HEARTS_MAX) {
-    return { data, ok: false, reasonUz: `Yuraklar allaqachon to‘la (${HEARTS_MAX}).` }
+    return { data, ok: false, reasonUz: `Yuraklar allaqaçon töla (${HEARTS_MAX}).` }
   }
   if (item === 'freeze' && g.freezes >= MAX_FREEZES) {
-    return { data, ok: false, reasonUz: `Omborda allaqachon ${MAX_FREEZES} ta qalqon bor.` }
+    return { data, ok: false, reasonUz: `Omborda allaqaçon ${MAX_FREEZES} ta qalqon bor.` }
   }
   if (item === 'xpBoost' && boostActive(g, now)) {
-    return { data, ok: false, reasonUz: 'Byust allaqachon faol.' }
+    return { data, ok: false, reasonUz: 'Byust allaqaçon faol.' }
   }
   const base = { ...g, gems: g.gems - price }
   const next: GameState =
@@ -168,8 +168,8 @@ export function buy(data: AppData, item: ShopItemId, now = Date.now()): BuyOutco
 /** "Double or Nothing" garovi (narxlar/kunlar `gameConfig` da — Duolingo 50→100). */
 export function placeBet(data: AppData, streakDays: number): BuyOutcome {
   const g = data.game
-  if (g.bet) return { data, ok: false, reasonUz: 'Garov allaqachon ochiq.' }
-  if (g.gems < BET_COST_GEMS) return { data, ok: false, reasonUz: `Garov uchun ${BET_COST_GEMS} gem kerak.` }
+  if (g.bet) return { data, ok: false, reasonUz: 'Garov allaqaçon oçiq.' }
+  if (g.gems < BET_COST_GEMS) return { data, ok: false, reasonUz: `Garov uçun ${BET_COST_GEMS} gem kerak.` }
   return {
     data: { ...data, game: { ...g, gems: g.gems - BET_COST_GEMS, bet: { startDay: g.today.day, streakAtStart: streakDays, gems: BET_COST_GEMS } } },
     ok: true,

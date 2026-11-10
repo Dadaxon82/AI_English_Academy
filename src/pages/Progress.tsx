@@ -63,7 +63,7 @@ export default function Progress() {
           <Chip tone="brand">
             {data.settings.currentLevel} → {data.settings.targetLevel}
           </Chip>
-          {examLeft !== null && <Chip tone={examLeft < 14 ? 'warn' : 'default'}>Imtihongacha {examLeft} kun</Chip>}
+          {examLeft !== null && <Chip tone={examLeft < 14 ? 'warn' : 'default'}>Imtihongaça {examLeft} kun</Chip>}
         </div>
         <p className="muted text-sm">
           Hozirgi daraja: <b>{ll.titleUz}</b> ({ll.titleEn}). Maqsad: <b>{target.titleUz}</b>.
@@ -76,7 +76,7 @@ export default function Progress() {
               <span
                 key={lvl}
                 className={`chip ${active ? '!border-[var(--accent)] !text-[var(--accent)] font-bold' : ''} ${loaded ? '' : 'border-dashed'}`}
-                title={loaded ? (active ? 'Siz hozir shu darajadasiz' : 'Kontent yuklangan daraja') : 'Kontent hali tayyor emas'}
+                title={loaded ? (active ? 'Siz hozir şu darajadasiz' : 'Kontent yuklangan daraja') : 'Kontent hali tayyor emas'}
               >
                 {lvl}
                 {!loaded && ' ·'}
@@ -88,22 +88,22 @@ export default function Progress() {
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <StatTile label="Kunlik ketma-ketlik" value={`${streak} kun`} tone={streak > 0 ? 'ok' : 'default'} hint="Ketma-ket faol kunlar" />
-        <StatTile label={`${range} kun ichida`} value={formatDuration(totals.seconds)} hint="Faoliyat vaqti" />
-        <StatTile label="Aniqlik" value={`${totals.acc}%`} tone={totals.acc >= 70 ? 'ok' : totals.acc >= 50 ? 'warn' : 'bad'} hint={`${totals.correct}/${totals.attempts} to‘g‘ri`} />
-        <StatTile label="So‘zlar" value={vocabSummary} hint={`${dueCount} ta takror navbatda`} />
+        <StatTile label={`${range} kun içida`} value={formatDuration(totals.seconds)} hint="Faoliyat vaqti" />
+        <StatTile label="Aniqlik" value={`${totals.acc}%`} tone={totals.acc >= 70 ? 'ok' : totals.acc >= 50 ? 'warn' : 'bad'} hint={`${totals.correct}/${totals.attempts} töğri`} />
+        <StatTile label="Sözlar" value={vocabSummary} hint={`${dueCount} ta takror navbatda`} />
       </div>
 
       {/* --- Ko'nikma isbotlari (daraja ko'tarish shartlari) --- */}
       <Card className="grid gap-3.5">
         <div className="flex flex-wrap items-center gap-2">
-          <h2 className="font-bold">Ko‘nikma isbotlari</h2>
+          <h2 className="font-bold">Könikma isbotlari</h2>
           <Chip tone={promotion.recommendedLevel ? 'ok' : 'warn'}>
-            {promotion.recommendedLevel ? 'Ko‘tarilishga tayyor' : 'Hali tayyor emas'}
+            {promotion.recommendedLevel ? 'Kötarilişga tayyor' : 'Hali tayyor emas'}
           </Chip>
         </div>
         <p className="text-xs muted">
-          Daraja faqat to‘rtta asosiy ko‘nikma bo‘yicha yetarli isbot yig‘ilsa tavsiya qilinadi: har birida kamida{' '}
-          {MIN_EVIDENCE_PER_SKILL} ta o‘lchov va umumiy ball {PROMOTION_THRESHOLD}+. XP yoki kunlar darajani ko‘tarmaydi.
+          Daraja faqat törtta asosiy könikma böyiça yetarli isbot yiğilsa tavsiya qilinadi: har birida kamida{' '}
+          {MIN_EVIDENCE_PER_SKILL} ta ölçov va umumiy ball {PROMOTION_THRESHOLD}+. XP yoki kunlar darajani kötarmaydi.
         </p>
         <div className="grid gap-3">
           {evidence.map((e) => (
@@ -141,7 +141,7 @@ export default function Progress() {
           ))}
         </div>
         {days.every((d) => d.seconds === 0 && d.attempts === 0) ? (
-          <EmptyState title="Grafik bo‘sh" body="Birinchi mashqni bajaring — kunlik faoliyat shu yerda ko‘rinadi." />
+          <EmptyState title="Grafik böş" body="Birinçi maşqni bajaring — kunlik faoliyat şu yerda körinadi." />
         ) : (
           <BarChart
             data={days.map((d) => ({
@@ -151,7 +151,7 @@ export default function Progress() {
             }))}
           />
         )}
-        <p className="text-[11px] muted">Chiziq — kunlik maqsad ({allocation.total}′).</p>
+        <p className="text-[11px] muted">Çiziq — kunlik maqsad ({allocation.total}′).</p>
       </Card>
 
       <div className="grid lg:grid-cols-2 gap-4">
@@ -159,7 +159,7 @@ export default function Progress() {
         <Card className="grid gap-3">
           <h2 className="font-bold">Mock imtihon natijalari</h2>
           {data.mockAttempts.length === 0 ? (
-            <EmptyState title="Mock imtihon topshirilmagan" body="Mock imtihon bo‘limiga o‘tib, to‘liq mashq imtihonini yeching." />
+            <EmptyState title="Mock imtihon topşirilmagan" body="Mock imtihon bölimiga ötib, töliq maşq imtihonini yeçing." />
           ) : (
             [...data.mockAttempts].reverse().map((m) => (
               <div key={m.id} className="rounded-xl border p-3 grid gap-2">
@@ -184,21 +184,21 @@ export default function Progress() {
 
         {/* --- Yozish / gapirish tarixi --- */}
         <Card className="grid gap-3">
-          <h2 className="font-bold">Yozish va gapirish tarixi</h2>
+          <h2 className="font-bold">Yoziş va gapiriş tarixi</h2>
           {data.writing.length + data.speaking.length === 0 ? (
-            <EmptyState title="Hali ish yuborilmagan" body="Yozish yoki gapirish topshirigini bajaring — baholar shu yerda paydo bo'ladi." />
+            <EmptyState title="Hali iş yuborilmagan" body="Yoziş yoki gapiriş topşirigini bajaring — baholar şu yerda paydo böladi." />
           ) : (
             <div className="grid gap-2 max-h-80 overflow-auto pr-1">
               {[
                 ...data.writing.map((w) => ({
                   at: w.createdAt,
-                  kind: 'Yozish',
+                  kind: 'Yoziş',
                   score: w.analysis ? Math.round((Object.values(w.analysis.criteriaScores).reduce((a, b) => a + b, 0) / 5 / 5) * 100) : null,
-                  label: `${w.wordCount} so‘z`,
+                  label: `${w.wordCount} söz`,
                 })),
                 ...data.speaking.map((s) => ({
                   at: s.createdAt,
-                  kind: 'Gapirish',
+                  kind: 'Gapiriş',
                   score: s.analysis ? speakingScore(s.analysis) : null,
                   label: `${s.durationSec}s`,
                 })),
@@ -224,7 +224,7 @@ export default function Progress() {
       {/* --- O'quv yo'li va diagnostika --- */}
       <div className="grid lg:grid-cols-2 gap-4">
         <Card className="grid gap-3">
-          <h2 className="font-bold">O‘quv yo‘li</h2>
+          <h2 className="font-bold">Öquv yöli</h2>
           <div className="flex items-center gap-3">
             <ProgressRing value={pathTotal ? pathDone / pathTotal : 0} size={72} label={`${pathDone}/${pathTotal} kun`} />
             <div className="text-sm muted">
@@ -239,10 +239,10 @@ export default function Progress() {
             <h2 className="font-bold">Diagnostika</h2>
             <span className="flex-1" />
             {retake ? (
-              <Button size="sm" variant="ghost" onClick={() => openRetake(false)}>Bekor qilish</Button>
+              <Button size="sm" variant="ghost" onClick={() => openRetake(false)}>Bekor qiliş</Button>
             ) : (
               <Button size="sm" variant="secondary" onClick={() => openRetake(true)}>
-                {data.diagnostic === null ? 'Diagnostikani topshirish' : 'Diagnostikani qayta topshirish'}
+                {data.diagnostic === null ? 'Diagnostikani topşiriş' : 'Diagnostikani qayta topşiriş'}
               </Button>
             )}
           </div>
@@ -255,7 +255,7 @@ export default function Progress() {
               }}
             />
           ) : data.diagnostic === null ? (
-            <EmptyState title="Diagnostika topshirilmagan" body="Yuqoridagi tugma bilan istalgan vaqtda topshirishingiz mumkin." />
+            <EmptyState title="Diagnostika topşirilmagan" body="Yuqoridagi tugma bilan istalgan vaqtda topşirişingiz mumkin." />
           ) : (
             <div className="grid gap-2 text-sm">
               <div className="flex flex-wrap items-center gap-2">
@@ -264,7 +264,7 @@ export default function Progress() {
                 <span className="muted">{new Date(data.diagnostic.at).toLocaleString('uz')}</span>
               </div>
               <p className="text-xs muted">
-                Diagnostika faqat boshlang‘ich yo‘nalish beradi; daraja keyin ko‘p ko‘nikma dalillari bilan ko‘tariladi.
+                Diagnostika faqat boşlanğiç yönaliş beradi; daraja keyin köp könikma dalillari bilan kötariladi.
               </p>
             </div>
           )}
@@ -274,10 +274,10 @@ export default function Progress() {
       <Card className="grid gap-3">
         <h2 className="font-bold">Xulosa statistikasi</h2>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-          <StatTile label="Jami urinishlar" value={data.attempts.length} />
-          <StatTile label="Yozish ishlari" value={data.writing.length} />
-          <StatTile label="Gapirish seanslari" value={data.speaking.length} />
-          <StatTile label="Mock urinishlar" value={data.mockAttempts.length} />
+          <StatTile label="Jami urinişlar" value={data.attempts.length} />
+          <StatTile label="Yoziş işlari" value={data.writing.length} />
+          <StatTile label="Gapiriş seanslari" value={data.speaking.length} />
+          <StatTile label="Mock urinişlar" value={data.mockAttempts.length} />
         </div>
         <ExportProgress />
       </Card>
@@ -302,9 +302,9 @@ function EvidenceRow({ e }: { e: SkillEvidence }) {
         <Chip tone={okCount ? 'ok' : 'warn'}>
           {e.evidenceCount}/{MIN_EVIDENCE_PER_SKILL} isbot
         </Chip>
-        <Chip tone={e.confidence >= 0.7 ? 'ok' : 'default'}>{Math.round(e.confidence * 100)}% ishonch</Chip>
+        <Chip tone={e.confidence >= 0.7 ? 'ok' : 'default'}>{Math.round(e.confidence * 100)}% işonç</Chip>
       </div>
-      {e.lastAt === null && <span className="text-[11px] muted">Bu ko‘nikma bo‘yicha hali o‘lchov yo‘q.</span>}
+      {e.lastAt === null && <span className="text-[11px] muted">Bu könikma böyiça hali ölçov yöq.</span>}
     </div>
   )
 }
@@ -312,7 +312,7 @@ function EvidenceRow({ e }: { e: SkillEvidence }) {
 function PromoteBanner() {
   const { promotion, actions } = useStore()
   const [done, setDone] = useState(false)
-  if (done) return <InfoBanner>Daraja yangilandi — yechib bo‘lingan mashqlar tarixi saqlanadi.</InfoBanner>
+  if (done) return <InfoBanner>Daraja yangilandi — yeçib bölingan maşqlar tarixi saqlanadi.</InfoBanner>
   const lvl = promotion.recommendedLevel
   if (!lvl) return null
   // ESKI BUG: tugma kontenti YUKLANMAGAN darajaga o'tkazardi — 6 ta sahifa
@@ -323,7 +323,7 @@ function PromoteBanner() {
   return (
     <div className="rounded-xl border border-emerald-300/60 bg-emerald-50 dark:bg-emerald-900/25 p-3.5 flex flex-wrap items-center gap-3">
       <span className="text-sm">
-        Tizim tavsiyasi: <b>{lvl}</b> darajasiga o‘tish.
+        Tizim tavsiyasi: <b>{lvl}</b> darajasiga ötiş.
       </span>
       <span className="flex-1" />
       <Button
@@ -336,12 +336,12 @@ function PromoteBanner() {
           setDone(true)
         }}
       >
-        {lvl}ga o‘tish
+        {lvl}ga ötiş
       </Button>
       <span className="text-[11px] muted w-full">
         {contentReady
-          ? `Kontent ${LOADED_LEVELS.join('/')} darajalari uchun tayyor.`
-          : `Tavsiya qayd etildi, lekin ${lvl} kontenti hali tayyor emas — o‘tish tugmasi kontent yuklangandan keyin ishlaydi.`}
+          ? `Kontent ${LOADED_LEVELS.join('/')} darajalari uçun tayyor.`
+          : `Tavsiya qayd etildi, lekin ${lvl} kontenti hali tayyor emas — ötiş tugmasi kontent yuklangandan keyin işlaydi.`}
       </span>
     </div>
   )

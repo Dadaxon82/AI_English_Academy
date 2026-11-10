@@ -33,17 +33,17 @@ class ExerciseProgressTest {
     fun layoutdaJarayonChizigiBorVaEskiSonMatniniOrniniBosadi() {
         val xml = File(app, "src/main/res/layout/fragment_exercise.xml").readText()
         assertTrue(
-            "fragment_exercise.xml da `exBar` bo'lishi kerak (vebdagi `.aea-step-bar` moslamasi)",
+            "fragment_exercise.xml da `exBar` bölişi kerak (vebdagi `.aea-step-bar` moslamasi)",
             xml.contains("""android:id="@+id/exBar""""),
         )
         assertTrue(
-            "`exBar` Material `LinearProgressIndicator` bo'lishi kerak — YANGI bog'liqlik qo'shilmaydi",
+            "`exBar` Material `LinearProgressIndicator` bölişi kerak — YANGI boğliqlik qöşilmaydi",
             xml.contains("com.google.android.material.progressindicator.LinearProgressIndicator"),
         )
         // Qoida: bar sonning O'RNINI bosadi (Duolingo jarayoni). Aks holda
         // ekranda ikkita jarayon ko'rsatkichi qoladi.
         assertTrue(
-            "`exCounter` matni `exBar` bilan almashtirilgan bo'lishi kerak",
+            "`exCounter` matni `exBar` bilan almaştirilgan bölişi kerak",
             !xml.contains("""android:id="@+id/exCounter"""),
         )
     }
@@ -53,16 +53,16 @@ class ExerciseProgressTest {
         val src = fragmentSource()
         val fn = src.substringAfter("private fun showProgress(animate: Boolean)")
         assertTrue(
-            "bar qiymati vebdagi `answeredCount` qoidasi bilan bir xil bo'lishi shart " +
-                "(`checked` bo'lsa index+1, aks holda index)",
+            "bar qiymati vebdagi `answeredCount` qoidasi bilan bir xil bölişi şart " +
+                "(`checked` bölsa index+1, aks holda index)",
             fn.contains("val done = if (checked) index + 1 else index"),
         )
         assertTrue(
-            "foiz haqiqiy hisobdan olinadi, chegaralangan (soxta to'ldirish yo'q)",
+            "foiz haqiqiy hisobdan olinadi, çegaralangan (soxta töldiriş yöq)",
             fn.contains("done.coerceIn(0, total) * 100 / total"),
         )
         assertTrue(
-            "son matni `contentDescription`da saqlanadi — ekranni o'qiydigan dastur o'qiydi",
+            "son matni `contentDescription`da saqlanadi — ekranni öqiydigan dastur öqiydi",
             fn.contains("getString(R.string.ex_index, done, total)"),
         )
     }
@@ -72,18 +72,18 @@ class ExerciseProgressTest {
         val src = fragmentSource()
         val fn = src.substringAfter("private fun showProgress(animate: Boolean)")
         assertTrue(
-            "harakat o'chirilganda `setProgressCompat(…, false)` bo'lishi shart " +
+            "harakat öçirilganda `setProgressCompat(…, false)` bölişi şart " +
                 "(vebdagi `html.no-motion` qoidasining mobil ekvivalenti)",
             fn.contains("animate && Motion.enabled(requireContext())"),
         )
         val onCheck = src.substringAfter("private fun onCheck()").substringBefore("private fun showOutcome")
         assertTrue(
-            "bar javob bilan birga siljishi kerak (to'g'ri/noto'g'ri farqi yo'q)",
+            "bar javob bilan birga siljişi kerak (töğri/notöğri farqi yöq)",
             onCheck.contains("showProgress(animate = true)"),
         )
         val show = src.substringAfter("private fun showExercise(i: Int)").substringBefore("private fun hideAllInputs")
         assertTrue(
-            "mashq ochilganda bar joyiga o'tadi (animatsiya yo'q)",
+            "maşq oçilganda bar joyiga ötadi (animatsiya yöq)",
             show.contains("showProgress(animate = false)"),
         )
     }

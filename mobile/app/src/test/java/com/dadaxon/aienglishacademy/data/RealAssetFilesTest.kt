@@ -35,8 +35,8 @@ class RealAssetFilesTest {
         val src = FsAssetSource(assetsRoot())
         assertTrue("diagnostic.json topilmadi", src.exists(DiagnosticLoader.PATH))
         val a = DiagnosticLoader.load(src)
-        assertNotNull("diagnostika o'qilmadi (null)", a)
-        assertEquals("barcha savollar o'qilishi kerak", 0, a!!.skipped)
+        assertNotNull("diagnostika öqilmadi (null)", a)
+        assertEquals("barça savollar öqilişi kerak", 0, a!!.skipped)
         assertEquals(12, a.exercises.size)
         assertTrue(a.passScore > 0)
         val ids = a.exercises.map { it.id }
@@ -54,7 +54,7 @@ class RealAssetFilesTest {
                 Kinds.MATCHING -> !e.pairs.isNullOrEmpty()
                 else -> false
             }
-            assertTrue("${e.id} (${e.kind}) javobi yo'q", hasAnswer)
+            assertTrue("${e.id} (${e.kind}) javobi yöq", hasAnswer)
         }
         // `dg-11` — word-order: `answer` massivi `answers` ga ko'chirilgan.
         val dg11 = a.exercises.first { it.id == "dg-11" }
@@ -66,7 +66,7 @@ class RealAssetFilesTest {
     /** Diagnostika javoblari `checkAnswer` bilan tekshirib bo'ladi (barcha tur). */
     @Test
     fun diagnosticExercisesAreCheckable() {
-        val a = DiagnosticLoader.load(FsAssetSource(assetsRoot())) ?: error("diagnostika yo'q")
+        val a = DiagnosticLoader.load(FsAssetSource(assetsRoot())) ?: error("diagnostika yöq")
         for (e in a.exercises) {
             val answer: Any? = when (e.kind) {
                 Kinds.MULTIPLE_CHOICE -> e.answerIndex
@@ -77,7 +77,7 @@ class RealAssetFilesTest {
                 else -> null
             } ?: continue
             val out = com.dadaxon.aienglishacademy.domain.checkAnswer(e, answer)
-            assertTrue("${e.id} (${e.kind}) — o'z javobi «noto‘g‘ri» deb chiqdi", out.correct)
+            assertTrue("${e.id} (${e.kind}) — öz javobi «notöğri» deb çiqdi", out.correct)
         }
     }
 
@@ -91,8 +91,8 @@ class RealAssetFilesTest {
         assertTrue(b.vocab.isNotEmpty())
         // Kun sarlavhalari bo'sh emas — dashboard'da «Kun N — …» shundan olinadi.
         for (d in b.days) {
-            assertTrue("kun ${d.id} sarlavhasi bo'sh", d.titleUz.isNotBlank())
-            assertTrue("kun ${d.id} bo'limlari yo'q", d.sections.isNotEmpty())
+            assertTrue("kun ${d.id} sarlavhasi böş", d.titleUz.isNotBlank())
+            assertTrue("kun ${d.id} bölimlari yöq", d.sections.isNotEmpty())
         }
     }
 

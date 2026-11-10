@@ -41,7 +41,7 @@ class LayoutWiringTest {
         // Dialog tugmalari MaterialAlertDialogBuilder orqali (`setPositiveButton`).
         "authGuestHintButton" to "alert dialog tugmasi",
         // Ro'yxat/satr ichidagi tugmalar `Rows.button`/adapterda qayta quriladi.
-        "rowButton" to "Rows ko'rinishi, listener Rows ichida",
+        "rowButton" to "Rows körinişi, listener Rows içida",
     )
 
     @Test

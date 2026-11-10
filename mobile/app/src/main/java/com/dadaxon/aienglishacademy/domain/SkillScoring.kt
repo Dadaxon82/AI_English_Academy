@@ -115,8 +115,8 @@ fun evaluateLevelPromotion(current: String, evidence: List<SkillEvidence>): Prom
             readySkills = ready,
             weakSkills = weak,
             reasonUz =
-                "To'rt asosiy ko'nikma bo'yicha yetarli dalil to'plandi (har biri ≥$PROMOTION_THRESHOLD ball va ≥$MIN_EVIDENCE_PER_SKILL natija). " +
-                    "$next bosqichiga o‘tish tavsiya etiladi. Bu avtomatik o‘tish emas — faqat tavsiya.",
+                "Tört asosiy könikma böyiça yetarli dalil töplandi (har biri ≥$PROMOTION_THRESHOLD ball va ≥$MIN_EVIDENCE_PER_SKILL natija). " +
+                    "$next bosqiçiga ötiş tavsiya etiladi. Bu avtomatik ötiş emas — faqat tavsiya.",
         )
     }
 
@@ -126,11 +126,11 @@ fun evaluateLevelPromotion(current: String, evidence: List<SkillEvidence>): Prom
         weakSkills = weak,
         reasonUz =
             if (ready.size >= SKILLS_REQUIRED_TO_PROMOTE) {
-                "Keyingi bosqich hozircha oxirgi daraja."
+                "Keyingi bosqiç hozirça oxirgi daraja."
             } else {
-                "Daraja oshirish uchun kamida $SKILLS_REQUIRED_TO_PROMOTE ko‘nikma bo‘yicha dalil kerak. " +
-                    "Hozircha ${ready.size} ta tayyor; zaif: ${if (weak.isEmpty()) "yo‘q" else weak.joinToString(", ")}. " +
-                    "XP va kunlar soni darajani o‘zgartirmaydi."
+                "Daraja oşiriş uçun kamida $SKILLS_REQUIRED_TO_PROMOTE könikma böyiça dalil kerak. " +
+                    "Hozirça ${ready.size} ta tayyor; zaif: ${if (weak.isEmpty()) "yöq" else weak.joinToString(", ")}. " +
+                    "XP va kunlar soni darajani özgartirmaydi."
             },
     )
 }
@@ -158,10 +158,10 @@ data class LevelLabel(val titleEn: String, val titleUz: String)
 
 fun levelLabel(level: String): LevelLabel =
     when (level) {
-        Levels.A1 -> LevelLabel("Beginner", "Boshlang‘ich")
-        Levels.A2 -> LevelLabel("Elementary", "O‘rtacha past")
-        Levels.B1 -> LevelLabel("Intermediate", "O‘rtacha")
-        Levels.B2 -> LevelLabel("Upper-Intermediate", "O‘rtachadan yuqori")
+        Levels.A1 -> LevelLabel("Beginner", "Boşlanğiç")
+        Levels.A2 -> LevelLabel("Elementary", "Örtaça past")
+        Levels.B1 -> LevelLabel("Intermediate", "Örtaça")
+        Levels.B2 -> LevelLabel("Upper-Intermediate", "Örtaçadan yuqori")
         Levels.C1 -> LevelLabel("Advanced", "Yuqori")
         else -> LevelLabel(level, level)
     }

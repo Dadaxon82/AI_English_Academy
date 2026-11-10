@@ -66,7 +66,7 @@ fun diagnose(exerciseResults: Map<String, Boolean>): DiagnosticOutcome {
         return DiagnosticOutcome(
             level = null,
             confidence = confidence,
-            labelUz = "Natija noaniq — A1 dan boshlaymiz va diagnostikani keyin takrorlaymiz.",
+            labelUz = "Natija noaniq — A1 dan boşlaymiz va diagnostikani keyin takrorlaymiz.",
         )
     }
     if (confidence < 0.5) {
@@ -74,14 +74,14 @@ fun diagnose(exerciseResults: Map<String, Boolean>): DiagnosticOutcome {
             level = null,
             confidence = confidence,
             labelUz =
-                "Taxminiy darajangiz $reached, ammo dalil yetarli emas. A1 bosqichidan boshlab, birinchi bo‘lim " +
-                "testidan so‘ng qayta baholanadi.",
+                "Taxminiy darajangiz $reached, ammo dalil yetarli emas. A1 bosqiçidan boşlab, birinçi bölim " +
+                "testidan söng qayta baholanadi.",
         )
     }
     return DiagnosticOutcome(
         level = reached,
         confidence = confidence,
-        labelUz = "Diagnostika natijasi: $reached. Bu taxminiy baho — darslar davomida aniqlashtiriladi.",
+        labelUz = "Diagnostika natijasi: $reached. Bu taxminiy baho — darslar davomida aniqlaştiriladi.",
     )
 }
 

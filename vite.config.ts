@@ -24,7 +24,7 @@ export default defineConfig({
       manifest: {
         name: 'AI English Academy',
         short_name: 'AEA',
-        description: "Ingliz tilini o'zbek tilida, o'yin shaklida o'rganish: CEFR yo'li (hozir A1 va A2 darslari), Mock Exam, oflayn",
+        description: "Ingliz tilini özbek tilida, öyin şaklida örganiş: CEFR yöli (hozir A1 va A2 darslari), Mock Exam, oflayn",
         lang: 'uz',
         dir: 'ltr',
         display: 'standalone',
@@ -47,14 +47,14 @@ export default defineConfig({
         ],
         // Do'kon / o'rnatish oynasidagi skrinshotlar — haqiqiy ilovadan (scripts/make-share-images.mjs).
         screenshots: [
-          { src: 'screenshots/wide-dashboard.png', sizes: '1280x800', type: 'image/png', form_factor: 'wide', label: 'Bosh sahifa: kunlik reja va darslar xaritasi' },
-          { src: 'screenshots/wide-path.png', sizes: '1280x800', type: 'image/png', form_factor: 'wide', label: 'O‘quv yo‘li xaritasi' },
-          { src: 'screenshots/narrow-dashboard.png', sizes: '390x844', type: 'image/png', form_factor: 'narrow', label: 'Bosh sahifa (telefon)' },
-          { src: 'screenshots/narrow-path.png', sizes: '390x844', type: 'image/png', form_factor: 'narrow', label: 'O‘quv yo‘li (telefon)' },
+          { src: 'screenshots/wide-dashboard.png', sizes: '1280x800', type: 'image/png', form_factor: 'wide', label: 'Boş sahifa: kunlik reja va darslar xaritasi' },
+          { src: 'screenshots/wide-path.png', sizes: '1280x800', type: 'image/png', form_factor: 'wide', label: 'Öquv yöli xaritasi' },
+          { src: 'screenshots/narrow-dashboard.png', sizes: '390x844', type: 'image/png', form_factor: 'narrow', label: 'Boş sahifa (telefon)' },
+          { src: 'screenshots/narrow-path.png', sizes: '390x844', type: 'image/png', form_factor: 'narrow', label: 'Öquv yöli (telefon)' },
         ],
         shortcuts: [
           { name: 'Dashboard', url: 'dashboard', description: 'Asosiy panel' },
-          { name: 'Vocabulary', url: 'vocabulary', description: "Lug'at va flashcard" },
+          { name: 'Vocabulary', url: 'vocabulary', description: "Luğat va flashcard" },
           { name: 'Mock Exam', url: 'mock-exam', description: 'Sinov namunasi' },
         ],
       },

@@ -22,8 +22,8 @@ const card = `<!doctype html><html><body style="margin:0;width:1200px;height:630
   padding:0 72px;box-sizing:border-box;background:linear-gradient(135deg,#0b1b34,#1c3fd8);font-family:Inter,system-ui,sans-serif;color:#fff">
   <img src="${mascot}" style="height:440px" alt="">
   <div><div style="font-size:64px;font-weight:900;line-height:1.05">AI English Academy</div>
-  <div style="font-size:30px;margin-top:20px;color:#dbe6fe;line-height:1.35">Ingliz tili — o‘zbek tilida, o‘yin shaklida.<br>CEFR yo‘li: A1 va A2 darslari tayyor.</div>
-  <div style="margin-top:28px;display:inline-block;background:#007a55;border-bottom:6px solid #004f3b;border-radius:18px;padding:14px 28px;font-size:26px;font-weight:900;letter-spacing:1px">BEPUL BOSHLASH</div></div></body></html>`
+  <div style="font-size:30px;margin-top:20px;color:#dbe6fe;line-height:1.35">Ingliz tili — özbek tilida, öyin şaklida.<br>CEFR yöli: A1 va A2 darslari tayyor.</div>
+  <div style="margin-top:28px;display:inline-block;background:#007a55;border-bottom:6px solid #004f3b;border-radius:18px;padding:14px 28px;font-size:26px;font-weight:900;letter-spacing:1px">BEPUL BOŞLAŞ</div></div></body></html>`
 
 const b = await chromium.launch()
 const og = await b.newPage({ viewport: { width: 1200, height: 630 } })

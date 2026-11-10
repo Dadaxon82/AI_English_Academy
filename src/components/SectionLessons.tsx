@@ -48,7 +48,7 @@ export function GrammarLesson({ topic, onClose, onFinish }: { topic: GrammarTopi
             <ul className="grid gap-2">
               {topic.examples.slice(0, 3).map((e, i) => (
                 <li key={i} className="flex items-start gap-2 rounded-2xl border-2 px-3 py-2">
-                  <SpeakButton text={e.en} label="Tinglash" />
+                  <SpeakButton text={e.en} label="Tinglaş" />
                   <span className="min-w-0">
                     <span className="block font-semibold" lang="en">
                       {e.en}
@@ -89,7 +89,7 @@ export function ReadingLesson({ passage, onClose, onFinish }: { passage: Reading
         onFinish={onFinish}
         renderInfo={() => (
           <>
-            <p className="text-sm muted">Matnni diqqat bilan o‘qing — keyingi savollar shu matn bo‘yicha. Savol paytida matnni qayta ochish mumkin.</p>
+            <p className="text-sm muted">Matnni diqqat bilan öqing — keyingi savollar şu matn böyiça. Savol paytida matnni qayta oçiş mumkin.</p>
             <div className="rounded-2xl border-2 p-4 bg-[var(--panel)]">
               <PassageText passage={passage} />
             </div>
@@ -134,11 +134,11 @@ function LessonAudio({ task }: { task: ListeningTask }) {
     }
   }, [task.audio.id, task.audio.fileAvailable])
 
-  if (state === 'loading') return <p className="text-sm muted">Audio tekshirilmoqda…</p>
+  if (state === 'loading') return <p className="text-sm muted">Audio tekşirilmoqda…</p>
   if (state === 'missing' || !src) {
     return (
       <div className="grid gap-2">
-        <InfoBanner tone="warn">Audio fayl topilmadi — transkript bilan ishlang.</InfoBanner>
+        <InfoBanner tone="warn">Audio fayl topilmadi — transkript bilan işlang.</InfoBanner>
         <div className="grid gap-1.5 text-sm" lang="en">
           {task.audio.transcript.map((t, i) => (
             <p key={i}>{t.text}</p>
@@ -167,8 +167,8 @@ export function ListeningLesson({ task, onClose, onFinish }: { task: ListeningTa
           <>
             <p className="text-sm muted">
               {task.audio.fileAvailable
-                ? 'Audioni tinglang — savollar shu audio bo‘yicha. Savol paytida uni qayta tinglash mumkin.'
-                : 'Bu suhbatning audio fayli hali yo‘q — transkriptni o‘qing, savollar shu matn bo‘yicha.'}
+                ? 'Audioni tinglang — savollar şu audio böyiça. Savol paytida uni qayta tinglaş mumkin.'
+                : 'Bu suhbatning audio fayli hali yöq — transkriptni öqing, savollar şu matn böyiça.'}
             </p>
             <LessonAudio task={task} />
           </>
@@ -196,7 +196,7 @@ export function WritingLesson({ task, onClose, onFinish }: { task: WritingTask; 
               {task.promptEn}
             </blockquote>
             <p className="text-sm muted">
-              {task.minWords}–{task.maxWords} so‘z. «Davom etish»dan keyin yozish maydoni ochiladi — matningiz tahlil qilinadi.
+              {task.minWords}–{task.maxWords} söz. «Davom etiş»dan keyin yoziş maydoni oçiladi — matningiz tahlil qilinadi.
             </p>
           </>
         )}
@@ -216,12 +216,12 @@ export function SpeakingLesson({ task, onClose, onFinish }: { task: SpeakingTask
         renderInfo={() => (
           <>
             <blockquote className="rounded-2xl border-2 bg-[var(--panel-2)] p-3.5 font-medium flex items-center gap-2" lang="en">
-              <SpeakButton text={task.questionEn} label="Tinglash" />
+              <SpeakButton text={task.questionEn} label="Tinglaş" />
               {task.questionEn}
             </blockquote>
             {task.hintUz && <p className="text-sm muted">{task.hintUz}</p>}
             <p className="text-sm muted">
-              Kamida {task.minSeconds} soniya gapiring. «Davom etish»dan keyin yozib olish paneli ochiladi.
+              Kamida {task.minSeconds} soniya gapiring. «Davom etiş»dan keyin yozib oliş paneli oçiladi.
             </p>
           </>
         )}
@@ -253,11 +253,11 @@ export function LessonStartCard({
         <p className="text-[11px] font-extrabold uppercase tracking-wider text-violet-600 dark:text-violet-400">{kicker}</p>
         <h2 className="text-xl sm:text-2xl font-extrabold">{title}</h2>
         <p className="text-sm muted">
-          {body} · {graded} ta topshiriq
+          {body} · {graded} ta topşiriq
         </p>
         <div>
           <button type="button" className={chunkyGreen} onClick={onStart}>
-            Darsni boshlash
+            Darsni boşlaş
           </button>
         </div>
       </div>

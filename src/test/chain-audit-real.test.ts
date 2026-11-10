@@ -37,10 +37,10 @@ function chainsOf(b: LevelBundle) {
   )
 }
 
-describe('chainAudit — A1 kontenti (o‘lchangan sonlar)', () => {
+describe('chainAudit — A1 kontenti (ölçangan sonlar)', () => {
   const chains = chainsOf(bundle)
   const audit = chainAudit(chains, (id) => findExercise(id)?.kind)
-  it('A1 — 7 kun, 49 bo‘lim/test (o‘lchangan kontent hajmi)', () => {
+  it('A1 — 7 kun, 49 bölim/test (ölçangan kontent hajmi)', () => {
     expect(chains).toHaveLength(bundle.days.length)
     expect(chains.reduce((a, c) => a + c.steps.length, 0)).toBe(49)
   })
@@ -54,7 +54,7 @@ describe('chainAudit — A1 kontenti (o‘lchangan sonlar)', () => {
     expect(audit.reinforcement).toBeGreaterThan(0) // REINFORCE_EVERY qatlam ishlaydi
     expect(audit.minGap).toBeGreaterThanOrEqual(2)
   })
-  it('mobil `chainAudit` bilan bir xil — sonlar tartibga bog‘liq emas', () => {
+  it('mobil `chainAudit` bilan bir xil — sonlar tartibga boğliq emas', () => {
     // KUNLAR va BO'LIMLAR teskari tartibda berilsa ham xuddi shu son chiqadi
     // (`buildChain` bo'limlarni `Skills.PLAN_ORDER` tartibiga qaytaradi).
     const reversed = chainsOf({

@@ -1,29 +1,58 @@
 {
-  "_comment": "O'yin qatlami sonlarining MOBIL nusxasi — veb `src/lib/gameConfig.ts` BILAN BIR XIL bo'lishi shart (testlar tenglikni sanaydi). Har bir sonning manbasi quyidagi maydonlarda ochiq yozilgan: 'Duolingo' = manbada tekshirilgan fakt, 'biznik' = BIZNING qarorimiz (manbada aniq son yo'q yoki manbalar zid). Asosiy manbalar: hearts — duolingo.com/help/what-is-a-streak + practicetestgeeks.com/duolingo/duolingo-earn-hearts; yurak tiklanish oralig'i manbalarda ZID (1/4/5 soat, rasmiy energy maqolasida 'taxminan bir kun') — 30 daqiqa biznik; do'kon narxlari — lingoly.io/duolingo-streak-freeze + happilyevertravels.com/duolingo-gems-lingots; kuniga 3 quest va chestda 4–15 gem — cherishstudy.com/duolingo-daily-quests; XP byust 2×/15 daq — lingoly.io/duolingo-xp-boost; ligalar tartibi va promoteTop — lingoly.io/duolingo-leagues-in-order + duolingo.com/help/leaderboards-and-league; achievement darajalari — duolingoguides.com/duolingo-rewards. XP masshtabimiz Duolingo'dan ~10 marta katta (bitta mashq 6+2×qiyinlik XP), shuning uchun XP sonlari ×10 — bu ham BIZNIK.",
+  "_comment": "Öyin qatlami sonlarining MOBIL nusxasi — veb `src/lib/gameConfig.ts` BILAN BIR XIL bölişi şart (testlar tenglikni sanaydi). Har bir sonning manbasi quyidagi maydonlarda oçiq yozilgan: 'Duolingo' = manbada tekşirilgan fakt, 'biznik' = BIZNING qarorimiz (manbada aniq son yöq yoki manbalar zid). Asosiy manbalar: hearts — duolingo.com/help/what-is-a-streak + practicetestgeeks.com/duolingo/duolingo-earn-hearts; yurak tiklaniş oraliği manbalarda ZID (1/4/5 soat, rasmiy energy maqolasida 'taxminan bir kun') — 30 daqiqa biznik; dökon narxlari — lingoly.io/duolingo-streak-freeze + happilyevertravels.com/duolingo-gems-lingots; kuniga 3 quest va chestda 4–15 gem — cherishstudy.com/duolingo-daily-quests; XP byust 2×/15 daq — lingoly.io/duolingo-xp-boost; ligalar tartibi va promoteTop — lingoly.io/duolingo-leagues-in-order + duolingo.com/help/leaderboards-and-league; achievement darajalari — duolingoguides.com/duolingo-rewards. XP masştabimiz Duolingödan ~10 marta katta (bitta maşq 6+2×qiyinlik XP), şuning uçun XP sonlari ×10 — bu ham BIZNIK.",
   "version": 1,
   "heartsMax": 5,
   "heartsCostWrong": 1,
   "heartRefillMinutes": 30,
-  "heartRefillMinutesSource": "biznik — manbalar zid (1/4/5 soat), o'quvchi kuni tugamasligi uchun 30 daqiqa",
+  "heartRefillMinutesSource": "biznik — manbalar zid (1/4/5 soat), öquvçi kuni tugamasligi uçun 30 daqiqa",
   "heartPracticeReviews": 8,
-  "heartPracticeReviewsSource": "Duolingo 'practice to earn hearts' (1 practice darsi = 1 yurak, ~10–15 savol); bizning lug'at takrorlashimizga mos son — 8 (orasini tanlash BIZNIK)",
+  "heartPracticeReviewsSource": "Duolingo 'practice to earn hearts' (1 practice darsi = 1 yurak, ~10–15 savol); bizning luğat takrorlaşimizga mos son — 8 (orasini tanlaş BIZNIK)",
   "heartComboStreak": 5,
-  "heartComboStreakSource": "Duolingo Energy tizimi: 5 ketma-ket to'g'ri javob = +1 unit; bizda 5 → 1 yurak",
-  "heartFreeSources": ["mock_exam", "diagnostic", "section_test"],
-  "heartFreeSourcesSource": "biznik — sinov/sanovlarda va bo'lim testlarida yurak jarimasi yo'q",
+  "heartComboStreakSource": "Duolingo Energy tizimi: 5 ketma-ket töğri javob = +1 unit; bizda 5 → 1 yurak",
+  "heartFreeSources": [
+    "mock_exam",
+    "diagnostic",
+    "section_test"
+  ],
+  "heartFreeSourcesSource": "biznik — sinov/sanovlarda va bölim testlarida yurak jarimasi yöq",
   "heartGateMin": 1,
-  "heartGateMinSource": "biznik — yurak 0 ga tushsa dars darvozasi yopiladi",
+  "heartGateMinSource": "biznik — yurak 0 ga tuşsa dars darvozasi yopiladi",
   "xpGoalTiers": [
-    { "id": "basic", "titleUz": "Boshlang‘ich", "xp": 50, "src": "Duolingo 5 bosqichi (Basic 1 XP) — masshtabimizda ×10" },
-    { "id": "casual", "titleUz": "Oddiy", "xp": 100, "src": "Duolingo Casual 10 XP — ×10" },
-    { "id": "regular", "titleUz": "Muntazam", "xp": 200, "src": "Duolingo Regular 20 XP — ×10; STANDART bosqich (gameConfig: XP_GOAL_DEFAULT_ID)" },
-    { "id": "serious", "titleUz": "Jiddiy", "xp": 300, "src": "Duolingo Serious 30 XP — ×10" },
-    { "id": "intense", "titleUz": "Faol", "xp": 500, "src": "Duolingo Intense 50 XP — ×10" }
+    {
+      "id": "basic",
+      "titleUz": "Boşlanğiç",
+      "xp": 50,
+      "src": "Duolingo 5 bosqichi (Basic 1 XP) — masshtabimizda ×10"
+    },
+    {
+      "id": "casual",
+      "titleUz": "Oddiy",
+      "xp": 100,
+      "src": "Duolingo Casual 10 XP — ×10"
+    },
+    {
+      "id": "regular",
+      "titleUz": "Muntazam",
+      "xp": 200,
+      "src": "Duolingo Regular 20 XP — ×10; STANDART bosqich (gameConfig: XP_GOAL_DEFAULT_ID)"
+    },
+    {
+      "id": "serious",
+      "titleUz": "Jiddiy",
+      "xp": 300,
+      "src": "Duolingo Serious 30 XP — ×10"
+    },
+    {
+      "id": "intense",
+      "titleUz": "Faol",
+      "xp": 500,
+      "src": "Duolingo Intense 50 XP — ×10"
+    }
   ],
   "xpGoalDefaultId": "regular",
   "xpBoostMinutes": 15,
   "xpBoostMult": 2,
-  "xpBoostSource": "Duolingo XP boost: aynan 2× va 15 daqiqa (lingoly.io/duolingo-xp-boost); gem bilan SOTILISHI — biznik (Duolingo byustni sotmaydi)",
+  "xpBoostSource": "Duolingo XP boost: aynan 2× va 15 daqiqa (lingoly.io/duolingo-xp-boost); gem bilan SOTILIŞI — biznik (Duolingo byustni sotmaydi)",
   "lessonBonusXp": 10,
   "lessonBonusXpSource": "biznik — dars yakunidagi bonus",
   "perfectLessonBonusXp": 10,
@@ -33,76 +62,277 @@
   "questsPerDay": 3,
   "questsPerDaySource": "Duolingo: kuniga 3 quest, 24 soatda yangilanadi",
   "questGemReward": 10,
-  "questGemRewardSource": "Duolingo chestida 4–15 gem — o'rtachasi (biznik)",
+  "questGemRewardSource": "Duolingo chestida 4–15 gem — örtaçasi (biznik)",
   "goalGemReward": 10,
   "goalGemRewardSource": "biznik — kunlik maqsadga yetganda",
   "chestGemReward": 50,
   "chestGemRewardSource": "biznik — haftalik sandiq",
   "chestMinActiveDays": 4,
-  "chestMinActiveDaysSource": "biznik — sandiq ochilishi uchun kamida 4 faol kun",
+  "chestMinActiveDaysSource": "biznik — sandiq oçilişi uçun kamida 4 faol kun",
   "questPool": [
-    { "id": "q-xp-100", "kind": "xp", "target": 100, "titleUz": "100 XP yigʻiring", "src": "Duolingo 'Earn 30/50 XP' tiq — bizning XP masshtabimizda ×10" },
-    { "id": "q-att-10", "kind": "attempts", "target": 10, "titleUz": "10 mashq bajaring", "src": "Duolingo 'Complete 4 lessons' tiq — bizda mashq soni (tanlov biznik)" },
-    { "id": "q-rev-8", "kind": "reviews", "target": 8, "titleUz": "8 ta so‘zni takrorlang", "src": "Duolingo 'Review 5/10 mistakes' — biznik (8)" },
-    { "id": "q-perf-1", "kind": "perfect_lesson", "target": 1, "titleUz": "Bitta darsni xatosiz tugating", "src": "Duolingo 'Score 90% in 2 lessons' tiq — biznik" },
-    { "id": "q-min-900", "kind": "minutes", "target": 900, "titleUz": "15 daqiqa shug‘ullaning", "src": "Duolingo 'Spend 15 minutes learning' — sekundlarda (900)" },
-    { "id": "q-lis-180", "kind": "listening", "target": 180, "titleUz": "Tinglashga 3 daqiqa sarflang", "src": "biznik — tinglashga 3 daqiqa (sekundlarda)" },
-    { "id": "q-spk-120", "kind": "speaking", "target": 120, "titleUz": "Gapirishga 2 daqiqa sarflang", "src": "biznik — gapirishga 2 daqiqa (sekundlarda)" },
-    { "id": "q-xp-300", "kind": "xp", "target": 300, "titleUz": "300 XP yigʻiring", "src": "yuqoridagining kattaroq varianti — ×10 masshtab" },
-    { "id": "q-att-20", "kind": "attempts", "target": 20, "titleUz": "20 mashq bajaring", "src": "yuqoridagining kattaroq varianti — biznik" },
-    { "id": "q-rev-15", "kind": "reviews", "target": 15, "titleUz": "15 ta so‘zni takrorlang", "src": "Duolingo 'Review 10 mistakes' tiq — biznik (15)" }
+    {
+      "id": "q-xp-100",
+      "kind": "xp",
+      "target": 100,
+      "titleUz": "100 XP yiğiring",
+      "src": "Duolingo 'Earn 30/50 XP' tiq — bizning XP masshtabimizda ×10"
+    },
+    {
+      "id": "q-att-10",
+      "kind": "attempts",
+      "target": 10,
+      "titleUz": "10 maşq bajaring",
+      "src": "Duolingo 'Complete 4 lessons' tiq — bizda mashq soni (tanlov biznik)"
+    },
+    {
+      "id": "q-rev-8",
+      "kind": "reviews",
+      "target": 8,
+      "titleUz": "8 ta sözni takrorlang",
+      "src": "Duolingo 'Review 5/10 mistakes' — biznik (8)"
+    },
+    {
+      "id": "q-perf-1",
+      "kind": "perfect_lesson",
+      "target": 1,
+      "titleUz": "Bitta darsni xatosiz tugating",
+      "src": "Duolingo 'Score 90% in 2 lessons' tiq — biznik"
+    },
+    {
+      "id": "q-min-900",
+      "kind": "minutes",
+      "target": 900,
+      "titleUz": "15 daqiqa şuğullaning",
+      "src": "Duolingo 'Spend 15 minutes learning' — sekundlarda (900)"
+    },
+    {
+      "id": "q-lis-180",
+      "kind": "listening",
+      "target": 180,
+      "titleUz": "Tinglaşga 3 daqiqa sarflang",
+      "src": "biznik — tinglashga 3 daqiqa (sekundlarda)"
+    },
+    {
+      "id": "q-spk-120",
+      "kind": "speaking",
+      "target": 120,
+      "titleUz": "Gapirişga 2 daqiqa sarflang",
+      "src": "biznik — gapirishga 2 daqiqa (sekundlarda)"
+    },
+    {
+      "id": "q-xp-300",
+      "kind": "xp",
+      "target": 300,
+      "titleUz": "300 XP yiğiring",
+      "src": "yuqoridagining kattaroq varianti — ×10 masshtab"
+    },
+    {
+      "id": "q-att-20",
+      "kind": "attempts",
+      "target": 20,
+      "titleUz": "20 maşq bajaring",
+      "src": "yuqoridagining kattaroq varianti — biznik"
+    },
+    {
+      "id": "q-rev-15",
+      "kind": "reviews",
+      "target": 15,
+      "titleUz": "15 ta sözni takrorlang",
+      "src": "Duolingo 'Review 10 mistakes' tiq — biznik (15)"
+    }
   ],
   "achievements": [
-    { "id": "a-wildfire", "metric": "streak_days", "levels": [3, 7, 14, 30, 90, 365], "gem": 25, "titleUz": "Ketma-ketlik", "src": "Duolingo Wildfire jadvali (3,7,14,30,60,90,120,180,270,365) — bizda 6 ta tanlangan qismi; gem ~25 (Duolingo'da yangi achievement ≈ 25 gem)" },
-    { "id": "a-scholar", "metric": "xp_total", "levels": [1000, 5000, 10000, 25000, 100000], "gem": 25, "titleUz": "Ta’limgon", "src": "Duolingo XP Olympian (100…30 000) — BIZNING XP masshtabimizda ×10 hisobiga moslashgan holda" },
-    { "id": "a-linguist", "metric": "words_learned", "levels": [50, 100, 250, 500, 2000], "gem": 25, "titleUz": "Lug‘atchi", "src": "Duolingo Word Collector: 50 → 2000 — oxirgi 5 daraja biznik" },
-    { "id": "a-sharp", "metric": "lessons_perfect", "levels": [1, 5, 10, 25, 100], "gem": 25, "titleUz": "Aniq otish", "src": "Duolingo Flawless Finisher: 1,5,10,25,100" },
-    { "id": "a-practise", "metric": "attempts_total", "levels": [100, 500, 2000, 5000], "gem": 25, "titleUz": "Mashqparvar", "src": "biznik — Duolingo'da bunday yutuq yo'q" },
-    { "id": "a-dedicated", "metric": "minutes_total", "levels": [60, 300, 900, 1800], "gem": 25, "titleUz": "Sadoqatli", "src": "biznik — daqiqalar bo'yicha sadoqat" }
+    {
+      "id": "a-wildfire",
+      "metric": "streak_days",
+      "levels": [
+        3,
+        7,
+        14,
+        30,
+        90,
+        365
+      ],
+      "gem": 25,
+      "titleUz": "Ketma-ketlik",
+      "src": "Duolingo Wildfire jadvali (3,7,14,30,60,90,120,180,270,365) — bizda 6 ta tanlangan qismi; gem ~25 (Duolingo'da yangi achievement ≈ 25 gem)"
+    },
+    {
+      "id": "a-scholar",
+      "metric": "xp_total",
+      "levels": [
+        1000,
+        5000,
+        10000,
+        25000,
+        100000
+      ],
+      "gem": 25,
+      "titleUz": "Ta’limgon",
+      "src": "Duolingo XP Olympian (100…30 000) — BIZNING XP masshtabimizda ×10 hisobiga moslashgan holda"
+    },
+    {
+      "id": "a-linguist",
+      "metric": "words_learned",
+      "levels": [
+        50,
+        100,
+        250,
+        500,
+        2000
+      ],
+      "gem": 25,
+      "titleUz": "Luğatçi",
+      "src": "Duolingo Word Collector: 50 → 2000 — oxirgi 5 daraja biznik"
+    },
+    {
+      "id": "a-sharp",
+      "metric": "lessons_perfect",
+      "levels": [
+        1,
+        5,
+        10,
+        25,
+        100
+      ],
+      "gem": 25,
+      "titleUz": "Aniq otiş",
+      "src": "Duolingo Flawless Finisher: 1,5,10,25,100"
+    },
+    {
+      "id": "a-practise",
+      "metric": "attempts_total",
+      "levels": [
+        100,
+        500,
+        2000,
+        5000
+      ],
+      "gem": 25,
+      "titleUz": "Maşqparvar",
+      "src": "biznik — Duolingo'da bunday yutuq yo'q"
+    },
+    {
+      "id": "a-dedicated",
+      "metric": "minutes_total",
+      "levels": [
+        60,
+        300,
+        900,
+        1800
+      ],
+      "gem": 25,
+      "titleUz": "Sadoqatli",
+      "src": "biznik — daqiqalar bo'yicha sadoqat"
+    }
   ],
   "achievementCount": 6,
-  "achievementCountSource": "yuqoridagi ro'yxatning sanog'i (test ikkala tomonda sanaydi)",
+  "achievementCountSource": "yuqoridagi röyxatning sanoği (test ikkala tomonda sanaydi)",
   "freezeGemCost": 200,
-  "freezeGemCostSource": "Duolingo streak freeze do'konda 200 gem",
+  "freezeGemCostSource": "Duolingo streak freeze dökonda 200 gem",
   "maxFreezes": 2,
-  "maxFreezesSource": "Duolingo: bir vaqtda omborda eng ko'p 2 ta freeze",
+  "maxFreezesSource": "Duolingo: bir vaqtda omborda eng köp 2 ta freeze",
   "freezeSearchDays": 14,
-  "freezeSearchDaysSource": "biznik — qalqon qayergacha izlanadi (ombordagi son emas); Duolingo aniq aytmagan",
-  "streakMilestones": [7, 30, 90, 365],
-  "streakMilestonesSource": "bosqichlar soni/tartibi Duolingo Streak Society atrofida, QAYSI bosqich ekanligi — biznik",
-  "freezeMilestones": { "7": 1, "30": 1, "90": 2, "365": 2 },
-  "freezeMilestonesSource": "Duolingo'da bosqichda '+3 streak freeze' deyiladi; nechta qaysi bosqichda — BIZNIK",
+  "freezeSearchDaysSource": "biznik — qalqon qayergaça izlanadi (ombordagi son emas); Duolingo aniq aytmagan",
+  "streakMilestones": [
+    7,
+    30,
+    90,
+    365
+  ],
+  "streakMilestonesSource": "bosqiçlar soni/tartibi Duolingo Streak Society atrofida, QAYSI bosqiç ekanligi — biznik",
+  "freezeMilestones": {
+    "7": 1,
+    "30": 1,
+    "90": 2,
+    "365": 2
+  },
+  "freezeMilestonesSource": "Duolingöda bosqiçda '+3 streak freeze' deyiladi; neçta qaysi bosqiçda — BIZNIK",
   "betCostGems": 50,
   "betWinGems": 100,
   "betStreakDays": 7,
   "betDays": 7,
-  "betSource": "Duolingo 'Double or Nothing': 50 gem tikiladi, 7 kun streak bo'lsa 100 gem qaytadi",
+  "betSource": "Duolingo 'Double or Nothing': 50 gem tikiladi, 7 kun streak bölsa 100 gem qaytadi",
   "shop": {
     "heart": 70,
     "heartSource": "biznik — 350/5 ≈ 70 (Duolingo bitta yurakni alohida sotmaydi)",
     "refill": 350,
-    "refillSource": "Duolingo do'koni: yuraklarni darhol to'ldirish 350 gem",
+    "refillSource": "Duolingo dökoni: yuraklarni darhol töldiriş 350 gem",
     "freeze": 200,
     "freezeSource": "Duolingo: streak freeze 200 gem (freezeGemCost bilan bir xil)",
     "xpBoost": 100,
     "xpBoostSource": "biznik — Duolingo byustni gem bilan sotmaydi"
   },
   "leagues": [
-    { "id": "bronze", "titleUz": "Bronza", "minXp": 0, "promoteTop": 20 },
-    { "id": "silver", "titleUz": "Kumush", "minXp": 100, "promoteTop": 15 },
-    { "id": "gold", "titleUz": "Oltin", "minXp": 250, "promoteTop": 10 },
-    { "id": "sapphire", "titleUz": "Sapfir", "minXp": 450, "promoteTop": 7 },
-    { "id": "ruby", "titleUz": "Rubin", "minXp": 700, "promoteTop": 7 },
-    { "id": "emerald", "titleUz": "Zumrad", "minXp": 1000, "promoteTop": 7 },
-    { "id": "amethyst", "titleUz": "Ametist", "minXp": 1500, "promoteTop": 7 },
-    { "id": "pearl", "titleUz": "Marvarid", "minXp": 2200, "promoteTop": 7 },
-    { "id": "obsidian", "titleUz": "Obsidian", "minXp": 3000, "promoteTop": 5 },
-    { "id": "diamond", "titleUz": "Olmos", "minXp": 4000, "promoteTop": 0 }
+    {
+      "id": "bronze",
+      "titleUz": "Bronza",
+      "minXp": 0,
+      "promoteTop": 20
+    },
+    {
+      "id": "silver",
+      "titleUz": "Kumuş",
+      "minXp": 100,
+      "promoteTop": 15
+    },
+    {
+      "id": "gold",
+      "titleUz": "Oltin",
+      "minXp": 250,
+      "promoteTop": 10
+    },
+    {
+      "id": "sapphire",
+      "titleUz": "Sapfir",
+      "minXp": 450,
+      "promoteTop": 7
+    },
+    {
+      "id": "ruby",
+      "titleUz": "Rubin",
+      "minXp": 700,
+      "promoteTop": 7
+    },
+    {
+      "id": "emerald",
+      "titleUz": "Zumrad",
+      "minXp": 1000,
+      "promoteTop": 7
+    },
+    {
+      "id": "amethyst",
+      "titleUz": "Ametist",
+      "minXp": 1500,
+      "promoteTop": 7
+    },
+    {
+      "id": "pearl",
+      "titleUz": "Marvarid",
+      "minXp": 2200,
+      "promoteTop": 7
+    },
+    {
+      "id": "obsidian",
+      "titleUz": "Obsidian",
+      "minXp": 3000,
+      "promoteTop": 5
+    },
+    {
+      "id": "diamond",
+      "titleUz": "Olmos",
+      "minXp": 4000,
+      "promoteTop": 0
+    }
   ],
-  "leaguesSource": "10 liga tartibi va har ligada 30 kishi — Duolingo (duolingo.com/help/leaderboards-and-league); promoteTop (20/15/10/7/7/7/7/7/5/0) — lingoly.io/duolingo-leagues-in-order; minXp (birinchi marta kirish chegarasi) — MANBADA Yo'Q, bizning aniqlik uchun jadvilimiz",
+  "leaguesSource": "10 liga tartibi va har ligada 30 kişi — Duolingo (duolingo.com/help/leaderboards-and-league); promoteTop (20/15/10/7/7/7/7/7/5/0) — lingoly.io/duolingo-leagues-in-order; minXp (birinçi marta kiriş çegarasi) — MANBADA YöQ, bizning aniqlik uçun jadvilimiz",
   "leagueBoardSize": 30,
-  "leaguePrizeGems": [100, 50, 30],
-  "leaguePrizeSource": "Duolingo: haftalik top-3 gem oladi; aniq sonlar manbada yo'q — BIZNIK",
+  "leaguePrizeGems": [
+    100,
+    50,
+    30
+  ],
+  "leaguePrizeSource": "Duolingo: haftalik top-3 gem oladi; aniq sonlar manbada yöq — BIZNIK",
   "gameDataVersion": 1,
   "gameDataVersionSource": "sxema versiyasi (veb gameConfig GAME_DATA_VERSION bilan bir xil)"
 }

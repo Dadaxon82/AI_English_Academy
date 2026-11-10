@@ -5,7 +5,7 @@ import { emptyData, todayKey } from '../lib/types'
 
 const UID = 'u-1'
 
-describe('Sinxronlash payload — PostgREST ustun nomlari (snake_case)', () => {
+describe('Sinxronlaş payload — PostgREST ustun nomlari (snake_case)', () => {
   const data = {
     ...emptyData(UID),
     settings: {
@@ -80,14 +80,14 @@ describe('Sinxronlash payload — PostgREST ustun nomlari (snake_case)', () => {
     expect(p.id).toBe(UID)
   })
 
-  it('barcha personal jadvallarda user_id bor (RLS with check)', () => {
+  it('barça personal jadvallarda user_id bor (RLS with check)', () => {
     for (const it of items) {
       const p = it.payload as Record<string, unknown>
-      expect(p.user_id, `${it.table} user_id’i yo‘q`).toBe(UID)
+      expect(p.user_id, `${it.table} user_id’i yöq`).toBe(UID)
     }
   })
 
-  it('o‘quv yo‘li va XP diagnostikasiz ham `plan` ustunida yuboriladi', () => {
+  it('öquv yöli va XP diagnostikasiz ham `plan` ustunida yuboriladi', () => {
     const d = {
       ...emptyData(UID),
       xp: 42,
@@ -111,8 +111,8 @@ describe('Sinxronlash payload — PostgREST ustun nomlari (snake_case)', () => {
   })
 })
 
-describe('migrate — onboarding belgisi (`onboardedAt`) eski keshda', () => {
-  it('diagnostikasi yoki mashq tarixi bor foydalanuvchi onboarding’dan o‘tgan hisoblanadi', () => {
+describe('migrate — onboarding belgisi (`onboardedAt`) eski keşda', () => {
+  it('diagnostikasi yoki maşq tarixi bor foydalanuvçi onboardinğdan ötgan hisoblanadi', () => {
     const base = emptyData(UID)
     const legacy = (extra: Record<string, unknown>) => {
       const raw: Record<string, unknown> = { ...base, ...extra }
@@ -126,8 +126,8 @@ describe('migrate — onboarding belgisi (`onboardedAt`) eski keshda', () => {
   })
 })
 
-describe('Kunlik daqiqa chegarasi (DB CHECK: 30..240)', () => {
-  it('eski keshdagi 15 daqiqa migratsiyada 30 ga keltiriladi', () => {
+describe('Kunlik daqiqa çegarasi (DB CHECK: 30..240)', () => {
+  it('eski keşdagi 15 daqiqa migratsiyada 30 ga keltiriladi', () => {
     const raw = { ...emptyData(UID), settings: { ...emptyData(UID).settings, dailyMinutes: 15 } }
     expect(migrate(raw).settings.dailyMinutes).toBe(30)
   })
@@ -139,12 +139,12 @@ describe('Kunlik daqiqa chegarasi (DB CHECK: 30..240)', () => {
   })
 })
 
-describe('Navbat deduplikati (sinxron tugmasi navbatni shishirmasin)', () => {
+describe('Navbat deduplikati (sinxron tugmasi navbatni şişirmasin)', () => {
   beforeEach(async () => {
     await updateQueue(UID, [])
   })
 
-  it('payload.id bo‘lgan jadval takrorlansa — bitta yozuv qoladi', async () => {
+  it('payload.id bölgan jadval takrorlansa — bitta yozuv qoladi', async () => {
     const item = { id: 'q1', table: 'exercise_attempts', op: 'upsert' as const, at: 1, payload: { id: 'att-1' } }
     await enqueue(UID, item)
     await enqueue(UID, { ...item, id: 'q2', at: 2 })
@@ -153,7 +153,7 @@ describe('Navbat deduplikati (sinxron tugmasi navbatni shishirmasin)', () => {
     expect((q[0].payload as { id: string }).id).toBe('att-1')
   })
 
-  it('payload.id BO‘LMAGan jadvallar ham deduplikatlanadi (eski bug: cheksiz o‘sardi)', async () => {
+  it('payload.id BÖLMAGan jadvallar ham deduplikatlanadi (eski bug: çeksiz ösardi)', async () => {
     const rows = [
       { table: 'user_settings', payload: { user_id: UID, daily_minutes: 90 } },
       { table: 'user_vocabulary', payload: { user_id: UID, vocabulary_id: 'a1-v1-hello' } },
@@ -165,13 +165,13 @@ describe('Navbat deduplikati (sinxron tugmasi navbatni shishirmasin)', () => {
     expect(q).toHaveLength(3)
   })
 
-  it('har xil tabiiy kalit — alohida yozuv bo‘lib qoladi', () => {
+  it('har xil tabiiy kalit — alohida yozuv bölib qoladi', () => {
     expect(dedupeKey('user_vocabulary', { vocabulary_id: 'a' })).not.toBe(dedupeKey('user_vocabulary', { vocabulary_id: 'b' }))
     expect(dedupeKey('daily_activity', { day: '2026-01-01' })).not.toBe(dedupeKey('daily_activity', { day: '2026-01-02' }))
     expect(dedupeKey('user_settings', {})).toBe('uk:user')
   })
 
-  it('enqueueMany: bitta yozishda qo‘shadi, kalit takrorlansa oxirgisi qoladi', async () => {
+  it('enqueueMany: bitta yozişda qöşadi, kalit takrorlansa oxirgisi qoladi', async () => {
     await enqueue(UID, { id: 'old', table: 'exercise_attempts', op: 'upsert', at: 0, payload: { id: 'att-2', v: 0 } })
     await enqueueMany(UID, [
       { id: 'a', table: 'exercise_attempts', op: 'upsert', at: 1, payload: { id: 'att-1', v: 1 } },
@@ -185,7 +185,7 @@ describe('Navbat deduplikati (sinxron tugmasi navbatni shishirmasin)', () => {
     ])
   })
 
-  it('butun AppData 5 marta navbatga qo‘yilsa ham navbat o‘smaydi', async () => {
+  it('butun AppData 5 marta navbatga qöyilsa ham navbat ösmaydi', async () => {
     const data = {
       ...emptyData(UID),
       diagnostic: { at: Date.UTC(2026, 0, 5), level: 'A1' as const, labelUz: 'A1', confidence: 0.5 },

@@ -60,7 +60,7 @@ export default function Conversation() {
   const vocabPool = useMemo<VocabularyItem[]>(() => [...allVocab(), ...allGlossaryVocab()], [])
   const script = useMemo(() => (d ? scriptTurns(d) : null), [d])
 
-  if (!ready) return <LoadingBlock label="Suhbatdosh tayyorlanmoqda…" />
+  if (!ready) return <LoadingBlock label="Suhbatdoş tayyorlanmoqda…" />
 
   const scroll = () => window.setTimeout(() => endRef.current?.scrollIntoView?.({ block: 'end' }), 0)
 
@@ -156,17 +156,17 @@ export default function Conversation() {
     return (
       <div className="grid content-start gap-4">
         <Card className="grid gap-3">
-          <h1 className="text-xl sm:text-2xl font-extrabold">Suhbatdosh</h1>
+          <h1 className="text-xl sm:text-2xl font-extrabold">Suhbatdoş</h1>
           <p className="text-sm muted">
-            Vaziyatni tanlang va hamsuhbat bilan ingliz tilida gaplashing — yozib yoki gapirib. Javoblaringizdagi xatolar suhbat
-            oxirida mashqqa aylanadi.
+            Vaziyatni tanlang va hamsuhbat bilan ingliz tilida gaplaşing — yozib yoki gapirib. Javoblaringizdagi xatolar suhbat
+            oxirida maşqqa aylanadi.
           </p>
           {aiOn ? (
             <InfoBanner>AI ulangan: hamsuhbat erkin javob beradi va xatolaringizni tuzatadi (kunlik AI limiti hisoblanadi).</InfoBanner>
           ) : (
             <InfoBanner tone="muted">
-              AI ulanmagan{!netOnline ? ' (internet yo‘q)' : data.settings.aiEnabled ? '' : ' (sozlamada o‘chirilgan)'} — suhbat oldindan
-              yozilgan stsenariy bo‘yicha boradi: har javobingiz namuna bilan solishtiriladi.
+              AI ulanmagan{!netOnline ? ' (internet yöq)' : data.settings.aiEnabled ? '' : ' (sozlamada öçirilgan)'} — suhbat oldindan
+              yozilgan stsenariy böyiça boradi: har javobingiz namuna bilan soliştiriladi.
             </InfoBanner>
           )}
           <div className="flex flex-wrap gap-2" role="group" aria-label="Daraja">
@@ -189,7 +189,7 @@ export default function Conversation() {
               </div>
               <div className="flex justify-end">
                 <Button size="sm" onClick={() => start(dlg, aiOn ? 'ai' : 'script')}>
-                  Gaplashish
+                  Gaplaşiş
                 </Button>
               </div>
             </Card>
@@ -231,7 +231,7 @@ export default function Conversation() {
                 <span className="text-[11px] font-extrabold uppercase tracking-wider muted">{l.speaker === 'learner' ? d.roles.b : d.roles.a}</span>
                 <span className="flex items-start gap-2">
                   <span className="text-sm leading-relaxed">{l.text}</span>
-                  {l.speaker === 'partner' && <SpeakButton text={l.text} label="Tinglash" />}
+                  {l.speaker === 'partner' && <SpeakButton text={l.text} label="Tinglaş" />}
                 </span>
                 {l.corrections && l.corrections.length > 0 && (
                   <ul className="grid gap-1 text-xs">
@@ -250,8 +250,8 @@ export default function Conversation() {
                       Namuna: <b>{l.compare.modelEn}</b>
                     </span>
                     <span className="muted">
-                      Namunadagi so‘zlardan {l.compare.matched.length}/{l.compare.matched.length + l.compare.missing.length} tasi bor
-                      {l.compare.missing.length > 0 ? ` · yo‘q: ${l.compare.missing.join(', ')}` : ''}. Bir ma’noni boshqa so‘z bilan ham aytish mumkin — bu baho emas.
+                      Namunadagi sözlardan {l.compare.matched.length}/{l.compare.matched.length + l.compare.missing.length} tasi bor
+                      {l.compare.missing.length > 0 ? ` · yöq: ${l.compare.missing.join(', ')}` : ''}. Bir ma’noni boşqa söz bilan ham aytiş mumkin — bu baho emas.
                     </span>
                   </div>
                 )}
@@ -266,13 +266,13 @@ export default function Conversation() {
           <div className="grid gap-2">
             {turn && (
               <p className="text-xs muted">
-                Aytmoqchi bo‘lgan fikringiz:{' '}
+                Aytmoqçi bölgan fikringiz:{' '}
                 <b>
                   <UzTranslation>{turn.modelUz}</UzTranslation>
                 </b>
               </p>
             )}
-            {engine === 'ai' && lines.length === 0 && <p className="text-xs muted">Suhbatni siz boshlang — {d.roles.b} sifatida birinchi gapni yozing.</p>}
+            {engine === 'ai' && lines.length === 0 && <p className="text-xs muted">Suhbatni siz boşlang — {d.roles.b} sifatida birinçi gapni yozing.</p>}
             <label className="sr-only" htmlFor="conv-input">
               Javobingiz
             </label>
@@ -281,7 +281,7 @@ export default function Conversation() {
               className={`${inputCls} min-h-16`}
               value={input}
               maxLength={400}
-              placeholder="Inglizcha javobingiz…"
+              placeholder="Inglizça javobingiz…"
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
@@ -292,7 +292,7 @@ export default function Conversation() {
             />
             <div className="flex flex-wrap items-center gap-2">
               <Button onClick={send} disabled={!input.trim() || busy} busy={busy}>
-                Yuborish
+                Yuboriş
               </Button>
               <Button
                 variant="secondary"
@@ -300,11 +300,11 @@ export default function Conversation() {
                 onClick={speech.listening ? speech.stop : speech.start}
                 aria-pressed={speech.listening}
               >
-                {speech.listening ? '■ To‘xtatish' : '🎤 Gapirish'}
+                {speech.listening ? '■ Töxtatiş' : '🎤 Gapiriş'}
               </Button>
               <span className="flex-1" />
               <Button variant="ghost" onClick={finish} disabled={lines.every((l) => l.speaker !== 'learner')}>
-                Suhbatni yakunlash
+                Suhbatni yakunlaş
               </Button>
             </div>
             {!speech.supported && <p className="text-xs muted">{SPEECH_UNSUPPORTED_UZ}</p>}
@@ -315,10 +315,10 @@ export default function Conversation() {
                   <span className="text-sm">{error}</span>
                   <div className="flex flex-wrap gap-2">
                     <Button size="sm" onClick={send} disabled={!input.trim()}>
-                      Qayta yuborish
+                      Qayta yuboriş
                     </Button>
                     <Button size="sm" variant="secondary" onClick={() => start(d, 'script')}>
-                      Oldindan yozilgan stsenariy bilan boshidan
+                      Oldindan yozilgan stsenariy bilan boşidan
                     </Button>
                   </div>
                 </div>
@@ -334,8 +334,8 @@ export default function Conversation() {
           {engine === 'ai' ? (
             <>
               <p className="text-sm">
-                {corrections.length === 0 ? 'AI javoblaringizda xato topmadi.' : `AI ${corrections.length} ta tuzatish berdi.`}
-                {corrections.length > fixIds.length && ` ${corrections.length - fixIds.length} tasi juda uzun yoki qisqa — mashqqa aylantirilmadi.`}
+                {corrections.length === 0 ? 'AI javoblaringizda xato topmadi.' : `AI ${corrections.length} ta tuzatiş berdi.`}
+                {corrections.length > fixIds.length && ` ${corrections.length - fixIds.length} tasi juda uzun yoki qisqa — maşqqa aylantirilmadi.`}
               </p>
               {fixIds.length > 0 && (
                 <div>
@@ -349,14 +349,14 @@ export default function Conversation() {
                       )
                     }
                   >
-                    Xatolar ustida ishlash ({fixIds.length} ta mashq)
+                    Xatolar ustida işlaş ({fixIds.length} ta maşq)
                   </Button>
-                  <p className="text-xs muted mt-1">Noto‘g‘ri yechilgani Xatolar daftari va Takrorlash menejeriga tushadi.</p>
+                  <p className="text-xs muted mt-1">Notöğri yeçilgani Xatolar daftari va Takrorlaş menejeriga tuşadi.</p>
                 </div>
               )}
               {words.length > 0 && (
                 <div className="grid gap-1.5">
-                  <p className="text-sm font-semibold">Suhbatdagi foydali so‘zlar</p>
+                  <p className="text-sm font-semibold">Suhbatdagi foydali sözlar</p>
                   <div className="flex flex-wrap gap-1.5">
                     {words.map((w) => (
                       <Chip key={w.word} tone={known.some((k) => k.word.toLowerCase() === w.word.toLowerCase()) ? 'ok' : 'default'}>
@@ -375,20 +375,20 @@ export default function Conversation() {
                           setSavedWords(true)
                         }}
                       >
-                        {savedWords ? 'Lug‘atga saqlandi' : `Lug‘atimga saqlash (${known.length} ta)`}
+                        {savedWords ? 'Luğatga saqlandi' : `Luğatimga saqlaş (${known.length} ta)`}
                       </Button>
-                      <span className="text-xs muted">Faqat lug‘atimizda bor so‘zlar saqlanadi (yashil).</span>
+                      <span className="text-xs muted">Faqat luğatimizda bor sözlar saqlanadi (yaşil).</span>
                     </div>
                   ) : (
-                    <p className="text-xs muted">Bu so‘zlar lug‘atimizda yo‘q — takrorlash jadvaliga qo‘shilmaydi.</p>
+                    <p className="text-xs muted">Bu sözlar luğatimizda yöq — takrorlaş jadvaliga qöşilmaydi.</p>
                   )}
                 </div>
               )}
             </>
           ) : (
             <p className="text-sm">
-              Stsenariy yakunlandi. Har javobingiz namuna bilan solishtirildi. Xatolar tahlili uchun AI kerak — u ulangan bo‘lsa, suhbat
-              erkin bo‘ladi va xatolar mashqqa aylanadi.
+              Stsenariy yakunlandi. Har javobingiz namuna bilan soliştirildi. Xatolar tahlili uçun AI kerak — u ulangan bölsa, suhbat
+              erkin böladi va xatolar maşqqa aylanadi.
             </p>
           )}
           <div className="flex flex-wrap gap-2">

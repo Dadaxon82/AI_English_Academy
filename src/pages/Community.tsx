@@ -65,7 +65,7 @@ function useCandidates(): Candidate[] {
   }, [data.writing, data.speaking, data.settings.currentLevel])
 }
 
-const KIND_UZ: Record<PeerKind, string> = { writing: 'Yozish', speaking: 'Gapirish (matn)' }
+const KIND_UZ: Record<PeerKind, string> = { writing: 'Yoziş', speaking: 'Gapiriş (matn)' }
 
 function Stars({ n }: { n: number }) {
   return (
@@ -83,7 +83,7 @@ function ReportForm({ onSend, busy }: { onSend: (r: PeerReportReason) => void; b
   if (!open)
     return (
       <Button size="sm" variant="ghost" onClick={() => setOpen(true)}>
-        Shikoyat qilish
+        Şikoyat qiliş
       </Button>
     )
   return (
@@ -99,10 +99,10 @@ function ReportForm({ onSend, busy }: { onSend: (r: PeerReportReason) => void; b
         ))}
       </select>
       <Button size="sm" variant="danger" busy={busy} onClick={() => onSend(reason)}>
-        Yuborish
+        Yuboriş
       </Button>
       <Button size="sm" variant="ghost" onClick={() => setOpen(false)}>
-        Bekor qilish
+        Bekor qiliş
       </Button>
     </div>
   )
@@ -147,18 +147,18 @@ export default function Community() {
     return r.ok
   }
 
-  if (!ready || gate === null) return <LoadingBlock label="Hamjamiyat tekshirilmoqda…" />
+  if (!ready || gate === null) return <LoadingBlock label="Hamjamiyat tekşirilmoqda…" />
 
   const sentKeys = new Set((mine ?? []).map((m) => `${m.submission.kind}:${m.submission.task_id}:${m.submission.body.trim()}`))
 
   return (
     <div className="grid content-start gap-4">
       <Card className="grid gap-2">
-        <h1 className="text-xl sm:text-2xl font-extrabold">Hamjamiyat tekshiruvi</h1>
+        <h1 className="text-xl sm:text-2xl font-extrabold">Hamjamiyat tekşiruvi</h1>
         <p className="text-sm muted">
-          Yozma javobingizni yoki nutqingiz matnini boshqa o‘quvchiga yuboring — u baho (1–5) va izoh yozadi. Siz ham boshqalarning
-          javobini tekshirasiz: server sizga bittasini tayinlaydi. Ismingiz ko‘rsatilmaydi, audio hech qachon yuborilmaydi. Noo‘rin
-          javob yoki izohga shikoyat qiling: javobga 2 ta shikoyat yoki izohga muallif shikoyati tushsa, u avtomatik yashiriladi.
+          Yozma javobingizni yoki nutqingiz matnini boşqa öquvçiga yuboring — u baho (1–5) va izoh yozadi. Siz ham boşqalarning
+          javobini tekşirasiz: server sizga bittasini tayinlaydi. Ismingiz körsatilmaydi, audio heç qaçon yuborilmaydi. Noörin
+          javob yoki izohga şikoyat qiling: javobga 2 ta şikoyat yoki izohga muallif şikoyati tuşsa, u avtomatik yaşiriladi.
         </p>
       </Card>
 
@@ -167,7 +167,7 @@ export default function Community() {
           <div className="grid gap-1.5">
             <span className="text-sm">{gate.reasonUz}</span>
             <Link to="/login" className="text-sm font-semibold underline">
-              Hisobga kirish
+              Hisobga kiriş
             </Link>
           </div>
         </InfoBanner>
@@ -179,19 +179,19 @@ export default function Community() {
         <>
           {/* -------------------- 1) Yuborish -------------------- */}
           <Card as="section" className="grid gap-3">
-            <h2 className="font-bold">Javobimni tekshiruvga yuborish</h2>
+            <h2 className="font-bold">Javobimni tekşiruvga yuboriş</h2>
             {candidates.length === 0 ? (
               <EmptyState
-                title="Yuboriladigan javob yo‘q"
-                body="Avval Yozish yoki Gapirish bo‘limida topshiriq bajaring — so‘nggi 10 ta javobingiz shu yerda chiqadi."
+                title="Yuboriladigan javob yöq"
+                body="Avval Yoziş yoki Gapiriş bölimida topşiriq bajaring — sönggi 10 ta javobingiz şu yerda çiqadi."
               />
             ) : (
               <>
                 <label className="flex items-start gap-2 text-sm">
                   <input type="checkbox" className="mt-1" checked={consent} onChange={(e) => setConsent(e.target.checked)} />
                   <span>
-                    Roziman: tanlagan matnim (ismimsiz) boshqa o‘quvchiga ko‘rsatiladi. Shaxsiy ma’lumot (telefon, manzil) yozmaganman.
-                    Kuniga ko‘pi bilan {PEER_LIMITS.dailySubmissions} ta.
+                    Roziman: tanlagan matnim (ismimsiz) boşqa öquvçiga körsatiladi. Şaxsiy ma’lumot (telefon, manzil) yozmaganman.
+                    Kuniga köpi bilan {PEER_LIMITS.dailySubmissions} ta.
                   </span>
                 </label>
                 <ul className="grid gap-2">
@@ -216,7 +216,7 @@ export default function Community() {
                               const ok = await act(
                                 c.key,
                                 () => submitForPeerReview({ kind: c.kind, taskId: c.taskId, level: c.level, prompt: c.prompt, body: c.body }),
-                                'Javob tekshiruvga yuborildi. Izohlar kelganda «Mening javoblarim»da ko‘rinadi.',
+                                'Javob tekşiruvga yuborildi. Izohlar kelganda «Mening javoblarim»da körinadi.',
                               )
                               if (ok) {
                                 trackUsage('community_submit', 'finished')
@@ -224,7 +224,7 @@ export default function Community() {
                               }
                             }}
                           >
-                            Yuborish
+                            Yuboriş
                           </Button>
                         </div>
                       </li>
@@ -241,7 +241,7 @@ export default function Community() {
               <h2 className="font-bold">Mening javoblarim</h2>
               <span className="flex-1" />
               <Button size="sm" variant="secondary" onClick={() => void loadMine()}>
-                Yangilash
+                Yangilaş
               </Button>
             </div>
             {mine === null ? (
@@ -256,7 +256,7 @@ export default function Community() {
                       <Chip>{KIND_UZ[s.kind]}</Chip>
                       <Chip>{s.level}</Chip>
                       {s.status === 'hidden' ? (
-                        <Chip tone="bad">Shikoyatlar sababli yashirildi</Chip>
+                        <Chip tone="bad">Şikoyatlar sababli yaşirildi</Chip>
                       ) : (
                         <Chip tone={reviews.length > 0 ? 'ok' : 'default'}>
                           {reviews.length}/{PEER_LIMITS.reviewsPerSubmission} izoh
@@ -268,11 +268,11 @@ export default function Community() {
                         variant="ghost"
                         busy={busy === `del:${s.id}`}
                         onClick={async () => {
-                          const ok = await act(`del:${s.id}`, () => deletePeerSubmission(s.id), 'Javob o‘chirildi.')
+                          const ok = await act(`del:${s.id}`, () => deletePeerSubmission(s.id), 'Javob öçirildi.')
                           if (ok) void loadMine()
                         }}
                       >
-                        O‘chirish
+                        Öçiriş
                       </Button>
                     </div>
                     <p className="text-sm line-clamp-3">{s.body}</p>
@@ -283,7 +283,7 @@ export default function Community() {
                         <ReportForm
                           busy={busy === `rep:${r.id}`}
                           onSend={async (reason) => {
-                            const ok = await act(`rep:${r.id}`, () => reportPeer({ reviewId: r.id }, reason), 'Shikoyat qabul qilindi — izoh yashirildi.')
+                            const ok = await act(`rep:${r.id}`, () => reportPeer({ reviewId: r.id }, reason), 'Şikoyat qabul qilindi — izoh yaşirildi.')
                             if (ok) void loadMine()
                           }}
                         />
@@ -297,7 +297,7 @@ export default function Community() {
 
           {/* -------------------- 3) Boshqalarni tekshirish -------------------- */}
           <Card as="section" className="grid gap-3">
-            <h2 className="font-bold">Boshqalarni tekshirish</h2>
+            <h2 className="font-bold">Boşqalarni tekşiriş</h2>
             {task === undefined ? (
               <div className="flex flex-wrap gap-2">
                 <Button
@@ -315,15 +315,15 @@ export default function Community() {
                     } else setMsg({ ok: false, text: r.reasonUz })
                   }}
                 >
-                  Tekshirish uchun javob olish
+                  Tekşiriş uçun javob oliş
                 </Button>
               </div>
             ) : task === null ? (
               <div className="grid gap-2">
-                <p className="text-sm muted">Hozircha tekshiriladigan javob yo‘q — keyinroq qayta urinib ko‘ring.</p>
+                <p className="text-sm muted">Hozirça tekşiriladigan javob yöq — keyinroq qayta urinib köring.</p>
                 <div>
                   <Button size="sm" variant="secondary" onClick={() => setTask(undefined)}>
-                    Qayta urinish
+                    Qayta uriniş
                   </Button>
                 </div>
               </div>
@@ -333,7 +333,7 @@ export default function Community() {
                   <Chip>{KIND_UZ[task.kind]}</Chip>
                   <Chip>{task.level}</Chip>
                 </div>
-                {task.prompt && <p className="text-xs muted">Topshiriq: {task.prompt}</p>}
+                {task.prompt && <p className="text-xs muted">Topşiriq: {task.prompt}</p>}
                 <blockquote className="rounded-xl border-2 bg-[var(--panel-2)] p-3 text-sm whitespace-pre-wrap">{task.body}</blockquote>
                 <div className="grid gap-1.5">
                   <span className="text-sm font-semibold" id="peer-score-label">
@@ -362,7 +362,7 @@ export default function Community() {
                     className={`${inputCls} min-h-24 font-normal`}
                     value={comment}
                     maxLength={PEER_LIMITS.commentMax}
-                    placeholder="Nimasi yaxshi? Qaysi xatoni qanday tuzatish kerak? Hurmat bilan yozing."
+                    placeholder="Nimasi yaxşi? Qaysi xatoni qanday tuzatiş kerak? Hurmat bilan yozing."
                     onChange={(e) => setComment(e.target.value)}
                   />
                 </label>
@@ -377,13 +377,13 @@ export default function Community() {
                       }
                     }}
                   >
-                    Izohni yuborish
+                    Izohni yuboriş
                   </Button>
                   <span className="flex-1" />
                   <ReportForm
                     busy={busy === `rep:${task.id}`}
                     onSend={async (reason) => {
-                      const ok = await act(`rep:${task.id}`, () => reportPeer({ submissionId: task.id }, reason), 'Shikoyat qabul qilindi.')
+                      const ok = await act(`rep:${task.id}`, () => reportPeer({ submissionId: task.id }, reason), 'Şikoyat qabul qilindi.')
                       if (ok) setTask(undefined)
                     }}
                   />

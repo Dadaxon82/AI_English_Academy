@@ -23,14 +23,14 @@ export type FeatureId =
   | 'certificate'
 
 export const FEATURES: { id: FeatureId; titleUz: string; startedUz: string; finishedUz: string }[] = [
-  { id: 'quick', titleUz: '«5 daqiqa» sessiya', startedUz: 'boshlandi', finishedUz: 'vaqt yoki kartalar tugaguncha' },
-  { id: 'dialogue', titleUz: 'Real hayot suhbatlari', startedUz: 'ochildi', finishedUz: 'dars oxirigacha' },
-  { id: 'review', titleUz: 'Takrorlash menejeri', startedUz: 'boshlandi', finishedUz: 'navbat oxirigacha' },
-  { id: 'conversation', titleUz: 'Suhbatdosh', startedUz: 'boshlandi', finishedUz: 'kamida bitta javob bilan yakunlandi' },
-  { id: 'pronunciation', titleUz: 'Talaffuz mashqi', startedUz: 'urinish', finishedUz: 'moslik 80% va undan yuqori' },
-  { id: 'community_submit', titleUz: 'Hamjamiyatga yuborish', startedUz: 'urinish', finishedUz: 'serverga yetdi' },
-  { id: 'community_review', titleUz: 'Hamjamiyatda tekshirish', startedUz: 'javob olindi', finishedUz: 'izoh yuborildi' },
-  { id: 'certificate', titleUz: 'Yakunlash guvohnomasi', startedUz: 'yaratish bosildi', finishedUz: 'rasm yaratildi' },
+  { id: 'quick', titleUz: '«5 daqiqa» sessiya', startedUz: 'boşlandi', finishedUz: 'vaqt yoki kartalar tugagunça' },
+  { id: 'dialogue', titleUz: 'Real hayot suhbatlari', startedUz: 'oçildi', finishedUz: 'dars oxirigaça' },
+  { id: 'review', titleUz: 'Takrorlaş menejeri', startedUz: 'boşlandi', finishedUz: 'navbat oxirigaça' },
+  { id: 'conversation', titleUz: 'Suhbatdoş', startedUz: 'boşlandi', finishedUz: 'kamida bitta javob bilan yakunlandi' },
+  { id: 'pronunciation', titleUz: 'Talaffuz maşqi', startedUz: 'uriniş', finishedUz: 'moslik 80% va undan yuqori' },
+  { id: 'community_submit', titleUz: 'Hamjamiyatga yuboriş', startedUz: 'uriniş', finishedUz: 'serverga yetdi' },
+  { id: 'community_review', titleUz: 'Hamjamiyatda tekşiriş', startedUz: 'javob olindi', finishedUz: 'izoh yuborildi' },
+  { id: 'certificate', titleUz: 'Yakunlaş guvohnomasi', startedUz: 'yaratiş bosildi', finishedUz: 'rasm yaratildi' },
 ]
 
 export interface FeatureStats {

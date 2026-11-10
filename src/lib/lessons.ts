@@ -89,7 +89,7 @@ export function writingLesson(task: WritingTask): LessonStep[] {
     const e = writingSentenceExercise(task, i)
     if (e) steps.push({ type: 'exercise', id: e.id, exercise: e })
   }
-  steps.push({ type: 'info', id: `${task.id}:write`, info: 'write-cta', titleUz: 'Endi o‘zingiz yozing' })
+  steps.push({ type: 'info', id: `${task.id}:write`, info: 'write-cta', titleUz: 'Endi özingiz yozing' })
   return steps
 }
 
@@ -141,7 +141,7 @@ export function dialogueLesson(d: Dialogue): LessonStep[] {
     const ex = dialogueExercise(d, i)
     if (ex) steps.push({ type: 'exercise', id: ex.id, exercise: ex, context: 'passage' })
   }
-  steps.push({ type: 'info', id: `${d.id}:note`, info: 'rule', titleUz: `Nega shunday? ${d.note.titleUz}` })
+  steps.push({ type: 'info', id: `${d.id}:note`, info: 'rule', titleUz: `Nega şunday? ${d.note.titleUz}` })
   return steps
 }
 

@@ -55,8 +55,8 @@ class ContentRepositoryTest {
         // PR #6 dan keyin (5 yangi tur: 203 → 238 core, mock 8 o'sgarisiz).
         val core = r.allExercises(Levels.A1).size
         val mock = r.mockExamExercises(Levels.A1).size
-        assertEquals("core mashqlar", 238, core)
-        assertEquals("Mock Exam mashqlari", 8, mock)
+        assertEquals("core maşqlar", 238, core)
+        assertEquals("Mock Exam maşqlari", 8, mock)
         assertEquals("manifest = core + mock", 246, core + mock)
     }
 
@@ -64,7 +64,7 @@ class ContentRepositoryTest {
     fun `har kun bo'limlari yig'indisi aniq 90 daqiqa (normalizeDayMinutes)`() {
         val r = repo()
         for (d in r.bundle(Levels.A1).days) {
-            assertEquals("${d.id} — 90 daqiqa bo'lishi kerak", 90, d.sections.sumOf { it.minutes })
+            assertEquals("${d.id} — 90 daqiqa bölişi kerak", 90, d.sections.sumOf { it.minutes })
         }
     }
 
@@ -80,9 +80,9 @@ class ContentRepositoryTest {
     fun `word-order mashqlarida javob ro'yxati answers maydoniga ko'chiriladi`() {
         val r = repo()
         val wordOrder = r.allExercises(Levels.A1).filter { it.kind == Kinds.WORD_ORDER }
-        assertTrue("word-order mashq topilmadi", wordOrder.isNotEmpty())
+        assertTrue("word-order maşq topilmadi", wordOrder.isNotEmpty())
         for (e in wordOrder) {
-            assertNotNull("${e.id} uchun javob ro'yxati bo'lishi kerak", e.answers)
+            assertNotNull("${e.id} uçun javob röyxati bölişi kerak", e.answers)
             assertTrue(e.answers!!.isNotEmpty())
         }
         // tfng'da `answer` satr bo'lib qoladi
@@ -122,7 +122,7 @@ class ContentRepositoryTest {
         val r = repo()
         val first = r.allExercises(Levels.A1).first()
         assertEquals(first.id, r.findExercise(first.id)?.id)
-        assertNull(r.findExercise("yo'q-undok-mashq"))
+        assertNull(r.findExercise("yöq-undok-maşq"))
     }
 
     @Test
@@ -156,7 +156,7 @@ class ContentRepositoryTest {
         assertEquals(v.id, r.findVocab(v.id)?.id)
         val g = r.allGlossaryVocab()
         if (g.isNotEmpty()) assertEquals(g.first().id, r.findVocab(g.first().id)?.id)
-        assertNull(r.findVocab("yo'q-so'z"))
+        assertNull(r.findVocab("yöq-söz"))
     }
 
     @Test

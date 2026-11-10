@@ -112,28 +112,28 @@ export default function ErrorLog() {
       <Card className="grid gap-3">
         <h1 className="text-xl font-bold">Xatolar kundaligi</h1>
         <p className="muted text-sm">
-          Barcha noto‘g‘ri javoblaringiz shu yerda. {totalErrors} ta xato qayd etilgan. Takrorlanadigan xatolar —
-          eng avval ishlash kerak bo‘lgan joylar.
+          Barça notöğri javoblaringiz şu yerda. {totalErrors} ta xato qayd etilgan. Takrorlanadigan xatolar —
+          eng avval işlaş kerak bölgan joylar.
         </p>
         <ExportButtons rows={errors} />
       </Card>
 
       <Card className="grid gap-3 p-4 sm:p-6 border-2 border-sky-300 dark:border-sky-700">
         <div className="grid gap-1.5">
-          <p className="text-[11px] font-extrabold uppercase tracking-wider text-sky-700 dark:text-sky-300">Takrorlash menejeri</p>
+          <p className="text-[11px] font-extrabold uppercase tracking-wider text-sky-700 dark:text-sky-300">Takrorlaş menejeri</p>
           <h2 className="text-xl font-extrabold">
             {reviewPreview.steps.length > 0
-              ? `Bugungi takror: ${reviewPreview.mistakes} ta xato + ${reviewPreview.words} ta so‘z`
-              : 'Hozircha takrorlanadigan narsa yo‘q'}
+              ? `Bugungi takror: ${reviewPreview.mistakes} ta xato + ${reviewPreview.words} ta söz`
+              : 'Hozirça takrorlanadigan narsa yöq'}
           </h2>
           <p className="text-sm muted">
-            Tuzatilmagan xatolar va takrorlash vaqti kelgan so‘zlar bitta navbatda (ko‘pi bilan {REVIEW_MAX} ta). So‘z bilan bog‘liq xato
-            ikki marta sanalmaydi: bitta javob ham xatoni, ham so‘z takrorini yangilaydi.
+            Tuzatilmagan xatolar va takrorlaş vaqti kelgan sözlar bitta navbatda (köpi bilan {REVIEW_MAX} ta). Söz bilan boğliq xato
+            ikki marta sanalmaydi: bitta javob ham xatoni, ham söz takrorini yangilaydi.
           </p>
         </div>
         <div className="flex justify-end">
           <button type="button" className={`${chunkyGreen} !px-4 !py-2`} disabled={reviewPreview.steps.length === 0} onClick={startReview}>
-            Takrorlashni boshlash
+            Takrorlaşni boşlaş
           </button>
         </div>
       </Card>
@@ -146,7 +146,7 @@ export default function ErrorLog() {
       {repeated.length > 0 && (
         <Card className="grid gap-3">
           <h2 className="font-bold">Takrorlanadigan xatolar</h2>
-          <p className="text-xs muted">Bitta mashqda kamida ikki marta xato qilganingiz.</p>
+          <p className="text-xs muted">Bitta maşqda kamida ikki marta xato qilganingiz.</p>
           <div className="grid gap-2">
             {repeated.map(([exId, list]) => {
               const ex = findExercise(exId)
@@ -160,7 +160,7 @@ export default function ErrorLog() {
                     <span className="flex-1" />
                     {ex && (
                       <Link to={pathForSkill(ex.skill)} className="text-xs font-semibold text-[var(--accent)]">
-                        Mashq qilish →
+                        Maşq qiliş →
                       </Link>
                     )}
                   </div>
@@ -174,11 +174,11 @@ export default function ErrorLog() {
       )}
 
       <Card className="grid gap-3">
-        <h2 className="font-bold">Barcha xatolar</h2>
+        <h2 className="font-bold">Barça xatolar</h2>
         <div className="grid sm:grid-cols-4 gap-2.5">
-          <Field label="Ko'nikma">
+          <Field label="Könikma">
             <select value={skill} onChange={(e) => setSkill(e.target.value as Skill | 'all')} className={inputCls}>
-              <option value="all">Barchasi</option>
+              <option value="all">Barçasi</option>
               {SKILL_ORDER.map((s) => (
                 <option key={s} value={s}>
                   {skillLabelUz(s)}
@@ -188,9 +188,9 @@ export default function ErrorLog() {
           </Field>
           <Field label="Manba">
             <select value={source} onChange={(e) => setSource(e.target.value as AttemptSource | 'all')} className={inputCls}>
-              <option value="all">Barchasi</option>
-              <option value="practice">Mashq</option>
-              <option value="section_test">Bo‘lim testi</option>
+              <option value="all">Barçasi</option>
+              <option value="practice">Maşq</option>
+              <option value="section_test">Bölim testi</option>
               <option value="mock_exam">Mock imtihon</option>
               <option value="diagnostic">Diagnostika</option>
             </select>
@@ -203,17 +203,17 @@ export default function ErrorLog() {
             </select>
           </Field>
           <Field label="Qidiruv">
-            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Mashq ID…" className={inputCls} />
+            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Maşq ID…" className={inputCls} />
           </Field>
         </div>
 
         {errors.length === 0 ? (
           <EmptyState
-            title="Bu filtr bo‘yicha xato topilmadi"
-            body="Filtrni o'zgartiring yoki mashq qiling — xatolar avtomatik qayd etiladi."
+            title="Bu filtr böyiça xato topilmadi"
+            body="Filtrni özgartiring yoki maşq qiling — xatolar avtomatik qayd etiladi."
             action={
               <Button variant="secondary" size="sm" onClick={() => nav('/dashboard')}>
-                Mashqqa o‘tish
+                Maşqqa ötiş
               </Button>
             }
           />
@@ -252,7 +252,7 @@ function WrongPair({ exerciseId, attempt }: { exerciseId: string; attempt: Attem
         <div className="text-[var(--bad)] break-words">{attempt.answerGiven || '—'}</div>
       </div>
       <div className="rounded-lg bg-[var(--panel-2)] p-2.5">
-        <div className="text-[10px] muted font-semibold uppercase">To‘g‘ri javob</div>
+        <div className="text-[10px] muted font-semibold uppercase">Töğri javob</div>
         <div className="text-[var(--ok)] break-words">{result?.expected ?? '—'}</div>
       </div>
     </div>
@@ -281,7 +281,7 @@ function ExportButtons({ rows }: { rows: AttemptRecord[] }) {
   }
 
   if (rows.length === 0) {
-    return <InfoBanner>Eksport uchun xato yo‘q.</InfoBanner>
+    return <InfoBanner>Eksport uçun xato yöq.</InfoBanner>
   }
 
   return (
@@ -320,7 +320,7 @@ function q(v: string) {
 }
 
 function sourceLabelUz(s: AttemptSource) {
-  return { practice: 'Mashq', section_test: 'Bo‘lim testi', mock_exam: 'Mock imtihon', diagnostic: 'Diagnostika' }[s]
+  return { practice: 'Maşq', section_test: 'Bölim testi', mock_exam: 'Mock imtihon', diagnostic: 'Diagnostika' }[s]
 }
 
 function pathForSkill(s: Skill) {

@@ -64,7 +64,7 @@ export function remixExercise(ex: Exercise, lastGiven = ''): Exercise | null {
       return {
         ...base,
         kind: 'dropdown-cloze',
-        instructionUz: 'Bo‘shliqlar uchun to‘g‘ri variantni tanlang.',
+        instructionUz: 'Böşliqlar uçun töğri variantni tanlang.',
         text: ex.text,
         choices,
         answers: ex.answers,
@@ -75,7 +75,7 @@ export function remixExercise(ex: Exercise, lastGiven = ''): Exercise | null {
       return {
         ...base,
         kind: 'gap-fill',
-        instructionUz: 'Endi variantlarsiz — bo‘shliqlarni o‘zingiz yozing.',
+        instructionUz: 'Endi variantlarsiz — böşliqlarni özingiz yozing.',
         text: ex.text,
         answers: ex.answers,
         explanationUz: ex.explanationUz,
@@ -102,7 +102,7 @@ export function remixExercise(ex: Exercise, lastGiven = ''): Exercise | null {
       return {
         ...base,
         kind: 'word-order',
-        instructionUz: `Tarjimani so‘zlardan tuzing: “${ex.source}”`,
+        instructionUz: `Tarjimani sözlardan tuzing: “${ex.source}”`,
         answer,
         bank,
         explanationUz: ex.explanationUz,

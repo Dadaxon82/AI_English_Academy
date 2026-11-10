@@ -28,14 +28,14 @@ const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1']
 
 /** Kiruvchi so'rovni tekshiradi; xato bo'lsa o'zbekcha sabab qaytaradi. */
 export function parseFeedbackRequest(body: unknown): { ok: true; req: FeedbackRequest } | { ok: false; reasonUz: string } {
-  if (!body || typeof body !== 'object') return { ok: false, reasonUz: 'So‘rov tanasi JSON obyekt bo‘lishi kerak.' }
+  if (!body || typeof body !== 'object') return { ok: false, reasonUz: 'Sörov tanasi JSON obyekt bölişi kerak.' }
   const b = body as Record<string, unknown>
   if (b.kind !== 'writing' && b.kind !== 'speaking') return { ok: false, reasonUz: 'kind: "writing" yoki "speaking".' }
   if (typeof b.level !== 'string' || !LEVELS.includes(b.level)) return { ok: false, reasonUz: 'level: A1–C1.' }
-  if (typeof b.taskPrompt !== 'string' || !b.taskPrompt.trim()) return { ok: false, reasonUz: 'taskPrompt bo‘sh.' }
-  if (typeof b.text !== 'string' || !b.text.trim()) return { ok: false, reasonUz: 'Javob matni bo‘sh.' }
-  if (b.text.length > MAX_TEXT_CHARS) return { ok: false, reasonUz: `Matn juda uzun (${MAX_TEXT_CHARS} belgigacha).` }
-  if (b.taskPrompt.length > MAX_PROMPT_CHARS) return { ok: false, reasonUz: 'Topshiriq matni juda uzun.' }
+  if (typeof b.taskPrompt !== 'string' || !b.taskPrompt.trim()) return { ok: false, reasonUz: 'taskPrompt böş.' }
+  if (typeof b.text !== 'string' || !b.text.trim()) return { ok: false, reasonUz: 'Javob matni böş.' }
+  if (b.text.length > MAX_TEXT_CHARS) return { ok: false, reasonUz: `Matn juda uzun (${MAX_TEXT_CHARS} belgigaça).` }
+  if (b.taskPrompt.length > MAX_PROMPT_CHARS) return { ok: false, reasonUz: 'Topşiriq matni juda uzun.' }
   return { ok: true, req: { kind: b.kind, level: b.level, taskPrompt: b.taskPrompt.trim(), text: b.text.trim() } }
 }
 
@@ -45,7 +45,7 @@ export const SYSTEM_PROMPT = `You are an experienced CEFR examiner for Uzbek lea
 Assess the learner's answer strictly against the stated CEFR level and task.
 Scores are integers from 0 to 5 (5 = fully meets the level's descriptor).
 Quote errors exactly as they appear in the learner's text ("excerpt") and give a corrected version.
-Write every explanation, strength, weakness, suggestion and note in Uzbek (Latin script), short and concrete.
+Write every explanation, strength, weakness, suggestion and note in Uzbek (Latin script), short and concrete. Write Uzbek in the NEW Latin alphabet: use ö, ğ, ş, ç instead of o‘, g‘, sh, ch (for example "töğri", "şu", "çiroyli", "öqituvçi"); keep the apostrophe ’ only for the glottal stop (ma’lumot).
 Do not invent errors: if the text has none of a kind, return fewer items. Never mention that you are an AI.`
 
 export function userPrompt(req: FeedbackRequest): string {

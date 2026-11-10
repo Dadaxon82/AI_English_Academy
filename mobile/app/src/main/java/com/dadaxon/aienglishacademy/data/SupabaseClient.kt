@@ -100,16 +100,16 @@ object AuthErrors {
         val msg = body.lowercase()
         return when {
             status == 401 || msg.contains("invalid login") || msg.contains("invalid credentials") ->
-                "Email yoki parol noto‘g‘ri."
+                "Email yoki parol notöğri."
             msg.contains("network") || msg.contains("failed to fetch") || msg.contains("unable to resolve host") ->
-                "Internet aloqasi yo‘q. Ulanishni tekshiring."
+                "Internet aloqasi yöq. Ulanişni tekşiring."
             msg.contains("rate") || msg.contains("twice an hour") ->
-                "Juda ko‘p urinish. Birozdan keyin qayta urinib ko‘ring."
+                "Juda köp uriniş. Birozdan keyin qayta urinib köring."
             msg.contains("already registered") || msg.contains("already exists") ->
-                "Bu email allaqachon ro‘yxatdan o‘tgan."
+                "Bu email allaqaçon röyxatdan ötgan."
             msg.contains("confirm") ->
-                "Emailingizni tasdiqlang. Kelgan xatni tekshiring."
-            else -> "Noma'lum xatolik. Qayta urinib ko'ring."
+                "Emailingizni tasdiqlang. Kelgan xatni tekşiring."
+            else -> "Noma'lum xatolik. Qayta urinib köring."
         }
     }
 }
@@ -268,7 +268,7 @@ class SupabaseClient(
             }
             DbResult(true, rows, null, null)
         } catch (err: Exception) {
-            DbResult(false, emptyList(), null, "Server javobi o'qilmadi: ${err.message}")
+            DbResult(false, emptyList(), null, "Server javobi öqilmadi: ${err.message}")
         }
     }
 
@@ -337,7 +337,7 @@ class SupabaseClient(
 
     private fun sessionFrom(resp: HttpResp): AuthResult {
         if (resp.error != null) {
-            return AuthResult(null, "Internet aloqasi yo‘q. Ulanishni tekshiring.", 0)
+            return AuthResult(null, "Internet aloqasi yöq. Ulanişni tekşiring.", 0)
         }
         if (!resp.ok) {
             // `auth/v1` xatolari foydalanuvchiga TUSHUNARLI tilga o'giriladi

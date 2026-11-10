@@ -24,7 +24,7 @@ class RoleplayClient(
 
     fun request(body: JsonObject): Result {
         val cfg = config ?: return Result.Fail("Server (Supabase) ulanmagan.")
-        if (auth.isGuest()) return Result.Fail("AI suhbatdosh uchun hisobga kiring.")
+        if (auth.isGuest()) return Result.Fail("AI suhbatdoş uçun hisobga kiring.")
         val (s, err) = auth.ensureFresh()
         if (s == null) return Result.Fail(err ?: "Sessiya muddati tugadi — qaytadan kiring.")
         val url = "${cfg.url.trimEnd('/')}/functions/v1/ai-roleplay"
@@ -38,7 +38,7 @@ class RoleplayClient(
             ),
             body.toString(),
         )
-        if (resp.error != null) return Result.Fail("AI xizmatiga ulanib bo‘lmadi.")
+        if (resp.error != null) return Result.Fail("AI xizmatiga ulanib bölmadi.")
         val json = runCatching { JsonParser.parseString(resp.body).asJsonObject }.getOrNull()
         if (!resp.ok) {
             val why = json?.get("reasonUz")?.takeIf { it.isJsonPrimitive }?.asString

@@ -16,11 +16,11 @@ export function shiftDay(day: string, n: number): string {
   return d.toISOString().slice(0, 10)
 }
 
-/** Hafta boshi — PONESHANBA. Liga haftasi shu yerda boshlanadi (Duolingo
+/** Hafta boshi — DUSHANBA. Liga haftasi shu yerda boshlanadi (Duolingo
  *  ligasi ham hafta yakunida — yakshanba keasi — yig'iladi). */
 export function weekStartOf(day: string): string {
   const d = new Date(day + 'T00:00:00Z')
-  const wd = (d.getUTCDay() + 6) % 7 // poneshanba = 0
+  const wd = (d.getUTCDay() + 6) % 7 // dushanba = 0
   return shiftDay(day, -wd)
 }
 

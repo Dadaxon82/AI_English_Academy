@@ -36,7 +36,7 @@ export default function WordGame({ pool }: { pool: VocabularyItem[] }) {
           type: 'exercise',
           id: `${g.exercise.id}#${i}`,
           exercise: g.exercise,
-          badge: g.isNew ? 'Yangi so‘z' : undefined,
+          badge: g.isNew ? 'Yangi söz' : undefined,
           icons: g.icons,
           vocabIds: g.vocabIds,
         }),
@@ -45,7 +45,7 @@ export default function WordGame({ pool }: { pool: VocabularyItem[] }) {
   }
 
   if (pool.length < 4) {
-    return <InfoBanner tone="warn">O‘yin uchun kamida 4 ta so‘z kerak — filtrlarni tozalang.</InfoBanner>
+    return <InfoBanner tone="warn">Öyin uçun kamida 4 ta söz kerak — filtrlarni tozalang.</InfoBanner>
   }
 
   if (steps) {
@@ -66,15 +66,15 @@ export default function WordGame({ pool }: { pool: VocabularyItem[] }) {
   return (
     <Card className="grid sm:grid-cols-[1fr_auto] items-center gap-4 p-5 sm:p-7">
       <div className="grid gap-2.5">
-        <p className="text-[11px] font-extrabold uppercase tracking-wider text-violet-600 dark:text-violet-400">So‘z o‘yini</p>
-        <h2 className="text-2xl font-extrabold">5 ta so‘z — rasm, tarjima, gap va juftlik</h2>
+        <p className="text-[11px] font-extrabold uppercase tracking-wider text-violet-600 dark:text-violet-400">Söz öyini</p>
+        <h2 className="text-2xl font-extrabold">5 ta söz — rasm, tarjima, gap va juftlik</h2>
         <p className="text-sm muted">
-          Avval takrori yetgan so‘zlar ({preview.due}), so‘ng yangilari ({preview.fresh}). Har javob takrorlash jadvaliga
-          yoziladi; xato qilingan topshiriq dars oxirida yana bir marta beriladi.
+          Avval takrori yetgan sözlar ({preview.due}), söng yangilari ({preview.fresh}). Har javob takrorlaş jadvaliga
+          yoziladi; xato qilingan topşiriq dars oxirida yana bir marta beriladi.
         </p>
         <div>
           <button type="button" onClick={start} className={chunkyGreen}>
-            O‘yinni boshlash
+            Öyinni boşlaş
           </button>
         </div>
       </div>

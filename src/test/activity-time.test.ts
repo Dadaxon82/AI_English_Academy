@@ -22,7 +22,7 @@ function todaysSkillSeconds(s: AppData, skill: Skill): number {
 }
 
 describe('Kundalik vaqt hisobi', () => {
-  it('taymer yurmasa mashqda sarflangan vaqt kundalik hisobga qo‘shiladi', () => {
+  it('taymer yurmasa maşqda sarflangan vaqt kundalik hisobga qöşiladi', () => {
     let s = baseState('u1')
     s = reducer(s, {
       type: 'attempt',
@@ -49,7 +49,7 @@ describe('Kundalik vaqt hisobi', () => {
     expect(todaysSkillSeconds(s, 'reading')).toBe(0) // skills ham shu qoidaga bo'ysunadi
   })
 
-  it('boshqa sessiyaga o‘tishda oldingi vaqt yo‘qolmaydi', () => {
+  it('boşqa sessiyaga ötişda oldingi vaqt yöqolmaydi', () => {
     let s = baseState('u1')
     s = reducer(s, { type: 'timer-start', sessionId: 'read-1', skill: 'reading' })
     s = reducer(s, { type: 'timer-start', sessionId: 'write-1', skill: 'writing' })
@@ -74,7 +74,7 @@ describe('Kundalik vaqt hisobi', () => {
     expect(todaysSeconds(s)).toBe(150)
   })
 
-  it('pause → “Davom etish” (same session) — sekundlar yo‘qolmaydi, takrorlanmaydi', () => {
+  it('pause → “Davom etiş” (same session) — sekundlar yöqolmaydi, takrorlanmaydi', () => {
     let s = baseState('u1')
     s = reducer(s, { type: 'timer-start', sessionId: 'p1', skill: 'reading' })
     s = reducer(s, { type: 'timer-pause' })
@@ -89,8 +89,8 @@ describe('Kundalik vaqt hisobi', () => {
   })
 })
 
-describe('Vaqt hisobi — sessiya/ko‘nikma atributsiyasi va chegaralar', () => {
-  it('boshqa sessiya taymeri yurarida boshqa ko‘nikma attempt sekundlari YO‘QOLMAYDI', () => {
+describe('Vaqt hisobi — sessiya/könikma atributsiyasi va çegaralar', () => {
+  it('boşqa sessiya taymeri yurarida boşqa könikma attempt sekundlari YÖQOLMAYDI', () => {
     let s = baseState('u1')
     s = reducer(s, { type: 'timer-start', sessionId: 'write-1', skill: 'writing' })
     s = reducer(s, {
@@ -105,7 +105,7 @@ describe('Vaqt hisobi — sessiya/ko‘nikma atributsiyasi va chegaralar', () =>
     expect(todaysSeconds(s)).toBe(300)
   })
 
-  it('sessiya bir xil, ko‘nikma o‘zgarsa — hisoblangan vaqt eski ko‘nikmaga yoziladi', () => {
+  it('sessiya bir xil, könikma özgarsa — hisoblangan vaqt eski könikmaga yoziladi', () => {
     let s = baseState('u1')
     s = reducer(s, { type: 'timer-start', sessionId: 'a1-day-01', skill: 'vocabulary' })
     s = { ...s, timer: { ...s.timer, elapsedSec: 600 } } // 10 daq lug‘atda o‘qildi
@@ -127,7 +127,7 @@ describe('Vaqt hisobi — sessiya/ko‘nikma atributsiyasi va chegaralar', () =>
     // ESKI BUG: yuqoridagi test soatni surmagani uchun yurgan vaqt 0 edi va
     // ikki marta sanash ko'rinmasdi. Haqiqiy holatda 2-kun: "Kunni boshlash"
     // (lug'at) → 10 daqiqadan keyin "Testni boshlash" (grammatika) → 5 daqiqa.
-    it('bir sessiyada ko‘nikma almashsa yurgan vaqt IKKI marta yozilmaydi', () => {
+    it('bir sessiyada könikma almaşsa yurgan vaqt IKKI marta yozilmaydi', () => {
       vi.useFakeTimers()
       vi.setSystemTime(new Date(2026, 10, 3, 9, 0, 0))
       let s = baseState('u1')
@@ -142,7 +142,7 @@ describe('Vaqt hisobi — sessiya/ko‘nikma atributsiyasi va chegaralar', () =>
       expect(todaysSeconds(s)).toBe(900)
     })
 
-    it('boshqa sessiyaga o‘tganda ham real vaqt bir marta yoziladi', () => {
+    it('boşqa sessiyaga ötganda ham real vaqt bir marta yoziladi', () => {
       vi.useFakeTimers()
       vi.setSystemTime(new Date(2026, 10, 3, 9, 0, 0))
       let s = baseState('u1')
@@ -165,7 +165,7 @@ describe('Vaqt hisobi — sessiya/ko‘nikma atributsiyasi va chegaralar', () =>
     expect(s.timer.sessionId).toBeNull()
   })
 
-  it('bo‘sh taymerda ham stop banner holatini yasamaydi', () => {
+  it('böş taymerda ham stop banner holatini yasamaydi', () => {
     const s = reducer(baseState('u1'), { type: 'timer-stop' })
     expect(s.timer.sessionId).toBeNull()
     expect(todaysSeconds(s)).toBe(0)
@@ -173,7 +173,7 @@ describe('Vaqt hisobi — sessiya/ko‘nikma atributsiyasi va chegaralar', () =>
 })
 
 describe('Mock imtihon vaqti kundalik hisobga yoziladi', () => {
-  it('bo‘limlarda sarflangan vaqt ko‘nikmalar bo‘yicha qo‘shiladi', () => {
+  it('bölimlarda sarflangan vaqt könikmalar böyiça qöşiladi', () => {
     let s = baseState('u1')
     s = reducer(s, {
       type: 'mock-time',
@@ -187,7 +187,7 @@ describe('Mock imtihon vaqti kundalik hisobga yoziladi', () => {
     expect(todaysSeconds(s)).toBe(1800)
   })
 
-  it('manfiy vaqt qo‘shilmaydi; 3 soatdan ko‘pi qisqartiriladi', () => {
+  it('manfiy vaqt qöşilmaydi; 3 soatdan köpi qisqartiriladi', () => {
     const s = reducer(baseState('u1'), {
       type: 'mock-time',
       entries: [

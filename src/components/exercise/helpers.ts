@@ -36,9 +36,9 @@ export function initialAnswer(ex: Exercise): unknown {
 }
 
 export const TFNG: { v: 'true' | 'false' | 'notgiven'; label: string }[] = [
-  { v: 'true', label: 'True — to‘g‘ri' },
-  { v: 'false', label: 'False — noto‘g‘ri' },
-  { v: 'notgiven', label: 'Not Given — matnda yo‘q' },
+  { v: 'true', label: 'True — töğri' },
+  { v: 'false', label: 'False — notöğri' },
+  { v: 'notgiven', label: 'Not Given — matnda yöq' },
 ]
 
 /** Raqamli variantlar soni (1–9 tugmalari uchun); variantsiz turda 0. */
@@ -86,7 +86,7 @@ export function promptOf(ex: Exercise): { text: string; lang: 'en' | 'uz' } | nu
 export function guessLang(text: string): 'en' | 'uz' {
   const a = "[ʻ‘’']"
   const uz = new RegExp(
-    `(^|\\s)(qaysi|nima|kim|qanday|nechta|qayerda|qachon|nega|so${a}z|gap|to${a}g${a}ri|ma${a}no|bilan|uchun|emas|yo${a}q|bor|qiling|tanlang)(?=$|[\\s.,?!])`,
+    `(^|\\s)(qaysi|nima|kim|qanday|neçta|qayerda|qaçon|nega|so${a}z|gap|to${a}g${a}ri|ma${a}no|bilan|uçun|emas|yo${a}q|bor|qiling|tanlang)(?=$|[\\s.,?!])`,
     'i',
   )
   return uz.test(text) ? 'uz' : 'en'
@@ -140,13 +140,13 @@ export function kindLabel(k: Exercise['kind']): string {
     'multiple-choice': 'Tanlov',
     'true-false-notgiven': 'True / False / Not Given',
     matching: 'Juftlik',
-    'gap-fill': 'Bo‘shliq',
-    'word-order': 'So‘z tartibi',
+    'gap-fill': 'Böşliq',
+    'word-order': 'Söz tartibi',
     translation: 'Tarjima',
-    'multi-select': 'Bir nechta javob',
-    'dropdown-cloze': 'Ro‘yxatdan tanlash',
+    'multi-select': 'Bir neçta javob',
+    'dropdown-cloze': 'Röyxatdan tanlaş',
     sequence: 'Ketma-ketlik',
-    categorize: 'Saralash',
+    categorize: 'Saralaş',
     'short-answer': 'Qisqa javob',
   }[k]
 }

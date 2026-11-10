@@ -34,9 +34,9 @@ class ListPagingTest {
 
         // 1) Bir bo'lakda nechta karta chizilishi ANIQ yozilgan.
         val page = Regex("""const val PAGE = (\d+)""").find(f)?.groupValues?.get(1)?.toInt()
-        assertTrue("`PAGE` (bir bo'lakdagi kartalar soni) topilmadi", page != null)
+        assertTrue("`PAGE` (bir bölakdagi kartalar soni) topilmadi", page != null)
         assertTrue(
-            "Bo'lak juda katta ($page) — asosiy o'qimni bloklaydi; 24 dan katta bo'lmasin",
+            "Bölak juda katta ($page) — asosiy öqimni bloklaydi; 24 dan katta bölmasin",
             page!! in 1..24,
         )
 
@@ -47,13 +47,13 @@ class ListPagingTest {
         )
         // 3) Chizilgan son index orqali chegaralanadi (`coerceIn`) va keyingi
         //    bo'lak `rendered` dan davom etadi (qayta qurilmaydi).
-        assertTrue("Chizish chegarasi (`coerceIn`) yo'q", f.contains("shown.coerceIn("))
-        assertTrue("Bo'lak davomi (`rendered until`) yo'q", Regex("""rendered until""").containsMatchIn(f))
+        assertTrue("Çiziş çegarasi (`coerceIn`) yöq", f.contains("shown.coerceIn("))
+        assertTrue("Bölak davomi (`rendered until`) yöq", Regex("""rendered until""").containsMatchIn(f))
 
         // 4) Davom tugmasi — foydalanuvchi "hammasi yo'q" deb o'ylamasligi uchun
         //    ko'rsatilgan son ochiq aytiladi.
-        assertTrue("`vocab_show_more` ishlatilmaydi", f.contains("R.string.vocab_show_more"))
-        assertTrue("`vocab_shown` ishlatilmaydi", f.contains("R.string.vocab_shown"))
+        assertTrue("`vocab_show_more` işlatilmaydi", f.contains("R.string.vocab_show_more"))
+        assertTrue("`vocab_shown` işlatilmaydi", f.contains("R.string.vocab_shown"))
     }
 
     /**
@@ -64,7 +64,7 @@ class ListPagingTest {
     @Test
     fun cardsHaveTheirOwnContainer() {
         val xml = src("src/main/res/layout/fragment_vocabulary.xml")
-        assertTrue("`vocabCards` sig'imi yo'q", xml.contains("""android:id="@+id/vocabCards""""))
-        assertTrue("`vocabRows` (statistika) sig'imi yo'q", xml.contains("""android:id="@+id/vocabRows""""))
+        assertTrue("`vocabCards` siğimi yöq", xml.contains("""android:id="@+id/vocabCards""""))
+        assertTrue("`vocabRows` (statistika) siğimi yöq", xml.contains("""android:id="@+id/vocabRows""""))
     }
 }

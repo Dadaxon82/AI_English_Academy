@@ -65,8 +65,8 @@ function pickOther(text: string) {
   const r = screen.getAllByRole('radio').find((el) => (el.textContent ?? '').replace(/^\s*\d+/, '').trim() !== text)
   fireEvent.click(r!)
 }
-const check = () => fireEvent.click(screen.getByRole('button', { name: 'Tekshirish' }))
-const next = () => fireEvent.click(screen.getByRole('button', { name: /Keyingi mashq|Yakunlash/ }))
+const check = () => fireEvent.click(screen.getByRole('button', { name: 'Tekşiriş' }))
+const next = () => fireEvent.click(screen.getByRole('button', { name: /Keyingi maşq|Yakunlaş/ }))
 
 beforeEach(() => {
   localStorage.clear()
@@ -82,16 +82,16 @@ afterEach(() => {
 })
 
 describe('Suhbatlar sahifasi', () => {
-  it('suhbat oxirigacha: 3 javob yoziladi, xato bitta, kartada holat ko‘rinadi', async () => {
+  it('suhbat oxirigaça: 3 javob yoziladi, xato bitta, kartada holat körinadi', async () => {
     renderPage(<Dialogues />)
     await advance(50)
     const d = dialoguesFor('A1')[0]!
     expect(screen.getByRole('heading', { name: d.titleUz })).toBeTruthy()
-    fireEvent.click(screen.getAllByRole('button', { name: 'Boshlash' })[0]!)
+    fireEvent.click(screen.getAllByRole('button', { name: 'Boşlaş' })[0]!)
     await advance(0)
     // O'qish kartasi: vaziyat va suhbat.
     expect(screen.getByText(d.situationUz)).toBeTruthy()
-    fireEvent.click(screen.getByRole('button', { name: 'Davom etish' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Davom etiş' }))
     await advance(0)
 
     const gaps = gapLineIndexes(d).map((i) => d.lines[i]!.gap!)
@@ -109,8 +109,8 @@ describe('Suhbatlar sahifasi', () => {
       await advance(0)
     }
     // «Nega shunday?» izohi — xatoni qayta urinishdan OLDIN (qoidani o'qib, keyin tuzatadi).
-    expect(screen.getByRole('heading', { name: `Nega shunday? ${d.note.titleUz}` })).toBeTruthy()
-    fireEvent.click(screen.getByRole('button', { name: 'Davom etish' }))
+    expect(screen.getByRole('heading', { name: `Nega şunday? ${d.note.titleUz}` })).toBeTruthy()
+    fireEvent.click(screen.getByRole('button', { name: 'Davom etiş' }))
     await advance(0)
     // Xato dars oxirida qayta beriladi.
     pick(gaps[0]!.answer)
@@ -123,14 +123,14 @@ describe('Suhbatlar sahifasi', () => {
     expect(screen.getByTestId('wrong').textContent).toBe('1')
     expect(JSON.parse(localStorage.getItem('aea-usage-v1')!).dialogue).toMatchObject({ started: 1, finished: 1 })
     // Ro'yxatga qaytish: oxirgi urinishlar hammasi to'g'ri → 3/3.
-    fireEvent.click(screen.getByRole('button', { name: 'Davom etish' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Davom etiş' }))
     await advance(0)
-    expect(screen.getAllByText('3/3 to‘g‘ri').length).toBe(1)
+    expect(screen.getAllByText('3/3 töğri').length).toBe(1)
   })
 })
 
-describe('Takrorlash menejeri', () => {
-  it('so‘z xatosi va o‘sha so‘zning takrori bitta qadam; SRS har qadamda bir marta baholanadi', async () => {
+describe('Takrorlaş menejeri', () => {
+  it('söz xatosi va öşa sözning takrori bitta qadam; SRS har qadamda bir marta baholanadi', async () => {
     renderPage(<ErrorLog />)
     await advance(50)
     fireEvent.click(screen.getByRole('button', { name: 'seed' }))
@@ -139,8 +139,8 @@ describe('Takrorlash menejeri', () => {
     // 2 kun o'tadi — ikkala so'zning takrori keladi.
     vi.setSystemTime(new Date(2026, 10, 11, 10, 0, 0))
     await advance(61_000)
-    expect(screen.getByRole('heading', { name: 'Bugungi takror: 1 ta xato + 1 ta so‘z' })).toBeTruthy()
-    fireEvent.click(screen.getByRole('button', { name: 'Takrorlashni boshlash' }))
+    expect(screen.getByRole('heading', { name: 'Bugungi takror: 1 ta xato + 1 ta söz' })).toBeTruthy()
+    fireEvent.click(screen.getByRole('button', { name: 'Takrorlaşni boşlaş' }))
     await advance(0)
 
     // 1-qadam: A so'zi bo'yicha xato mashqi — yana xato.

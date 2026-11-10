@@ -20,7 +20,7 @@ export type AdminRole = 'user' | 'moderator' | 'admin'
 export type UserStatus = 'active' | 'blocked'
 
 export const ROLES: { id: AdminRole; labelUz: string }[] = [
-  { id: 'user', labelUz: 'Foydalanuvchi' },
+  { id: 'user', labelUz: 'Foydalanuvçi' },
   { id: 'moderator', labelUz: 'Moderator' },
   { id: 'admin', labelUz: 'Admin' },
 ]
@@ -110,16 +110,16 @@ export function bucketLevels(levels: Record<string, number>): { name: LevelBucke
 
 export function validateFullName(name: string): string | null {
   const t = name.trim()
-  if (t.length === 0) return 'Ism bo‘sh bo‘lmasin.'
-  if (t.length > FULL_NAME_MAX) return `Ism juda uzun (ko‘pi bilan ${FULL_NAME_MAX} belgi).`
+  if (t.length === 0) return 'Ism böş bölmasin.'
+  if (t.length > FULL_NAME_MAX) return `Ism juda uzun (köpi bilan ${FULL_NAME_MAX} belgi).`
   return null
 }
 
 export function validateAvatarUrl(url: string): string | null {
   const t = url.trim()
   if (t === '') return null
-  if (t.length > 500) return 'Havola juda uzun (ko‘pi bilan 500 belgi).'
-  if (!/^https:\/\/\S+$/.test(t)) return 'Rasm havolasi https:// bilan boshlansin.'
+  if (t.length > 500) return 'Havola juda uzun (köpi bilan 500 belgi).'
+  if (!/^https:\/\/\S+$/.test(t)) return 'Rasm havolasi https:// bilan boşlansin.'
   return null
 }
 
@@ -131,17 +131,17 @@ export function pageCount(total: number, size = PAGE_SIZE): number {
 export function adminErrorUz(err: unknown): string {
   const e = (err ?? {}) as { code?: string; message?: string }
   const msg = (e.message ?? '').toLowerCase()
-  if (msg.includes('admin_last')) return 'Bu oxirgi faol admin — avval boshqa foydalanuvchini admin qiling.'
-  if (msg.includes('admin_self_block')) return 'O‘zingizni bloklay olmaysiz.'
-  if (msg.includes('admin_self_delete')) return 'O‘z hisobingizni bu yerdan o‘chira olmaysiz.'
-  if (msg.includes('admin_delete_admin')) return 'Adminni o‘chirib bo‘lmaydi — avval rolini o‘zgartiring.'
-  if (msg.includes('admin_not_found')) return 'Foydalanuvchi topilmadi (allaqachon o‘chirilgan bo‘lishi mumkin).'
-  if (msg.includes('admin_only') || e.code === '42501') return 'Bu amal faqat admin uchun.'
+  if (msg.includes('admin_last')) return 'Bu oxirgi faol admin — avval boşqa foydalanuvçini admin qiling.'
+  if (msg.includes('admin_self_block')) return 'Özingizni bloklay olmaysiz.'
+  if (msg.includes('admin_self_delete')) return 'Öz hisobingizni bu yerdan öçira olmaysiz.'
+  if (msg.includes('admin_delete_admin')) return 'Adminni öçirib bölmaydi — avval rolini özgartiring.'
+  if (msg.includes('admin_not_found')) return 'Foydalanuvçi topilmadi (allaqaçon öçirilgan bölişi mumkin).'
+  if (msg.includes('admin_only') || e.code === '42501') return 'Bu amal faqat admin uçun.'
   if (e.code === 'PGRST202' || e.code === 'PGRST205' || e.code === '42883' || e.code === '42P01' || msg.includes('schema cache'))
-    return 'Serverda admin funksiyalari hali yo‘q: `supabase/migrations/0007_admin.sql` migratsiyasini qo‘llang.'
-  if (e.code === '23514') return 'Qiymat ruxsat etilgan chegaradan tashqarida.'
-  if (msg.includes('failed to fetch') || msg.includes('network')) return 'Internet aloqasi yo‘q. Ulanishni tekshirib, qayta urinib ko‘ring.'
-  return 'Server xatosi. Birozdan keyin qayta urinib ko‘ring.'
+    return 'Serverda admin funksiyalari hali yöq: `supabase/migrations/0007_admin.sql` migratsiyasini qöllang.'
+  if (e.code === '23514') return 'Qiymat ruxsat etilgan çegaradan taşqarida.'
+  if (msg.includes('failed to fetch') || msg.includes('network')) return 'Internet aloqasi yöq. Ulanişni tekşirib, qayta urinib köring.'
+  return 'Server xatosi. Birozdan keyin qayta urinib köring.'
 }
 
 /* ------------------------------ ulanish ------------------------------ */
@@ -157,14 +157,14 @@ async function withClient<T>(
   fn: (c: SupabaseClient, uid: string) => Promise<AdminResult<T>>,
   deps: AdminDeps,
 ): Promise<AdminResult<T>> {
-  if (!deps.configured) return { ok: false, reasonUz: 'Server (Supabase) ulanmagan — admin panel faqat server bilan ishlaydi.' }
+  if (!deps.configured) return { ok: false, reasonUz: 'Server (Supabase) ulanmagan — admin panel faqat server bilan işlaydi.' }
   const c = await deps.getClient()
   if (!c) return { ok: false, reasonUz: 'Server (Supabase) ulanmagan.' }
   try {
     const { data, error } = await c.auth.getSession()
     if (error) return { ok: false, reasonUz: adminErrorUz(error) }
     const uid = data.session?.user?.id
-    if (!uid) return { ok: false, reasonUz: 'Admin panel uchun hisobingizga kiring.' }
+    if (!uid) return { ok: false, reasonUz: 'Admin panel uçun hisobingizga kiring.' }
     return await fn(c, uid)
   } catch (err) {
     return { ok: false, reasonUz: adminErrorUz(err) }
@@ -250,7 +250,7 @@ async function updateProfile(
     const { data, error } = await c.from('profiles').update(patch).eq('id', userId).select('id')
     if (error) return { ok: false, reasonUz: adminErrorUz(error) }
     // RLS bo'yicha ruxsat bo'lmasa xato emas, 0 qator qaytadi.
-    if (!Array.isArray(data) || data.length === 0) return { ok: false, reasonUz: 'O‘zgartirilmadi: ruxsat yo‘q yoki foydalanuvchi topilmadi.' }
+    if (!Array.isArray(data) || data.length === 0) return { ok: false, reasonUz: 'Özgartirilmadi: ruxsat yöq yoki foydalanuvçi topilmadi.' }
     return { ok: true, data: null }
   }, deps)
 }

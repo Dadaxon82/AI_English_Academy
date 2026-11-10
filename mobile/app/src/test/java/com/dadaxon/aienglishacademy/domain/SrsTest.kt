@@ -68,7 +68,7 @@ class SrsTest {
         val s1 = review(initialSrsState(t0), SrsGrade.GOOD, t0)
         assertEquals(1, s1.intervalDays)
         val s2 = review(s1, SrsGrade.GOOD, t0 + day)
-        assertTrue("interval oshishi kerak edi: ${s2.intervalDays}", s2.intervalDays > s1.intervalDays)
+        assertTrue("interval oşişi kerak edi: ${s2.intervalDays}", s2.intervalDays > s1.intervalDays)
         // ease 2.5 → 2.6: round(1 * 2.6) = 3
         assertEquals(3, s2.intervalDays)
     }
@@ -95,7 +95,7 @@ class SrsTest {
     fun `again - ease pasadi, lekin minimal chegaradan tushmaydi`() {
         var s = initialSrsState(t0)
         for (i in 0 until 10) s = review(s, SrsGrade.AGAIN, t0 + i * day)
-        assertTrue("ease >= 1.3 bo'lishi kerak: ${s.ease}", s.ease >= MIN_EASE)
+        assertTrue("ease >= 1.3 bölişi kerak: ${s.ease}", s.ease >= MIN_EASE)
         assertEquals(10, s.lapses)
     }
 

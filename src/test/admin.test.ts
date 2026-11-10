@@ -53,8 +53,8 @@ function fake(opts: {
   return { deps, calls }
 }
 
-describe('sof yordamchilar', () => {
-  it('o‘sish foizi: oldingi 0 bo‘lsa null, aks holda yaxlitlangan %', () => {
+describe('sof yordamçilar', () => {
+  it('ösiş foizi: oldingi 0 bölsa null, aks holda yaxlitlangan %', () => {
     expect(growthPct(5, 0)).toBeNull()
     expect(growthPct(15, 10)).toBe(50)
     expect(growthPct(5, 10)).toBe(-50)
@@ -76,8 +76,8 @@ describe('sof yordamchilar', () => {
     ])
   })
 
-  it('ism va rasm havolasini tekshirish', () => {
-    expect(validateFullName('  ')).toMatch(/bo‘sh/)
+  it('ism va rasm havolasini tekşiriş', () => {
+    expect(validateFullName('  ')).toMatch(/böş/)
     expect(validateFullName('a'.repeat(81))).toMatch(/uzun/)
     expect(validateFullName('Ali')).toBeNull()
     expect(validateAvatarUrl('')).toBeNull()
@@ -92,7 +92,7 @@ describe('sof yordamchilar', () => {
     expect(pageCount(PAGE_SIZE + 1)).toBe(2)
   })
 
-  it('server xatolari tushunarli sababga aylanadi (SQL sizib chiqmaydi)', () => {
+  it('server xatolari tuşunarli sababga aylanadi (SQL sizib çiqmaydi)', () => {
     expect(adminErrorUz({ code: '42501', message: 'admin_last' })).toMatch(/oxirgi faol admin/)
     expect(adminErrorUz({ code: '42501', message: 'admin_self_block' })).toMatch(/bloklay olmaysiz/)
     expect(adminErrorUz({ code: '42501', message: 'admin_only' })).toMatch(/faqat admin/)
@@ -102,8 +102,8 @@ describe('sof yordamchilar', () => {
   })
 })
 
-describe('server bilan ishlash', () => {
-  it('server sozlanmagan yoki kirmagan — sabab, so‘rov yo‘q', async () => {
+describe('server bilan işlaş', () => {
+  it('server sozlanmagan yoki kirmagan — sabab, sörov yöq', async () => {
     const off: AdminDeps = { configured: false, getClient: async () => null }
     expect(await fetchIsAdmin(off)).toEqual({ ok: false, reasonUz: expect.stringMatching(/ulanmagan/) })
     const { deps, calls } = fake({ session: null })
@@ -111,13 +111,13 @@ describe('server bilan ishlash', () => {
     expect(calls).toHaveLength(0)
   })
 
-  it('is_admin faqat aniq true bo‘lsa admin', async () => {
+  it('is_admin faqat aniq true bölsa admin', async () => {
     expect(await fetchIsAdmin(fake({ rpc: { is_admin: { data: true } } }).deps)).toEqual({ ok: true, data: true })
     expect(await fetchIsAdmin(fake({ rpc: { is_admin: { data: 'true' } } }).deps)).toEqual({ ok: true, data: false })
     expect(await fetchIsAdmin(fake({ rpc: { is_admin: { data: null } } }).deps)).toEqual({ ok: true, data: false })
   })
 
-  it('statistika: sonlar normallashtiriladi', async () => {
+  it('statistika: sonlar normallaştiriladi', async () => {
     const { deps } = fake({
       rpc: {
         admin_stats: {
@@ -134,7 +134,7 @@ describe('server bilan ishlash', () => {
     expect(r.ok && r.data).toMatchObject({ total_users: 12, avg_streak: 2.5, levels: { A1: 5, B1: 2 }, signups_30d: [{ day: '2026-11-10', count: 2 }] })
   })
 
-  it('ro‘yxat: qidiruv, filtr va sahifa serverga uzatiladi, total_count olinadi', async () => {
+  it('röyxat: qidiruv, filtr va sahifa serverga uzatiladi, total_count olinadi', async () => {
     const { deps, calls } = fake({
       rpc: {
         admin_list_users: {
@@ -154,19 +154,19 @@ describe('server bilan ishlash', () => {
     expect(r.ok && r.data.rows[0]).toMatchObject({ id: 'u1', xp: 120, streak: 3, level: 'B1' })
   })
 
-  it('rolni o‘zgartirish — profiles UPDATE; 0 qator — ruxsat yo‘q', async () => {
+  it('rolni özgartiriş — profiles UPDATE; 0 qator — ruxsat yöq', async () => {
     const ok = fake({})
     expect(await setUserRole('u1', 'moderator', ok.deps)).toEqual({ ok: true, data: null })
     expect(ok.calls[0]).toEqual({ op: 'update', table: 'profiles', patch: { role: 'moderator' }, eq: ['id', 'u1'] })
 
     const none = fake({ updateRows: [] })
-    expect(await setUserRole('u1', 'admin', none.deps)).toEqual({ ok: false, reasonUz: expect.stringMatching(/ruxsat yo‘q/) })
+    expect(await setUserRole('u1', 'admin', none.deps)).toEqual({ ok: false, reasonUz: expect.stringMatching(/ruxsat yöq/) })
 
     const last = fake({ updateError: { code: '42501', message: 'admin_last' } })
     expect(await setUserRole('me', 'user', last.deps)).toEqual({ ok: false, reasonUz: expect.stringMatching(/oxirgi faol admin/) })
   })
 
-  it('tahrirlash: tekshiruvdan o‘tmasa so‘rov yuborilmaydi; aks holda tozalangan qiymatlar', async () => {
+  it('tahrirlaş: tekşiruvdan ötmasa sörov yuborilmaydi; aks holda tozalangan qiymatlar', async () => {
     const bad = fake({})
     expect((await updateUser('u1', { full_name: ' ', avatar_url: '', role: 'user', status: 'active' }, bad.deps)).ok).toBe(false)
     expect(bad.calls).toHaveLength(0)
@@ -176,9 +176,9 @@ describe('server bilan ishlash', () => {
     expect(good.calls[0].patch).toEqual({ display_name: 'Ali Valiyev', avatar_url: null, role: 'user', status: 'blocked' })
   })
 
-  it('o‘chirish — admin_delete_user RPC', async () => {
+  it('öçiriş — admin_delete_user RPC', async () => {
     const { deps, calls } = fake({ rpc: { admin_delete_user: { error: { code: '42501', message: 'admin_delete_admin' } } } })
-    expect(await deleteUser('u9', deps)).toEqual({ ok: false, reasonUz: expect.stringMatching(/Adminni o‘chirib bo‘lmaydi/) })
+    expect(await deleteUser('u9', deps)).toEqual({ ok: false, reasonUz: expect.stringMatching(/Adminni öçirib bölmaydi/) })
     expect(calls[0]).toEqual({ op: 'rpc', name: 'admin_delete_user', args: { p_user: 'u9' } })
   })
 })

@@ -174,7 +174,7 @@ export function ErrorState({ message, retry }: { message: string; retry?: () => 
       <p className="text-sm">{message}</p>
       {retry && (
         <Button variant="secondary" size="sm" onClick={retry}>
-          Qayta urinish
+          Qayta uriniş
         </Button>
       )}
     </div>
@@ -215,7 +215,7 @@ export function Modal({ open, title, children, onClose }: { open: boolean; title
       <div ref={ref} tabIndex={-1} className="panel relative p-5 w-full max-w-md max-h-[90vh] overflow-auto animate-[var(--animate-pop)]">
         <div className="flex items-start justify-between gap-3 mb-3">
           <h2 className="font-bold text-lg">{title}</h2>
-          <Button variant="ghost" size="sm" onClick={onClose} aria-label="Yopish">
+          <Button variant="ghost" size="sm" onClick={onClose} aria-label="Yopiş">
             ✕
           </Button>
         </div>
@@ -263,13 +263,13 @@ export function SpeakButton({ text, label, size = 'sm' }: { text: string; label?
         window.speechSynthesis.speak(u)
       }}
       aria-label={label ?? `Talaffuz: ${text}`}
-      title="Talaffuzni eshitish"
+      title="Talaffuzni eşitiş"
     >
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
         <path d="M11 5 6 9H3v6h3l5 4V5Z" />
         {speaking ? <path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 6a8 8 0 0 1 0 12" /> : <path d="M15.5 8.5a5 5 0 0 1 0 7" />}
       </svg>
-      {label ?? 'Aytish'}
+      {label ?? 'Aytiş'}
     </Button>
   )
 }

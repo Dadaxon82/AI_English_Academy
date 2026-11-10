@@ -23,11 +23,11 @@ export function drawCertificate(canvas: HTMLCanvasElement, info: CertificateInfo
   ctx.fillText('AI English Academy', W / 2, 170)
   ctx.fillStyle = '#0f172a'
   ctx.font = 'bold 72px sans-serif'
-  ctx.fillText('Yakunlash guvohnomasi', W / 2, 280)
+  ctx.fillText('Yakunlaş guvohnomasi', W / 2, 280)
   ctx.font = '34px sans-serif'
-  ctx.fillText('Ushbu guvohnoma egasi', W / 2, 370)
+  ctx.fillText('Uşbu guvohnoma egasi', W / 2, 370)
   // Uzun ism ramkadan chiqmasin: sig'guncha shrift kichraytiriladi.
-  const shown = name || 'O‘quvchi'
+  const shown = name || 'Öquvçi'
   let size = 64
   ctx.font = `bold ${size}px sans-serif`
   while (size > 28 && ctx.measureText(shown).width > W - 260) {
@@ -36,12 +36,12 @@ export function drawCertificate(canvas: HTMLCanvasElement, info: CertificateInfo
   }
   ctx.fillText(shown, W / 2, 460)
   ctx.font = '34px sans-serif'
-  ctx.fillText(`${info.level} — ${levelLabel(info.level).titleUz} darajasi o‘quv yo‘lini yakunladi`, W / 2, 545)
+  ctx.fillText(`${info.level} — ${levelLabel(info.level).titleUz} darajasi öquv yölini yakunladi`, W / 2, 545)
   ctx.font = '30px sans-serif'
   ctx.fillStyle = '#334155'
   const lines = [
-    `${info.daysDone}/${info.daysTotal} kun · ${info.attempts} ta mashq${info.accuracy === null ? '' : ` · aniqlik ${info.accuracy}%`}`,
-    `${info.wordsLearned} ta so‘z o‘zlashtirildi · «Men qila olaman»: ${info.canDoConfirmed}/${info.canDoTotal} natija bilan tasdiqlangan`,
+    `${info.daysDone}/${info.daysTotal} kun · ${info.attempts} ta maşq${info.accuracy === null ? '' : ` · aniqlik ${info.accuracy}%`}`,
+    `${info.wordsLearned} ta söz özlaştirildi · «Men qila olaman»: ${info.canDoConfirmed}/${info.canDoTotal} natija bilan tasdiqlangan`,
     `Sana: ${dateUz}`,
   ]
   lines.forEach((l, i) => ctx.fillText(l, W / 2, 640 + i * 52))

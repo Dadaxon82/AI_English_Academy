@@ -52,11 +52,11 @@ afterEach(() => {
 })
 
 describe('«5 daqiqa» sahifasi', () => {
-  it('boshlash → klaviatura bilan baholash → vaqt tugaganda natija va 300 sekund faollik', async () => {
+  it('boşlaş → klaviatura bilan baholaş → vaqt tugaganda natija va 300 sekund faollik', async () => {
     renderPage()
     await advance(50)
     expect(screen.getByRole('heading', { name: /5 daqiqa — tezkor takror/ })).toBeTruthy()
-    fireEvent.click(screen.getByRole('button', { name: /Boshlash/ }))
+    fireEvent.click(screen.getByRole('button', { name: /Boşlaş/ }))
     await advance(0)
     expect(screen.getByTestId('timer').textContent).toBe('running')
 
@@ -86,10 +86,10 @@ describe('«5 daqiqa» sahifasi', () => {
     expect(JSON.parse(localStorage.getItem('aea-usage-v1')!).quick).toMatchObject({ started: 1, finished: 1 })
   })
 
-  it('sahifadan chiqilsa taymer pauzaga olinadi va qaytganda «Davom etish» taklif qilinadi', async () => {
+  it('sahifadan çiqilsa taymer pauzaga olinadi va qaytganda «Davom etiş» taklif qilinadi', async () => {
     const view = renderPage()
     await advance(50)
-    fireEvent.click(screen.getByRole('button', { name: /Boshlash/ }))
+    fireEvent.click(screen.getByRole('button', { name: /Boşlaş/ }))
     await advance(60_000)
     view.rerender(
       <MemoryRouter>
@@ -114,7 +114,7 @@ describe('«5 daqiqa» sahifasi', () => {
     await advance(0)
     expect(screen.getByRole('heading', { name: /davom etmoqda/ })).toBeTruthy()
     expect(screen.getByText('04:00')).toBeTruthy()
-    fireEvent.click(screen.getByRole('button', { name: 'Davom etish' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Davom etiş' }))
     await advance(0)
     expect(screen.getByTestId('timer').textContent).toBe('running')
   })

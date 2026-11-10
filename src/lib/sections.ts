@@ -43,10 +43,10 @@ export interface SectionPlanEntry {
  * bo'sh, karta "Kontent tayyorlanmoqda" deb ochiq yozadi.
  */
 export const SECTION_PLAN: readonly SectionPlanEntry[] = [
-  { id: 'a1-1', level: 'A1', part: 1, dayNumbers: [1, 2, 3, 4], summaryUz: 'Salomlashish, oila va egalik, kunlik tartib, uy va xonalar: “to be”, “have got”, Present Simple, “there is / are”.' },
-  { id: 'a1-2', level: 'A1', part: 2, dayNumbers: [5, 6, 7], summaryUz: 'Ovqat va ichimliklar, bo‘sh vaqt va rejalar, sayohat va yo‘l so‘rash: “some / any”, “can”, “going to”, “was / were”.' },
-  { id: 'a2-1', level: 'A2', part: 1, dayNumbers: [1, 2, 3, 4], summaryUz: 'O‘tgan hafta oxiri, bolalik xotiralari, shahar va qishloq, rejalar va ob-havo: Past Simple (to‘g‘ri va noto‘g‘ri fe’llar), qiyosiy daraja, “going to / will”.' },
-  { id: 'a2-2', level: 'A2', part: 2, dayNumbers: [5, 6, 7], summaryUz: 'Hayot tajribalari, sog‘liq va maslahat, oshxona va xarid: Present Perfect, “should / must / have to”, “some / any, much / many”.' },
+  { id: 'a1-1', level: 'A1', part: 1, dayNumbers: [1, 2, 3, 4], summaryUz: 'Salomlaşiş, oila va egalik, kunlik tartib, uy va xonalar: “to be”, “have got”, Present Simple, “there is / are”.' },
+  { id: 'a1-2', level: 'A1', part: 2, dayNumbers: [5, 6, 7], summaryUz: 'Ovqat va içimliklar, böş vaqt va rejalar, sayohat va yöl söraş: “some / any”, “can”, “going to”, “was / were”.' },
+  { id: 'a2-1', level: 'A2', part: 1, dayNumbers: [1, 2, 3, 4], summaryUz: 'Ötgan hafta oxiri, bolalik xotiralari, şahar va qişloq, rejalar va ob-havo: Past Simple (töğri va notöğri fe’llar), qiyosiy daraja, “going to / will”.' },
+  { id: 'a2-2', level: 'A2', part: 2, dayNumbers: [5, 6, 7], summaryUz: 'Hayot tajribalari, soğliq va maslahat, oşxona va xarid: Present Perfect, “should / must / have to”, “some / any, much / many”.' },
   ...CEFR_LEVELS.filter((l) => l !== 'A1' && l !== 'A2').flatMap((level) =>
     [1, 2].map((part) => ({
       id: `${level.toLowerCase()}-${part}`,
@@ -229,7 +229,7 @@ export function pathMilestoneSpecs(level: CefrLevel): { afterDayId: string; sect
     out.push({
       afterDayId: last.id,
       sectionDayIds: days.map((d) => d.id),
-      label: next ? `${sectionLabel(next)}-bo‘lim` : 'Kurs yakuni',
+      label: next ? `${sectionLabel(next)}-bölim` : 'Kurs yakuni',
     })
   })
   return out

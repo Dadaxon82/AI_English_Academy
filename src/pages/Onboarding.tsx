@@ -50,8 +50,8 @@ export default function Onboarding() {
           <div className="flex justify-center mb-1">
             <MascotAvatar size="lg" mood="greeting" alt="AI English Academy qahramoni" className="shadow-md" />
           </div>
-          <h1 className="text-2xl font-bold">Xush kelibsiz!</h1>
-          <p className="muted text-sm">3 ta savol — so‘ng boshlaymiz. Bularning barchasini keyin sozlamalardan o‘zgartirasiz.</p>
+          <h1 className="text-2xl font-bold">Xuş kelibsiz!</h1>
+          <p className="muted text-sm">3 ta savol — söng boşlaymiz. Bularning barçasini keyin sozlamalardan özgartirasiz.</p>
           <ol className="flex justify-center gap-2 mt-2">
             {steps.map((s, i) => (
               <li key={s} className={`text-[11px] font-semibold px-2.5 py-1 rounded-full ${i === step ? 'bg-navy-700 text-white dark:bg-navy-300 dark:text-navy-950' : i < step ? 'text-[var(--ok)]' : 'muted'}`}>
@@ -80,22 +80,22 @@ export default function Onboarding() {
           <Card className="text-center grid gap-3">
             <h2 className="text-xl font-bold">Hammasi tayyor 🎉</h2>
             <p className="muted text-sm">
-              Boshlang‘ich darajangiz: <b>{data.settings.currentLevel}</b> · Maqsad: <b>{data.settings.targetLevel}</b> ·
+              Boşlanğiç darajangiz: <b>{data.settings.currentLevel}</b> · Maqsad: <b>{data.settings.targetLevel}</b> ·
               Kunlik reja: <b>{data.settings.dailyMinutes} daqiqa</b>
             </p>
             {data.diagnostic && <InfoBanner>{data.diagnostic.labelUz}</InfoBanner>}
             {!data.diagnostic && (
               <InfoBanner tone="muted">
-                Diagnostika o‘tkazilmadi — A1 bosqichidan boshlaysiz. Testni Progress bo‘limidan keyin ham topshirishingiz
+                Diagnostika ötkazilmadi — A1 bosqiçidan boşlaysiz. Testni Progress bölimidan keyin ham topşirişingiz
                 mumkin.
               </InfoBanner>
             )}
             <div className="flex gap-2 justify-center">
               <Button size="lg" onClick={() => nav('/dashboard')}>
-                Dashboardga o‘tish
+                Dashboardga ötiş
               </Button>
               <Button size="lg" variant="secondary" onClick={() => nav('/path')}>
-                Darsni boshlash
+                Darsni boşlaş
               </Button>
             </div>
           </Card>
@@ -121,7 +121,7 @@ function Basics({
   const loaded = new Set(LOADED_LEVELS)
   return (
     <Card className="grid gap-4">
-      <Field label="Hozirgi darajangiz" hint="Ishonchsiz bo‘lsangiz A1 ni tanlang — dastur diagnostika bilan tekshiradi.">
+      <Field label="Hozirgi darajangiz" hint="Işonçsiz bölsangiz A1 ni tanlang — dastur diagnostika bilan tekşiradi.">
         <div className="flex flex-wrap gap-2">
           {CEFR_LEVELS.map((l) => (
             <button
@@ -130,7 +130,7 @@ function Basics({
               aria-pressed={level === l}
               onClick={() => setLevel(l)}
               disabled={!loaded.has(l)}
-              title={loaded.has(l) ? undefined : `${l} kontenti hali yuklanmagan — A1 dan boshlang`}
+              title={loaded.has(l) ? undefined : `${l} kontenti hali yuklanmagan — A1 dan boşlang`}
               className={`px-4 py-2 rounded-xl border font-bold ${level === l ? 'border-[var(--accent)] bg-navy-50 dark:bg-navy-900/40' : 'hover:bg-[var(--panel-2)]'} ${!loaded.has(l) ? 'opacity-50' : ''}`}
             >
               {l}
@@ -138,7 +138,7 @@ function Basics({
           ))}
         </div>
       </Field>
-      <Field label="Qaysi darajaga yetmoqchisiz?">
+      <Field label="Qaysi darajaga yetmoqçisiz?">
         <div className="flex flex-wrap gap-2">
           {CEFR_LEVELS.map((l) => (
             <button
@@ -153,15 +153,15 @@ function Basics({
           ))}
         </div>
       </Field>
-      <Field label="Asosiy ko‘nikmalar">
+      <Field label="Asosiy könikmalar">
         <div className="flex flex-wrap gap-1.5">
           {['Reading', 'Listening', 'Writing', 'Speaking'].map((s) => (
             <Chip key={s} tone="brand">{s}</Chip>
           ))}
         </div>
       </Field>
-      <InfoBanner tone="muted">Interfeys tili: o‘zbekcha · O‘rganiladigan til: inglizcha · Platformalar: kompyuter va telefon.</InfoBanner>
-      <Button size="lg" onClick={onNext}>Davom etish</Button>
+      <InfoBanner tone="muted">Interfeys tili: özbekça · Örganiladigan til: inglizça · Platformalar: kompyuter va telefon.</InfoBanner>
+      <Button size="lg" onClick={onNext}>Davom etiş</Button>
     </Card>
   )
 }
@@ -192,7 +192,7 @@ function Schedule({
   ] as const
   return (
     <Card className="grid gap-4">
-      <Field label="Kunlik o‘qish vaqti (daqiqa)" hint={`Boshlang‘ich: 90 daqiqa. ${minutes} daqiqaga taqsimlanadi.`}>
+      <Field label="Kunlik öqiş vaqti (daqiqa)" hint={`Boşlanğiç: 90 daqiqa. ${minutes} daqiqaga taqsimlanadi.`}>
         <div className="flex items-center gap-3">
           {/* Minimal 30 — reja (6 × 5 daq) va DB CHECK bilan bir xil; 15–25 serverga yozilmasdi. */}
           <input type="range" min={MIN_DAILY_MINUTES} max={180} step={5} value={minutes} onChange={(e) => setMinutes(Number(e.target.value))} className="flex-1 accent-[var(--accent)]" />
@@ -207,12 +207,12 @@ function Schedule({
           </div>
         ))}
       </div>
-      <Field label="Imtihon sanangiz (agar ma'lum bo'lsa)" hint="Milliy CEFR / Multilevel imtihoniga tayyorgarlik rejasi shu sanaga moslashadi.">
+      <Field label="Imtihon sanangiz (agar ma'lum bölsa)" hint="Milliy CEFR / Multilevel imtihoniga tayyorgarlik rejasi şu sanaga moslaşadi.">
         <input type="date" className={inputCls} value={examDate} onChange={(e) => setExamDate(e.target.value)} min={new Date().toISOString().slice(0, 10)} />
       </Field>
       <div className="flex gap-2">
         <Button variant="ghost" onClick={onBack}>Orqaga</Button>
-        <Button className="flex-1" size="lg" onClick={onNext}>Davom etish</Button>
+        <Button className="flex-1" size="lg" onClick={onNext}>Davom etiş</Button>
       </div>
     </Card>
   )
@@ -236,7 +236,7 @@ export function DiagnosticStep({ onDone, onSkip }: { onDone: (r: ReturnType<type
           <div className="flex items-center justify-between">
             <h2 className="font-bold">Diagnostika — {total} savol</h2>
             <Button variant="ghost" size="sm" onClick={onSkip}>
-              Hozir o‘tkazmayman
+              Hozir ötkazmayman
             </Button>
           </div>
           <ExerciseRunner
@@ -257,10 +257,10 @@ export function DiagnosticStep({ onDone, onSkip }: { onDone: (r: ReturnType<type
         <div className="grid gap-3 text-center">
           <h2 className="font-bold text-lg">Diagnostika yakunlandi</h2>
           <p className="text-sm">{verdict?.labelUz}</p>
-          <p className="text-[11px] muted">Ishonchlilik: {Math.round((verdict?.confidence ?? 0) * 100)}%</p>
+          <p className="text-[11px] muted">Işonçlilik: {Math.round((verdict?.confidence ?? 0) * 100)}%</p>
           <div className="flex gap-2 justify-center">
             {verdict && verdict.level && <Chip tone="ok">Tavsiya: {verdict.level} daraja</Chip>}
-            <Button onClick={() => onDone(verdict!)}>Davom etish</Button>
+            <Button onClick={() => onDone(verdict!)}>Davom etiş</Button>
           </div>
         </div>
       )}

@@ -21,15 +21,15 @@ const att = (over: Partial<AttemptRecord>): AttemptRecord => ({
 const examLevel = (id: string): CefrLevel | null => (id === 'a1-mock-exam' ? 'A1' : null)
 
 describe('canDoEvidence', () => {
-  it('natija yo‘q — «dalil yo‘q», ball ixtiro qilinmaydi', () => {
+  it('natija yöq — «dalil yöq», ball ixtiro qilinmaydi', () => {
     expect(canDoEvidence(grammarA1, [], [], NOW, examLevel)).toEqual({ status: 'none', count: 0, score: null, needed: MIN_EVIDENCE_PER_SKILL })
   })
-  it('faqat shu DARAJA va KO‘NIKMA hisoblanadi', () => {
+  it('faqat şu DARAJA va KÖNIKMA hisoblanadi', () => {
     const atts = [att({}), att({ level: 'A2' }), att({ skill: 'reading' })]
     const ev = canDoEvidence(grammarA1, atts, [], NOW, examLevel)
     expect(ev).toEqual({ status: 'few', count: 1, score: 100, needed: MIN_EVIDENCE_PER_SKILL - 1 })
   })
-  it('yetarli dalil: chegaradan yuqori — tasdiqlandi, past — mashq kerak', () => {
+  it('yetarli dalil: çegaradan yuqori — tasdiqlandi, past — maşq kerak', () => {
     const good = Array.from({ length: MIN_EVIDENCE_PER_SKILL }, () => att({}))
     expect(canDoEvidence(grammarA1, good, [], NOW, examLevel).status).toBe('confirmed')
     const bad = Array.from({ length: MIN_EVIDENCE_PER_SKILL }, (_, i) => att({ correct: i === 0, partial: 0 }))
@@ -37,20 +37,20 @@ describe('canDoEvidence', () => {
     expect(ev.status).toBe('practice')
     expect(ev.score!).toBeLessThan(PROMOTION_THRESHOLD)
   })
-  it('mock imtihon bo‘limi o‘z darajasi bo‘yicha hisoblanadi', () => {
+  it('mock imtihon bölimi öz darajasi böyiça hisoblanadi', () => {
     const mock = (examId: string): MockExamAttempt => ({
       id: 'm', examId, totalScore: 80, speakingAdvisory: '', completedAt: NOW - 10,
       sections: [{ sectionId: 's', skill: 'reading', answered: 5, total: 5, score: 80, startedAt: 0, finishedAt: 1, exerciseResults: {} }],
     })
     expect(canDoEvidence(readA1, [], [mock('a1-mock-exam')], NOW, examLevel).count).toBe(1)
-    expect(canDoEvidence(readA1, [], [mock('boshqa')], NOW, examLevel).count).toBe(0)
+    expect(canDoEvidence(readA1, [], [mock('boşqa')], NOW, examLevel).count).toBe(0)
   })
 })
 
 describe('certificateInfo', () => {
   const b = getBundle('A1')
   const ids = b.vocab.map((v) => v.id)
-  it('kunlar tugamaguncha berilmaydi', () => {
+  it('kunlar tugamagunça berilmaydi', () => {
     const d = emptyData('u')
     d.path.completedDays = b.days.slice(0, 6).map((x) => x.id)
     const info = certificateInfo(d, 'A1', b.days, ids, NOW, examLevel)
@@ -66,7 +66,7 @@ describe('certificateInfo', () => {
     const info = certificateInfo(d, 'A1', b.days, ids, NOW, examLevel)
     expect(info).toMatchObject({ eligible: true, daysDone: 7, attempts: 2, accuracy: 50, wordsLearned: 1, canDoTotal: 6 })
   })
-  it('ogohlantirish matni «rasmiy sertifikat emas» deydi', () => {
+  it('ogohlantiriş matni «rasmiy sertifikat emas» deydi', () => {
     expect(CERTIFICATE_DISCLAIMER_UZ).toMatch(/rasmiy sertifikat emas/)
   })
 })

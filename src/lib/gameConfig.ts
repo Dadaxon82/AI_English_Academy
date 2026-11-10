@@ -89,7 +89,7 @@ export interface XpGoalTier {
 }
 
 export const XP_GOAL_TIERS: XpGoalTier[] = [
-  { id: 'basic', titleUz: 'Boshlang‘ich', xp: 50 },
+  { id: 'basic', titleUz: 'Boşlanğiç', xp: 50 },
   { id: 'casual', titleUz: 'Oddiy', xp: 100 },
   { id: 'regular', titleUz: 'Muntazam', xp: 200 },
   { id: 'serious', titleUz: 'Jiddiy', xp: 300 },
@@ -160,16 +160,16 @@ export interface QuestSpec {
  * XP sonlari bizning masshtabimizga mos (×10).
  */
 export const QUEST_POOL: QuestSpec[] = [
-  { id: 'q-xp-100', kind: 'xp', target: 100, titleUz: '100 XP yigʻiring' },
-  { id: 'q-att-10', kind: 'attempts', target: 10, titleUz: '10 mashq bajaring' },
-  { id: 'q-rev-8', kind: 'reviews', target: 8, titleUz: '8 ta so‘zni takrorlang' },
+  { id: 'q-xp-100', kind: 'xp', target: 100, titleUz: '100 XP yiğiring' },
+  { id: 'q-att-10', kind: 'attempts', target: 10, titleUz: '10 maşq bajaring' },
+  { id: 'q-rev-8', kind: 'reviews', target: 8, titleUz: '8 ta sözni takrorlang' },
   { id: 'q-perf-1', kind: 'perfect_lesson', target: 1, titleUz: 'Bitta darsni xatosiz tugating' },
-  { id: 'q-min-900', kind: 'minutes', target: 900, titleUz: '15 daqiqa shug‘ullaning' },
-  { id: 'q-lis-180', kind: 'listening', target: 180, titleUz: 'Tinglashga 3 daqiqa sarflang' },
-  { id: 'q-spk-120', kind: 'speaking', target: 120, titleUz: 'Gapirishga 2 daqiqa sarflang' },
-  { id: 'q-xp-300', kind: 'xp', target: 300, titleUz: '300 XP yigʻiring' },
-  { id: 'q-att-20', kind: 'attempts', target: 20, titleUz: '20 mashq bajaring' },
-  { id: 'q-rev-15', kind: 'reviews', target: 15, titleUz: '15 ta so‘zni takrorlang' },
+  { id: 'q-min-900', kind: 'minutes', target: 900, titleUz: '15 daqiqa şuğullaning' },
+  { id: 'q-lis-180', kind: 'listening', target: 180, titleUz: 'Tinglaşga 3 daqiqa sarflang' },
+  { id: 'q-spk-120', kind: 'speaking', target: 120, titleUz: 'Gapirişga 2 daqiqa sarflang' },
+  { id: 'q-xp-300', kind: 'xp', target: 300, titleUz: '300 XP yiğiring' },
+  { id: 'q-att-20', kind: 'attempts', target: 20, titleUz: '20 maşq bajaring' },
+  { id: 'q-rev-15', kind: 'reviews', target: 15, titleUz: '15 ta sözni takrorlang' },
 ]
 
 /* --------------------------- Yutuqlar (achievements) --------------------------- */
@@ -205,9 +205,9 @@ export interface AchievementSpec {
 export const ACHIEVEMENTS: AchievementSpec[] = [
   { id: 'a-wildfire', metric: 'streak_days', levels: [3, 7, 14, 30, 90, 365], titleUz: 'Ketma-ketlik', gemReward: 25 },
   { id: 'a-scholar', metric: 'xp_total', levels: [1000, 5000, 10000, 25000, 100000], titleUz: 'Ta’limgon', gemReward: 25 },
-  { id: 'a-linguist', metric: 'words_learned', levels: [50, 100, 250, 500, 2000], titleUz: 'Lug‘atchi', gemReward: 25 },
-  { id: 'a-sharp', metric: 'lessons_perfect', levels: [1, 5, 10, 25, 100], titleUz: 'Aniq otish', gemReward: 25 },
-  { id: 'a-practise', metric: 'attempts_total', levels: [100, 500, 2000, 5000], titleUz: 'Mashqparvar', gemReward: 25 },
+  { id: 'a-linguist', metric: 'words_learned', levels: [50, 100, 250, 500, 2000], titleUz: 'Luğatçi', gemReward: 25 },
+  { id: 'a-sharp', metric: 'lessons_perfect', levels: [1, 5, 10, 25, 100], titleUz: 'Aniq otiş', gemReward: 25 },
+  { id: 'a-practise', metric: 'attempts_total', levels: [100, 500, 2000, 5000], titleUz: 'Maşqparvar', gemReward: 25 },
   { id: 'a-dedicated', metric: 'minutes_total', levels: [60, 300, 900, 1800], titleUz: 'Sadoqatli', gemReward: 25 },
 ]
 
@@ -283,7 +283,7 @@ export type ShopItemId = keyof typeof SHOP
  */
 export const LEAGUES = [
   { id: 'bronze', titleUz: 'Bronza', minXp: 0, promoteTop: 20 },
-  { id: 'silver', titleUz: 'Kumush', minXp: 100, promoteTop: 15 },
+  { id: 'silver', titleUz: 'Kumuş', minXp: 100, promoteTop: 15 },
   { id: 'gold', titleUz: 'Oltin', minXp: 250, promoteTop: 10 },
   { id: 'sapphire', titleUz: 'Sapfir', minXp: 450, promoteTop: 7 },
   { id: 'ruby', titleUz: 'Rubin', minXp: 700, promoteTop: 7 },

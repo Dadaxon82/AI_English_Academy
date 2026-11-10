@@ -64,7 +64,7 @@ export async function callAiFunction(
   deps: AiDeps = defaultDeps(),
 ): Promise<{ ok: true; body: Record<string, unknown> } | { ok: false; reasonUz: string }> {
   const token = await deps.getToken()
-  if (!token) return { ok: false, reasonUz: 'AI tahlili uchun hisobga kiring.' }
+  if (!token) return { ok: false, reasonUz: 'AI tahlili uçun hisobga kiring.' }
   const ctrl = new AbortController()
   const timer = setTimeout(() => ctrl.abort(), AI_TIMEOUT_MS)
   try {
@@ -86,7 +86,7 @@ export async function callAiFunction(
     }
     return { ok: true, body }
   } catch {
-    return { ok: false, reasonUz: ctrl.signal.aborted ? 'AI xizmati vaqtida javob bermadi.' : 'AI xizmatiga ulanib bo‘lmadi.' }
+    return { ok: false, reasonUz: ctrl.signal.aborted ? 'AI xizmati vaqtida javob bermadi.' : 'AI xizmatiga ulanib bölmadi.' }
   } finally {
     clearTimeout(timer)
   }
@@ -134,6 +134,6 @@ export function speakingAnalysisFromAi(fb: SpeakingFeedback, measured: SpeakingA
     grammar: fb.grammar,
     notesUz: fb.notesUz.length ? fb.notesUz : measured.notesUz,
     disclaimerUz:
-      'Lug‘at va grammatika — AI bahosi (transkript asosida); ravonlik va uzunlik qurilmada o‘lchandi. Mashq bahosi, rasmiy imtihon natijasi emas.',
+      'Luğat va grammatika — AI bahosi (transkript asosida); ravonlik va uzunlik qurilmada ölçandi. Maşq bahosi, rasmiy imtihon natijasi emas.',
   }
 }

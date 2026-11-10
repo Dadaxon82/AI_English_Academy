@@ -42,7 +42,7 @@ export default function CertificateCard() {
       ok = false
     }
     if (!ok) {
-      setError('Brauzeringiz rasm yasay olmadi (canvas qo‘llanmaydi). Boshqa brauzerda urinib ko‘ring.')
+      setError('Brauzeringiz rasm yasay olmadi (canvas qöllanmaydi). Boşqa brauzerda urinib köring.')
       return
     }
     setUrl(canvas.toDataURL('image/png'))
@@ -52,7 +52,7 @@ export default function CertificateCard() {
   return (
     <Card className="grid gap-3">
       <div className="flex flex-wrap items-center gap-2">
-        <h2 className="font-bold">Yakunlash guvohnomasi</h2>
+        <h2 className="font-bold">Yakunlaş guvohnomasi</h2>
         {LEVELS.map((l) => (
           <Button key={l} size="sm" variant={l === level ? 'primary' : 'secondary'} aria-pressed={l === level} onClick={() => { setLevel(l); setUrl(null) }}>
             {l}
@@ -64,34 +64,34 @@ export default function CertificateCard() {
         <Chip tone={info.eligible ? 'ok' : 'default'}>
           {info.daysDone}/{info.daysTotal} kun yakunlangan
         </Chip>
-        <Chip>{info.attempts} ta mashq</Chip>
+        <Chip>{info.attempts} ta maşq</Chip>
         {info.accuracy !== null && <Chip>aniqlik {info.accuracy}%</Chip>}
-        <Chip>{info.wordsLearned} ta so‘z</Chip>
+        <Chip>{info.wordsLearned} ta söz</Chip>
         <Chip>
           «Men qila olaman»: {info.canDoConfirmed}/{info.canDoTotal}
         </Chip>
       </div>
       {!info.eligible ? (
         <InfoBanner tone="muted">
-          Guvohnoma {level} darajasining barcha {info.daysTotal} kuni O‘quv yo‘lida yakunlangach ochiladi (yana{' '}
+          Guvohnoma {level} darajasining barça {info.daysTotal} kuni Öquv yölida yakunlangaç oçiladi (yana{' '}
           {info.daysTotal - info.daysDone} kun).
         </InfoBanner>
       ) : (
         <div className="grid gap-2">
           <label className="grid gap-1 text-sm font-semibold" htmlFor="cert-name">
-            Guvohnomadagi ism (faqat shu qurilmada)
+            Guvohnomadagi ism (faqat şu qurilmada)
             <input id="cert-name" className={inputCls} value={name} maxLength={60} onChange={(e) => setName(e.target.value)} />
           </label>
           <div className="flex flex-wrap gap-2">
-            <Button onClick={make}>Guvohnomani yaratish</Button>
+            <Button onClick={make}>Guvohnomani yaratiş</Button>
             {url && (
               <a href={url} download={`guvohnoma-${level}.png`} className="inline-flex items-center px-4 py-2.5 text-sm font-semibold rounded-xl border">
-                PNG yuklab olish
+                PNG yuklab oliş
               </a>
             )}
           </div>
           {error && <InfoBanner tone="warn">{error}</InfoBanner>}
-          {url && <img src={url} alt={`${level} darajasi yakunlash guvohnomasi`} className="w-full rounded-xl border" />}
+          {url && <img src={url} alt={`${level} darajasi yakunlaş guvohnomasi`} className="w-full rounded-xl border" />}
         </div>
       )}
     </Card>

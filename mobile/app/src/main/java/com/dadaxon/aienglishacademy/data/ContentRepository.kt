@@ -115,7 +115,7 @@ class ContentRepository {
     fun init(assets: AssetManager): ContentRepository = init(ApkAssetSource(assets))
 
     private fun src(): AssetSource =
-        source ?: throw IllegalStateException("ContentRepository init() bilan ulanmagan — kontent o'qilmaydi")
+        source ?: throw IllegalStateException("ContentRepository init() bilan ulanmagan — kontent öqilmaydi")
 
     /** `content/manifest.json` — bir marta o'qiladi. */
     fun manifest(): ContentManifest {
@@ -125,7 +125,7 @@ class ContentRepository {
             try {
                 gson.fromJson(src().read(MANIFEST_PATH), ContentManifest::class.java) ?: ContentManifest()
             } catch (e: JsonSyntaxException) {
-                throw IllegalStateException("$MANIFEST_PATH o'qilmadi: ${e.message}", e)
+                throw IllegalStateException("$MANIFEST_PATH öqilmadi: ${e.message}", e)
             }
         manifestCache = parsed
         return parsed
@@ -193,7 +193,7 @@ class ContentRepository {
         Exercise(
             id = "$VOCAB_QUIZ_PREFIX${v.id}",
             kind = Kinds.MULTIPLE_CHOICE,
-            instructionUz = "“${v.word}” so‘zining o‘zbekcha ma’nosini tanlang.",
+            instructionUz = "“${v.word}” sözining özbekça ma’nosini tanlang.",
             level = v.level,
             skill = Skills.VOCABULARY,
             explanationUz = "${v.word} — ${v.translationUz}. ${v.explanationEn}",
@@ -318,7 +318,7 @@ class ContentRepository {
         fixWordOrderAnswers(root)
         return try {
             gson.fromJson(root, LevelBundle::class.java)
-                ?: throw IllegalStateException("$path bo'sh yoki buzilgan")
+                ?: throw IllegalStateException("$path böş yoki buzilgan")
         } catch (e: JsonSyntaxException) {
             throw IllegalStateException("$path parses qilinmadi: ${e.message}", e)
         }
@@ -360,7 +360,7 @@ class ContentRepository {
                             id = glossaryVocabId(g.word),
                             word = g.word,
                             translationUz = g.uz,
-                            explanationEn = "Bu so‘z “${p.title}” matnining glossariyidan olindi.",
+                            explanationEn = "Bu söz “${p.title}” matnining glossariyidan olindi.",
                             exampleEn = "",
                             exampleUz = "",
                             pos = "noun",

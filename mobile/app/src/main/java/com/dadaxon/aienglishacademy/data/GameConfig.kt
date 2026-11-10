@@ -55,7 +55,7 @@ object GameConfig {
      * tartibi Duolingo'dek.
      */
     val XP_GOAL_TIERS: List<XpGoalTier> = listOf(
-        XpGoalTier("basic", "Boshlang‘ich", 50),
+        XpGoalTier("basic", "Boşlanğiç", 50),
         XpGoalTier("casual", "Oddiy", 100),
         XpGoalTier("regular", "Muntazam", 200),
         XpGoalTier("serious", "Jiddiy", 300),
@@ -129,16 +129,16 @@ object GameConfig {
      * qarab hisoblanadi.
      */
     val QUEST_POOL: List<QuestSpec> = listOf(
-        QuestSpec("q-xp-100", "xp", 100, "100 XP yigʻiring"),
-        QuestSpec("q-att-10", "attempts", 10, "10 mashq bajaring"),
-        QuestSpec("q-rev-8", "reviews", 8, "8 ta so‘zni takrorlang"),
+        QuestSpec("q-xp-100", "xp", 100, "100 XP yiğiring"),
+        QuestSpec("q-att-10", "attempts", 10, "10 maşq bajaring"),
+        QuestSpec("q-rev-8", "reviews", 8, "8 ta sözni takrorlang"),
         QuestSpec("q-perf-1", "perfect_lesson", 1, "Bitta darsni xatosiz tugating"),
-        QuestSpec("q-min-900", "minutes", 900, "15 daqiqa shug‘ullaning"),
-        QuestSpec("q-lis-180", "listening", 180, "Tinglashga 3 daqiqa sarflang"),
-        QuestSpec("q-spk-120", "speaking", 120, "Gapirishga 2 daqiqa sarflang"),
-        QuestSpec("q-xp-300", "xp", 300, "300 XP yigʻiring"),
-        QuestSpec("q-att-20", "attempts", 20, "20 mashq bajaring"),
-        QuestSpec("q-rev-15", "reviews", 15, "15 ta so‘zni takrorlang"),
+        QuestSpec("q-min-900", "minutes", 900, "15 daqiqa şuğullaning"),
+        QuestSpec("q-lis-180", "listening", 180, "Tinglaşga 3 daqiqa sarflang"),
+        QuestSpec("q-spk-120", "speaking", 120, "Gapirişga 2 daqiqa sarflang"),
+        QuestSpec("q-xp-300", "xp", 300, "300 XP yiğiring"),
+        QuestSpec("q-att-20", "attempts", 20, "20 maşq bajaring"),
+        QuestSpec("q-rev-15", "reviews", 15, "15 ta sözni takrorlang"),
     )
 
     /* --------------------------- Yutuqlar (achievements) --------------------------- */
@@ -163,9 +163,9 @@ object GameConfig {
     val ACHIEVEMENTS: List<AchievementSpec> = listOf(
         AchievementSpec("a-wildfire", "streak_days", listOf(3, 7, 14, 30, 90, 365), "Ketma-ketlik", 25),
         AchievementSpec("a-scholar", "xp_total", listOf(1000, 5000, 10000, 25000, 100000), "Ta’limgon", 25),
-        AchievementSpec("a-linguist", "words_learned", listOf(50, 100, 250, 500, 2000), "Lug‘atchi", 25),
-        AchievementSpec("a-sharp", "lessons_perfect", listOf(1, 5, 10, 25, 100), "Aniq otish", 25),
-        AchievementSpec("a-practise", "attempts_total", listOf(100, 500, 2000, 5000), "Mashqparvar", 25),
+        AchievementSpec("a-linguist", "words_learned", listOf(50, 100, 250, 500, 2000), "Luğatçi", 25),
+        AchievementSpec("a-sharp", "lessons_perfect", listOf(1, 5, 10, 25, 100), "Aniq otiş", 25),
+        AchievementSpec("a-practise", "attempts_total", listOf(100, 500, 2000, 5000), "Maşqparvar", 25),
         AchievementSpec("a-dedicated", "minutes_total", listOf(60, 300, 900, 1800), "Sadoqatli", 25),
     )
 
@@ -221,9 +221,9 @@ object GameConfig {
 
     /** Do'kon ro'yxati — TARTIBI veb `SHOP_ITEMS` bilan bir xil (ekran shu tartibda chizadi). */
     val SHOP_ITEMS: List<ShopItem> = listOf(
-        ShopItem("refill", "Yuraklarni to‘ldirish", SHOP.getValue("refill"), "Barcha yuraklar darhol $HEARTS_MAX tagacha qaytadi."),
-        ShopItem("heart", "Bitta yurak", SHOP.getValue("heart"), "Bitta yurak qo‘shiladi (keyingi xatoga bardosh)."),
-        ShopItem("freeze", "Streak qalqoni", SHOP.getValue("freeze"), "1 kun uzilishni saqlaydi. Omborda eng ko‘p $MAX_FREEZES ta."),
+        ShopItem("refill", "Yuraklarni töldiriş", SHOP.getValue("refill"), "Barça yuraklar darhol $HEARTS_MAX tagaça qaytadi."),
+        ShopItem("heart", "Bitta yurak", SHOP.getValue("heart"), "Bitta yurak qöşiladi (keyingi xatoga bardoş)."),
+        ShopItem("freeze", "Streak qalqoni", SHOP.getValue("freeze"), "1 kun uzilişni saqlaydi. Omborda eng köp $MAX_FREEZES ta."),
         ShopItem("xpBoost", "2× XP byusti", SHOP.getValue("xpBoost"), "$XP_BOOST_MINUTES daqiqa davomida har javob $XP_BOOST_MULT× XP oladi."),
     )
 
@@ -243,7 +243,7 @@ object GameConfig {
      */
     val LEAGUES: List<LeagueSpec> = listOf(
         LeagueSpec("bronze", "Bronza", 0, 20),
-        LeagueSpec("silver", "Kumush", 100, 15),
+        LeagueSpec("silver", "Kumuş", 100, 15),
         LeagueSpec("gold", "Oltin", 250, 10),
         LeagueSpec("sapphire", "Sapfir", 450, 7),
         LeagueSpec("ruby", "Rubin", 700, 7),

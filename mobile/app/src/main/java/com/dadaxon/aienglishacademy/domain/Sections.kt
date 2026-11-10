@@ -62,28 +62,28 @@ val SECTION_PLAN: List<SectionPlanEntry> =
             level = Levels.A1,
             part = 1,
             dayNumbers = listOf(1, 2, 3, 4),
-            summaryUz = "Salomlashish, oila va egalik, kunlik tartib, uy va xonalar: “to be”, “have got”, Present Simple, “there is / are”.",
+            summaryUz = "Salomlaşiş, oila va egalik, kunlik tartib, uy va xonalar: “to be”, “have got”, Present Simple, “there is / are”.",
         ),
         SectionPlanEntry(
             id = "a1-2",
             level = Levels.A1,
             part = 2,
             dayNumbers = listOf(5, 6, 7),
-            summaryUz = "Ovqat va ichimliklar, bo‘sh vaqt va rejalar, sayohat va yo‘l so‘rash: “some / any”, “can”, “going to”, “was / were”.",
+            summaryUz = "Ovqat va içimliklar, böş vaqt va rejalar, sayohat va yöl söraş: “some / any”, “can”, “going to”, “was / were”.",
         ),
         SectionPlanEntry(
             id = "a2-1",
             level = Levels.A2,
             part = 1,
             dayNumbers = listOf(1, 2, 3, 4),
-            summaryUz = "O‘tgan hafta oxiri, bolalik xotiralari, shahar va qishloq, rejalar va ob-havo: Past Simple (to‘g‘ri va noto‘g‘ri fe’llar), qiyosiy daraja, “going to / will”.",
+            summaryUz = "Ötgan hafta oxiri, bolalik xotiralari, şahar va qişloq, rejalar va ob-havo: Past Simple (töğri va notöğri fe’llar), qiyosiy daraja, “going to / will”.",
         ),
         SectionPlanEntry(
             id = "a2-2",
             level = Levels.A2,
             part = 2,
             dayNumbers = listOf(5, 6, 7),
-            summaryUz = "Hayot tajribalari, sog‘liq va maslahat, oshxona va xarid: Present Perfect, “should / must / have to”, “some / any, much / many”.",
+            summaryUz = "Hayot tajribalari, soğliq va maslahat, oşxona va xarid: Present Perfect, “should / must / have to”, “some / any, much / many”.",
         ),
     ) +
         Levels.ALL.filter { it != Levels.A1 && it != Levels.A2 }.flatMap { level ->

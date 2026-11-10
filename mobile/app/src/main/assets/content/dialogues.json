@@ -3,8 +3,8 @@
   "id": "a1-d1-first-class",
   "level": "A1",
   "dayNumber": 1,
-  "titleUz": "Birinchi dars: tanishuv",
-  "situationUz": "Til kursidagi birinchi darsingiz. O‘qituvchi siz bilan tanishmoqda.",
+  "titleUz": "Birinçi dars: tanişuv",
+  "situationUz": "Til kursidagi birinçi darsingiz. Öqituvçi siz bilan tanişmoqda.",
   "roles": {
    "a": "Teacher",
    "b": "You"
@@ -13,7 +13,7 @@
    {
     "speaker": "a",
     "en": "Good morning! I’m Ms Brown, your teacher.",
-    "uz": "Xayrli tong! Men Braun xonim, sizning o‘qituvchingizman."
+    "uz": "Xayrli tong! Men Braun xonim, sizning öqituvçingizman."
    },
    {
     "speaker": "b",
@@ -27,18 +27,18 @@
       "are"
      ],
      "skill": "grammar",
-     "whyUz": "“My name” — bitta narsa (u), shuning uchun “is”: My name is…"
+     "whyUz": "“My name” — bitta narsa (u), şuning uçun “is”: My name is…"
     }
    },
    {
     "speaker": "a",
     "en": "Nice to meet you, Aziz. Where are you from?",
-    "uz": "Tanishganimdan xursandman, Aziz. Qayerdansiz?"
+    "uz": "Tanişganimdan xursandman, Aziz. Qayerdansiz?"
    },
    {
     "speaker": "b",
     "en": "I’m ___ Uzbekistan. I live in Tashkent.",
-    "uz": "Men O‘zbekistondanman. Toshkentda yashayman.",
+    "uz": "Men Özbekistondanman. Toşkentda yaşayman.",
     "gap": {
      "answer": "from",
      "options": [
@@ -47,18 +47,18 @@
       "from"
      ],
      "skill": "vocabulary",
-     "whyUz": "Kelib chiqish “from” bilan aytiladi: I’m from Uzbekistan."
+     "whyUz": "Kelib çiqiş “from” bilan aytiladi: I’m from Uzbekistan."
     }
    },
    {
     "speaker": "a",
     "en": "Great. How old are you?",
-    "uz": "Ajoyib. Necha yoshdasiz?"
+    "uz": "Ajoyib. Neça yoşdasiz?"
    },
    {
     "speaker": "b",
     "en": "I’m nineteen. Nice to ___ you too!",
-    "uz": "O‘n to‘qqiz yoshdaman. Men ham tanishganimdan xursandman!",
+    "uz": "Ön töqqiz yoşdaman. Men ham tanişganimdan xursandman!",
     "gap": {
      "answer": "meet",
      "options": [
@@ -67,12 +67,12 @@
       "know"
      ],
      "skill": "vocabulary",
-     "whyUz": "Birinchi tanishuvda qotib qolgan ibora: “Nice to meet you”."
+     "whyUz": "Birinçi tanişuvda qotib qolgan ibora: “Nice to meet you”."
     }
    }
   ],
   "note": {
-   "titleUz": "am / is / are — qachon qaysi biri?",
+   "titleUz": "am / is / are — qaçon qaysi biri?",
    "pointsUz": [
     "I → am (I’m).",
     "he / she / it va bitta narsa (my name) → is.",
@@ -85,7 +85,7 @@
     },
     {
      "en": "My teacher is from London.",
-     "uz": "O‘qituvchim Londondan."
+     "uz": "Öqituvçim Londondan."
     },
     {
      "en": "We are in class 3.",
@@ -99,7 +99,7 @@
   "level": "A1",
   "dayNumber": 2,
   "titleUz": "Oilaviy surat",
-  "situationUz": "Do‘stingiz telefoningizdagi oilaviy suratni ko‘rib, savol bermoqda.",
+  "situationUz": "Döstingiz telefoningizdagi oilaviy suratni körib, savol bermoqda.",
   "roles": {
    "a": "Friend",
    "b": "You"
@@ -108,7 +108,7 @@
    {
     "speaker": "a",
     "en": "What a nice photo! Who is this woman?",
-    "uz": "Qanday chiroyli surat! Bu ayol kim?"
+    "uz": "Qanday çiroyli surat! Bu ayol kim?"
    },
    {
     "speaker": "b",
@@ -128,12 +128,12 @@
    {
     "speaker": "a",
     "en": "And the tall man?",
-    "uz": "Uzun bo‘yli erkak-chi?"
+    "uz": "Uzun böyli erkak-çi?"
    },
    {
     "speaker": "b",
     "en": "He’s my ___. He is a doctor.",
-    "uz": "U mening akam. U shifokor.",
+    "uz": "U mening akam. U şifokor.",
     "gap": {
      "answer": "brother",
      "options": [
@@ -142,7 +142,7 @@
       "grandmother"
      ],
      "skill": "vocabulary",
-     "whyUz": "Erkak qarindosh — “brother” (aka/uka); “sister” — opa/singil."
+     "whyUz": "Erkak qarindoş — “brother” (aka/uka); “sister” — opa/singil."
     }
    },
    {
@@ -153,7 +153,7 @@
    {
     "speaker": "b",
     "en": "Yes, I ___ got one sister. She is ten.",
-    "uz": "Ha, bitta singlim bor. U o‘n yoshda.",
+    "uz": "Ha, bitta singlim bor. U ön yoşda.",
     "gap": {
      "answer": "have",
      "options": [
@@ -162,7 +162,7 @@
       "am"
      ],
      "skill": "grammar",
-     "whyUz": "“I” bilan “have got” ishlatiladi; “has got” — he/she uchun."
+     "whyUz": "“I” bilan “have got” işlatiladi; “has got” — he/she uçun."
     }
    }
   ],
@@ -179,7 +179,7 @@
     },
     {
      "en": "She has got two cats.",
-     "uz": "Uning ikkita mushugi bor."
+     "uz": "Uning ikkita muşugi bor."
     }
    ]
   }
@@ -188,8 +188,8 @@
   "id": "a1-d3-meeting-time",
   "level": "A1",
   "dayNumber": 3,
-  "titleUz": "Uchrashuv vaqtini kelishish",
-  "situationUz": "Sinfdoshingiz siz bilan birga kutubxonaga borish uchun vaqt so‘ramoqda.",
+  "titleUz": "Uçraşuv vaqtini kelişiş",
+  "situationUz": "Sinfdoşingiz siz bilan birga kutubxonaga boriş uçun vaqt söramoqda.",
   "roles": {
    "a": "Classmate",
    "b": "You"
@@ -198,7 +198,7 @@
    {
     "speaker": "a",
     "en": "Let’s go to the library tomorrow. What time do you get up?",
-    "uz": "Ertaga kutubxonaga boraylik. Soat nechada turasiz?"
+    "uz": "Ertaga kutubxonaga boraylik. Soat neçada turasiz?"
    },
    {
     "speaker": "b",
@@ -218,12 +218,12 @@
    {
     "speaker": "a",
     "en": "And when do you have breakfast?",
-    "uz": "Nonushtani qachon qilasiz?"
+    "uz": "Nonuştani qaçon qilasiz?"
    },
    {
     "speaker": "b",
     "en": "I ___ breakfast at half past seven.",
-    "uz": "Yetti yarimda nonushta qilaman.",
+    "uz": "Yetti yarimda nonuşta qilaman.",
     "gap": {
      "answer": "have",
      "options": [
@@ -232,18 +232,18 @@
       "having"
      ],
      "skill": "grammar",
-     "whyUz": "Present Simple, “I” bilan fe’l o‘zgarmaydi: I have breakfast."
+     "whyUz": "Present Simple, “I” bilan fe’l özgarmaydi: I have breakfast."
     }
    },
    {
     "speaker": "a",
     "en": "OK. Let’s meet at nine.",
-    "uz": "Yaxshi. Soat to‘qqizda uchrashaylik."
+    "uz": "Yaxşi. Soat töqqizda uçraşaylik."
    },
    {
     "speaker": "b",
     "en": "Great! See you ___.",
-    "uz": "Zo‘r! Ertaga ko‘rishguncha.",
+    "uz": "Zör! Ertaga körişgunça.",
     "gap": {
      "answer": "tomorrow",
      "options": [
@@ -252,15 +252,15 @@
       "today"
      ],
      "skill": "vocabulary",
-     "whyUz": "Uchrashuv ertaga — “See you tomorrow”."
+     "whyUz": "Uçraşuv ertaga — “See you tomorrow”."
     }
    }
   ],
   "note": {
    "titleUz": "Present Simple va vaqt predloglari",
    "pointsUz": [
-    "Har kungi odat: I get up, I have breakfast (fe’l o‘zgarmaydi).",
-    "he / she bilan fe’lga -s qo‘shiladi: she gets up.",
+    "Har kungi odat: I get up, I have breakfast (fe’l özgarmaydi).",
+    "he / she bilan fe’lga -s qöşiladi: she gets up.",
     "Soat → at, kun → on (on Monday), qism → in (in the morning)."
    ],
    "examples": [
@@ -270,7 +270,7 @@
     },
     {
      "en": "She works on Saturdays.",
-     "uz": "U shanba kunlari ishlaydi."
+     "uz": "U şanba kunlari işlaydi."
     }
    ]
   }
@@ -280,7 +280,7 @@
   "level": "A1",
   "dayNumber": 4,
   "titleUz": "Yangi kvartira: narsa qayerda?",
-  "situationUz": "Ijaraga olingan kvartiraga keldingiz. Uy egasi xonalarni ko‘rsatmoqda.",
+  "situationUz": "Ijaraga olingan kvartiraga keldingiz. Uy egasi xonalarni körsatmoqda.",
   "roles": {
    "a": "Landlord",
    "b": "You"
@@ -289,12 +289,12 @@
    {
     "speaker": "a",
     "en": "Welcome! This is the living room.",
-    "uz": "Xush kelibsiz! Bu mehmonxona."
+    "uz": "Xuş kelibsiz! Bu mehmonxona."
    },
    {
     "speaker": "b",
     "en": "It’s nice. Is ___ a TV?",
-    "uz": "Yaxshi ekan. Televizor bormi?",
+    "uz": "Yaxşi ekan. Televizor bormi?",
     "gap": {
      "answer": "there",
      "options": [
@@ -303,7 +303,7 @@
       "they"
      ],
      "skill": "grammar",
-     "whyUz": "Biror narsa borligini so‘rash: Is there a…? / There is a…"
+     "whyUz": "Biror narsa borligini söraş: Is there a…? / There is a…"
     }
    },
    {
@@ -323,18 +323,18 @@
       "at"
      ],
      "skill": "grammar",
-     "whyUz": "Sirt ustida — “on”: on the table. Ichida — “in”: in the box."
+     "whyUz": "Sirt ustida — “on”: on the table. Içida — “in”: in the box."
     }
    },
    {
     "speaker": "a",
     "en": "No, they are in the kitchen, in the drawer.",
-    "uz": "Yo‘q, ular oshxonada, tortmada."
+    "uz": "Yöq, ular oşxonada, tortmada."
    },
    {
     "speaker": "b",
     "en": "How many bedrooms ___ there?",
-    "uz": "Nechta yotoqxona bor?",
+    "uz": "Neçta yotoqxona bor?",
     "gap": {
      "answer": "are",
      "options": [
@@ -343,7 +343,7 @@
       "be"
      ],
      "skill": "grammar",
-     "whyUz": "“bedrooms” — ko‘plik, shuning uchun “are there”."
+     "whyUz": "“bedrooms” — köplik, şuning uçun “are there”."
     }
    },
    {
@@ -355,18 +355,18 @@
   "note": {
    "titleUz": "There is / there are va joy predloglari",
    "pointsUz": [
-    "Bitta narsa → there is; ko‘p narsa → there are.",
+    "Bitta narsa → there is; köp narsa → there are.",
     "Savol: Is there…? / Are there…?",
-    "on — ustida, in — ichida, next to — yonida, under — tagida."
+    "on — ustida, in — içida, next to — yonida, under — tagida."
    ],
    "examples": [
     {
      "en": "There is a lamp next to the bed.",
-     "uz": "Karavot yonida chiroq bor."
+     "uz": "Karavot yonida çiroq bor."
     },
     {
      "en": "Are there any chairs in the kitchen?",
-     "uz": "Oshxonada stullar bormi?"
+     "uz": "Oşxonada stullar bormi?"
     }
    ]
   }
@@ -375,7 +375,7 @@
   "id": "a1-d5-cafe",
   "level": "A1",
   "dayNumber": 5,
-  "titleUz": "Kafeda buyurtma berish",
+  "titleUz": "Kafeda buyurtma beriş",
   "situationUz": "Kafega kirdingiz. Ofitsiant buyurtmangizni olmoqda.",
   "roles": {
    "a": "Waiter",
@@ -390,7 +390,7 @@
    {
     "speaker": "b",
     "en": "___ I have a cup of tea, please?",
-    "uz": "Bir piyola choy olsam bo‘ladimi?",
+    "uz": "Bir piyola çoy olsam böladimi?",
     "gap": {
      "answer": "Can",
      "options": [
@@ -399,18 +399,18 @@
       "Am"
      ],
      "skill": "grammar",
-     "whyUz": "Xushmuomala so‘rov: “Can I have…, please?”"
+     "whyUz": "Xuşmuomala sörov: “Can I have…, please?”"
     }
    },
    {
     "speaker": "a",
     "en": "Of course. Anything to eat?",
-    "uz": "Albatta. Yeyish uchun biror narsa?"
+    "uz": "Albatta. Yeyiş uçun biror narsa?"
    },
    {
     "speaker": "b",
     "en": "Yes, I’d like ___ sandwich, please.",
-    "uz": "Ha, bitta sendvich olaman.",
+    "uz": "Ha, bitta sendviç olaman.",
     "gap": {
      "answer": "a",
      "options": [
@@ -419,18 +419,18 @@
       "some"
      ],
      "skill": "grammar",
-     "whyUz": "“sandwich” undosh tovush bilan boshlanadi va sanaladi → a sandwich."
+     "whyUz": "“sandwich” undoş tovuş bilan boşlanadi va sanaladi → a sandwich."
     }
    },
    {
     "speaker": "a",
     "en": "Sorry, we haven’t got any sandwiches today. We’ve got soup.",
-    "uz": "Kechirasiz, bugun sendvich yo‘q. Sho‘rva bor."
+    "uz": "Keçirasiz, bugun sendviç yöq. Şörva bor."
    },
    {
     "speaker": "b",
     "en": "OK, some soup, then. How ___ is it?",
-    "uz": "Mayli, unda sho‘rva. Qancha turadi?",
+    "uz": "Mayli, unda şörva. Qança turadi?",
     "gap": {
      "answer": "much",
      "options": [
@@ -439,19 +439,19 @@
       "old"
      ],
      "skill": "vocabulary",
-     "whyUz": "Narx so‘rash: “How much is it?”"
+     "whyUz": "Narx söraş: “How much is it?”"
     }
    },
    {
     "speaker": "a",
     "en": "The tea and the soup are six dollars.",
-    "uz": "Choy va sho‘rva olti dollar."
+    "uz": "Çoy va şörva olti dollar."
    }
   ],
   "note": {
-   "titleUz": "Xushmuomala buyurtma: Can I have… / I’d like…",
+   "titleUz": "Xuşmuomala buyurtma: Can I have… / I’d like…",
    "pointsUz": [
-    "“Can I have…, please?” va “I’d like…” — muloyim so‘rov.",
+    "“Can I have…, please?” va “I’d like…” — muloyim sörov.",
     "Sanaladigan bittasi → a/an; sanalmaydigan → some (some soup, some water).",
     "Narx: How much is it? / How much are they?"
    ],
@@ -462,7 +462,7 @@
     },
     {
      "en": "I’d like an apple juice.",
-     "uz": "Olma sharbati olaman."
+     "uz": "Olma şarbati olaman."
     }
    ]
   }
@@ -472,7 +472,7 @@
   "level": "A1",
   "dayNumber": 6,
   "titleUz": "Hafta oxiriga taklif",
-  "situationUz": "Do‘stingiz shanba kuni kinoga borishni taklif qilmoqda.",
+  "situationUz": "Döstingiz şanba kuni kinoga borişni taklif qilmoqda.",
   "roles": {
    "a": "Friend",
    "b": "You"
@@ -481,12 +481,12 @@
    {
     "speaker": "a",
     "en": "I’m going to watch a film on Saturday. Can you come?",
-    "uz": "Shanba kuni kino ko‘rmoqchiman. Kela olasanmi?"
+    "uz": "Şanba kuni kino körmoqçiman. Kela olasanmi?"
    },
    {
     "speaker": "b",
     "en": "Sorry, I ___ come on Saturday. I work.",
-    "uz": "Kechir, shanba kuni kela olmayman. Ishlayman.",
+    "uz": "Keçir, şanba kuni kela olmayman. Işlayman.",
     "gap": {
      "answer": "can’t",
      "options": [
@@ -495,18 +495,18 @@
       "am not"
      ],
      "skill": "grammar",
-     "whyUz": "Imkoniyat yo‘qligi “can’t” bilan: I can’t come."
+     "whyUz": "Imkoniyat yöqligi “can’t” bilan: I can’t come."
     }
    },
    {
     "speaker": "a",
     "en": "What about Sunday?",
-    "uz": "Yakshanba-chi?"
+    "uz": "Yakşanba-çi?"
    },
    {
     "speaker": "b",
     "en": "Sunday is OK. I’m going ___ visit my grandmother in the morning, but I’m free in the evening.",
-    "uz": "Yakshanba bo‘ladi. Ertalab buvimnikiga bormoqchiman, lekin kechqurun bo‘shman.",
+    "uz": "Yakşanba böladi. Ertalab buvimnikiga bormoqçiman, lekin keçqurun böşman.",
     "gap": {
      "answer": "to",
      "options": [
@@ -521,12 +521,12 @@
    {
     "speaker": "a",
     "en": "Great! Do you like comedies?",
-    "uz": "Zo‘r! Komediyalarni yoqtirasanmi?"
+    "uz": "Zör! Komediyalarni yoqtirasanmi?"
    },
    {
     "speaker": "b",
     "en": "Yes, I love ___ comedies!",
-    "uz": "Ha, komediya ko‘rishni juda yaxshi ko‘raman!",
+    "uz": "Ha, komediya körişni juda yaxşi köraman!",
     "gap": {
      "answer": "watching",
      "options": [
@@ -542,18 +542,18 @@
   "note": {
    "titleUz": "can / can’t va be going to",
    "pointsUz": [
-    "can / can’t + fe’l — qila olish (I can swim, I can’t come).",
+    "can / can’t + fe’l — qila oliş (I can swim, I can’t come).",
     "Reja: am / is / are going to + fe’l.",
     "like / love / hate + fe’l-ing."
    ],
    "examples": [
     {
      "en": "We are going to play football.",
-     "uz": "Biz futbol o‘ynamoqchimiz."
+     "uz": "Biz futbol öynamoqçimiz."
     },
     {
      "en": "She can’t drive.",
-     "uz": "U mashina hayday olmaydi."
+     "uz": "U maşina hayday olmaydi."
     }
    ]
   }
@@ -562,8 +562,8 @@
   "id": "a1-d7-directions",
   "level": "A1",
   "dayNumber": 7,
-  "titleUz": "Yo‘l so‘rash",
-  "situationUz": "Yangi shahardasiz va temir yo‘l vokzalini qidiryapsiz. Yo‘lovchidan so‘raysiz.",
+  "titleUz": "Yöl söraş",
+  "situationUz": "Yangi şahardasiz va temir yöl vokzalini qidiryapsiz. Yölovçidan söraysiz.",
   "roles": {
    "a": "Passer-by",
    "b": "You"
@@ -572,7 +572,7 @@
    {
     "speaker": "b",
     "en": "Excuse me, ___ is the railway station?",
-    "uz": "Kechirasiz, temir yo‘l vokzali qayerda?",
+    "uz": "Keçirasiz, temir yöl vokzali qayerda?",
     "gap": {
      "answer": "where",
      "options": [
@@ -581,18 +581,18 @@
       "who"
      ],
      "skill": "vocabulary",
-     "whyUz": "Joy so‘rash — “where”: Where is…?"
+     "whyUz": "Joy söraş — “where”: Where is…?"
     }
    },
    {
     "speaker": "a",
     "en": "Go straight on and turn left at the bridge.",
-    "uz": "To‘g‘riga yuring va ko‘prikda chapga buriling."
+    "uz": "Töğriga yuring va köprikda çapga buriling."
    },
    {
     "speaker": "b",
     "en": "Turn left ___ the bridge. OK.",
-    "uz": "Ko‘prikda chapga burilaman. Tushunarli.",
+    "uz": "Köprikda çapga burilaman. Tuşunarli.",
     "gap": {
      "answer": "at",
      "options": [
@@ -601,18 +601,18 @@
       "to"
      ],
      "skill": "grammar",
-     "whyUz": "Aniq nuqtada burilish — “at”: turn left at the bridge."
+     "whyUz": "Aniq nuqtada buriliş — “at”: turn left at the bridge."
     }
    },
    {
     "speaker": "a",
     "en": "Then the station is on your right, next to the museum.",
-    "uz": "Keyin vokzal o‘ng tomoningizda, muzey yonida."
+    "uz": "Keyin vokzal öng tomoningizda, muzey yonida."
    },
    {
     "speaker": "b",
     "en": "Is it far? Yesterday I ___ lost here!",
-    "uz": "Uzoqmi? Kecha shu yerda adashib qolgandim!",
+    "uz": "Uzoqmi? Keça şu yerda adaşib qolgandim!",
     "gap": {
      "answer": "was",
      "options": [
@@ -621,30 +621,30 @@
       "were"
      ],
      "skill": "grammar",
-     "whyUz": "O‘tgan zamon, “I” bilan → was: I was lost."
+     "whyUz": "Ötgan zamon, “I” bilan → was: I was lost."
     }
    },
    {
     "speaker": "a",
     "en": "No, it’s about five minutes on foot.",
-    "uz": "Yo‘q, piyoda besh daqiqacha."
+    "uz": "Yöq, piyoda beş daqiqaça."
    }
   ],
   "note": {
-   "titleUz": "Yo‘l ko‘rsatish iboralari va was / were",
+   "titleUz": "Yöl körsatiş iboralari va was / were",
    "pointsUz": [
-    "go straight on — to‘g‘riga yuring; turn left / right — chapga / o‘ngga buriling.",
-    "on your left / right — chap / o‘ng tomoningizda.",
-    "O‘tgan zamon: I / he / she / it → was; you / we / they → were."
+    "go straight on — töğriga yuring; turn left / right — çapga / öngga buriling.",
+    "on your left / right — çap / öng tomoningizda.",
+    "Ötgan zamon: I / he / she / it → was; you / we / they → were."
    ],
    "examples": [
     {
      "en": "The bank is on the left.",
-     "uz": "Bank chap tomonda."
+     "uz": "Bank çap tomonda."
     },
     {
      "en": "We were at home yesterday.",
-     "uz": "Kecha biz uyda edik."
+     "uz": "Keça biz uyda edik."
     }
    ]
   }
@@ -653,8 +653,8 @@
   "id": "a2-d1-holiday-back",
   "level": "A2",
   "dayNumber": 1,
-  "titleUz": "Ta’tildan qaytgach",
-  "situationUz": "Ishxonada hamkasbingiz ta’tilingiz haqida so‘ramoqda.",
+  "titleUz": "Ta’tildan qaytgaç",
+  "situationUz": "Işxonada hamkasbingiz ta’tilingiz haqida söramoqda.",
   "roles": {
    "a": "Colleague",
    "b": "You"
@@ -663,12 +663,12 @@
    {
     "speaker": "a",
     "en": "Welcome back! How was your holiday?",
-    "uz": "Qaytganingiz bilan! Ta’tilingiz qanday o‘tdi?"
+    "uz": "Qaytganingiz bilan! Ta’tilingiz qanday ötdi?"
    },
    {
     "speaker": "b",
     "en": "It was great, thanks. We ___ Samarkand for a week.",
-    "uz": "Zo‘r o‘tdi, rahmat. Bir hafta Samarqandga borib keldik.",
+    "uz": "Zör ötdi, rahmat. Bir hafta Samarqandga borib keldik.",
     "gap": {
      "answer": "visited",
      "options": [
@@ -688,7 +688,7 @@
    {
     "speaker": "b",
     "en": "We ___ around the old city and took lots of photos.",
-    "uz": "Eski shahar bo‘ylab sayr qildik va ko‘p surat oldik.",
+    "uz": "Eski şahar böylab sayr qildik va köp surat oldik.",
     "gap": {
      "answer": "walked",
      "options": [
@@ -722,20 +722,20 @@
    }
   ],
   "note": {
-   "titleUz": "Past Simple: to‘g‘ri fe’llar va qisqa javoblar",
+   "titleUz": "Past Simple: töğri fe’llar va qisqa javoblar",
    "pointsUz": [
-    "To‘g‘ri fe’l + -ed: visit → visited, walk → walked.",
-    "Savol: Did + ega + fe’lning 1-shakli? (Did you like…?)",
+    "Töğri fe’l + -ed: visit → visited, walk → walked.",
+    "Savol: Did + ega + fe’lning 1-şakli? (Did you like…?)",
     "Qisqa javob: Yes, I did. / No, I didn’t."
    ],
    "examples": [
     {
      "en": "We stayed in a small hotel.",
-     "uz": "Biz kichik mehmonxonada qoldik."
+     "uz": "Biz kiçik mehmonxonada qoldik."
     },
     {
      "en": "Did she call you? — No, she didn’t.",
-     "uz": "U sizga qo‘ng‘iroq qildimi? — Yo‘q."
+     "uz": "U sizga qönğiroq qildimi? — Yöq."
     }
    ]
   }
@@ -745,7 +745,7 @@
   "level": "A2",
   "dayNumber": 2,
   "titleUz": "Bolalik xotiralari",
-  "situationUz": "Yangi tanishingiz bilan bolalikdagi o‘yinlar haqida gaplashyapsiz.",
+  "situationUz": "Yangi tanişingiz bilan bolalikdagi öyinlar haqida gaplaşyapsiz.",
   "roles": {
    "a": "New friend",
    "b": "You"
@@ -754,12 +754,12 @@
    {
     "speaker": "a",
     "en": "Where did you grow up?",
-    "uz": "Qayerda o‘sgansiz?"
+    "uz": "Qayerda ösgansiz?"
    },
    {
     "speaker": "b",
     "en": "I grew up in a small village. Our house ___ near a river.",
-    "uz": "Kichik qishloqda o‘sganman. Uyimiz daryo yonida edi.",
+    "uz": "Kiçik qişloqda ösganman. Uyimiz daryo yonida edi.",
     "gap": {
      "answer": "was",
      "options": [
@@ -768,18 +768,18 @@
       "is"
      ],
      "skill": "grammar",
-     "whyUz": "Bitta uy, o‘tgan zamon → was."
+     "whyUz": "Bitta uy, ötgan zamon → was."
     }
    },
    {
     "speaker": "a",
     "en": "What games did you play?",
-    "uz": "Qanday o‘yinlar o‘ynardingiz?"
+    "uz": "Qanday öyinlar öynardingiz?"
    },
    {
     "speaker": "b",
     "en": "We ___ football every day after school.",
-    "uz": "Har kuni maktabdan keyin futbol o‘ynardik.",
+    "uz": "Har kuni maktabdan keyin futbol öynardik.",
     "gap": {
      "answer": "played",
      "options": [
@@ -788,18 +788,18 @@
       "playing"
      ],
      "skill": "grammar",
-     "whyUz": "play → played (y dan oldin unli bo‘lsa, -ed oddiy qo‘shiladi)."
+     "whyUz": "play → played (y dan oldin unli bölsa, -ed oddiy qöşiladi)."
     }
    },
    {
     "speaker": "a",
     "en": "Who was your favourite teacher?",
-    "uz": "Eng yaxshi ko‘rgan o‘qituvchingiz kim edi?"
+    "uz": "Eng yaxşi körgan öqituvçingiz kim edi?"
    },
    {
     "speaker": "b",
     "en": "Mr Karimov. He ___ us a lot about nature.",
-    "uz": "Karimov domla. U bizga tabiat haqida ko‘p narsa o‘rgatgan.",
+    "uz": "Karimov domla. U bizga tabiat haqida köp narsa örgatgan.",
     "gap": {
      "answer": "taught",
      "options": [
@@ -808,15 +808,15 @@
       "teach"
      ],
      "skill": "grammar",
-     "whyUz": "“teach” — noto‘g‘ri fe’l: teach → taught."
+     "whyUz": "“teach” — notöğri fe’l: teach → taught."
     }
    }
   ],
   "note": {
-   "titleUz": "Noto‘g‘ri fe’llar va was / were",
+   "titleUz": "Notöğri fe’llar va was / were",
    "pointsUz": [
     "Ba’zi fe’llar -ed olmaydi: grow → grew, teach → taught, go → went.",
-    "Ularni yodlash kerak — har biri alohida shaklga ega.",
+    "Ularni yodlaş kerak — har biri alohida şaklga ega.",
     "I / he / she / it → was, you / we / they → were."
    ],
    "examples": [
@@ -826,7 +826,7 @@
     },
     {
      "en": "My parents were teachers.",
-     "uz": "Ota-onam o‘qituvchi edi."
+     "uz": "Ota-onam öqituvçi edi."
     }
    ]
   }
@@ -835,8 +835,8 @@
   "id": "a2-d3-train-ticket",
   "level": "A2",
   "dayNumber": 3,
-  "titleUz": "Vokzalda chipta olish",
-  "situationUz": "Buxoroga borish uchun vokzal kassasidasiz.",
+  "titleUz": "Vokzalda çipta oliş",
+  "situationUz": "Buxoroga boriş uçun vokzal kassasidasiz.",
   "roles": {
    "a": "Ticket clerk",
    "b": "You"
@@ -859,13 +859,13 @@
       "fastest"
      ],
      "skill": "grammar",
-     "whyUz": "Ikki narsani solishtirish: qisqa sifat + -er → faster."
+     "whyUz": "Ikki narsani soliştiriş: qisqa sifat + -er → faster."
     }
    },
    {
     "speaker": "a",
     "en": "The fast train. It takes four hours.",
-    "uz": "Tezyurar poyezd. To‘rt soat yuradi."
+    "uz": "Tezyurar poyezd. Tört soat yuradi."
    },
    {
     "speaker": "b",
@@ -885,12 +885,12 @@
    {
     "speaker": "a",
     "en": "A little. A return ticket is 200,000 sums.",
-    "uz": "Biroz. Borib-kelish chiptasi 200 000 so‘m."
+    "uz": "Biroz. Borib-keliş çiptasi 200 000 söm."
    },
    {
     "speaker": "b",
     "en": "OK, one ___ ticket, please.",
-    "uz": "Mayli, bitta borib-kelish chiptasi, iltimos.",
+    "uz": "Mayli, bitta borib-keliş çiptasi, iltimos.",
     "gap": {
      "answer": "return",
      "options": [
@@ -899,7 +899,7 @@
       "free"
      ],
      "skill": "vocabulary",
-     "whyUz": "“return ticket” — borib-kelish; “single” — faqat bir tomonga."
+     "whyUz": "“return ticket” — borib-keliş; “single” — faqat bir tomonga."
     }
    }
   ],
@@ -917,7 +917,7 @@
     },
     {
      "en": "This is the most beautiful city.",
-     "uz": "Bu eng go‘zal shahar."
+     "uz": "Bu eng gözal şahar."
     }
    ]
   }
@@ -927,7 +927,7 @@
   "level": "A2",
   "dayNumber": 4,
   "titleUz": "Ob-havo va hafta oxiri rejalari",
-  "situationUz": "Do‘stingiz bilan hafta oxiri tog‘ga chiqishni rejalashtiryapsiz.",
+  "situationUz": "Döstingiz bilan hafta oxiri toğga çiqişni rejalaştiryapsiz.",
   "roles": {
    "a": "Friend",
    "b": "You"
@@ -941,7 +941,7 @@
    {
     "speaker": "b",
     "en": "I’m ___ to go hiking in the mountains.",
-    "uz": "Tog‘da piyoda sayrga chiqmoqchiman.",
+    "uz": "Toğda piyoda sayrga çiqmoqçiman.",
     "gap": {
      "answer": "going",
      "options": [
@@ -961,7 +961,7 @@
    {
     "speaker": "b",
     "en": "They say it ___ be sunny on Saturday.",
-    "uz": "Shanba kuni quyoshli bo‘lishini aytishyapti.",
+    "uz": "Şanba kuni quyoşli bölişini aytişyapti.",
     "gap": {
      "answer": "will",
      "options": [
@@ -970,18 +970,18 @@
       "does"
      ],
      "skill": "grammar",
-     "whyUz": "Bashorat (ob-havo) — will + fe’l: it will be sunny."
+     "whyUz": "Başorat (ob-havo) — will + fe’l: it will be sunny."
     }
    },
    {
     "speaker": "a",
     "en": "Sounds great. Can I come too?",
-    "uz": "Zo‘r eshitiladi. Men ham borsam bo‘ladimi?"
+    "uz": "Zör eşitiladi. Men ham borsam böladimi?"
    },
    {
     "speaker": "b",
     "en": "Of course! I ___ call you tonight with the details.",
-    "uz": "Albatta! Kechqurun qo‘ng‘iroq qilib, tafsilotlarini aytaman.",
+    "uz": "Albatta! Keçqurun qönğiroq qilib, tafsilotlarini aytaman.",
     "gap": {
      "answer": "will",
      "options": [
@@ -990,20 +990,20 @@
       "going"
      ],
      "skill": "grammar",
-     "whyUz": "Shu zahoti qabul qilingan qaror yoki va’da — will: I’ll call you."
+     "whyUz": "Şu zahoti qabul qilingan qaror yoki va’da — will: I’ll call you."
     }
    }
   ],
   "note": {
    "titleUz": "be going to va will — farqi",
    "pointsUz": [
-    "be going to — oldindan o‘ylangan reja (I’m going to visit…).",
-    "will — bashorat (It will rain) yoki shu zahoti qaror/va’da (I’ll help you)."
+    "be going to — oldindan öylangan reja (I’m going to visit…).",
+    "will — başorat (It will rain) yoki şu zahoti qaror/va’da (I’ll help you)."
    ],
    "examples": [
     {
      "en": "We are going to buy a new car.",
-     "uz": "Yangi mashina olmoqchimiz."
+     "uz": "Yangi maşina olmoqçimiz."
     },
     {
      "en": "It’s cold. I’ll close the window.",
@@ -1016,8 +1016,8 @@
   "id": "a2-d5-job-interview",
   "level": "A2",
   "dayNumber": 5,
-  "titleUz": "Ish suhbati",
-  "situationUz": "Mehmonxonaga resepshn xodimi lavozimiga suhbatdasiz.",
+  "titleUz": "Iş suhbati",
+  "situationUz": "Mehmonxonaga resepşn xodimi lavozimiga suhbatdasiz.",
   "roles": {
    "a": "Manager",
    "b": "You"
@@ -1026,12 +1026,12 @@
    {
     "speaker": "a",
     "en": "Have you ever worked in a hotel?",
-    "uz": "Hech mehmonxonada ishlaganmisiz?"
+    "uz": "Heç mehmonxonada işlaganmisiz?"
    },
    {
     "speaker": "b",
     "en": "Yes, I ___. I worked at a hotel in Tashkent last year.",
-    "uz": "Ha, ishlaganman. O‘tgan yili Toshkentdagi mehmonxonada ishladim.",
+    "uz": "Ha, işlaganman. Ötgan yili Toşkentdagi mehmonxonada işladim.",
     "gap": {
      "answer": "have",
      "options": [
@@ -1046,12 +1046,12 @@
    {
     "speaker": "a",
     "en": "Good. Have you finished your English course?",
-    "uz": "Yaxshi. Ingliz tili kursingizni tugatdingizmi?"
+    "uz": "Yaxşi. Ingliz tili kursingizni tugatdingizmi?"
    },
    {
     "speaker": "b",
     "en": "Not ___. I finish next month.",
-    "uz": "Hali yo‘q. Keyingi oy tugataman.",
+    "uz": "Hali yöq. Keyingi oy tugataman.",
     "gap": {
      "answer": "yet",
      "options": [
@@ -1066,12 +1066,12 @@
    {
     "speaker": "a",
     "en": "And have you used our booking system before?",
-    "uz": "Bizning bron qilish tizimimizdan oldin foydalanganmisiz?"
+    "uz": "Bizning bron qiliş tizimimizdan oldin foydalanganmisiz?"
    },
    {
     "speaker": "b",
     "en": "No, I’ve ___ used it, but I learn quickly.",
-    "uz": "Yo‘q, hech foydalanmaganman, lekin tez o‘rganaman.",
+    "uz": "Yöq, heç foydalanmaganman, lekin tez örganaman.",
     "gap": {
      "answer": "never",
      "options": [
@@ -1080,25 +1080,25 @@
       "yet"
      ],
      "skill": "grammar",
-     "whyUz": "“never” — hech qachon: I’ve never used it."
+     "whyUz": "“never” — heç qaçon: I’ve never used it."
     }
    }
   ],
   "note": {
    "titleUz": "Present Perfect: ever, never, already, yet",
    "pointsUz": [
-    "have / has + fe’lning 3-shakli: I have worked, she has finished.",
-    "ever — savolda “hech”; never — “hech qachon”.",
-    "already — allaqachon (tasdiq); yet — hali (inkor/savol)."
+    "have / has + fe’lning 3-şakli: I have worked, she has finished.",
+    "ever — savolda “heç”; never — “heç qaçon”.",
+    "already — allaqaçon (tasdiq); yet — hali (inkor/savol)."
    ],
    "examples": [
     {
      "en": "Have you ever been to London?",
-     "uz": "Hech Londonda bo‘lganmisiz?"
+     "uz": "Heç Londonda bölganmisiz?"
     },
     {
      "en": "I have already sent the email.",
-     "uz": "Xatni allaqachon yubordim."
+     "uz": "Xatni allaqaçon yubordim."
     }
    ]
   }
@@ -1107,8 +1107,8 @@
   "id": "a2-d6-doctor",
   "level": "A2",
   "dayNumber": 6,
-  "titleUz": "Shifokor qabulida",
-  "situationUz": "Bir necha kundan beri boshingiz og‘riyapti. Shifokor maslahat bermoqda.",
+  "titleUz": "Şifokor qabulida",
+  "situationUz": "Bir neça kundan beri boşingiz oğriyapti. Şifokor maslahat bermoqda.",
   "roles": {
    "a": "Doctor",
    "b": "You"
@@ -1122,7 +1122,7 @@
    {
     "speaker": "b",
     "en": "I ___ a headache for three days.",
-    "uz": "Uch kundan beri boshim og‘riyapti.",
+    "uz": "Uç kundan beri boşim oğriyapti.",
     "gap": {
      "answer": "have had",
      "options": [
@@ -1131,18 +1131,18 @@
       "has"
      ],
      "skill": "grammar",
-     "whyUz": "Hozirgacha davom etayotgan holat: have had … for three days."
+     "whyUz": "Hozirgaça davom etayotgan holat: have had … for three days."
     }
    },
    {
     "speaker": "a",
     "en": "Do you sleep well? Do you drink enough water?",
-    "uz": "Yaxshi uxlaysizmi? Yetarli suv ichasizmi?"
+    "uz": "Yaxşi uxlaysizmi? Yetarli suv içasizmi?"
    },
    {
     "speaker": "b",
     "en": "Not really. What ___ I do?",
-    "uz": "Unchalik emas. Nima qilishim kerak?",
+    "uz": "Unçalik emas. Nima qilişim kerak?",
     "gap": {
      "answer": "should",
      "options": [
@@ -1151,18 +1151,18 @@
       "have"
      ],
      "skill": "grammar",
-     "whyUz": "Maslahat so‘rash — should: What should I do?"
+     "whyUz": "Maslahat söraş — should: What should I do?"
     }
    },
    {
     "speaker": "a",
     "en": "You should sleep eight hours and drink more water. You mustn’t work late.",
-    "uz": "Sakkiz soat uxlang va ko‘proq suv iching. Kech ishlamasligingiz shart."
+    "uz": "Sakkiz soat uxlang va köproq suv içing. Keç işlamasligingiz şart."
    },
    {
     "speaker": "b",
     "en": "Do I have ___ take any medicine?",
-    "uz": "Biror dori ichishim kerakmi?",
+    "uz": "Biror dori içişim kerakmi?",
     "gap": {
      "answer": "to",
      "options": [
@@ -1180,17 +1180,17 @@
    "pointsUz": [
     "should — maslahat (You should rest).",
     "must / mustn’t — qat’iy qoida (You mustn’t smoke here).",
-    "have to — tashqi majburiyat (I have to work on Saturday).",
-    "Modal fe’ldan keyin “to” qo‘yilmaydi: must go, should eat (have to bundan mustasno)."
+    "have to — taşqi majburiyat (I have to work on Saturday).",
+    "Modal fe’ldan keyin “to” qöyilmaydi: must go, should eat (have to bundan mustasno)."
    ],
    "examples": [
     {
      "en": "You should see a dentist.",
-     "uz": "Tish shifokoriga borishingiz kerak."
+     "uz": "Tiş şifokoriga borişingiz kerak."
     },
     {
      "en": "We have to wear a uniform.",
-     "uz": "Biz forma kiyishimiz shart."
+     "uz": "Biz forma kiyişimiz şart."
     }
    ]
   }
@@ -1199,8 +1199,8 @@
   "id": "a2-d7-market",
   "level": "A2",
   "dayNumber": 7,
-  "titleUz": "Do‘konda xarid",
-  "situationUz": "Mehmonlar uchun ovqat tayyorlaysiz va oziq-ovqat do‘konidasiz.",
+  "titleUz": "Dökonda xarid",
+  "situationUz": "Mehmonlar uçun ovqat tayyorlaysiz va oziq-ovqat dökonidasiz.",
   "roles": {
    "a": "Shop assistant",
    "b": "You"
@@ -1214,7 +1214,7 @@
    {
     "speaker": "b",
     "en": "Yes, please. I need ___ tomatoes and some rice.",
-    "uz": "Ha, iltimos. Menga bir nechta pomidor va bir oz guruch kerak.",
+    "uz": "Ha, iltimos. Menga bir neçta pomidor va bir oz guruç kerak.",
     "gap": {
      "answer": "some",
      "options": [
@@ -1229,12 +1229,12 @@
    {
     "speaker": "a",
     "en": "How many tomatoes would you like?",
-    "uz": "Nechta pomidor olasiz?"
+    "uz": "Neçta pomidor olasiz?"
    },
    {
     "speaker": "b",
     "en": "A kilo, please. And how ___ rice do I need for six people?",
-    "uz": "Bir kilo, iltimos. Olti kishiga qancha guruch kerak?",
+    "uz": "Bir kilo, iltimos. Olti kişiga qança guruç kerak?",
     "gap": {
      "answer": "much",
      "options": [
@@ -1254,7 +1254,7 @@
    {
     "speaker": "b",
     "en": "No, thanks. I’ve got a ___ of onions at home.",
-    "uz": "Yo‘q, rahmat. Uyda piyoz ko‘p.",
+    "uz": "Yöq, rahmat. Uyda piyoz köp.",
     "gap": {
      "answer": "lot",
      "options": [
@@ -1263,7 +1263,7 @@
       "few"
      ],
      "skill": "grammar",
-     "whyUz": "“a lot of” — ko‘p (sanaladigan ham, sanalmaydigan ham)."
+     "whyUz": "“a lot of” — köp (sanaladigan ham, sanalmaydigan ham)."
     }
    }
   ],
@@ -1272,7 +1272,7 @@
    "pointsUz": [
     "some — tasdiqda, any — inkor va savolda.",
     "many — sanaladigan (many apples), much — sanalmaydigan (much water).",
-    "a lot of — ikkalasi bilan ham ishlaydi."
+    "a lot of — ikkalasi bilan ham işlaydi."
    ],
    "examples": [
     {
@@ -1281,7 +1281,7 @@
     },
     {
      "en": "We haven’t got much time.",
-     "uz": "Vaqtimiz ko‘p emas."
+     "uz": "Vaqtimiz köp emas."
     }
    ]
   }

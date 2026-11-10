@@ -157,7 +157,7 @@ export function MascotExerciseFeedback({
           className={`absolute right-3 top-1 text-sm font-bold tabular-nums animate-[var(--animate-xp)] pointer-events-none ${
             correct ? 'text-[var(--ok)]' : 'text-[var(--bad)]'
           }`}
-          aria-label={`Bu javob uchun ${xp} XP`}
+          aria-label={`Bu javob uçun ${xp} XP`}
         >
           +{xp} XP
         </span>
@@ -169,11 +169,11 @@ export function MascotExerciseFeedback({
       />
       <div className="flex-1">
         <strong className={correct ? 'text-[var(--ok)]' : 'text-[var(--bad)]'}>
-          {correct ? "Ofarin! To'g'ri topdingiz! 🌟" : "Xavotir olmang, harakatdan to'xtamang! 💪"}
+          {correct ? "Ofarin! Töğri topdingiz! 🌟" : "Xavotir olmang, harakatdan töxtamang! 💪"}
         </strong>
         {!correct && expected && (
           <p className="mt-1">
-            To‘g‘ri javob: <b className="font-semibold">{expected}</b>
+            Töğri javob: <b className="font-semibold">{expected}</b>
           </p>
         )}
         {whyUz && <p className="mt-1 muted text-xs leading-normal">{whyUz}</p>}

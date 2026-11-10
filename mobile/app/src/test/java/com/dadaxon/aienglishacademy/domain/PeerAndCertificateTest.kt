@@ -54,15 +54,15 @@ class PeerAndCertificateTest {
 
     @Test
     fun chegaralarVaSabablarVebBilanBirXil() {
-        assertEquals("Bahoni 1 dan 5 gacha tanlang.", validateReview(0, "yaxshi yozilgan matn"))
+        assertEquals("Bahoni 1 dan 5 gaça tanlang.", validateReview(0, "yaxşi yozilgan matn"))
         assertTrue(validateReview(4, "qisqa")!!.contains("kamida 10"))
-        assertNull(validateReview(5, "  Juda yaxshi, rahmat!  "))
-        assertTrue(validateSubmissionBody("   ")!!.startsWith("Bo‘sh"))
+        assertNull(validateReview(5, "  Juda yaxşi, rahmat!  "))
+        assertTrue(validateSubmissionBody("   ")!!.startsWith("Böş"))
         assertTrue(validateSubmissionBody("a".repeat(4001))!!.contains("juda uzun"))
-        assertTrue(peerErrorUz("P0001", "peer_daily_limit").contains("kunlik chegara"))
+        assertTrue(peerErrorUz("P0001", "peer_daily_limit").contains("kunlik çegara"))
         assertTrue(peerErrorUz("PGRST205", "Could not find the table").contains("0006_peer_review"))
-        assertTrue(peerErrorUz("23505", "dup").contains("allaqachon"))
-        assertTrue(peerErrorUz("42501", "new row violates row-level security policy").contains("ruxsat yo‘q"))
+        assertTrue(peerErrorUz("23505", "dup").contains("allaqaçon"))
+        assertTrue(peerErrorUz("42501", "new row violates row-level security policy").contains("ruxsat yöq"))
         // Veb faylidagi sonlar bilan paritet.
         val ts = listOf("..", "../..", ".", "app").map { File(File(it), "src/lib/peer.ts") }.first { it.isFile }.readText()
         for ((k, v) in mapOf("bodyMax" to PeerLimits.BODY_MAX, "commentMin" to PeerLimits.COMMENT_MIN, "commentMax" to PeerLimits.COMMENT_MAX, "dailySubmissions" to PeerLimits.DAILY_SUBMISSIONS)) {
@@ -101,7 +101,7 @@ class PeerAndCertificateTest {
         assertEquals("https://x.supabase.co/rest/v1/rpc/peer_claim", t.calls.single().second)
         t.reply = HttpResp(400, """{"code":"P0001","message":"peer_daily_limit"}""")
         val r = p.submit("writing", "t", "A1", "", "Hello")
-        assertTrue(r is PeerResult.Fail && r.reasonUz.contains("kunlik chegara"))
+        assertTrue(r is PeerResult.Fail && r.reasonUz.contains("kunlik çegara"))
         // Noto'g'ri izoh serverga yuborilmaydi.
         val before = t.calls.size
         assertTrue(p.review("s1", 4, "qisqa") is PeerResult.Fail)

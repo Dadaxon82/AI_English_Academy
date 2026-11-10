@@ -36,10 +36,10 @@ fun dialogueExercise(d: Dialogue, lineIndex: Int): Exercise? {
     return Exercise(
         id = dialogueExerciseId(d, lineIndex),
         kind = Kinds.MULTIPLE_CHOICE,
-        instructionUz = "Suhbatni davom ettiring: bo‘sh joyga mos variantni tanlang.",
+        instructionUz = "Suhbatni davom ettiring: böş joyga mos variantni tanlang.",
         level = d.level,
         skill = gap.skill,
-        explanationUz = "${gap.whyUz} To‘liq: “${filledLine(line)}” — ${line.uz}",
+        explanationUz = "${gap.whyUz} Töliq: “${filledLine(line)}” — ${line.uz}",
         difficulty = if (d.level == Levels.A1) 1 else 2,
         tags = listOf("dialogue", d.id),
         passageExcerpt = prev?.let { "${role(d, it.speaker)}: ${it.en}" },

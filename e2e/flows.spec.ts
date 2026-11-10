@@ -9,22 +9,22 @@ import { answerSomething, disableHearts, expectClean, skipThroughLesson, waitPer
 test('onboarding → dashboard', async ({ page }) => {
   const errors = watchErrors(page)
   await page.goto('onboarding')
-  await page.getByRole('button', { name: 'Davom etish' }).click()
-  await page.getByRole('button', { name: 'Davom etish' }).click()
-  await page.getByRole('button', { name: 'Hozir o‘tkazmayman' }).click()
+  await page.getByRole('button', { name: 'Davom etiş' }).click()
+  await page.getByRole('button', { name: 'Davom etiş' }).click()
+  await page.getByRole('button', { name: 'Hozir ötkazmayman' }).click()
   await expect(page.getByRole('heading', { name: /Hammasi tayyor/ })).toBeVisible()
-  await page.getByRole('button', { name: 'Dashboardga o‘tish' }).click()
+  await page.getByRole('button', { name: 'Dashboardga ötiş' }).click()
   await expect(page).toHaveURL(/\/dashboard$/)
   // Onboarding yakunlangan — "to'ldirilmagan" eslatmasi chiqmaydi
-  await expect(page.getByText('Boshlang‘ich sozlamalar to‘ldirilmagan.')).toHaveCount(0)
+  await expect(page.getByText('Boşlanğiç sozlamalar töldirilmagan.')).toHaveCount(0)
   await expectClean(page, errors)
 })
 
-test('dars rejimi: grammatika darsi oxirigacha', async ({ page }) => {
+test('dars rejimi: grammatika darsi oxirigaça', async ({ page }) => {
   const errors = watchErrors(page)
   await disableHearts(page)
   await page.goto('grammar')
-  await page.getByRole('button', { name: 'Darsni boshlash' }).first().click()
+  await page.getByRole('button', { name: 'Darsni boşlaş' }).first().click()
   await expect(page.locator('.aea-lesson').first()).toBeVisible()
   await expectClean(page, errors)
   await skipThroughLesson(page)
@@ -32,45 +32,45 @@ test('dars rejimi: grammatika darsi oxirigacha', async ({ page }) => {
   await expectClean(page, errors)
 })
 
-test('so‘z o‘yini: lug‘at o‘yini oxirigacha', async ({ page }) => {
+test('söz öyini: luğat öyini oxirigaça', async ({ page }) => {
   const errors = watchErrors(page)
   await disableHearts(page)
   await page.goto('vocabulary')
-  await page.getByRole('button', { name: 'O‘yinni boshlash' }).click()
+  await page.getByRole('button', { name: 'Öyinni boşlaş' }).click()
   await expect(page.locator('.aea-lesson').first()).toBeVisible()
   await expectClean(page, errors)
   await skipThroughLesson(page)
   await expectClean(page, errors)
 })
 
-test('sakrash testi: savollarga javob va natija', async ({ page }) => {
+test('sakraş testi: savollarga javob va natija', async ({ page }) => {
   const errors = watchErrors(page)
   await page.goto('sections')
-  await page.getByRole('button', { name: /sakrash testi/i }).first().click()
-  await page.getByRole('button', { name: 'Testni boshlash' }).click()
-  const result = page.getByText(/Sakrash testi topshirildi|sakrash uchun yetarli emas/)
+  await page.getByRole('button', { name: /sakraş testi/i }).first().click()
+  await page.getByRole('button', { name: 'Testni boşlaş' }).click()
+  const result = page.getByText(/Sakraş testi topşirildi|sakraş uçun yetarli emas/)
   for (let i = 0; i < 40 && !(await result.count()); i++) {
     const runner = page.locator('.aea-lesson').first()
     await answerSomething(runner)
-    await runner.getByRole('button', { name: 'Tekshirish' }).click()
-    await runner.getByRole('button', { name: /Keyingi mashq|Yakunlash/ }).click()
+    await runner.getByRole('button', { name: 'Tekşiriş' }).click()
+    await runner.getByRole('button', { name: /Keyingi maşq|Yakunlaş/ }).click()
   }
   await expect(result).toBeVisible()
   await expectClean(page, errors)
 })
 
-test('xatolar o‘yini: xato qilingan mashqlarni qayta ishlash', async ({ page }) => {
+test('xatolar öyini: xato qilingan maşqlarni qayta işlaş', async ({ page }) => {
   const errors = watchErrors(page)
   await disableHearts(page)
   // Xato yaratamiz: grammatika darsini o'tkazib yuborib o'tamiz
   await page.goto('grammar')
-  await page.getByRole('button', { name: 'Darsni boshlash' }).first().click()
+  await page.getByRole('button', { name: 'Darsni boşlaş' }).first().click()
   await skipThroughLesson(page)
   await waitPersist(page)
 
   await page.goto('errors')
-  const card = page.locator('div.rounded-2xl', { hasText: 'Xatolarni tuzatish' }).last()
-  const start = card.getByRole('button', { name: 'Boshlash' })
+  const card = page.locator('div.rounded-2xl', { hasText: 'Xatolarni tuzatiş' }).last()
+  const start = card.getByRole('button', { name: 'Boşlaş' })
   await expect(start).toBeEnabled()
   await start.click()
   await expect(page.locator('.aea-lesson').first()).toBeVisible()
@@ -79,17 +79,17 @@ test('xatolar o‘yini: xato qilingan mashqlarni qayta ishlash', async ({ page }
   await expectClean(page, errors)
 })
 
-test('A2: onboardingda A2 tanlansa — yo‘l, grammatika va tinglash A2 kontentini ochadi', async ({ page }) => {
+test('A2: onboardingda A2 tanlansa — yöl, grammatika va tinglaş A2 kontentini oçadi', async ({ page }) => {
   const errors = watchErrors(page)
   await page.goto('onboarding')
   await page.getByRole('button', { name: 'A2', exact: true }).first().click()
-  await page.getByRole('button', { name: 'Davom etish' }).click()
-  await page.getByRole('button', { name: 'Davom etish' }).click()
-  await page.getByRole('button', { name: 'Hozir o‘tkazmayman' }).click()
-  await page.getByRole('button', { name: 'Dashboardga o‘tish' }).click()
+  await page.getByRole('button', { name: 'Davom etiş' }).click()
+  await page.getByRole('button', { name: 'Davom etiş' }).click()
+  await page.getByRole('button', { name: 'Hozir ötkazmayman' }).click()
+  await page.getByRole('button', { name: 'Dashboardga ötiş' }).click()
   await waitPersist(page)
   await page.goto('path')
-  await expect(page.getByText('O‘tgan hafta oxiri').first()).toBeVisible()
+  await expect(page.getByText('Ötgan hafta oxiri').first()).toBeVisible()
   await page.goto('grammar')
   await expect(page.getByText(/Past Simple/).first()).toBeVisible()
   await page.goto('listening')
@@ -99,7 +99,7 @@ test('A2: onboardingda A2 tanlansa — yo‘l, grammatika va tinglash A2 kontent
   await expectClean(page, errors)
 })
 
-test('SEO/OG meta va PWA manifest skrinshotlari haqiqatan mavjud', async ({ page, request }) => {
+test('SEO/OG meta va PWA manifest skrinşotlari haqiqatan mavjud', async ({ page, request }) => {
   await page.goto('dashboard')
   const og = await page.locator('meta[property="og:image"]').getAttribute('content')
   expect(og).toMatch(/^https:\/\/.+\/og-image\.png$/)
@@ -111,7 +111,7 @@ test('SEO/OG meta va PWA manifest skrinshotlari haqiqatan mavjud', async ({ page
   for (const s of manifest.screenshots) expect((await request.get(s.src)).status(), s.src).toBe(200)
 })
 
-test('xarita: tugun bosilsa bo‘lim darsi ochiladi, yakunlangach ball tugun ustida', async ({ page }) => {
+test('xarita: tugun bosilsa bölim darsi oçiladi, yakunlangaç ball tugun ustida', async ({ page }) => {
   const errors = watchErrors(page)
   await disableHearts(page)
   await page.goto('path')
@@ -119,19 +119,19 @@ test('xarita: tugun bosilsa bo‘lim darsi ochiladi, yakunlangach ball tugun ust
   await expect(page).toHaveURL(/\/lesson\/a1-day-01\/grammar$/)
   await skipThroughLesson(page)
   await expect(page.getByText(/Natija: \d+%/)).toBeVisible()
-  await page.getByRole('button', { name: 'Davom etish' }).last().click()
+  await page.getByRole('button', { name: 'Davom etiş' }).last().click()
   await expect(page).toHaveURL(/\/path$/)
   await expect(page.getByRole('button', { name: /^Grammatika: .* — natija \d+%/ }).first()).toBeVisible()
   await expectClean(page, errors)
 })
 
-test('«5 daqiqa»: dashboard → sessiya, surish va tugmalar bilan baholash', async ({ page }) => {
+test('«5 daqiqa»: dashboard → sessiya, suriş va tugmalar bilan baholaş', async ({ page }) => {
   const errors = watchErrors(page)
   await page.goto('dashboard')
-  await page.getByRole('link', { name: '5 daqiqa boshlash' }).click()
+  await page.getByRole('link', { name: '5 daqiqa boşlaş' }).click()
   await expect(page).toHaveURL(/\/quick$/)
-  await page.getByRole('button', { name: /Boshlash/ }).click()
-  const card = page.getByRole('button', { name: /tarjimani ko‘rish/ })
+  await page.getByRole('button', { name: /Boşlaş/ }).click()
+  const card = page.getByRole('button', { name: /tarjimani köriş/ })
   await expect(card).toBeVisible()
   const counter = page.getByText(/^1 \/ \d+$/)
   await expect(counter).toBeVisible()
@@ -147,48 +147,48 @@ test('«5 daqiqa»: dashboard → sessiya, surish va tugmalar bilan baholash', a
   await expectClean(page, errors)
 })
 
-test('suhbatlar: A1 suhbati oxirigacha va xato Takrorlash menejeriga tushadi', async ({ page }) => {
+test('suhbatlar: A1 suhbati oxirigaça va xato Takrorlaş menejeriga tuşadi', async ({ page }) => {
   const errors = watchErrors(page)
   await disableHearts(page)
   await page.goto('dialogues')
   await expect(page.getByRole('heading', { name: 'Real hayot suhbatlari' })).toBeVisible()
-  await page.getByRole('button', { name: 'Boshlash' }).first().click()
+  await page.getByRole('button', { name: 'Boşlaş' }).first().click()
   await expect(page.locator('.aea-lesson').first()).toBeVisible()
   await skipThroughLesson(page)
   await expect(page.getByText('Dars tugadi!')).toBeVisible()
   await expectClean(page, errors)
   await waitPersist(page)
   await page.goto('errors')
-  await expect(page.getByRole('heading', { name: /Bugungi takror: 3 ta xato \+ 0 ta so‘z/ })).toBeVisible()
-  await page.getByRole('button', { name: 'Takrorlashni boshlash' }).click()
+  await expect(page.getByRole('heading', { name: /Bugungi takror: 3 ta xato \+ 0 ta söz/ })).toBeVisible()
+  await page.getByRole('button', { name: 'Takrorlaşni boşlaş' }).click()
   await expect(page.locator('.aea-lesson').first()).toBeVisible()
   await expectClean(page, errors)
 })
 
-test('suhbatdosh: stsenariy rejimida kafe suhbati oxirigacha', async ({ page }) => {
+test('suhbatdoş: stsenariy rejimida kafe suhbati oxirigaça', async ({ page }) => {
   const errors = watchErrors(page)
   await page.goto('conversation')
   await expect(page.getByText(/AI ulanmagan/)).toBeVisible()
-  await page.getByRole('article').filter({ hasText: 'Kafeda buyurtma berish' }).getByRole('button', { name: 'Gaplashish' }).click()
+  await page.getByRole('article').filter({ hasText: 'Kafeda buyurtma beriş' }).getByRole('button', { name: 'Gaplaşiş' }).click()
   for (const t of ['Can I have tea please', 'I would like a sandwich', 'How much is it']) {
     await page.getByLabel('Javobingiz').fill(t)
-    await page.getByRole('button', { name: 'Yuborish' }).click()
+    await page.getByRole('button', { name: 'Yuboriş' }).click()
   }
   await expect(page.getByRole('heading', { name: 'Suhbat yakunlandi' })).toBeVisible()
   await expectClean(page, errors)
 })
 
-test('immersion: Sozlamada yoqilsa lug‘at kartasida tarjima yashirinadi va tugma bilan ochiladi', async ({ page }) => {
+test('immersion: Sozlamada yoqilsa luğat kartasida tarjima yaşirinadi va tugma bilan oçiladi', async ({ page }) => {
   const errors = watchErrors(page)
   await page.goto('settings')
-  await page.getByRole('checkbox', { name: /O‘zbekcha tarjimalarni yashirish/ }).check()
+  await page.getByRole('checkbox', { name: /Özbekça tarjimalarni yaşiriş/ }).check()
   await page.goto('vocabulary')
   await page.getByRole('button', { name: 'Ro\'yxat' }).click()
   const card = page.locator('article').first()
-  await expect(card.getByRole('button', { name: 'Tarjimani ko‘rsatish' })).toBeVisible()
-  await card.getByRole('button', { name: 'Tarjimani ko‘rsatish' }).click()
-  await expect(card.getByRole('button', { name: 'Tarjimani ko‘rsatish' })).toHaveCount(0)
+  await expect(card.getByRole('button', { name: 'Tarjimani körsatiş' })).toBeVisible()
+  await card.getByRole('button', { name: 'Tarjimani körsatiş' }).click()
+  await expect(card.getByRole('button', { name: 'Tarjimani körsatiş' })).toHaveCount(0)
   await page.goto('pronunciation')
-  await expect(page.getByRole('heading', { name: 'Talaffuz mashqi' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Talaffuz maşqi' })).toBeVisible()
   await expectClean(page, errors)
 })

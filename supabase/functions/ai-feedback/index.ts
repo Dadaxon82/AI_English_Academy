@@ -52,7 +52,7 @@ Deno.serve(async (req) => {
 
   const provider = Deno.env.get('AI_PROVIDER') ?? 'anthropic'
   const apiKey = Deno.env.get('AI_API_KEY') ?? Deno.env.get('ANTHROPIC_API_KEY')
-  if (provider !== 'anthropic') return json(501, { error: 'provider', reasonUz: `AI_PROVIDER="${provider}" qo‘llab-quvvatlanmaydi.` })
+  if (provider !== 'anthropic') return json(501, { error: 'provider', reasonUz: `AI_PROVIDER="${provider}" qöllab-quvvatlanmaydi.` })
   if (!apiKey) return json(503, { error: 'not_configured', reasonUz: 'AI kaliti serverda sozlanmagan.' })
 
   // --- foydalanuvchi ---
@@ -70,7 +70,7 @@ Deno.serve(async (req) => {
   try {
     body = await req.json()
   } catch {
-    return json(400, { error: 'bad_json', reasonUz: 'JSON o‘qilmadi.' })
+    return json(400, { error: 'bad_json', reasonUz: 'JSON öqilmadi.' })
   }
   const parsed = parseFeedbackRequest(body)
   if (!parsed.ok) return json(400, { error: 'bad_request', reasonUz: parsed.reasonUz })
@@ -80,8 +80,8 @@ Deno.serve(async (req) => {
   const limit = dailyLimit(Deno.env.get('AI_DAILY_LIMIT'))
   const admin = createClient(url, service)
   const { data: allowed, error: limErr } = await admin.rpc('ai_usage_take', { p_user: userData.user.id, p_limit: limit })
-  if (limErr) return json(500, { error: 'limit', reasonUz: 'Limitni tekshirib bo‘lmadi.' })
-  if (allowed !== true) return json(429, { error: 'limit', reasonUz: `Bugungi AI limiti (${limit} ta) tugadi — qoidaviy tahlil ishlatiladi.` })
+  if (limErr) return json(500, { error: 'limit', reasonUz: 'Limitni tekşirib bölmadi.' })
+  if (allowed !== true) return json(429, { error: 'limit', reasonUz: `Bugungi AI limiti (${limit} ta) tugadi — qoidaviy tahlil işlatiladi.` })
 
   // --- model ---
   const client = new Anthropic({ apiKey })
@@ -100,8 +100,8 @@ Deno.serve(async (req) => {
       messages: [{ role: 'user', content: userPrompt(fr) }],
     } as never)
     const m = msg as unknown as { stop_reason: string; model: string; content: { type: string; text?: string }[] }
-    if (m.stop_reason === 'refusal') return json(502, { error: 'refusal', reasonUz: 'Model baholashdan bosh tortdi.' })
-    if (m.stop_reason === 'max_tokens') return json(502, { error: 'truncated', reasonUz: 'Model javobi chala qoldi.' })
+    if (m.stop_reason === 'refusal') return json(502, { error: 'refusal', reasonUz: 'Model baholaşdan boş tortdi.' })
+    if (m.stop_reason === 'max_tokens') return json(502, { error: 'truncated', reasonUz: 'Model javobi çala qoldi.' })
     const text = m.content.find((b) => b.type === 'text')?.text ?? ''
     let raw: unknown
     try {
@@ -116,6 +116,6 @@ Deno.serve(async (req) => {
     if (e instanceof Anthropic.RateLimitError) return json(503, { error: 'busy', reasonUz: 'AI xizmati band — keyinroq.' })
     if (e instanceof Anthropic.AuthenticationError) return json(503, { error: 'not_configured', reasonUz: 'AI kaliti yaroqsiz.' })
     if (e instanceof Anthropic.APIError) return json(502, { error: 'upstream', reasonUz: `AI xizmati xatosi (${e.status}).` })
-    return json(502, { error: 'upstream', reasonUz: 'AI xizmatiga ulanib bo‘lmadi.' })
+    return json(502, { error: 'upstream', reasonUz: 'AI xizmatiga ulanib bölmadi.' })
   }
 })

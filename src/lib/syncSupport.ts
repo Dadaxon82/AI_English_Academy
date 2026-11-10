@@ -131,8 +131,8 @@ export class SchemaNotes {
     for (const [migration, columns] of [...this.missing.entries()].sort()) {
       parts.push(
         columns.size > 0
-          ? `baza eski: ${migration} migratsiyasi qo‘llanmagan (${[...columns].sort().join(', ')} ustunlari yo‘q)`
-          : `baza eski: jadval yo‘q — ${migration} migratsiyasi qo‘llanmagan`,
+          ? `baza eski: ${migration} migratsiyasi qöllanmagan (${[...columns].sort().join(', ')} ustunlari yöq)`
+          : `baza eski: jadval yöq — ${migration} migratsiyasi qöllanmagan`,
       )
     }
     return parts.join('; ')

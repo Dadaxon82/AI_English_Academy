@@ -168,7 +168,7 @@ class MascotView @JvmOverloads constructor(
 
     private fun moodColor(): Int = when (mood) {
         Mood.HAPPY, Mood.CHEER -> 0xFF34D399.toInt() // emerald
-        Mood.SAD -> 0xFFF59E0B.toInt() // amber — "qo'llab-quvvatlash"
+        Mood.SAD -> 0xFFF59E0B.toInt() // amber — "qöllab-quvvatlaş"
         Mood.NEUTRAL -> 0xFF60A5FA.toInt() // indigo/sky
     }
 

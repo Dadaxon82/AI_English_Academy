@@ -115,7 +115,7 @@ class PlanningTest {
     fun `yakshanba — o'qishga ko'proq vaqt, yengil kun`() {
         val sunday = LocalDate.parse("2026-11-01") // 2026-11-01 — yakshanba
         val a = computeAllocation(settings(), emptyList(), sunday)
-        assertTrue(a.reasonUz.any { it.contains("Yakshanba") })
+        assertTrue(a.reasonUz.any { it.contains("Yakşanba") })
         val base = computeAllocation(settings(), emptyList(), wed)
         assertTrue(a.minutes.getValue(Skills.READING) > base.minutes.getValue(Skills.READING))
         assertEquals(90, a.total)
@@ -126,7 +126,7 @@ class PlanningTest {
         // Minimal 30 daq → har ko'nikma 5 daqiqa, donor 5→0 ga tusholmaydi.
         val a = computeAllocation(settings(dailyMinutes = 30), listOf(ev("listening", 40.0), ev("speaking", 40.0)), wed)
         val changed = a.minutes.entries.any { (s, m) -> m > (DEFAULT_ALLOCATION[s] ?: 0) }
-        val claims = a.reasonUz.any { it.contains("kuchaytirildi") }
+        val claims = a.reasonUz.any { it.contains("kuçaytirildi") }
         assertEquals(changed, claims)
     }
 
@@ -144,7 +144,7 @@ class PlanningTest {
             id = "a1-day-1",
             sections =
                 listOf(
-                    DaySection(skill = Skills.VOCABULARY, minutes = 15, itemIds = listOf("a1-v1-1"), titleUz = "Yangi so‘zlar"),
+                    DaySection(skill = Skills.VOCABULARY, minutes = 15, itemIds = listOf("a1-v1-1"), titleUz = "Yangi sözlar"),
                     DaySection(skill = Skills.GRAMMAR, minutes = 25, itemIds = listOf("a1-ex-g1-01"), titleUz = "to be"),
                 ),
         )
@@ -170,7 +170,7 @@ class PlanningTest {
         assertEquals(alloc.minutes.getValue(Skills.READING), tasks.first { it.skill == Skills.READING }.minutes)
         assertEquals("to be", tasks.first { it.skill == Skills.GRAMMAR }.titleUz)
         // Bo'lim bo'lmasa — o'zbekcha nomdan foydalaniladi
-        assertEquals("O‘qish", tasks.first { it.skill == Skills.READING }.titleUz)
+        assertEquals("Öqiş", tasks.first { it.skill == Skills.READING }.titleUz)
         assertEquals("a1-day-1:vocabulary", tasks.first { it.skill == Skills.VOCABULARY }.sectionId)
         assertEquals("a1-v1-1", tasks.first { it.skill == Skills.VOCABULARY }.contentId)
         assertNull(tasks.first { it.skill == Skills.READING }.contentId)
@@ -197,12 +197,12 @@ class PlanningTest {
 
     @Test
     fun `skillLabelUz o'zbekcha nom beradi`() {
-        assertEquals("Lug‘at", skillLabelUz("vocabulary"))
-        assertEquals("Gapirish", skillLabelUz("speaking"))
+        assertEquals("Luğat", skillLabelUz("vocabulary"))
+        assertEquals("Gapiriş", skillLabelUz("speaking"))
         assertEquals("Grammatika", skillLabelUz("grammar"))
-        assertEquals("O‘qish", skillLabelUz("reading"))
-        assertEquals("Tinglash", skillLabelUz("listening"))
-        assertEquals("Yozish", skillLabelUz("writing"))
+        assertEquals("Öqiş", skillLabelUz("reading"))
+        assertEquals("Tinglaş", skillLabelUz("listening"))
+        assertEquals("Yoziş", skillLabelUz("writing"))
         assertEquals("noma'lum", skillLabelUz("noma'lum"))
     }
 }

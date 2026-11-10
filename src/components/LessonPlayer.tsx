@@ -133,7 +133,7 @@ export default function LessonPlayer({ steps, onClose, renderInfo, renderContext
         <div className="grid gap-3">{renderInfo?.(step)}</div>
         <div className="flex justify-end rounded-2xl border-2 bg-[var(--panel-2)] px-3.5 sm:px-5 py-3.5">
           <button type="button" className={chunkyGreen} onClick={next} autoFocus>
-            Davom etish
+            Davom etiş
           </button>
         </div>
       </LessonFrame>
@@ -197,14 +197,14 @@ function LessonFrame({
     <div className="aea-lesson grid gap-5">
       {streak >= 3 && (
         <p className="-mb-3 text-center text-[11px] font-extrabold uppercase tracking-wider text-amber-700 dark:text-amber-400">
-          {streak} ta ketma-ket to‘g‘ri javob
+          {streak} ta ketma-ket töğri javob
         </p>
       )}
       <div className="flex items-center gap-3">
         <button
           type="button"
           onClick={onExit}
-          aria-label="Darsdan chiqish"
+          aria-label="Darsdan çiqiş"
           className="shrink-0 inline-grid place-items-center w-9 h-9 rounded-xl muted hover:bg-[var(--panel-2)]"
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" aria-hidden>
@@ -245,7 +245,7 @@ function ContextToggle({ kind, children }: { kind: 'passage' | 'audio'; children
         aria-expanded={open}
         className="justify-self-start inline-flex items-center gap-1.5 rounded-xl border-2 border-b-4 px-3 py-1.5 text-xs font-extrabold uppercase tracking-wide text-sky-700 dark:text-sky-300 bg-[var(--panel)] hover:bg-[var(--panel-2)]"
       >
-        {kind === 'passage' ? '📖' : '🎧'} {open ? 'Yopish' : kind === 'passage' ? 'Matnni ko‘rish' : 'Audioni qayta tinglash'}
+        {kind === 'passage' ? '📖' : '🎧'} {open ? 'Yopiş' : kind === 'passage' ? 'Matnni köriş' : 'Audioni qayta tinglaş'}
       </button>
       {open && <div className="rounded-2xl border-2 bg-[var(--panel-2)] p-3.5 text-sm max-h-72 overflow-auto">{children}</div>}
     </div>
@@ -321,7 +321,7 @@ function SpeakStep({
         skippable
         onExit={onExit}
         streak={streak}
-        badge={badge ?? (Ctor ? undefined : 'Mikrofon yo‘q — plitkalar bilan')}
+        badge={badge ?? (Ctor ? undefined : 'Mikrofon yöq — plitkalar bilan')}
         badgeTone={badge ? 'fix' : 'new'}
         context={<SentenceBubble sentence={step.sentence} hidden />}
       />
@@ -353,7 +353,7 @@ function SpeakStep({
         if (e.results[e.results.length - 1]?.isFinal) finalText = t
       }
       rec.onerror = (e) => {
-        setError(e.error === 'not-allowed' ? 'Mikrofonga ruxsat berilmadi.' : 'Ovoz tanilmadi — qayta urinib ko‘ring.')
+        setError(e.error === 'not-allowed' ? 'Mikrofonga ruxsat berilmadi.' : 'Ovoz tanilmadi — qayta urinib köring.')
       }
       rec.onend = () => {
         setListening(false)
@@ -362,7 +362,7 @@ function SpeakStep({
       rec.start()
       setListening(true)
     } catch {
-      setError('Ovozni tanish ishga tushmadi.')
+      setError('Ovozni taniş işga tuşmadi.')
     }
   }
 
@@ -370,12 +370,12 @@ function SpeakStep({
     <LessonFrame pos={result ? pos + 1 : pos} total={total} streak={streak} onExit={onExit}>
       <div className="grid gap-1">
         <p className={`text-[11px] font-extrabold uppercase tracking-wider ${badge ? 'text-orange-700 dark:text-orange-400' : 'text-violet-600 dark:text-violet-400'}`}>
-          {badge ?? 'Gapirish'}
+          {badge ?? 'Gapiriş'}
         </p>
-        <h2 className="text-xl sm:text-2xl font-extrabold leading-tight">Ovoz chiqarib ayting</h2>
+        <h2 className="text-xl sm:text-2xl font-extrabold leading-tight">Ovoz çiqarib ayting</h2>
       </div>
       <SentenceBubble sentence={step.sentence} />
-      {blocked && <InfoBanner tone="warn">Yuraklar tugadi — Lug‘at bo‘limida so‘z takrorlab yurak qaytaring.</InfoBanner>}
+      {blocked && <InfoBanner tone="warn">Yuraklar tugadi — Luğat bölimida söz takrorlab yurak qaytaring.</InfoBanner>}
       <button
         type="button"
         onClick={listen}
@@ -384,11 +384,11 @@ function SpeakStep({
           listening ? 'bg-sky-50 dark:bg-sky-950/30 border-sky-400 animate-pulse' : 'bg-[var(--panel)] hover:bg-[var(--panel-2)]'
         } disabled:cursor-not-allowed`}
       >
-        🎤 {listening ? 'Tinglayapman… gapiring' : 'Gapirish uchun bosing'}
+        🎤 {listening ? 'Tinglayapman… gapiring' : 'Gapiriş uçun bosing'}
       </button>
       {heard && (
         <p className="text-sm text-center">
-          Eshitildi: <b lang="en">{heard}</b>
+          Eşitildi: <b lang="en">{heard}</b>
         </p>
       )}
       {error && <InfoBanner tone="warn">{error}</InfoBanner>}
@@ -407,7 +407,7 @@ function SpeakStep({
               bare
               correct={result.correct}
               expected={step.sentence}
-              whyUz={`Gapdagi so‘zlarning ${Math.round(result.score * 100)}% i aniq eshitildi (o‘tish: ${Math.round(SPEECH_PASS * 100)}%).`}
+              whyUz={`Gapdagi sözlarning ${Math.round(result.score * 100)}% i aniq eşitildi (ötiş: ${Math.round(SPEECH_PASS * 100)}%).`}
             />
           </div>
         )}
@@ -425,7 +425,7 @@ function SpeakStep({
           )}
           {result && (
             <button type="button" onClick={onNext} className={result.correct ? chunkyGreen : `${CHUNKY} px-6 py-3 ${CHUNKY_NO}`}>
-              Keyingi mashq
+              Keyingi maşq
             </button>
           )}
         </div>
@@ -448,7 +448,7 @@ function SentenceBubble({ sentence, hidden = false }: { sentence: string; hidden
         <button
           type="button"
           onClick={() => speak(sentence)}
-          aria-label={`Tinglash: ${sentence}`}
+          aria-label={`Tinglaş: ${sentence}`}
           className="shrink-0 inline-grid place-items-center w-8 h-8 rounded-lg text-sky-700 dark:text-sky-400 hover:bg-sky-50 dark:hover:bg-sky-950/40"
         >
           <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
@@ -462,7 +462,7 @@ function SentenceBubble({ sentence, hidden = false }: { sentence: string; hidden
           </p>
         ) : (
           <button type="button" onClick={() => setShown(true)} className="text-sm font-bold muted hover:underline">
-            Tinglang va yig‘ing · matnni ko‘rsatish
+            Tinglang va yiğing · matnni körsatiş
           </button>
         )}
       </div>
@@ -499,19 +499,19 @@ function lessonAccuracy(results: readonly ResultRow[]): number {
 function LessonEnd({ results, xp, onClose, timedOut = false }: { results: ResultRow[]; xp: number; onClose: () => void; timedOut?: boolean }) {
   const [review, setReview] = useState(false)
   const pct = lessonAccuracy(results)
-  const praise = pct >= 90 ? 'Zo‘r!' : pct >= 70 ? 'Yaxshi!' : 'Aniqlik'
+  const praise = pct >= 90 ? 'Zör!' : pct >= 70 ? 'Yaxşi!' : 'Aniqlik'
   return (
     <div className="grid gap-5 py-2 sm:py-4 text-center justify-items-center animate-[var(--animate-pop)]">
       <MascotFigure maxHeight="max-h-36" alt="" />
       <h2 className="text-2xl sm:text-3xl font-extrabold text-amber-700 dark:text-amber-400">{timedOut ? 'Vaqt tugadi!' : 'Dars tugadi!'}</h2>
       {timedOut && (
         <p className="text-sm font-bold muted">
-          {results.filter((r) => r.correct).length} ta mashq to‘g‘ri yechildi — keyingi safar ko‘prog‘iga harakat qiling!
+          {results.filter((r) => r.correct).length} ta maşq töğri yeçildi — keyingi safar köproğiga harakat qiling!
         </p>
       )}
       <div className="grid grid-cols-2 gap-3 w-full max-w-sm">
         <div className="rounded-2xl border-2 border-amber-400 overflow-hidden">
-          <p className="bg-amber-400 text-amber-950 text-[11px] font-extrabold uppercase py-1">Tajriba ochkolari</p>
+          <p className="bg-amber-400 text-amber-950 text-[11px] font-extrabold uppercase py-1">Tajriba oçkolari</p>
           <p className="py-3 text-2xl font-extrabold text-amber-700 dark:text-amber-400 tabular-nums">⚡ {xp}</p>
         </div>
         <div className="rounded-2xl border-2 border-emerald-500 overflow-hidden">
@@ -538,10 +538,10 @@ function LessonEnd({ results, xp, onClose, timedOut = false }: { results: Result
       )}
       <div className="flex flex-wrap justify-center gap-2">
         <button type="button" onClick={() => setReview((v) => !v)} className={chunkyPlain} aria-expanded={review}>
-          {review ? 'Ro‘yxatni yopish' : 'Darsni ko‘rib chiqish'}
+          {review ? 'Röyxatni yopiş' : 'Darsni körib çiqiş'}
         </button>
         <button type="button" onClick={onClose} className={chunkyGreen}>
-          Davom etish
+          Davom etiş
         </button>
       </div>
     </div>

@@ -49,7 +49,7 @@ class DialoguesParityTest {
 
     @Test
     fun mashqlarVebBilanAynanBirXil() {
-        assertEquals("fixture: 14 suhbat × 3 bo'shliq", 42, web.size)
+        assertEquals("fixture: 14 suhbat × 3 böşliq", 42, web.size)
         val bad = mutableListOf<String>()
         for (w in web) {
             val k = repo.findExercise(w.id)
@@ -82,7 +82,7 @@ class DialoguesParityTest {
         val ids = gapLineIndexes(d).map { dialogueExerciseId(d, it) }
         fun a(id: String, ok: Boolean, at: Long) = AttemptRecord(id = "$id$at", exerciseId = id, skill = "grammar", level = "A1", correct = ok, partial = 0.0, difficulty = 1, secondsSpent = 1, source = "practice", answerGiven = "", at = at)
         assertEquals(DialogueProgress(0, 0, 3), dialogueProgress(d, emptyList()))
-        val atts = listOf(a(ids[0], false, 1), a(ids[0], true, 2), a(ids[1], true, 3), a(ids[1], false, 4), a("boshqa", true, 5))
+        val atts = listOf(a(ids[0], false, 1), a(ids[0], true, 2), a(ids[1], true, 3), a(ids[1], false, 4), a("boşqa", true, 5))
         assertEquals(DialogueProgress(1, 2, 3), dialogueProgress(d, atts))
     }
 }

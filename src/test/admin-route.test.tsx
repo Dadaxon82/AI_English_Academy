@@ -15,7 +15,7 @@ afterEach(() => {
 })
 
 describe('AdminRoute', () => {
-  it('admin emas → /dashboard, maxfiy kontent ko‘rinmaydi', async () => {
+  it('admin emas → /dashboard, maxfiy kontent körinmaydi', async () => {
     render(
       <AuthContext.Provider value={{ signOut: () => {}, userId: 'u-1' }}>
         <MemoryRouter initialEntries={['/admin']}>
@@ -28,7 +28,7 @@ describe('AdminRoute', () => {
                 </AdminRoute>
               }
             />
-            <Route path="/dashboard" element={<p>BOSH SAHIFA</p>} />
+            <Route path="/dashboard" element={<p>BOŞ SAHIFA</p>} />
           </Routes>
         </MemoryRouter>
       </AuthContext.Provider>,
@@ -36,7 +36,7 @@ describe('AdminRoute', () => {
     await act(async () => {
       await Promise.resolve()
     })
-    expect(screen.getByText('BOSH SAHIFA')).toBeTruthy()
+    expect(screen.getByText('BOŞ SAHIFA')).toBeTruthy()
     expect(screen.queryByText('MAXFIY ADMIN')).toBeNull()
   })
 })

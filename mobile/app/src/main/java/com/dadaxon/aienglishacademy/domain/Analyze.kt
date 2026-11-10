@@ -26,9 +26,9 @@ import java.util.Locale
 /** Veb: `CRITERIA_UZ` (tartibi ham bir xil). */
 private val CRITERIA_UZ: Map<String, String> =
     linkedMapOf(
-        Criterion.TASK_ACHIEVEMENT to "Topshiriq bajarilishi",
-        Criterion.COHERENCE to "Mantiqiy bog‘lanish",
-        Criterion.LEXICAL_RESOURCE to "Lug‘at boyligi",
+        Criterion.TASK_ACHIEVEMENT to "Topşiriq bajarilişi",
+        Criterion.COHERENCE to "Mantiqiy boğlaniş",
+        Criterion.LEXICAL_RESOURCE to "Luğat boyligi",
         Criterion.GRAMMATICAL_RANGE to "Grammatik qamrov",
         Criterion.ACCURACY to "Aniqlik",
     )
@@ -97,7 +97,7 @@ fun analyzeWriting(text: String, task: WritingTask): WritingAnalysis {
     for (need in task.mustInclude ?: emptyList()) {
         val found = containsLoose(text, need.pattern)
         if (!found) {
-            errors.add(WritingError(excerpt = "—", kind = "content", correction = need.pattern, whyUz = "Topshiriqda bu ma‘no kutiladi: ${need.whyUz}"))
+            errors.add(WritingError(excerpt = "—", kind = "content", correction = need.pattern, whyUz = "Topşiriqda bu ma’no kutiladi: ${need.whyUz}"))
         } else {
             hit++
         }
@@ -136,15 +136,15 @@ fun analyzeWriting(text: String, task: WritingTask): WritingAnalysis {
             Criterion.ACCURACY to accuracy.toDouble(),
         )
 
-    if (words >= task.minWords) strengthsUz.add("Hajm talabi bajarildi: $words so‘z.")
-    if (linkers >= 3) strengthsUz.add("Gaplar bog‘lovchilar bilan mantiqiy bog‘langan.")
-    if (unique.size >= words * 0.55 && words > 20) strengthsUz.add("So‘z boyligi yaxshi — takrorlar kam.")
-    if (errors.isEmpty()) strengthsUz.add("Tekshirilgan asosiy xatolar topilmadi.")
+    if (words >= task.minWords) strengthsUz.add("Hajm talabi bajarildi: $words söz.")
+    if (linkers >= 3) strengthsUz.add("Gaplar boğlovçilar bilan mantiqiy boğlangan.")
+    if (unique.size >= words * 0.55 && words > 20) strengthsUz.add("Söz boyligi yaxşi — takrorlar kam.")
+    if (errors.isEmpty()) strengthsUz.add("Tekşirilgan asosiy xatolar topilmadi.")
 
-    if (words < task.minWords) weaknessesUz.add("Matn qisqa: $words so‘z, kamida ${task.minWords} kerak.")
-    if (linkers < 2) weaknessesUz.add("Bog‘lovchilar kam: and, but, because, then, so qo‘shing.")
-    if (sents.size < 3) weaknessesUz.add("Gaplar soni kam — fikrlarni alohida gaplarga bo‘ling.")
-    if (errors.isNotEmpty()) weaknessesUz.add("${errors.size} ta tuzatiladigan xato bor (pastda ko‘rsatilgan).")
+    if (words < task.minWords) weaknessesUz.add("Matn qisqa: $words söz, kamida ${task.minWords} kerak.")
+    if (linkers < 2) weaknessesUz.add("Boğlovçilar kam: and, but, because, then, so qöşing.")
+    if (sents.size < 3) weaknessesUz.add("Gaplar soni kam — fikrlarni alohida gaplarga böling.")
+    if (errors.isNotEmpty()) weaknessesUz.add("${errors.size} ta tuzatiladigan xato bor (pastda körsatilgan).")
 
     val suggestionsUz = buildSuggestions(criteriaScores, task)
 
@@ -162,21 +162,21 @@ fun analyzeWriting(text: String, task: WritingTask): WritingAnalysis {
 private fun buildSuggestions(scores: Map<String, Double>, task: WritingTask): List<String> {
     val out = mutableListOf<String>()
     if ((scores[Criterion.TASK_ACHIEVEMENT] ?: 0.0) < 3) {
-        out.add("Topshiriqdagi har bir bandni alohida gap bilan javoblang (hajm: ${task.minWords}–${task.maxWords} so‘z).")
+        out.add("Topşiriqdagi har bir bandni alohida gap bilan javoblang (hajm: ${task.minWords}–${task.maxWords} söz).")
     }
     if ((scores[Criterion.COHERENCE] ?: 0.0) < 3) out.add("Fikrlarni first / next / then / finally bilan tartiblang.")
-    if ((scores[Criterion.LEXICAL_RESOURCE] ?: 0.0) < 3) out.add("Bir so‘zni takrorlamang — sinonim izlang (vocabulary bo‘limidan foydalaning).")
+    if ((scores[Criterion.LEXICAL_RESOURCE] ?: 0.0) < 3) out.add("Bir sözni takrorlamang — sinonim izlang (vocabulary bölimidan foydalaning).")
     if ((scores[Criterion.GRAMMATICAL_RANGE] ?: 0.0) < 3) {
         out.add(
             if (task.genre == "email") {
-                "Hozirgi va o‘tmish zamonlarini birga ishlatishga harakat qiling."
+                "Hozirgi va ötmiş zamonlarini birga işlatişga harakat qiling."
             } else {
-                "Ikki xil zamonni ishlatishga harakat qiling."
+                "Ikki xil zamonni işlatişga harakat qiling."
             },
         )
     }
-    if ((scores[Criterion.ACCURACY] ?: 0.0) < 3) out.add("Yozganingizdan so‘ng har bir fe‘lga e’tibor bering: kim ishlayapti — -s kerakmi?")
-    out.add("Qayta yozib, eski va yangi versiyani solishtiring — o‘sish shu taqqoslashda ko‘rinadi.")
+    if ((scores[Criterion.ACCURACY] ?: 0.0) < 3) out.add("Yozganingizdan söng har bir fe’lga e’tibor bering: kim işlayapti — -s kerakmi?")
+    out.add("Qayta yozib, eski va yangi versiyani soliştiring — ösiş şu taqqoslaşda körinadi.")
     return out.take(5)
 }
 
@@ -215,19 +215,19 @@ private val AGREEMENT_MAP: Map<String, String> =
 private fun ruleList(): List<Rule> =
     listOf(
         Rule(pat("\\bi\\b(?!')"), "capitalization", { "I" }, "Ingliz tilida “I” har doim katta harf bilan yoziladi."),
-        Rule(pati("\\bdont\\b"), "punctuation", { "don't" }, "Apostrof tushib qolgan."),
-        Rule(pati("\\bcant\\b"), "punctuation", { "can't" }, "Apostrof tushib qolgan."),
+        Rule(pati("\\bdont\\b"), "punctuation", { "don't" }, "Apostrof tuşib qolgan."),
+        Rule(pati("\\bcant\\b"), "punctuation", { "can't" }, "Apostrof tuşib qolgan."),
         Rule(pati("\\bim\\b(?=\\s)"), "contraction", { "I'm" }, "Qisqartirma apostrof bilan yoziladi."),
         Rule(pati("\\bive\\b"), "contraction", { "I've" }, "Apostrof kerak."),
-        Rule(pat("\\ba m\\b"), "spacing", { "am" }, "“am” bir so‘z."),
-        Rule(pati("\\bisnt\\b"), "punctuation", { "isn't" }, "Apostrof tushib qolgan."),
-        Rule(pati("\\bgonna\\b"), "register", { "going to" }, "Rasmiy yozuvda “gonna” ishlatilmaydi."),
+        Rule(pat("\\ba m\\b"), "spacing", { "am" }, "“am” bir söz."),
+        Rule(pati("\\bisnt\\b"), "punctuation", { "isn't" }, "Apostrof tuşib qolgan."),
+        Rule(pati("\\bgonna\\b"), "register", { "going to" }, "Rasmiy yozuvda “gonna” işlatilmaydi."),
         Rule(pati("\\bthx\\b"), "register", { "thanks" }, "Qisqartirma rasmiy uslubga mos emas."),
         Rule(pati("\\bwich\\b"), "spelling", { "which" }, "Imlo xatosi."),
         Rule(pati("\\bbecouse\\b"), "spelling", { "because" }, "Imlo xatosi."),
         Rule(pati("\\bteh\\b"), "spelling", { "the" }, "Imlo xatosi."),
         Rule(pati("\\brecieve\\b"), "spelling", { "receive" }, "Imlo xatosi."),
-        Rule(pati("\\b(alot)\\b"), "spacing", { "a lot" }, "Ikki so‘z bilan yoziladi."),
+        Rule(pati("\\b(alot)\\b"), "spacing", { "a lot" }, "Ikki söz bilan yoziladi."),
         Rule(
             // FaqAT uchinchi shaxs birlikdagi xato tutadi: "he go" → "he goes".
             // Birinchi/ikkinchi shaxs ("I go", "we like") AVTODAN TO'G'RI — ularni
@@ -240,7 +240,7 @@ private fun ruleList(): List<Rule> =
                 val verb = m.group(2).orEmpty()
                 "${m.group(1).orEmpty()} ${AGREEMENT_MAP[verb] ?: verb}"
             },
-            "Uchinchi shaxs birlikda fe‘lga -s/-es qo‘shiladi.",
+            "Uçinçi şaxs birlikda fe’lga -s/-es qöşiladi.",
         ),
     )
 
@@ -299,11 +299,11 @@ fun analyzeSpeaking(
     val fluency = if (wpm == 0) 0 else if (wpm < 60) 2 else if (wpm > 190) 3 else 5
 
     val notesUz = mutableListOf<String>()
-    if (durationSec < minSeconds) notesUz.add("Javob qisqa: ${durationSec}s. Kamida ${minSeconds} sekund gapirishga harakat qiling.")
-    if (wpm > 0 && wpm < 60) notesUz.add("Gapirish sekin — gaplar orasidagi pauzalarni kamaytiring, kunni shu mavzuda 1 daqiqa mashq qilib ko‘ring.")
-    if (unique.size <= 8 && words > 0) notesUz.add("Kam so‘z ishlatdingiz — kunlik lug‘atdan 3–4 ta yangi so‘zni shu javobga qo‘shib ko‘ring.")
-    if (sents.size < 3) notesUz.add("Fikrlarni alohida gaplarga bo‘ling: kim, nima, qachon, nega.")
-    if (notesUz.isEmpty()) notesUz.add("Yaxshi javob: davomiylik va tuzilish A1 me’yoriga mos.")
+    if (durationSec < minSeconds) notesUz.add("Javob qisqa: ${durationSec}s. Kamida ${minSeconds} sekund gapirişga harakat qiling.")
+    if (wpm > 0 && wpm < 60) notesUz.add("Gapiriş sekin — gaplar orasidagi pauzalarni kamaytiring, kunni şu mavzuda 1 daqiqa maşq qilib köring.")
+    if (unique.size <= 8 && words > 0) notesUz.add("Kam söz işlatdingiz — kunlik luğatdan 3–4 ta yangi sözni şu javobga qöşib köring.")
+    if (sents.size < 3) notesUz.add("Fikrlarni alohida gaplarga böling: kim, nima, qaçon, nega.")
+    if (notesUz.isEmpty()) notesUz.add("Yaxşi javob: davomiylik va tuziliş A1 me’yoriga mos.")
 
     return SpeakingAnalysis(
         engine = "rule-based",
@@ -316,7 +316,7 @@ fun analyzeSpeaking(
         wpm = wpm.toDouble(),
         notesUz = notesUz,
         disclaimerUz =
-            "Bu baho mashq maqsadida berildi — rasmiy imtihon natijasi emas. Transkript avtomatik va aniq bo‘lmasligi mumkin.",
+            "Bu baho maşq maqsadida berildi — rasmiy imtihon natijasi emas. Transkript avtomatik va aniq bölmasligi mumkin.",
     )
 }
 
@@ -363,10 +363,10 @@ fun analyzeSpeakingText(
             5,
         )
 
-    val notesUz = mutableListOf("Matnli javob: ravonlik va talaffuz baholanmadi — imkon bo‘lsa javobni ovoz bilan ham yozib ko‘ring.")
-    if (words < minWords) notesUz.add("Javob qisqa: $words so‘z. Kamida $minWords so‘z yozishga harakat qiling.")
-    if (unique.size <= 8 && words > 0) notesUz.add("So‘zlar kam — kunlik lug‘atdan 3–4 ta yangi so‘zni shu javobga qo‘shib ko‘ring.")
-    if (sents.size < 3) notesUz.add("Fikrlarni alohida gaplarga bo‘ling: kim, nima, qachon, nega.")
+    val notesUz = mutableListOf("Matnli javob: ravonlik va talaffuz baholanmadi — imkon bölsa javobni ovoz bilan ham yozib köring.")
+    if (words < minWords) notesUz.add("Javob qisqa: $words söz. Kamida $minWords söz yozişga harakat qiling.")
+    if (unique.size <= 8 && words > 0) notesUz.add("Sözlar kam — kunlik luğatdan 3–4 ta yangi sözni şu javobga qöşib köring.")
+    if (sents.size < 3) notesUz.add("Fikrlarni alohida gaplarga böling: kim, nima, qaçon, nega.")
 
     return SpeakingAnalysis(
         engine = "rule-based",
@@ -378,7 +378,7 @@ fun analyzeSpeakingText(
         wordCount = words,
         wpm = 0.0,
         notesUz = notesUz,
-        disclaimerUz = "Bu baho mashq maqsadida berildi — rasmiy imtihon natijasi emas. Matnli javobda ravonlik o‘lchanmaydi.",
+        disclaimerUz = "Bu baho maşq maqsadida berildi — rasmiy imtihon natijasi emas. Matnli javobda ravonlik ölçanmaydi.",
     )
 }
 

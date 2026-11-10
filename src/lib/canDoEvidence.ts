@@ -30,9 +30,9 @@ export interface CanDoEvidence {
 }
 
 export const CAN_DO_STATUS_UZ: Record<CanDoStatus, string> = {
-  none: 'Dalil yo‘q',
+  none: 'Dalil yöq',
   few: 'Dalil yetarli emas',
-  practice: 'Hali mashq kerak',
+  practice: 'Hali maşq kerak',
   confirmed: 'Natija bilan tasdiqlandi',
 }
 

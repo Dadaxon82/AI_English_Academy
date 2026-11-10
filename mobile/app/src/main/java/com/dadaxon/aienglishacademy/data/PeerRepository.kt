@@ -26,8 +26,8 @@ class PeerRepository(private val client: SupabaseClient?, private val auth: Auth
 
     /** Ishlay oladimi: server sozlangan va foydalanuvchi kirgan (sessiya yangilanadi). */
     fun ready(): PeerResult<Session> {
-        if (client == null || !client.isConfigured) return PeerResult.Fail("Server (Supabase) ulanmagan — hamjamiyat tekshiruvi faqat server bilan ishlaydi.")
-        if (auth.isGuest()) return PeerResult.Fail("Hamjamiyat tekshiruvi uchun hisobingizga kiring (mehmon rejimida javoblar boshqalarga yuborilmaydi).")
+        if (client == null || !client.isConfigured) return PeerResult.Fail("Server (Supabase) ulanmagan — hamjamiyat tekşiruvi faqat server bilan işlaydi.")
+        if (auth.isGuest()) return PeerResult.Fail("Hamjamiyat tekşiruvi uçun hisobingizga kiring (mehmon rejimida javoblar boşqalarga yuborilmaydi).")
         val (s, err) = auth.ensureFresh()
         if (s == null) return PeerResult.Fail(err ?: "Sessiya muddati tugadi — qaytadan kiring.")
         return PeerResult.Ok(s)

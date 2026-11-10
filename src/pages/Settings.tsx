@@ -7,8 +7,7 @@
 
 import { setImmersion, useImmersion } from '../lib/prefs'
 import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { useAuthActions } from '../lib/authContext'
+import { Link } from 'react-router-dom'
 import { Button, Card, Chip, Field, InfoBanner, Modal, StatTile, SuccessBanner, inputCls } from '../components/ui'
 import { aiRuntimeEnabled } from '../lib/ai'
 import { useStore } from '../lib/storeContext'
@@ -16,6 +15,7 @@ import { skillLabelUz, daysUntil } from '../lib/planning'
 import { loadCacheMeta, loadQueue, purgeUserData, storageBackend } from '../lib/storage'
 import { MOTION, motionAllowed } from '../lib/motionManifest'
 import { GameIcon } from '../components/icons'
+import SignOutButton from '../components/SignOutButton'
 import { BET_COST_GEMS, BET_DAYS, BET_STREAK_DAYS, BET_WIN_GEMS, GOAL_GEM_REWARD, HEARTS_COST_WRONG, HEARTS_MAX, HEART_COMBO_STREAK, HEART_PRACTICE_REVIEWS, HEART_REFILL_MINUTES, MAX_FREEZES, XP_GOAL_TIERS } from '../lib/gameConfig'
 import { supabaseConfigured, safeErrorMessage } from '../lib/supabase'
 import { deleteRemoteData } from '../lib/sync'
@@ -31,16 +31,14 @@ const SKILLS: Skill[] = ['vocabulary', 'grammar', 'reading', 'listening', 'writi
  * bir-biriga zid kelmaydi.
  */
 function examHint(examLeft: number | null): string {
-  if (examLeft === null) return 'Imtihon sanasi kiritilsa (30 kun ichida) reja avtomatik moslashadi.'
-  if (examLeft < 0) return 'Sana o‘tib ketgan — reja o‘zgarmaydi.'
-  if (examLeft > 30) return `${examLeft} kun qoldi — 30 kundan boshlab O‘qish va Yozish kuchaytiriladi.`
-  return `${examLeft} kun qoldi — O‘qish va Yozish kuchaytirildi.`
+  if (examLeft === null) return 'Imtihon sanasi kiritilsa (30 kun içida) reja avtomatik moslaşadi.'
+  if (examLeft < 0) return 'Sana ötib ketgan — reja özgarmaydi.'
+  if (examLeft > 30) return `${examLeft} kun qoldi — 30 kundan boşlab Öqiş va Yoziş kuçaytiriladi.`
+  return `${examLeft} kun qoldi — Öqiş va Yoziş kuçaytirildi.`
 }
 
 export default function Settings() {
   const { data, actions, allocation, evidence, netOnline, promotion, hearts, goal, shop } = useStore()
-  const authActions = useAuthActions()
-  const nav = useNavigate()
   const s = data.settings
   const immersion = useImmersion()
 
@@ -50,8 +48,6 @@ export default function Settings() {
   const [syncing, setSyncing] = useState(false)
   const [confirmReset, setConfirmReset] = useState(false)
   const [resetDone, setResetDone] = useState(false)
-  const [signingOut, setSigningOut] = useState(false)
-  const [unsynced, setUnsynced] = useState<{ pending: number; reasonUz: string | null } | null>(null)
   const [deleting, setDeleting] = useState(false)
   const [deleteError, setDeleteError] = useState<string | null>(null)
   // Do'kon xaridining natija xabari (muvaffaqiyat yoki sababi bilan).
@@ -97,29 +93,6 @@ export default function Settings() {
     setConfirmReset(false)
   }
 
-  const doSignOut = () => {
-    setUnsynced(null)
-    authActions?.signOut()
-    void nav('/login')
-  }
-
-  // ESKI BUG: chiqishda lokal ma'lumot va navbat darhol o'chirilardi —
-  // serverga yetmagan progress jimgina yo'qolardi. Endi avval sinxronlanadi,
-  // yuborilmagan narsa qolsa foydalanuvchidan tasdiq so'raladi.
-  const requestSignOut = async () => {
-    if (isGuest || !supabaseConfigured) {
-      doSignOut()
-      return
-    }
-    setSigningOut(true)
-    const res = await actions.sync()
-    const q = await loadQueue(data.userId)
-    setSigningOut(false)
-    setQueueLen(q.length)
-    if (res.ok && q.length === 0) doSignOut()
-    else setUnsynced({ pending: q.length, reasonUz: res.reasonUz })
-  }
-
   useEffect(() => {
     let alive = true
     void Promise.all([loadQueue(data.userId), loadCacheMeta(data.userId)]).then(([q, c]) => {
@@ -139,15 +112,15 @@ export default function Settings() {
       <Card className="grid gap-3">
         <h1 className="text-xl font-bold">Sozlamalar</h1>
         <p className="muted text-sm">
-          Reja va ko‘rinish shu yerda boshqariladi. O‘zgarishlar darhol saqlanadi va offline holatda ham ishlaydi.
+          Reja va köriniş şu yerda boşqariladi. Özgarişlar darhol saqlanadi va offline holatda ham işlaydi.
         </p>
       </Card>
 
       {/* --- O'quv rejasi --- */}
       <Card className="grid gap-4">
-        <h2 className="font-bold">O‘quv rejasi</h2>
+        <h2 className="font-bold">Öquv rejasi</h2>
         <div className="grid sm:grid-cols-2 gap-4">
-          <Field label={`Kunlik davomiylik: ${s.dailyMinutes} daqiqa`} hint="90 daqiqa — tavsiya etilgan boshlang‘ich reja.">
+          <Field label={`Kunlik davomiylik: ${s.dailyMinutes} daqiqa`} hint="90 daqiqa — tavsiya etilgan boşlanğiç reja.">
             <input
               type="range"
               min={30}
@@ -168,7 +141,7 @@ export default function Settings() {
           </Field>
           <Field
             label="Hozirgi daraja"
-            hint={`Daraja faqat isbotlar asosida tavsiya qilinadi; bu yerda qo‘lda ham belgilash mumkin. Kontent hozircha: ${LOADED_LEVELS.join(', ')}.`}
+            hint={`Daraja faqat isbotlar asosida tavsiya qilinadi; bu yerda qölda ham belgilaş mumkin. Kontent hozirça: ${LOADED_LEVELS.join(', ')}.`}
           >
             {/* ESKI KAMCHILIK: kontenti yo'q darajani tanlab bo'lardi — barcha
                 o'quv sahifalari bo'sh qolardi. Endi bunday daraja tanlanmaydi
@@ -226,7 +199,7 @@ export default function Settings() {
 
       {/* --- Ko'rinish --- */}
       <Card className="grid gap-3">
-        <h2 className="font-bold">Ko‘rinish</h2>
+        <h2 className="font-bold">Köriniş</h2>
         <div className="flex flex-wrap gap-2">
           {(['light', 'dark', 'system'] as const).map((t) => (
             <button
@@ -251,13 +224,13 @@ export default function Settings() {
         </div>
         <label className="flex items-center gap-2 text-sm">
           <input type="checkbox" checked={s.aiEnabled} onChange={(e) => actions.setSettings({ aiEnabled: e.target.checked })} />
-          AI tahlilidan foydalanish (mavjud bo‘lsa)
+          AI tahlilidan foydalaniş (mavjud bölsa)
         </label>
         <InfoBanner tone="muted">
-          AI serveri ulanmaganda yozish va gapirish tahlili <b>qoidaviy dvigatel</b> bilan bajariladi va natijada «Qoidaviy
-          tahlil» deb belgilanadi. Hech qachon mavjud bo‘lmagan AI natijasi ko‘rsatilmaydi. AI kalitlari faqat serverda
-          saqlanadi; deploy paytida <code>VITE_AI_ENABLED=true</code> bayrog‘i qo‘yilib, serverless funksiya qo‘shilsagina bu
-          belgi «ulangan» ga o‘zgaradi.
+          AI serveri ulanmaganda yoziş va gapiriş tahlili <b>qoidaviy dvigatel</b> bilan bajariladi va natijada «Qoidaviy
+          tahlil» deb belgilanadi. Heç qaçon mavjud bölmagan AI natijasi körsatilmaydi. AI kalitlari faqat serverda
+          saqlanadi; deploy paytida <code>VITE_AI_ENABLED=true</code> bayroği qöyilib, serverless funksiya qöşilsagina bu
+          belgi «ulangan» ga özgaradi.
         </InfoBanner>
       </Card>
 
@@ -266,7 +239,7 @@ export default function Settings() {
         <div className="flex flex-wrap items-center gap-2">
           <h2 className="font-bold">Harakat va darslar ketma-ketligi</h2>
           <Chip tone={motionAllowed(s.motionEnabled) ? 'ok' : 'warn'}>
-            {motionAllowed(s.motionEnabled) ? 'Harakat yoqilgan' : 'Harakat o‘chirilgan'}
+            {motionAllowed(s.motionEnabled) ? 'Harakat yoqilgan' : 'Harakat öçirilgan'}
           </Chip>
         </div>
         <label className="flex items-center gap-2 text-sm">
@@ -275,25 +248,25 @@ export default function Settings() {
             checked={s.motionEnabled}
             onChange={(e) => actions.setSettings({ motionEnabled: e.target.checked })}
           />
-          Harakatlarni yoqish (o‘tish, qahramon sakrashi, XP ko‘tarilishi, zanjir kataklari)
+          Harakatlarni yoqiş (ötiş, qahramon sakraşi, XP kötarilişi, zanjir kataklari)
         </label>
-        <p className="text-xs muted">Byudjet: o‘tish {MOTION.stepMs} ms, qahramon {MOTION.popMs} ms, XP {MOTION.xpMs} ms. Brauzer «kamaytirilgan harakat» so‘rovi bo‘lsa harakat avtomatik o‘chiriladi. Bu sozlama telefon ilovasi bilan ham sinxronlanadi.</p>
+        <p className="text-xs muted">Byudjet: ötiş {MOTION.stepMs} ms, qahramon {MOTION.popMs} ms, XP {MOTION.xpMs} ms. Brauzer «kamaytirilgan harakat» sörovi bölsa harakat avtomatik öçiriladi. Bu sozlama telefon ilovasi bilan ham sinxronlanadi.</p>
       </Card>
 
       {/* --- Immersion (tarjimasiz o'rganish) — QURILMA sozlamasi --- */}
       <Card className="grid gap-3">
         <div className="flex flex-wrap items-center gap-2">
           <h2 className="font-bold">Immersion rejimi</h2>
-          <Chip tone={immersion ? 'brand' : 'default'}>{immersion ? 'Yoqilgan' : 'O‘chiq'}</Chip>
+          <Chip tone={immersion ? 'brand' : 'default'}>{immersion ? 'Yoqilgan' : 'Öçiq'}</Chip>
           {(s.currentLevel === 'A1' || s.currentLevel === 'A2') && <Chip>B1 dan tavsiya etiladi</Chip>}
         </div>
         <label className="flex items-center gap-2 text-sm">
           <input type="checkbox" checked={immersion} onChange={(e) => setImmersion(e.target.checked)} />
-          O‘zbekcha tarjimalarni yashirish (so‘z ma’nosi inglizcha izoh va misol orqali)
+          Özbekça tarjimalarni yaşiriş (söz ma’nosi inglizça izoh va misol orqali)
         </label>
         <p className="text-xs muted">
-          Lug‘at kartalari, «5 daqiqa», O‘quv yo‘li so‘zlari va Suhbatdosh maslahatlarida tarjima yashiriladi — istalgan paytda
-          «Tarjimani ko‘rsatish» tugmasi bilan ochiladi. Topshiriq va izohlar o‘zbekcha qoladi. Bu sozlama faqat shu qurilmada
+          Luğat kartalari, «5 daqiqa», Öquv yöli sözlari va Suhbatdoş maslahatlarida tarjima yaşiriladi — istalgan paytda
+          «Tarjimani körsatiş» tugmasi bilan oçiladi. Topşiriq va izohlar özbekça qoladi. Bu sozlama faqat şu qurilmada
           saqlanadi (hisobga va telefon ilovasiga sinxronlanmaydi).
         </p>
       </Card>
@@ -301,8 +274,8 @@ export default function Settings() {
       {/* --- O‘yin qatlami: yuraklar va kunlik XP maqsadi --- */}
       <Card className="grid gap-3">
         <div className="flex flex-wrap items-center gap-2">
-          <h2 className="font-bold">O‘yin qatlami</h2>
-          <Chip tone={s.heartsEnabled ? 'brand' : 'warn'}>{s.heartsEnabled ? 'Yuraklar yoqilgan' : 'Yuraklar o‘chiq'}</Chip>
+          <h2 className="font-bold">Öyin qatlami</h2>
+          <Chip tone={s.heartsEnabled ? 'brand' : 'warn'}>{s.heartsEnabled ? 'Yuraklar yoqilgan' : 'Yuraklar öçiq'}</Chip>
           <Chip tone={goal.reached ? 'ok' : 'warn'}>
             Bugun {goal.value}/{goal.target} XP
           </Chip>
@@ -313,11 +286,11 @@ export default function Settings() {
           Yuraklar tizimi (har xato javobda bitta yurak ketadi)
         </label>
         <InfoBanner tone="muted">
-          Yuraklar soni <b>{HEARTS_MAX}</b> ta, har xato javob uchun <b>{HEARTS_COST_WRONG}</b> tasi ketadi va{' '}
-          {HEART_REFILL_MINUTES} daqiqada bittasi qaytadi. Yuraklar tugasa <b>takrorlash darsi</b> ochiladi —{' '}
-          {HEART_PRACTICE_REVIEWS} ta so‘z takrorlansa bitta yurak qaytadi. Ketma-ket {HEART_COMBO_STREAK} ta to‘g‘ri
-          javob uchun ham bitta yurak qaytariladi. Mock imtihon, diagnostika va bo‘lim testlarida yurak{' '}
-          <b>jarima qilinmaydi</b>. O‘chirilsa — hech qanday jarima darvozasi qolmaydi. Sozlama telefon ilovasi bilan
+          Yuraklar soni <b>{HEARTS_MAX}</b> ta, har xato javob uçun <b>{HEARTS_COST_WRONG}</b> tasi ketadi va{' '}
+          {HEART_REFILL_MINUTES} daqiqada bittasi qaytadi. Yuraklar tugasa <b>takrorlaş darsi</b> oçiladi —{' '}
+          {HEART_PRACTICE_REVIEWS} ta söz takrorlansa bitta yurak qaytadi. Ketma-ket {HEART_COMBO_STREAK} ta töğri
+          javob uçun ham bitta yurak qaytariladi. Mock imtihon, diagnostika va bölim testlarida yurak{' '}
+          <b>jarima qilinmaydi</b>. Öçirilsa — heç qanday jarima darvozasi qolmaydi. Sozlama telefon ilovasi bilan
           ham sinxronlanadi.
         </InfoBanner>
         <div className="flex items-center gap-2 text-sm">
@@ -343,14 +316,14 @@ export default function Settings() {
             ))}
           </div>
           <p className="text-xs muted">
-            Bosqichlar Duolingo‘ning 5 pog‘onasi (Basic/Casual/Regular/Serious/Intense) — bizning XP masshtabimizga moslab
-            10 marta kattalashtirilgan. Maqsadga yetilsa {GOAL_GEM_REWARD} gem beriladi; kunlik daqiqa rejasi
-            ({s.dailyMinutes} daqiqa) alohida maqsad bo‘lib qoladi.
+            Bosqiçlar Duolingöning 5 poğonasi (Basic/Casual/Regular/Serious/Intense) — bizning XP masştabimizga moslab
+            10 marta kattalaştirilgan. Maqsadga yetilsa {GOAL_GEM_REWARD} gem beriladi; kunlik daqiqa rejasi
+            ({s.dailyMinutes} daqiqa) alohida maqsad bölib qoladi.
           </p>
         </div>
 
         <div className="grid gap-1.5">
-          <span className="text-sm font-semibold">Do‘kon (gemlar: {data.game.gems})</span>
+          <span className="text-sm font-semibold">Dökon (gemlar: {data.game.gems})</span>
           <div className="grid sm:grid-cols-2 gap-2">
             {shop.map((it) => (
               <div key={it.id} className="rounded-xl border border-[var(--line)] p-3 grid gap-1.5">
@@ -367,17 +340,17 @@ export default function Settings() {
                   variant="secondary"
                   onClick={() => {
                     const res = actions.buy(it.id)
-                    setShopMsg({ ok: res.ok, text: res.ok ? `${it.titleUz} olindi — ${it.price} gem sarflandi.` : (res.reasonUz ?? 'Xarid qilmab bo‘lmadi.') })
+                    setShopMsg({ ok: res.ok, text: res.ok ? `${it.titleUz} olindi — ${it.price} gem sarflandi.` : (res.reasonUz ?? 'Xarid qilmab bölmadi.') })
                   }}
                 >
-                  Sotib olish
+                  Sotib oliş
                 </Button>
               </div>
             ))}
           </div>
           <p className="text-xs muted">
-            Narxlar Duolingo do‘konidan olindi (yuraklarni to‘ldirish 350 gem, streak qalqoni 200 gem); bitta yurak va
-            XP byusti narxi — bizning qarorimiz. Omborda eng ko‘p {MAX_FREEZES} ta qalqon saqlanadi.
+            Narxlar Duolingo dökonidan olindi (yuraklarni töldiriş 350 gem, streak qalqoni 200 gem); bitta yurak va
+            XP byusti narxi — bizning qarorimiz. Omborda eng köp {MAX_FREEZES} ta qalqon saqlanadi.
           </p>
           {shopMsg && (shopMsg.ok ? <SuccessBanner>{shopMsg.text}</SuccessBanner> : <InfoBanner tone="warn">{shopMsg.text}</InfoBanner>)}
         </div>
@@ -395,7 +368,7 @@ export default function Settings() {
                 const res = actions.placeStreakBet()
                 setBetMsg({
                   ok: res.ok,
-                  text: res.ok ? `Garov tikildi — ${BET_COST_GEMS} gem sarflandi.` : (res.reasonUz ?? 'Garov qo‘ymas bo‘ldi.'),
+                  text: res.ok ? `Garov tikildi — ${BET_COST_GEMS} gem sarflandi.` : (res.reasonUz ?? 'Garov qöymas böldi.'),
                 })
               }}
             >
@@ -403,13 +376,13 @@ export default function Settings() {
             </Button>
             {bet && (
               <Chip tone="brand">
-                Garov ochiq: {bet.startDay} kunidan {bet.gems} gem tikilgan
+                Garov oçiq: {bet.startDay} kunidan {bet.gems} gem tikilgan
               </Chip>
             )}
           </div>
           <p className="text-xs muted">
-            Garov ochilgan kundan {BET_DAYS} kun o‘tsa va zanjir kamida {BET_STREAK_DAYS} kunga o‘sgan bo‘lsa{' '}
-            {BET_WIN_GEMS} gem qaytadi; aks holda tikilgan gem yo‘qoladi. Qalqonlar zanjirni uzmaydi — ular ham
+            Garov oçilgan kundan {BET_DAYS} kun ötsa va zanjir kamida {BET_STREAK_DAYS} kunga ösgan bölsa{' '}
+            {BET_WIN_GEMS} gem qaytadi; aks holda tikilgan gem yöqoladi. Qalqonlar zanjirni uzmaydi — ular ham
             garov hisobiga kiradi.
           </p>
           {betMsg && (betMsg.ok ? <SuccessBanner>{betMsg.text}</SuccessBanner> : <InfoBanner tone="warn">{betMsg.text}</InfoBanner>)}
@@ -422,14 +395,14 @@ export default function Settings() {
           <h2 className="font-bold">Sinxronizatsiya va offline</h2>
           <Chip tone={netOnline ? 'ok' : 'warn'}>{netOnline ? 'Onlayn' : 'Offline'}</Chip>
           <Chip>{supabaseConfigured ? 'Supabase ulangan' : 'Supabase sozlanmagan — faqat mahalliy'}</Chip>
-          <Chip tone="brand">Saqlash: {storageBackend()}</Chip>
+          <Chip tone="brand">Saqlaş: {storageBackend()}</Chip>
         </div>
         <div className="grid grid-cols-2 gap-3">
-          <StatTile label="Navbatdagi yozuvlar" value={queueLen === null ? '…' : queueLen} hint="Sinxronizatsiya yoki hisobdan chiqishda yuboriladi" tone={queueLen && queueLen > 0 ? 'warn' : 'ok'} />
+          <StatTile label="Navbatdagi yozuvlar" value={queueLen === null ? '…' : queueLen} hint="Sinxronizatsiya yoki hisobdan çiqişda yuboriladi" tone={queueLen && queueLen > 0 ? 'warn' : 'ok'} />
           <StatTile
             label="Offline kesh"
-            value={cache ? `${cache.vocabIds.length} so‘z · ${cache.dayIds.length} kun` : '—'}
-            hint={cache ? `Saqlangan: ${new Date(cache.savedAt).toLocaleString('uz')} · ${cache.level}` : 'Offline uchun hech narsa keshlanmagan'}
+            value={cache ? `${cache.vocabIds.length} söz · ${cache.dayIds.length} kun` : '—'}
+            hint={cache ? `Saqlangan: ${new Date(cache.savedAt).toLocaleString('uz')} · ${cache.level}` : 'Offline uçun heç narsa keşlanmagan'}
           />
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -443,28 +416,28 @@ export default function Settings() {
               setSyncMsg({
                 ok: res.ok,
                 text: res.ok
-                  ? `${res.done > 0 ? `${res.done} ta yozuv yuborildi.` : 'Yuboriladigan yangi o‘zgarish yo‘q.'}${
-                      res.pulled ? ' Serverdagi ma’lumotlar qurilmadagisi bilan birlashtirildi.' : ''
+                  ? `${res.done > 0 ? `${res.done} ta yozuv yuborildi.` : 'Yuboriladigan yangi özgariş yöq.'}${
+                      res.pulled ? ' Serverdagi ma’lumotlar qurilmadagisi bilan birlaştirildi.' : ''
                     }`
-                  : (res.reasonUz ?? 'Yuborib bo‘lmadi — navbat saqlandi.'),
+                  : (res.reasonUz ?? 'Yuborib bölmadi — navbat saqlandi.'),
               })
               const q = await loadQueue(data.userId)
               setQueueLen(q.length)
             }}
           >
-            Hoziroq sinxronizatsiya qilish
+            Hoziroq sinxronizatsiya qiliş
           </Button>
           <Link to="/progress">
             <Button variant="ghost" size="sm">
-              Progressni ko‘rish
+              Progressni köriş
             </Button>
           </Link>
         </div>
         {syncMsg && (syncMsg.ok ? <SuccessBanner>{syncMsg.text}</SuccessBanner> : <InfoBanner tone="warn">{syncMsg.text}</InfoBanner>)}
         {!supabaseConfigured && (
           <InfoBanner tone="warn">
-            <code>.env</code> ichida <code>VITE_SUPABASE_URL</code> va <code>VITE_SUPABASE_ANON_KEY</code> bo‘lmaganligi
-            sababli ilova faqat shu qurilmada ishlaydi. Serverga yuborish uchun ularni kiriting.
+            <code>.env</code> içida <code>VITE_SUPABASE_URL</code> va <code>VITE_SUPABASE_ANON_KEY</code> bölmaganligi
+            sababli ilova faqat şu qurilmada işlaydi. Serverga yuboriş uçun ularni kiriting.
           </InfoBanner>
         )}
       </Card>
@@ -477,23 +450,21 @@ export default function Settings() {
             <span className="text-sm font-semibold">Hisob turi</span>
             <div className="flex flex-wrap gap-2">
               <Chip tone={data.userId.startsWith('local-') ? 'warn' : 'ok'}>
-                {data.userId.startsWith('local-') ? 'Mehmon (faqat shu qurilma)' : 'Supabase hisobi'}
+                {data.userId.startsWith('local-') ? 'Mehmon (faqat şu qurilma)' : 'Supabase hisobi'}
               </Chip>
               <Chip>Sinxron navbati: {queueLen === null ? '…' : queueLen}</Chip>
             </div>
             <p className="text-xs muted">
               {data.userId.startsWith('local-')
-                ? 'Ma’lumotlar faqat shu qurilmada. Hisob yaratilsa — barcha qurilmalardan kirish mumkin bo‘ladi.'
+                ? 'Ma’lumotlar faqat şu qurilmada. Hisob yaratilsa — barça qurilmalardan kiriş mumkin böladi.'
                 : 'Ma’lumotlaringiz serverda RLS bilan himoyalangan.'}
             </p>
           </div>
           <div className="grid gap-2 content-end">
-            <Button variant="secondary" busy={signingOut} onClick={() => void requestSignOut()}>
-              {isGuest ? 'Chiqish (ma’lumot saqlanadi)' : signingOut ? 'Sinxronlanmoqda…' : 'Hisobdan chiqish'}
-            </Button>
+            <SignOutButton />
             <Link to="/dashboard">
               <Button variant="ghost" size="sm">
-                Dashboardga qaytish
+                Dashboardga qaytiş
               </Button>
             </Link>
           </div>
@@ -504,43 +475,20 @@ export default function Settings() {
       <Card className="grid gap-3 border-l-4 !border-l-[var(--bad)]">
         <h2 className="font-bold text-[var(--bad)]">Xavf zonasi</h2>
         <p className="text-sm muted">
-          Quyidagi amallar qaytarib bo‘lmaydi. Ma’lumotlar shu qurilmadagi keshdan, sinxron navbatidan va offline
-          fayllardan{hasServerCopy ? ', shuningdek serverdan' : ''} o‘chiriladi.
+          Quyidagi amallar qaytarib bölmaydi. Ma’lumotlar şu qurilmadagi keşdan, sinxron navbatidan va offline
+          fayllardan{hasServerCopy ? ', şuningdek serverdan' : ''} öçiriladi.
         </p>
         <div className="flex flex-wrap gap-2">
-          <Button variant="danger" disabled={syncing || signingOut} onClick={() => setConfirmReset(true)}>
-            Barcha ma’lumotni o‘chirish
+          <Button variant="danger" disabled={syncing} onClick={() => setConfirmReset(true)}>
+            Barça ma’lumotni öçiriş
           </Button>
         </div>
-        {resetDone && <SuccessBanner>Ma’lumotlar o‘chirildi — ilova boshlang‘ich holatga qaytdi.</SuccessBanner>}
+        {resetDone && <SuccessBanner>Ma’lumotlar öçirildi — ilova boşlanğiç holatga qaytdi.</SuccessBanner>}
       </Card>
-
-      <Modal open={unsynced !== null} title="Serverga yetmagan ma’lumot bor" onClose={() => setUnsynced(null)}>
-        <div className="grid gap-3">
-          <p className="text-sm">
-            {unsynced && unsynced.pending > 0
-              ? `${unsynced.pending} ta yozuv serverga yuborilmadi.`
-              : 'Sinxronizatsiya to‘liq bajarilmadi.'}{' '}
-            {unsynced?.reasonUz}
-          </p>
-          <InfoBanner tone="warn">
-            Hisobdan chiqsangiz, bu qurilmadagi ma’lumotlar o‘chiriladi — serverga yetmagan qismini tiklab bo‘lmaydi.
-            Internetni tekshirib, qayta urinib ko‘ring.
-          </InfoBanner>
-          <div className="flex gap-2 justify-end">
-            <Button variant="ghost" onClick={() => setUnsynced(null)}>
-              Qolish
-            </Button>
-            <Button variant="danger" onClick={doSignOut}>
-              Baribir chiqish
-            </Button>
-          </div>
-        </div>
-      </Modal>
 
       <Modal
         open={confirmReset}
-        title="Ma’lumotlarni o‘chirasizmi?"
+        title="Ma’lumotlarni öçirasizmi?"
         onClose={() => {
           if (deleting) return
           setDeleteError(null)
@@ -549,15 +497,15 @@ export default function Settings() {
       >
         <div className="grid gap-3">
           <p className="text-sm">
-            Bu amal {data.attempts.length} ta urinish, {Object.keys(data.srs).length} ta so‘z holati,
-            {' '}{data.writing.length} ta yozish va {data.speaking.length} ta gapirish seansini o‘chiradi.
+            Bu amal {data.attempts.length} ta uriniş, {Object.keys(data.srs).length} ta söz holati,
+            {' '}{data.writing.length} ta yoziş va {data.speaking.length} ta gapiriş seansini öçiradi.
           </p>
           <InfoBanner tone="warn">
             {hasServerCopy
-              ? 'Serverdagi barcha shaxsiy yozuvlaringiz ham o‘chiriladi (hisobning o‘zi qoladi), so‘ng shu qurilmadagi kesh tozalanadi.'
-              : 'Ma’lumotlar faqat shu qurilmada saqlangan — mahalliy kesh to‘liq tozalanadi.'}
+              ? 'Serverdagi barça şaxsiy yozuvlaringiz ham öçiriladi (hisobning özi qoladi), söng şu qurilmadagi kesh tozalanadi.'
+              : 'Ma’lumotlar faqat şu qurilmada saqlangan — mahalliy kesh töliq tozalanadi.'}
           </InfoBanner>
-          {deleteError && <InfoBanner tone="warn">{deleteError} Qurilmadagi ma’lumotlar o‘zgarmadi.</InfoBanner>}
+          {deleteError && <InfoBanner tone="warn">{deleteError} Qurilmadagi ma’lumotlar özgarmadi.</InfoBanner>}
           <div className="flex gap-2 justify-end">
             <Button
               variant="ghost"
@@ -567,10 +515,10 @@ export default function Settings() {
                 setConfirmReset(false)
               }}
             >
-              Bekor qilish
+              Bekor qiliş
             </Button>
             <Button variant="danger" busy={deleting} onClick={() => void deleteAll()}>
-              Ha, o‘chirilsin
+              Ha, öçirilsin
             </Button>
           </div>
         </div>

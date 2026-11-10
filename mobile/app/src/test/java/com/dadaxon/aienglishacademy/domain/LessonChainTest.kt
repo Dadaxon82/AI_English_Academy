@@ -41,9 +41,9 @@ class LessonChainTest {
         )
         val out = lessonSequence("day", ids, knownKind = { kind[it] }, reinforce = false)
         assertEquals(ids.size, out.size)
-        assertEquals("id'lar saqlanishi kerak", ids.toSet(), out.toSet())
+        assertEquals("id'lar saqlanişi kerak", ids.toSet(), out.toSet())
         val audit = sequenceAudit(out) { kind[it] }
-        assertEquals("bir xil turli qo'shni bo'lmasligi kerak: $out", 0, audit.getValue("sameNeighbours"))
+        assertEquals("bir xil turli qöşni bölmasligi kerak: $out", 0, audit.getValue("sameNeighbours"))
     }
 
     /**
@@ -76,9 +76,9 @@ class LessonChainTest {
         )
         val out = lessonSequence("day", ids, knownKind = { kind[it] }, reinforce = false)
         assertEquals(ids.size, out.size)
-        assertEquals("hech qaysi mashq yo'qolmaganligi kerak", ids.toSet(), out.toSet())
+        assertEquals("heç qaysi maşq yöqolmaganligi kerak", ids.toSet(), out.toSet())
         val audit = sequenceAudit(out) { kind[it] }
-        assertEquals("bir xil turli qo'shni: $out", 0, audit.getValue("sameNeighbours"))
+        assertEquals("bir xil turli qöşni: $out", 0, audit.getValue("sameNeighbours"))
         assertTrue("takror masofasi: $audit", audit.getValue("minGap") >= MIN_KIND_GAP)
     }
 
@@ -115,7 +115,7 @@ class LessonChainTest {
     fun reinforceDuplicatesExistingIdsOnly() {
         val ids = (1..13).map { "e$it" }
         val out = lessonSequence("day", ids, reinforce = true)
-        assertTrue("takror qo'shilishi kerak: $out", out.size > ids.size)
+        assertTrue("takror qöşilişi kerak: $out", out.size > ids.size)
         assertTrue("faqat kontent id'lari: $out", ids.toSet().containsAll(out.toSet()))
         // Shu o'lchamda qo'shilishi kutiladi (har REINFORCE_EVERY qadamda bitta).
         assertEquals(ids.size + ids.size / REINFORCE_EVERY, out.size)
@@ -146,7 +146,7 @@ class LessonChainTest {
         id = id,
         level = "A1",
         dayNumber = 1,
-        titleUz = "Birinchi kun",
+        titleUz = "Birinçi kun",
         goalUz = "",
         sections = sections,
         sectionTest = test,
@@ -156,7 +156,7 @@ class LessonChainTest {
         id = id,
         level = "A1",
         section = Skills.VOCABULARY,
-        titleUz = "Lug'at testi",
+        titleUz = "Luğat testi",
         passScore = 70,
         exercises = listOf(ex("$id-1")),
     )
@@ -168,8 +168,8 @@ class LessonChainTest {
         // zanjir baribir reja tartibini oladi.
         val d = day(
             sections = listOf(
-                DaySection(Skills.READING, 15, listOf("r1"), "O'qish"),
-                DaySection(Skills.VOCABULARY, 10, listOf("v1", "v2"), "Lug'at"),
+                DaySection(Skills.READING, 15, listOf("r1"), "Öqiş"),
+                DaySection(Skills.VOCABULARY, 10, listOf("v1", "v2"), "Luğat"),
             ),
             test = test("a1-day-01-test"),
         )
@@ -185,7 +185,7 @@ class LessonChainTest {
         assertEquals(0, chain.steps.last().minutes)
         assertEquals(15, chain.steps[1].minutes)
         assertEquals(listOf(0, 1, 2), chain.steps.map { it.index })
-        assertEquals("Lug'at testi", chain.steps.last().titleUz)
+        assertEquals("Luğat testi", chain.steps.last().titleUz)
     }
 
     /** Mashqi bo'lmagan bo'lim zanjirga KIRMAYDI (yozish/gapirishdan tashqari). */
@@ -193,9 +193,9 @@ class LessonChainTest {
     fun emptySectionSkippedButTextTasksStay() {
         val d = day(
             sections = listOf(
-                DaySection(Skills.VOCABULARY, 10, listOf("v1"), "Lug'at"),
-                DaySection(Skills.LISTENING, 15, emptyList(), "Tinglash"),
-                DaySection(Skills.WRITING, 20, emptyList(), "Yozish"),
+                DaySection(Skills.VOCABULARY, 10, listOf("v1"), "Luğat"),
+                DaySection(Skills.LISTENING, 15, emptyList(), "Tinglaş"),
+                DaySection(Skills.WRITING, 20, emptyList(), "Yoziş"),
             ),
         )
         val chain = buildChain(d, mapOf(Skills.VOCABULARY to listOf("v1")), isCurrent = true)
@@ -207,9 +207,9 @@ class LessonChainTest {
     fun dayLockStates() {
         val chains = buildDayChains(
             days = listOf(
-                day("d1", listOf(DaySection(Skills.VOCABULARY, 10, listOf("v1"), "Lug'at"))),
-                day("d2", listOf(DaySection(Skills.VOCABULARY, 10, listOf("v2"), "Lug'at"))),
-                day("d3", listOf(DaySection(Skills.VOCABULARY, 10, listOf("v3"), "Lug'at"))),
+                day("d1", listOf(DaySection(Skills.VOCABULARY, 10, listOf("v1"), "Luğat"))),
+                day("d2", listOf(DaySection(Skills.VOCABULARY, 10, listOf("v2"), "Luğat"))),
+                day("d3", listOf(DaySection(Skills.VOCABULARY, 10, listOf("v3"), "Luğat"))),
             ),
             exerciseIdsByDayAndSkill = mapOf(
                 "d1" to mapOf(Skills.VOCABULARY to listOf("v1")),
@@ -235,7 +235,7 @@ class LessonChainTest {
     /** Bo'lim testi zanjirda `testStepOf` orqali topiladi (pleyerga id'lar beriladi). */
     @Test
     fun testStepExposed() {
-        val d = day(sections = listOf(DaySection(Skills.VOCABULARY, 10, listOf("v1"), "Lug'at")), test = test("t9"))
+        val d = day(sections = listOf(DaySection(Skills.VOCABULARY, 10, listOf("v1"), "Luğat")), test = test("t9"))
         val chain = buildChain(d, mapOf(Skills.VOCABULARY to listOf("v1")), isCurrent = true)
         val t = testStepOf(d)
         assertTrue(t != null && t.id == "t9")
@@ -258,7 +258,7 @@ class LessonChainTest {
         val d = day(
             sections = listOf(
                 // yagona turli bo'lim: 3 mashq → 2 MAJBURIY qo'shni
-                DaySection(Skills.VOCABULARY, 10, listOf("v1", "v2", "v3"), "Lug'at"),
+                DaySection(Skills.VOCABULARY, 10, listOf("v1", "v2", "v3"), "Luğat"),
                 // aralash bo'lim: `gap_fill` 1 va 3-o'rinlarda (ajratilgan) → 0 qo'shni
                 DaySection(Skills.GRAMMAR, 15, listOf("g1", "g2", "g3"), "Grammatika"),
             ),
@@ -272,13 +272,13 @@ class LessonChainTest {
             isCurrent = true,
         )
         val a = chainAudit(listOf(chain)) { kind[it] }
-        assertEquals("bo'limlar soni", 2, a.sections)
-        assertEquals("majburiy qo'shni — yagona turli bo'limda 2 ta", 2, a.unavoidable)
-        assertEquals("aralash bo'limda qo'shni qolmaydi: hammasi majburiy", a.unavoidable, a.sameNeighbours)
-        assertEquals("aralash bo'limda eng qisqa masofa 2", 2, a.minGap)
+        assertEquals("bölimlar soni", 2, a.sections)
+        assertEquals("majburiy qöşni — yagona turli bölimda 2 ta", 2, a.unavoidable)
+        assertEquals("aralaş bölimda qöşni qolmaydi: hammasi majburiy", a.unavoidable, a.sameNeighbours)
+        assertEquals("aralaş bölimda eng qisqa masofa 2", 2, a.minGap)
         assertEquals("rotatsiya qadamlari", 6, a.rotationSteps)
         // Bo'limlar kichik (3 va 3) — `REINFORCE_EVERY=6` shishirmaydi.
-        assertEquals("qisqa bo'limda takror qo'shilmaydi", 0, a.reinforcement)
+        assertEquals("qisqa bölimda takror qöşilmaydi", 0, a.reinforcement)
         assertEquals(a.rotationSteps + a.reinforcement, a.plannedSteps)
     }
 

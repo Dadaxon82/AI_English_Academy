@@ -73,57 +73,57 @@ afterEach(() => {
   cleanup()
 })
 
-describe('Hisobdan chiqish — avval sinxron, yuborilmagan narsa qolsa ogohlantirish', () => {
-  it('hammasi serverga yetsa darhol chiqadi', async () => {
+describe('Hisobdan çiqiş — avval sinxron, yuborilmagan narsa qolsa ogohlantiriş', () => {
+  it('hammasi serverga yetsa darhol çiqadi', async () => {
     seedLocal(5)
     const signOut = vi.fn()
     renderSettings(signOut)
-    fireEvent.click(await screen.findByRole('button', { name: 'Hisobdan chiqish' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Hisobdan çiqiş' }))
     await waitFor(() => expect(signOut).toHaveBeenCalledTimes(1))
     expect(server.rows('exercise_attempts')).toHaveLength(5)
     expect(screen.queryByText('Serverga yetmagan ma’lumot bor')).toBeNull()
   })
 
-  it('internet bo‘lmasa chiqmaydi, tasdiq so‘raydi; tasdiqdan keyingina chiqadi', async () => {
+  it('internet bölmasa çiqmaydi, tasdiq söraydi; tasdiqdan keyingina çiqadi', async () => {
     seedLocal(5)
     server.network = true
     const signOut = vi.fn()
     renderSettings(signOut)
-    fireEvent.click(await screen.findByRole('button', { name: 'Hisobdan chiqish' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Hisobdan çiqiş' }))
     expect(await screen.findByText('Serverga yetmagan ma’lumot bor')).toBeInTheDocument()
     expect(signOut).not.toHaveBeenCalled()
-    fireEvent.click(screen.getByRole('button', { name: 'Baribir chiqish' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Baribir çiqiş' }))
     expect(signOut).toHaveBeenCalledTimes(1)
   })
 })
 
-describe('Barcha ma’lumotni o‘chirish — hisobga kirgan foydalanuvchida serverdan ham', () => {
+describe('Barça ma’lumotni öçiriş — hisobga kirgan foydalanuvçida serverdan ham', () => {
   const openAndConfirm = async () => {
-    fireEvent.click(await screen.findByRole('button', { name: 'Barcha ma’lumotni o‘chirish' }))
-    fireEvent.click(screen.getByRole('button', { name: 'Ha, o‘chirilsin' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Barça ma’lumotni öçiriş' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Ha, öçirilsin' }))
   }
 
-  it('serverdagi shaxsiy yozuvlar va qurilmadagi ma’lumot o‘chadi', async () => {
+  it('serverdagi şaxsiy yozuvlar va qurilmadagi ma’lumot öçadi', async () => {
     seedLocal(5)
     server.tables.set('exercise_attempts', new Map([['att-1', { id: 'att-1', user_id: UID }]]))
     server.tables.set('user_settings', new Map([[UID, { user_id: UID, daily_minutes: 90 }]]))
     renderSettings(vi.fn())
     expect(await screen.findByTestId('attempts')).toHaveTextContent('5')
     await openAndConfirm()
-    expect(await screen.findByText(/Ma’lumotlar o‘chirildi/)).toBeInTheDocument()
+    expect(await screen.findByText(/Ma’lumotlar öçirildi/)).toBeInTheDocument()
     expect(server.rows('exercise_attempts')).toHaveLength(0)
     expect(server.rows('user_settings')).toHaveLength(0)
     expect(screen.getByTestId('attempts')).toHaveTextContent('0')
   })
 
-  it('server o‘chira olmasa qurilmadagi ma’lumot ham tegilmaydi (qayta urinish mumkin)', async () => {
+  it('server öçira olmasa qurilmadagi ma’lumot ham tegilmaydi (qayta uriniş mumkin)', async () => {
     seedLocal(5)
     server.tables.set('exercise_attempts', new Map([['att-1', { id: 'att-1', user_id: UID }]]))
     server.network = true
     renderSettings(vi.fn())
     expect(await screen.findByTestId('attempts')).toHaveTextContent('5')
     await openAndConfirm()
-    expect(await screen.findByText(/Qurilmadagi ma’lumotlar o‘zgarmadi/)).toBeInTheDocument()
+    expect(await screen.findByText(/Qurilmadagi ma’lumotlar özgarmadi/)).toBeInTheDocument()
     expect(screen.getByTestId('attempts')).toHaveTextContent('5')
     expect(server.rows('exercise_attempts')).toHaveLength(1)
   })

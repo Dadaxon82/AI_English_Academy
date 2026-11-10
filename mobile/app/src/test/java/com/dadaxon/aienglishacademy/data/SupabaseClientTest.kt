@@ -69,7 +69,7 @@ class SupabaseClientTest {
         val c = client { _, _, _ -> HttpResp(0, "", "Unable to resolve host") }
         val r = c.select("user_settings", "", "t")
         assertFalse(r.ok)
-        assertNull(r.code) // kodsiz → SyncEngine "to'xtaydi" deb biladi
+        assertNull(r.code) // kodsiz → SyncEngine "töxtaydi" deb biladi
         assertTrue(r.errorUz!!.contains("Internet") || r.errorUz!!.contains("host"))
     }
 
@@ -166,16 +166,16 @@ class SupabaseClientTest {
         val r = SupabaseClient(cfg, f).signUp("a@b.co", "parol", "Dadaxon")
         assertNull(r.session)
         // Veb `safeErrorMessage` matni almashtiradi — foydalanuvchi tushunadi.
-        assertEquals("Bu email allaqachon ro‘yxatdan o‘tgan.", r.errorUz)
+        assertEquals("Bu email allaqaçon röyxatdan ötgan.", r.errorUz)
     }
 
     @Test
     fun authErrorsAreMappedToUzbek() {
-        assertEquals("Email yoki parol noto‘g‘ri.", AuthErrors.safe(401, "invalid login credentials"))
-        assertEquals("Internet aloqasi yo‘q. Ulanishni tekshiring.", AuthErrors.safe(0, "Failed to fetch"))
-        assertEquals("Juda ko‘p urinish. Birozdan keyin qayta urinib ko‘ring.", AuthErrors.safe(429, "Rate limit"))
-        assertEquals("Emailingizni tasdiqlang. Kelgan xatni tekshiring.", AuthErrors.safe(400, "Email not confirmed"))
-        assertEquals("Noma'lum xatolik. Qayta urinib ko'ring.", AuthErrors.safe(500, "boom"))
+        assertEquals("Email yoki parol notöğri.", AuthErrors.safe(401, "invalid login credentials"))
+        assertEquals("Internet aloqasi yöq. Ulanişni tekşiring.", AuthErrors.safe(0, "Failed to fetch"))
+        assertEquals("Juda köp uriniş. Birozdan keyin qayta urinib köring.", AuthErrors.safe(429, "Rate limit"))
+        assertEquals("Emailingizni tasdiqlang. Kelgan xatni tekşiring.", AuthErrors.safe(400, "Email not confirmed"))
+        assertEquals("Noma'lum xatolik. Qayta urinib köring.", AuthErrors.safe(500, "boom"))
     }
 
     @Test

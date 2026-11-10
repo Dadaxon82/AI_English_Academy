@@ -153,9 +153,9 @@ class SyncEngine(
 
         fun text(): String = missing.entries.sortedBy { it.key }.map { (migration, columns) ->
             if (columns.isNotEmpty()) {
-                "baza eski: $migration migratsiyasi qo‘llanmagan (${columns.sorted().joinToString(", ")} ustunlari yo‘q)"
+                "baza eski: $migration migratsiyasi qöllanmagan (${columns.sorted().joinToString(", ")} ustunlari yöq)"
             } else {
-                "baza eski: jadval yo‘q — $migration migratsiyasi qo‘llanmagan"
+                "baza eski: jadval yöq — $migration migratsiyasi qöllanmagan"
             }
         }.joinToString("; ")
     }
@@ -203,11 +203,11 @@ class SyncEngine(
             return empty.copy(reasonUz = "Supabase sozlanmagan — ma’lumotlar qurilmada saqlanmoqda.")
         }
         if (!online()) {
-            return empty.copy(reasonUz = "Internet yo‘q. Navbat saqlandi, ulanish qaytganda yuboriladi.")
+            return empty.copy(reasonUz = "Internet yöq. Navbat saqlandi, ulaniş qaytganda yuboriladi.")
         }
         val (session, authErr) = auth.ensureFresh()
         if (session == null) {
-            return empty.copy(reasonUz = authErr ?: "Tizimga kirilmagan — sinxronlash to‘xtatildi.")
+            return empty.copy(reasonUz = authErr ?: "Tizimga kirilmagan — sinxronlaş töxtatildi.")
         }
 
         val queue = local.loadQueue(userId)
@@ -348,7 +348,7 @@ class SyncEngine(
         if (rejected > 0) reasons.add("$rejected ta yozuvni server qabul qilmadi (ma’lumot yoki ruxsat xatosi).")
         // Sabab ochiq aytiladi: "qabul qilinmadi" yetarli emas — foydalanuvchi
         // nimani qilishi kerakligini bilishi kerak (SQL Editor'da migratsiya).
-        if (!notes.isEmpty()) reasons.add("Baza eski sxemada — ${notes.text()}. Supabase SQL Editor’ida shu skriptni bir marta bajaring.")
+        if (!notes.isEmpty()) reasons.add("Baza eski sxemada — ${notes.text()}. Supabase SQL Editor’ida şu skriptni bir marta bajaring.")
         return SyncStats(
             ok = failed == 0 && rejected == 0,
             attempted = batch.size,
@@ -391,13 +391,13 @@ class SyncEngine(
     fun pullRemote(userId: String): PullResult {
         val sb = client
         if (!configured || sb == null) return PullResult(false, null, "Supabase sozlanmagan.")
-        if (!online()) return PullResult(false, null, "Internet yo‘q.")
+        if (!online()) return PullResult(false, null, "Internet yöq.")
         val (session, authErr) = auth.ensureFresh()
         // Boshqa foydalanuvchining sessiyasi bilan o'qilgan ma'lumot bu holatga aralashmasin.
         if (session == null || session.userId != userId) {
             return PullResult(false, null, authErr ?: "Tizimga kirilmagan.")
         }
-        val failRead = PullResult(false, null, "Serverdagi ma’lumotni o‘qib bo‘lmadi.")
+        val failRead = PullResult(false, null, "Serverdagi ma’lumotni öqib bölmadi.")
         val own = { table: String, query: String ->
             val q = "user_id=eq.$userId&$query".trimEnd('&')
             sb.select(table, q, session.accessToken)
@@ -471,7 +471,7 @@ class SyncEngine(
             return push.copy(
                 pulled = false,
                 ok = push.ok,
-                reasonUz = listOfNotNull(push.reasonUz, pr.reasonUz?.let { "Serverdan o'qib bo'lmadi: $it" })
+                reasonUz = listOfNotNull(push.reasonUz, pr.reasonUz?.let { "Serverdan öqib bölmadi: $it" })
                     .joinToString(" ").ifEmpty { null },
             )
         }

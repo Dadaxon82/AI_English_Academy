@@ -181,10 +181,10 @@ export default function QuickSession() {
           </p>
           <div className="flex flex-wrap gap-2">
             <Button size="lg" onClick={() => begin(false)} disabled={remaining <= 0}>
-              Davom etish
+              Davom etiş
             </Button>
             <Button variant="secondary" onClick={() => actions.stopTimer()}>
-              Sessiyani yakunlash
+              Sessiyani yakunlaş
             </Button>
           </div>
         </Card>
@@ -200,36 +200,36 @@ export default function QuickSession() {
         <Card as="section" className="grid gap-3">
           <h1 className="text-2xl font-extrabold tracking-tight">⚡ 5 daqiqa — tezkor takror</h1>
           <p className="text-sm leading-relaxed">
-            Qisqa, har kungi odat: avval takrorlash navbatidagi so‘zlar, keyin bitta mavzudan yangi so‘zlar.
-            Kartani o‘ngga suring — <b>«Bilaman»</b>, chapga — <b>«Yana»</b>.
+            Qisqa, har kungi odat: avval takrorlaş navbatidagi sözlar, keyin bitta mavzudan yangi sözlar.
+            Kartani öngga suring — <b>«Bilaman»</b>, çapga — <b>«Yana»</b>.
           </p>
           <div className="flex flex-wrap gap-1.5">
             <Chip tone={preview.dueCount > 0 ? 'warn' : 'default'}>{preview.dueCount} ta takror</Chip>
-            <Chip tone="brand">{preview.newCount} ta yangi so‘z</Chip>
+            <Chip tone="brand">{preview.newCount} ta yangi söz</Chip>
             {preview.newTopic && <Chip>Mavzu: {preview.newTopic}</Chip>}
             <Chip>Daraja: {level}</Chip>
           </div>
           <InfoBanner tone="muted">
-            Bu kunlik {data.settings.dailyMinutes} daqiqalik rejaning o‘rnini bosmaydi — band kunlar uchun «minimal kun».
+            Bu kunlik {data.settings.dailyMinutes} daqiqalik rejaning örnini bosmaydi — band kunlar uçun «minimal kun».
             Sarflangan vaqt bugungi faollikka yoziladi va ketma-ket kun zanjirini saqlaydi.
           </InfoBanner>
           {empty ? (
             <EmptyState
-              title="Hozir kartalar yo‘q"
-              body="Takrorlash navbati bo‘sh va bu darajaning barcha so‘zlari allaqachon lug‘atingizda. Lug‘at bo‘limida boshqa mashqlarni sinab ko‘ring."
+              title="Hozir kartalar yöq"
+              body="Takrorlaş navbati böş va bu darajaning barça sözlari allaqaçon luğatingizda. Luğat bölimida boşqa maşqlarni sinab köring."
               action={
                 <Link to="/vocabulary" className="font-semibold underline">
-                  Lug‘at bo‘limiga o‘tish
+                  Luğat bölimiga ötiş
                 </Link>
               }
             />
           ) : (
             <div className="flex flex-wrap gap-2">
               <Button size="lg" onClick={start}>
-                Boshlash ({formatDuration(QUICK_SESSION_SEC)})
+                Boşlaş ({formatDuration(QUICK_SESSION_SEC)})
               </Button>
               <Link to="/dashboard" className="inline-flex items-center px-4 py-2.5 text-sm font-semibold rounded-xl border">
-                Bosh sahifa
+                Boş sahifa
               </Link>
             </div>
           )}
@@ -251,7 +251,7 @@ export default function QuickSession() {
             <InfoBanner tone="muted">Bu safar birorta karta baholanmadi.</InfoBanner>
           ) : (
             <SuccessBanner>
-              {`${log.length} ta karta: ${known} tasini bildingiz, ${again} tasi qayta takrorlanadi. Yangi o‘rganilgan: ${fresh} ta so‘z.`}
+              {`${log.length} ta karta: ${known} tasini bildingiz, ${again} tasi qayta takrorlanadi. Yangi örganilgan: ${fresh} ta söz.`}
             </SuccessBanner>
           )}
           <p className="text-sm">
@@ -271,7 +271,7 @@ export default function QuickSession() {
               Yana 5 daqiqa
             </Button>
             <Link to="/dashboard" className="inline-flex items-center px-4 py-2.5 text-sm font-semibold rounded-xl border">
-              Bosh sahifa
+              Boş sahifa
             </Link>
           </div>
         </Card>
@@ -313,14 +313,14 @@ export default function QuickSession() {
             <span className="text-sm">Sessiya pauzada — qolgan vaqt saqlangan.</span>
             <span className="flex-1" />
             <Button size="sm" onClick={() => actions.startTimer(sid, 'vocabulary')}>
-              Davom etish
+              Davom etiş
             </Button>
             <Button
               size="sm"
               variant="secondary"
               onClick={() => actions.stopTimer()}
             >
-              Yakunlash
+              Yakunlaş
             </Button>
           </div>
         </InfoBanner>
@@ -329,7 +329,7 @@ export default function QuickSession() {
       {card && (
         <Card className="grid gap-4">
           <div className="flex flex-wrap gap-1.5">
-            <Chip tone={card.isNew ? 'brand' : 'warn'}>{card.isNew ? 'Yangi so‘z' : 'Takror'}</Chip>
+            <Chip tone={card.isNew ? 'brand' : 'warn'}>{card.isNew ? 'Yangi söz' : 'Takror'}</Chip>
             <Chip>{card.item.topic}</Chip>
           </div>
 
@@ -351,7 +351,7 @@ export default function QuickSession() {
               setDragging(false)
               setDrag(0)
             }}
-            aria-label={flipped ? `${card.item.word} — tarjimani yopish` : `${card.item.word} — tarjimani ko‘rish`}
+            aria-label={flipped ? `${card.item.word} — tarjimani yopiş` : `${card.item.word} — tarjimani köriş`}
             className="touch-pan-y select-none min-h-56 rounded-2xl border bg-[var(--panel-2)] p-5 grid place-items-center text-center disabled:opacity-60"
             style={{
               transform: `translateX(${drag}px) rotate(${drag / 30}deg)`,
@@ -376,7 +376,7 @@ export default function QuickSession() {
                   {card.item.exampleEn.trim() !== '' && <span className="muted text-sm italic">"{card.item.exampleEn}"</span>}
                 </>
               ) : (
-                <span className="muted text-sm">Ma’nosi uchun bosing</span>
+                <span className="muted text-sm">Ma’nosi uçun bosing</span>
               )}
               {hint && <span className="text-sm font-bold">{hint === 'Bilaman' ? 'Bilaman →' : '← Yana'}</span>}
             </span>
@@ -385,7 +385,7 @@ export default function QuickSession() {
           {immersion && flipped && !revealUz && (
             <div>
               <Button size="sm" variant="ghost" onClick={() => setRevealUz(true)}>
-                Tarjimani ko‘rsatish
+                Tarjimani körsatiş
               </Button>
             </div>
           )}
@@ -393,7 +393,7 @@ export default function QuickSession() {
           <div className="flex flex-wrap items-center justify-between gap-2">
             <SpeakButton text={card.item.pronunciation?.ttsText ?? card.item.word} label={`${card.item.word} — talaffuz`} size="md" />
             <span className="text-[11px] muted">
-              <Kbd>←</Kbd> Yana · <Kbd>→</Kbd> Bilaman · <Kbd>Space</Kbd> ochish
+              <Kbd>←</Kbd> Yana · <Kbd>→</Kbd> Bilaman · <Kbd>Space</Kbd> oçiş
             </span>
           </div>
 

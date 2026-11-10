@@ -19,7 +19,7 @@ afterEach(() => {
 })
 
 describe('Hamjamiyat — server ulanmagan', () => {
-  it('sabab va kirish havolasi ko‘rsatiladi, yuborish/tekshirish tugmalari yo‘q', async () => {
+  it('sabab va kiriş havolasi körsatiladi, yuboriş/tekşiriş tugmalari yöq', async () => {
     render(
       <MemoryRouter>
         <StoreProvider userId="u-community">
@@ -30,10 +30,10 @@ describe('Hamjamiyat — server ulanmagan', () => {
     await act(async () => {
       await vi.advanceTimersByTimeAsync(50)
     })
-    expect(screen.getByRole('heading', { name: 'Hamjamiyat tekshiruvi' })).toBeTruthy()
+    expect(screen.getByRole('heading', { name: 'Hamjamiyat tekşiruvi' })).toBeTruthy()
     expect(screen.getByText(/Server \(Supabase\) ulanmagan/)).toBeTruthy()
-    expect(screen.getByRole('link', { name: 'Hisobga kirish' })).toBeTruthy()
-    expect(screen.queryByRole('button', { name: 'Tekshirish uchun javob olish' })).toBeNull()
-    expect(screen.queryByRole('button', { name: 'Yuborish' })).toBeNull()
+    expect(screen.getByRole('link', { name: 'Hisobga kiriş' })).toBeTruthy()
+    expect(screen.queryByRole('button', { name: 'Tekşiriş uçun javob oliş' })).toBeNull()
+    expect(screen.queryByRole('button', { name: 'Yuboriş' })).toBeNull()
   })
 })

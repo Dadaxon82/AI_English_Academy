@@ -51,7 +51,9 @@ private val SPACES = "\\s+".toRegex()
  * ("oʻn ikki") noto'g'ri deb baholanardi.
  */
 fun normalize(value: String): String =
-    Normalizer.normalize(value.lowercase(Locale.ROOT), Normalizer.Form.NFD)
+    // Yangi alifbo (ö, ğ, ş, ç) eski shaklga keltiriladi — veb `foldUzLatin` bilan bir xil:
+    // aks holda NFD ularni «o, g, s, c» ga aylantirib, «o'qish» ≠ «öqiş» bo'lardi.
+    Normalizer.normalize(foldUzLatin(value).lowercase(Locale.ROOT), Normalizer.Form.NFD)
         .replace(COMBINING_MARKS, "")
         .replace(APOSTROPHES, "'")
         .replace(NOT_ALLOWED, " ")
@@ -131,7 +133,7 @@ fun checkChoice(exercise: Exercise, answer: Any?): CheckOutcome {
         correct = correct,
         given = chosen,
         expected = opts.getOrNull(exercise.answerIndex) ?: "",
-        whyUz = if (correct) exercise.explanationUz else "Tanlovingiz noto‘g‘ri. ${exercise.explanationUz}",
+        whyUz = if (correct) exercise.explanationUz else "Tanlovingiz notöğri. ${exercise.explanationUz}",
         partial = if (correct) 1.0 else 0.0,
     )
 }
@@ -153,7 +155,7 @@ fun checkTfng(exercise: Exercise, answer: Any?): CheckOutcome {
     var why = exercise.explanationUz
     val evidence = exercise.evidence
     if (!correct) {
-        why = "To‘g‘ri javob — ${TFNG_LABEL[expectedKey]}. ${exercise.explanationUz}"
+        why = "Töğri javob — ${TFNG_LABEL[expectedKey]}. ${exercise.explanationUz}"
         if (!evidence.isNullOrEmpty()) why += " Matndagi asos: “$evidence”."
     } else if (!evidence.isNullOrEmpty()) {
         why += " Matndagi asos: “$evidence”."
@@ -197,7 +199,7 @@ fun checkMatching(exercise: Exercise, answer: Any?): CheckOutcome {
             if (ok == total) {
                 exercise.explanationUz
             } else {
-                "$ok/$total juftlik to‘g‘ri. Xatolar: ${wrongPairs.take(4).joinToString(", ")}. ${exercise.explanationUz}"
+                "$ok/$total juftlik töğri. Xatolar: ${wrongPairs.take(4).joinToString(", ")}. ${exercise.explanationUz}"
             },
         partial = partial,
     )
@@ -217,7 +219,7 @@ fun checkGapFill(exercise: Exercise, answer: Any?): CheckOutcome {
         if (hit) {
             ok += 1
         } else {
-            detail.add("${i + 1}-bo‘shliq: sizda “${if (user.isEmpty()) "bo‘sh" else user}”, to‘g‘ri: “$expected”")
+            detail.add("${i + 1}-böşliq: sizda “${if (user.isEmpty()) "böş" else user}”, töğri: “$expected”")
         }
     }
 
@@ -262,7 +264,7 @@ fun checkWordOrder(exercise: Exercise, answer: Any?): CheckOutcome {
         val pos = firstWrong + 1
         val sizda = given.getOrNull(firstWrong)
         why =
-            "Tartibda xato bor: $pos-o‘rinda “${expectedList.getOrNull(firstWrong) ?: "—"}” turishi kerak edi" +
+            "Tartibda xato bor: $pos-örinda “${expectedList.getOrNull(firstWrong) ?: "—"}” turişi kerak edi" +
                 (if (!sizda.isNullOrEmpty()) ", sizda “$sizda”." else ".") +
                 " ${exercise.noteUz ?: ""} ${exercise.explanationUz}".trim()
     }
@@ -316,8 +318,8 @@ fun checkMultiSelect(exercise: Exercise, answer: Any?): CheckOutcome {
         val bits = mutableListOf<String>()
         val missed = right.filter { it !in chosen }.map { "“${opts[it]}”" }
         val wrong = chosen.filter { it !in right }.map { "“${opts[it]}”" }
-        if (missed.isNotEmpty()) bits.add("belgilanmagan to‘g‘ri javob: ${missed.joinToString(", ")}")
-        if (wrong.isNotEmpty()) bits.add("ortiqcha belgilangan: ${wrong.joinToString(", ")}")
+        if (missed.isNotEmpty()) bits.add("belgilanmagan töğri javob: ${missed.joinToString(", ")}")
+        if (wrong.isNotEmpty()) bits.add("ortiqça belgilangan: ${wrong.joinToString(", ")}")
         why = "${bits.joinToString("; ")}. ${exercise.explanationUz}"
     }
     return CheckOutcome(
@@ -340,7 +342,7 @@ fun checkDropdown(exercise: Exercise, answer: Any?): CheckOutcome {
         if (normalize(user) == normalize(expected)) {
             ok += 1
         } else {
-            detail.add("${i + 1}-bo‘shliq: “${if (user.isEmpty()) "—" else user}” emas, “$expected”")
+            detail.add("${i + 1}-böşliq: “${if (user.isEmpty()) "—" else user}” emas, “$expected”")
         }
     }
     val total = expectedList.size
@@ -364,7 +366,7 @@ fun checkSequence(exercise: Exercise, answer: Any?): CheckOutcome {
     var why = exercise.explanationUz
     if (!correct) {
         val first = items.indices.firstOrNull { normalize(given.getOrNull(it) ?: "") != normalize(items[it]) } ?: -1
-        why = "$ok/$n ta element o‘z joyida. ${first + 1}-o‘rinda “${items.getOrNull(first) ?: "—"}” turishi kerak edi. ${exercise.explanationUz}"
+        why = "$ok/$n ta element öz joyida. ${first + 1}-örinda “${items.getOrNull(first) ?: "—"}” turişi kerak edi. ${exercise.explanationUz}"
     }
     return CheckOutcome(
         correct = correct,
@@ -405,7 +407,7 @@ fun checkCategorize(exercise: Exercise, answer: Any?): CheckOutcome {
             if (ok == total) {
                 exercise.explanationUz
             } else {
-                "$ok/$total to‘g‘ri. To‘g‘risi: ${wrong.take(4).joinToString("; ")}. ${exercise.explanationUz}"
+                "$ok/$total töğri. Töğrisi: ${wrong.take(4).joinToString("; ")}. ${exercise.explanationUz}"
             },
         partial = if (total == 0) 0.0 else ok.toDouble() / total,
     )
@@ -448,4 +450,29 @@ fun nextExerciseIndex(currentIndex: Int, results: List<CheckOutcome>, poolSize: 
     }
     if (avg >= 0.8) return Math.min(poolSize - 1, currentIndex + 1)
     return Math.max(0, Math.min(poolSize - 1, currentIndex))
+}
+
+
+/**
+ * O'zbek lotin yozuvi: yangi alifbo harflari (ö, ğ, ş, ç) eski ikki belgili
+ * shaklga (o', g', sh, ch), apostrof turlari `'` ga — veb `src/lib/uzAlphabet.ts`.
+ * O'quvchi klaviaturada eski shaklda yozsa ham javob to'g'ri hisoblanadi.
+ */
+fun foldUzLatin(s: String): String {
+    val sb = StringBuilder(s.length + 8)
+    for (c in Normalizer.normalize(s, Normalizer.Form.NFC)) {
+        when (c) {
+            'ö' -> sb.append("o'")
+            'Ö' -> sb.append("O'")
+            'ğ' -> sb.append("g'")
+            'Ğ' -> sb.append("G'")
+            'ş' -> sb.append("sh")
+            'Ş' -> sb.append("Sh")
+            'ç' -> sb.append("ch")
+            'Ç' -> sb.append("Ch")
+            '’', '‘', '`', '´', 'ʻ', 'ʼ', 'ʹ' -> sb.append('\'')
+            else -> sb.append(c)
+        }
+    }
+    return sb.toString()
 }

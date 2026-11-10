@@ -240,7 +240,7 @@ export interface LeagueRow {
 }
 
 export interface LeagueSnapshot {
-  /** Hafta boshi (poneshanba, lokal sana) — serverdagi `week_start` bilan bir xil. */
+  /** Hafta boshi (dushanba, lokal sana) — serverdagi `week_start` bilan bir xil. */
   weekStart: string
   leagueId: string
   /** Bizning o'rnimiz (1 dan sanaladi) — jadvalda biz yo'q bo'lsak 0. */

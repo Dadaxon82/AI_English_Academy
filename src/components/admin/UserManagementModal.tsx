@@ -63,12 +63,12 @@ export default function UserManagementModal({ user, currentUserId, onClose, onSa
     setDeleting(true)
     const r = await deleteUser(user.id)
     setDeleting(false)
-    if (r.ok) onDeleted(`«${user.full_name || confirmTarget}» hisobi o‘chirildi.`)
+    if (r.ok) onDeleted(`«${user.full_name || confirmTarget}» hisobi öçirildi.`)
     else onError(r.reasonUz)
   }
 
   return (
-    <Modal open title="Foydalanuvchini tahrirlash" onClose={onClose}>
+    <Modal open title="Foydalanuvçini tahrirlaş" onClose={onClose}>
       <form
         className="grid gap-4"
         onSubmit={(e) => {
@@ -76,7 +76,7 @@ export default function UserManagementModal({ user, currentUserId, onClose, onSa
           if (!nameErr && !avatarErr && changed && !busy) void save()
         }}
       >
-        <p className="text-sm muted break-all">{user.email ?? 'Email yo‘q'}</p>
+        <p className="text-sm muted break-all">{user.email ?? 'Email yöq'}</p>
 
         <Field label="Ism" htmlFor={`${id}-name`} hint={nameErr ?? `${fullName.trim().length}/${FULL_NAME_MAX}`}>
           <input
@@ -89,7 +89,7 @@ export default function UserManagementModal({ user, currentUserId, onClose, onSa
           />
         </Field>
 
-        <Field label="Rasm havolasi (ixtiyoriy)" htmlFor={`${id}-avatar`} hint={avatarErr ?? 'https:// bilan boshlanadigan rasm manzili'}>
+        <Field label="Rasm havolasi (ixtiyoriy)" htmlFor={`${id}-avatar`} hint={avatarErr ?? 'https:// bilan boşlanadigan rasm manzili'}>
           <input
             id={`${id}-avatar`}
             className={inputCls}
@@ -111,7 +111,7 @@ export default function UserManagementModal({ user, currentUserId, onClose, onSa
               ))}
             </select>
           </Field>
-          <Field label="Holat" htmlFor={`${id}-status`} hint={isSelf ? 'O‘zingizni bloklay olmaysiz' : undefined}>
+          <Field label="Holat" htmlFor={`${id}-status`} hint={isSelf ? 'Özingizni bloklay olmaysiz' : undefined}>
             <select
               id={`${id}-status`}
               className={inputCls}
@@ -129,13 +129,13 @@ export default function UserManagementModal({ user, currentUserId, onClose, onSa
         </div>
         {status === 'blocked' && (
           <p className="text-xs rounded-lg bg-rose-50 text-rose-800 dark:bg-rose-950/40 dark:text-rose-200 p-2.5">
-            Bloklangan foydalanuvchi hamjamiyatga javob/izoh yubora olmaydi va AI xizmatidan foydalana olmaydi. Shaxsiy o‘quv
-            ma’lumoti o‘chirilmaydi.
+            Bloklangan foydalanuvçi hamjamiyatga javob/izoh yubora olmaydi va AI xizmatidan foydalana olmaydi. Şaxsiy öquv
+            ma’lumoti öçirilmaydi.
           </p>
         )}
 
         <div className="grid gap-2 rounded-xl bg-[var(--panel-2)] p-3">
-          <p className="text-xs font-semibold uppercase tracking-wide muted">O‘quv ko‘rsatkichlari (faqat ko‘rish)</p>
+          <p className="text-xs font-semibold uppercase tracking-wide muted">Öquv körsatkiçlari (faqat köriş)</p>
           <div className="grid grid-cols-3 gap-2 text-sm">
             <span className="inline-flex items-center gap-1.5">
               <Sparkles aria-hidden="true" className="h-4 w-4 text-violet-700 dark:text-violet-300" />
@@ -151,32 +151,32 @@ export default function UserManagementModal({ user, currentUserId, onClose, onSa
             </span>
           </div>
           <p className="text-[11px] muted">
-            {levelBucket(user.level)}. XP, streak va daraja o‘quvchining haqiqiy mashqlaridan hisoblanadi — qo‘lda o‘zgartirilmaydi.
+            {levelBucket(user.level)}. XP, streak va daraja öquvçining haqiqiy maşqlaridan hisoblanadi — qölda özgartirilmaydi.
           </p>
         </div>
 
         <div className="flex justify-end gap-2">
           <Button type="button" variant="ghost" onClick={onClose}>
-            Bekor qilish
+            Bekor qiliş
           </Button>
           <Button type="submit" busy={busy} disabled={Boolean(nameErr || avatarErr) || !changed}>
-            Saqlash
+            Saqlaş
           </Button>
         </div>
       </form>
 
       {!isSelf && user.role !== 'admin' && (
         <details className="mt-5 rounded-xl border border-rose-300/60 dark:border-rose-800/60 p-3">
-          <summary className="cursor-pointer text-sm font-semibold text-rose-700 dark:text-rose-300">Xavfli zona: hisobni o‘chirish</summary>
+          <summary className="cursor-pointer text-sm font-semibold text-rose-700 dark:text-rose-300">Xavfli zona: hisobni öçiriş</summary>
           <div className="grid gap-2 mt-3">
             <p className="text-xs muted">
-              Hisob va unga tegishli barcha ma’lumot (progress, yozuvlar, hamjamiyat javoblari) butunlay o‘chadi. Qaytarib bo‘lmaydi.
+              Hisob va unga tegişli barça ma’lumot (progress, yozuvlar, hamjamiyat javoblari) butunlay öçadi. Qaytarib bölmaydi.
             </p>
-            <Field label={`Tasdiqlash uchun yozing: ${confirmTarget}`} htmlFor={`${id}-confirm`}>
+            <Field label={`Tasdiqlaş uçun yozing: ${confirmTarget}`} htmlFor={`${id}-confirm`}>
               <input id={`${id}-confirm`} className={inputCls} value={confirmText} onChange={(e) => setConfirmText(e.target.value)} autoComplete="off" />
             </Field>
             <Button type="button" variant="danger" busy={deleting} disabled={!canDelete} onClick={() => void remove()}>
-              <Trash2 aria-hidden="true" className="h-4 w-4" /> Butunlay o‘chirish
+              <Trash2 aria-hidden="true" className="h-4 w-4" /> Butunlay öçiriş
             </Button>
           </div>
         </details>

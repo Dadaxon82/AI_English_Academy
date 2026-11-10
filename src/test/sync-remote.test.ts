@@ -73,7 +73,7 @@ function richData(uid: string): AppData {
           { sectionId: 'a1-mock-reading', skill: 'reading', answered: 4, total: 4, score: 75, startedAt: Date.UTC(2026, 10, 2, 12), finishedAt: Date.UTC(2026, 10, 2, 12, 10), secondsUsed: 600, exerciseResults: { 'a1-mock-r-01': { correct: true, given: 'True' } } },
         ],
         totalScore: 75,
-        speakingAdvisory: 'mashq',
+        speakingAdvisory: 'maşq',
         completedAt: Date.UTC(2026, 10, 2, 13),
       },
     ],
@@ -90,7 +90,7 @@ beforeEach(() => {
 })
 
 describe('syncNow — bitta sinxron butun navbatni yuboradi', () => {
-  it('202 ta yozuv bir marta bosishda serverga yetadi va navbat bo‘shaydi (eski: faqat 80 ta)', async () => {
+  it('202 ta yozuv bir marta bosişda serverga yetadi va navbat böşaydi (eski: faqat 80 ta)', async () => {
     const data = withAttempts(emptyData(UID), 200)
     const total = toQueueItems(data).length
     expect(await queueAllData(data)).toBe(total)
@@ -103,7 +103,7 @@ describe('syncNow — bitta sinxron butun navbatni yuboradi', () => {
     expect(server.calls.filter((c) => c.op === 'upsert')).toHaveLength(5)
   })
 
-  it('serverda bor yozuvlar qayta yuborilmaydi — faqat o‘zgargani', async () => {
+  it('serverda bor yozuvlar qayta yuborilmaydi — faqat özgargani', async () => {
     const data = withAttempts(emptyData(UID), 120)
     await queueAllData(data)
     await syncNow(UID)
@@ -114,7 +114,7 @@ describe('syncNow — bitta sinxron butun navbatni yuboradi', () => {
     expect(server.rows('user_settings')[0]?.daily_minutes).toBe(120)
   })
 
-  it('bitta yaroqsiz qator butun bo‘lakni yiqitmaydi — faqat o‘zi rad etiladi', async () => {
+  it('bitta yaroqsiz qator butun bölakni yiqitmaydi — faqat özi rad etiladi', async () => {
     server.failRow = (table, r) => (table === 'exercise_attempts' && r.id === 'att-7' ? '23514' : null)
     const data = withAttempts(emptyData(UID), 30)
     const total = toQueueItems(data).length
@@ -125,7 +125,7 @@ describe('syncNow — bitta sinxron butun navbatni yuboradi', () => {
     expect(server.rows('exercise_attempts')).toHaveLength(29)
   })
 
-  it('tarmoq uzilsa yozuvlar navbatda qoladi va ortiqcha so‘rov yuborilmaydi', async () => {
+  it('tarmoq uzilsa yozuvlar navbatda qoladi va ortiqça sörov yuborilmaydi', async () => {
     server.network = true
     const data = withAttempts(emptyData(UID), 150)
     const total = toQueueItems(data).length
@@ -142,7 +142,7 @@ describe('syncNow — bitta sinxron butun navbatni yuboradi', () => {
 })
 
 describe('pullRemote — serverdagi progress qayta tiklanadi', () => {
-  it('serverga yozilgan holat bo‘sh qurilmada to‘liq qaytadi', async () => {
+  it('serverga yozilgan holat böş qurilmada töliq qaytadi', async () => {
     const rich = richData(UID)
     await queueAllData(rich)
     expect((await syncNow(UID)).ok).toBe(true)
@@ -163,7 +163,7 @@ describe('pullRemote — serverdagi progress qayta tiklanadi', () => {
     expect(restored.onboardedAt).toBe(rich.onboardedAt)
   })
 
-  it('boshqa foydalanuvchining sessiyasi bilan o‘qilmaydi', async () => {
+  it('boşqa foydalanuvçining sessiyasi bilan öqilmaydi', async () => {
     server.reset('someone-else')
     const res = await pullRemote(UID)
     expect(res.ok).toBe(false)
@@ -171,7 +171,7 @@ describe('pullRemote — serverdagi progress qayta tiklanadi', () => {
     expect(server.calls).toHaveLength(0)
   })
 
-  it('tarmoq xatosida snapshot qaytmaydi (yarim ma’lumot birlashtirilmaydi)', async () => {
+  it('tarmoq xatosida snapshot qaytmaydi (yarim ma’lumot birlaştirilmaydi)', async () => {
     server.network = true
     const res = await pullRemote(UID)
     expect(res).toMatchObject({ ok: false, snapshot: null })
@@ -186,8 +186,8 @@ describe('pullRemote — serverdagi progress qayta tiklanadi', () => {
  * `server.missingTables`) va talab qiladi: ma'lumot yetib boradi, sabab ochiq
  * aytiladi, migratsiyadan keyin hamma o'zi tuzatiladi.
  */
-describe('syncNow — baza eski sxemada (0003 / 0004 migratsiyalari qo‘llanmagan)', () => {
-  it('sozlamalar eski bazaga ham yoziladi: rad etilgan ustunlar tushiriladi, sabab ochiq', async () => {
+describe('syncNow — baza eski sxemada (0003 / 0004 migratsiyalari qöllanmagan)', () => {
+  it('sozlamalar eski bazaga ham yoziladi: rad etilgan ustunlar tuşiriladi, sabab oçiq', async () => {
     server.missingColumns = { user_settings: ['motion_enabled', 'xp_goal_xp', 'hearts_enabled'] }
     const data = withAttempts(emptyData(UID), 1)
     const total = toQueueItems(data).length
@@ -205,7 +205,7 @@ describe('syncNow — baza eski sxemada (0003 / 0004 migratsiyalari qo‘llanmag
     expect(res.reasonUz).toContain('SQL Editor')
   })
 
-  it('migratsiya qo‘llanilsa tushirilgan ustunlar o‘zi qayta yuboriladi (iz — yuborilgan qator bo‘yicha)', async () => {
+  it('migratsiya qöllanilsa tuşirilgan ustunlar özi qayta yuboriladi (iz — yuborilgan qator böyiça)', async () => {
     server.missingColumns = { user_settings: ['motion_enabled', 'xp_goal_xp', 'hearts_enabled'] }
     const data = withAttempts(emptyData(UID), 1)
     await queueAllData(data)
@@ -221,7 +221,7 @@ describe('syncNow — baza eski sxemada (0003 / 0004 migratsiyalari qo‘llanmag
     expect(row).toHaveProperty('hearts_enabled', data.settings.heartsEnabled)
   })
 
-  it('weekly_xp jadvali bo‘lmasa yozuv navbatda qoladi va migratsiyadan keyin o‘zi yetib boradi', async () => {
+  it('weekly_xp jadvali bölmasa yozuv navbatda qoladi va migratsiyadan keyin özi yetib boradi', async () => {
     server.missingTables = ['weekly_xp']
     const data = withAttempts(emptyData(UID), 1)
     const total = toQueueItems(data).length
@@ -243,7 +243,7 @@ describe('syncNow — baza eski sxemada (0003 / 0004 migratsiyalari qo‘llanmag
     expect(server.rows('weekly_xp')).toHaveLength(1)
   })
 
-  it('boshqa jadvaldagi nomlanmagan ustun xatosi yozuvni jimgina yo‘qotmaydi (rad etiladi)', async () => {
+  it('boşqa jadvaldagi nomlanmagan ustun xatosi yozuvni jimgina yöqotmaydi (rad etiladi)', async () => {
     // PostgREST matni BIZNI ustunni aytmaydi → mijoz hech narsani tushirmaydi,
     // yozuv rad etilgan deb ochiq sanaladi (silqitib yuborish YO'Q).
     server.failRow = (table) =>
@@ -260,8 +260,8 @@ describe('syncNow — baza eski sxemada (0003 / 0004 migratsiyalari qo‘llanmag
   })
 })
 
-describe('pullRemote — eski bazada liga o‘qilmasa ham progress qaytadi', () => {
-  it('weekly_xp yo‘q bo‘lsa ham ok: true — liga snapshoti eski holatida qoladi', async () => {
+describe('pullRemote — eski bazada liga öqilmasa ham progress qaytadi', () => {
+  it('weekly_xp yöq bölsa ham ok: true — liga snapşoti eski holatida qoladi', async () => {
     const rich = { ...richData(UID), profileName: 'Aziz' }
     await queueAllData(rich)
     expect((await syncNow(UID)).ok).toBe(true)
@@ -281,7 +281,7 @@ describe('pullRemote — eski bazada liga o‘qilmasa ham progress qaytadi', () 
     expect(mergeRemote(withLeague, res.snapshot!).game.league).toEqual(withLeague.game.league)
   })
 
-  it('profiles qatori bo‘lmasa ham o‘qish yiqilmaydi (ism ixtir qilinmaydi)', async () => {
+  it('profiles qatori bölmasa ham öqiş yiqilmaydi (ism ixtir qilinmaydi)', async () => {
     await queueAllData(richData(UID))
     await syncNow(UID)
     server.missingTables = ['profiles']
@@ -291,8 +291,8 @@ describe('pullRemote — eski bazada liga o‘qilmasa ham progress qaytadi', () 
   })
 })
 
-describe('deleteRemoteData — serverdagi shaxsiy yozuvlar o‘chiriladi', () => {
-  it('barcha shaxsiy jadvallar tozalanadi, boshqa foydalanuvchiniki qoladi', async () => {
+describe('deleteRemoteData — serverdagi şaxsiy yozuvlar öçiriladi', () => {
+  it('barça şaxsiy jadvallar tozalanadi, boşqa foydalanuvçiniki qoladi', async () => {
     await queueAllData(richData(UID))
     await syncNow(UID)
     server.tables.get('exercise_attempts')?.set('other', { id: 'other', user_id: 'someone-else' })
@@ -308,7 +308,7 @@ describe('deleteRemoteData — serverdagi shaxsiy yozuvlar o‘chiriladi', () =>
     expect(pulled.snapshot?.attempts).toEqual([])
   })
 
-  it('weekly_xp jadvali bazada bo‘lmasa ham o‘chirish bajariladi (eski: tugma butunlay ishlamasdi)', async () => {
+  it('weekly_xp jadvali bazada bölmasa ham öçiriş bajariladi (eski: tugma butunlay işlamasdi)', async () => {
     // ESKI BUG: `weekly_xp` yo'q bazada DELETE 404 PGRST205 berardi va
     // "Barcha ma'lumotni o'chirish" AMALNI TO'XTATARDI — foydalanuvchi
     // ma'lumotini o'chira olmasdi. Jadval yo'q bo'lsa o'chiriladigan yozuv
@@ -320,13 +320,13 @@ describe('deleteRemoteData — serverdagi shaxsiy yozuvlar o‘chiriladi', () =>
     const res = await deleteRemoteData(UID)
     expect(res.ok).toBe(true)
     expect(res.reasonUz).toContain('0004_weekly_xp.sql')
-    expect(res.reasonUz).toContain('o‘chirildi')
+    expect(res.reasonUz).toContain('öçirildi')
     for (const t of ['exercise_attempts', 'user_settings', 'writing_submissions']) {
       expect(server.rows(t).filter((r) => r.user_id === UID), t).toHaveLength(0)
     }
   })
 
-  it('tarmoq xatosida ok: false — chaqiruvchi qurilmadagi ma’lumotni o‘chirmasligi uchun', async () => {
+  it('tarmoq xatosida ok: false — çaqiruvçi qurilmadagi ma’lumotni öçirmasligi uçun', async () => {
     server.network = true
     const res = await deleteRemoteData(UID)
     expect(res.ok).toBe(false)

@@ -52,8 +52,8 @@ function checkSteps(steps: LessonStep[]) {
   }
 }
 
-describe('Bo‘lim darslari — barcha A1 kontentidan quriladi va yechiladi', () => {
-  it('Grammatika: qoida kartasi + mashqlar + misol gaplar', () => {
+describe('Bölim darslari — barça A1 kontentidan quriladi va yeçiladi', () => {
+  it('Grammatika: qoida kartasi + maşqlar + misol gaplar', () => {
     for (const t of b.grammar) {
       const steps = grammarLesson(t)
       expect(steps[0]).toMatchObject({ type: 'info', info: 'rule' })
@@ -62,7 +62,7 @@ describe('Bo‘lim darslari — barcha A1 kontentidan quriladi va yechiladi', ()
     }
   })
 
-  it('O‘qish: avval matn, savollarda matn konteksti', () => {
+  it('Öqiş: avval matn, savollarda matn konteksti', () => {
     for (const p of b.reading) {
       const steps = readingLesson(p)
       expect(steps[0]).toMatchObject({ type: 'info', info: 'passage' })
@@ -71,7 +71,7 @@ describe('Bo‘lim darslari — barcha A1 kontentidan quriladi va yechiladi', ()
     }
   })
 
-  it('Tinglash: avval audio, savollarda audio konteksti', () => {
+  it('Tinglaş: avval audio, savollarda audio konteksti', () => {
     for (const t of b.listening) {
       const steps = listeningLesson(t)
       expect(steps[0]).toMatchObject({ type: 'info', info: 'audio' })
@@ -79,16 +79,16 @@ describe('Bo‘lim darslari — barcha A1 kontentidan quriladi va yechiladi', ()
     }
   })
 
-  it('Yozish: namuna gaplar plitkalarda, oxirida yozishga chaqiriq', () => {
+  it('Yoziş: namuna gaplar plitkalarda, oxirida yozişga çaqiriq', () => {
     for (const t of b.writing) {
       const steps = writingLesson(t)
       expect(steps.at(-1)).toMatchObject({ type: 'info', info: 'write-cta' })
       checkSteps(steps)
     }
-    expect(b.writing.some((t) => writingLesson(t).length > 1), 'kamida bitta yozish darsida plitkali gap bo‘lishi kerak').toBe(true)
+    expect(b.writing.some((t) => writingLesson(t).length > 1), 'kamida bitta yoziş darsida plitkali gap bölişi kerak').toBe(true)
   })
 
-  it('Gapirish: takrorlash qadamlari (mikrofonsiz — plitkalar), oxirida javobga chaqiriq', () => {
+  it('Gapiriş: takrorlaş qadamlari (mikrofonsiz — plitkalar), oxirida javobga çaqiriq', () => {
     for (const t of b.speaking) {
       const steps = speakingLesson(t)
       expect(steps.at(-1)).toMatchObject({ type: 'info', info: 'speak-cta' })
@@ -99,12 +99,12 @@ describe('Bo‘lim darslari — barcha A1 kontentidan quriladi va yechiladi', ()
 })
 
 describe('Talaffuz bahosi', () => {
-  it('to‘liq gap — 1, yarmi — 0.5, bo‘sh — 0', () => {
+  it('töliq gap — 1, yarmi — 0.5, böş — 0', () => {
     expect(speechMatch('What is your name?', 'what is your name')).toBe(1)
     expect(speechMatch('I like green apples', 'I like')).toBe(0.5)
     expect(speechMatch('Hello there', '')).toBe(0)
   })
-  it('chegara 70% — bitta so‘z tushib qolsa ham uzun gap o‘tadi', () => {
+  it('çegara 70% — bitta söz tuşib qolsa ham uzun gap ötadi', () => {
     expect(speechMatch('Where do you usually go on Sunday', 'where do you go on sunday')).toBeGreaterThanOrEqual(SPEECH_PASS)
   })
 })

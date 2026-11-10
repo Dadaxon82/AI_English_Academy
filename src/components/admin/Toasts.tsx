@@ -25,7 +25,7 @@ export function ToastStack({ items, onDismiss }: { items: Toast[]; onDismiss: (i
             type="button"
             onClick={() => onDismiss(t.id)}
             className="rounded-md p-1 muted hover:bg-[var(--panel-2)]"
-            aria-label="Xabarni yopish"
+            aria-label="Xabarni yopiş"
           >
             <X aria-hidden="true" className="h-4 w-4" />
           </button>

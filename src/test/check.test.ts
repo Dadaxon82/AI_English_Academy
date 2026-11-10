@@ -10,16 +10,16 @@ const base = {
   explanationUz: 'Izoh.',
 }
 
-describe('checkAnswer — 6 mashq turi', () => {
+describe('checkAnswer — 6 maşq turi', () => {
   const mc: Exercise = {
     ...base,
     kind: 'multiple-choice',
-    instructionUz: 'To‘g‘ri variantni tanlang.',
+    instructionUz: 'Töğri variantni tanlang.',
     question: 'She ___ to school every day.',
     options: ['go', 'goes', 'going'],
     answerIndex: 1,
   }
-  it('multiple-choice: indeks bo‘yicha tekshiradi', () => {
+  it('multiple-choice: indeks böyiça tekşiradi', () => {
     const r = checkAnswer(mc, 1)
     expect(r.correct).toBe(true)
     expect(r.given).toBe('goes')
@@ -35,7 +35,7 @@ describe('checkAnswer — 6 mashq turi', () => {
     answer: 'notgiven',
     evidence: 'Tom works from Monday to Saturday.',
   }
-  it('tfng: evidence izohga qo‘shiladi', () => {
+  it('tfng: evidence izohga qöşiladi', () => {
     const r = checkAnswer(tf, 'notgiven')
     expect(r.correct).toBe(true)
     expect(r.whyUz).toContain('Tom works from Monday to Saturday.')
@@ -45,7 +45,7 @@ describe('checkAnswer — 6 mashq turi', () => {
   const match: Exercise = {
     ...base,
     kind: 'matching',
-    instructionUz: 'Juftlashtiring.',
+    instructionUz: 'Juftlaştiring.',
     pairs: [
       { left: 'apple', right: 'olma' },
       { left: 'bread', right: 'non' },
@@ -61,7 +61,7 @@ describe('checkAnswer — 6 mashq turi', () => {
   const gap: Exercise = {
     ...base,
     kind: 'gap-fill',
-    instructionUz: 'Bo‘sh joyni to‘ldiring.',
+    instructionUz: 'Böş joyni töldiring.',
     text: 'I ___ a student and she ___ a teacher.',
     answers: ['am', 'is'],
     acceptAlternatives: [[], ['is']],
@@ -76,16 +76,16 @@ describe('checkAnswer — 6 mashq turi', () => {
   const wo: Exercise = {
     ...base,
     kind: 'word-order',
-    instructionUz: 'So‘zlarni tartib bilan tizing.',
+    instructionUz: 'Sözlarni tartib bilan tizing.',
     bank: ['a', 'doctor', 'She', 'is'],
     answer: ['She', 'is', 'a', 'doctor'],
     noteUz: 'Eslatma.',
   }
-  it('word-order: normallashtirilgan taqqoslash', () => {
+  it('word-order: normallaştirilgan taqqoslaş', () => {
     expect(checkAnswer(wo, ['she', 'IS', 'a', 'doctor.']).correct).toBe(true)
     const bad = checkAnswer(wo, ['is', 'she', 'a', 'doctor'])
     expect(bad.correct).toBe(false)
-    expect(bad.whyUz).toContain('1-o‘rin')
+    expect(bad.whyUz).toContain('1-örin')
   })
 
   const tr: Exercise = {
@@ -103,24 +103,29 @@ describe('checkAnswer — 6 mashq turi', () => {
 })
 
 describe('normalize', () => {
-  it('apostrof va diacritic belgilarni bir xillashtiradi', () => {
+  it('apostrof va diacritic belgilarni bir xillaştiradi', () => {
     expect(normalize('Don’t TELL')).toBe("don't tell")
     expect(normalize(' café ')).toBe('cafe')
   })
 })
 
-describe('A1 o‘quvchi klaviaturasi — apostrof va bo‘shliq bardoshliligi', () => {
+describe('A1 öquvçi klaviaturasi — apostrof va böşliq bardoşliligi', () => {
   const tr: Exercise = {
     ...base,
     kind: 'translation',
     instructionUz: 'Tarjima qiling.',
     source: 'I am twelve years old.',
     sourceLang: 'en',
-    accepted: ['Mening ismim Aziza va men o‘n ikki yoshdaman'],
+    accepted: ['Mening ismim Aziza va men ön ikki yoşdaman'],
   }
-  it('o‘ (U+2018), ʻ (U+02BB) va ASCII apostrof — uchi ham qabul qilinadi', () => {
+  it('o‘ (U+2018), ʻ (U+02BB), ASCII apostrof va yangi alifbo (ö, ş) — barçasi qabul qilinadi', () => {
+    // Eski yozuvning har xil apostroflari va yangi alifbo bir xil ko'rinishga keladi.
     expect(normalize('men oʻn ikki yoshdaman')).toBe("men o'n ikki yoshdaman")
     expect(normalize('men o‘n ikki yoshdaman')).toBe("men o'n ikki yoshdaman")
+    expect(normalize('men ön ikki yoşdaman')).toBe("men o'n ikki yoshdaman")
+    expect(normalize('ÖQUVÇI ĞALABA')).toBe("o'quvchi g'alaba")
+    // Kutilgan javob yangi alifboda — o'quvchi eski shaklda yozsa ham to'g'ri.
+    expect(checkAnswer(tr, 'Mening ismim Aziza va men ön ikki yoşdaman').correct).toBe(true)
     expect(checkAnswer(tr, 'Mening ismim Aziza va men oʻn ikki yoshdaman').correct).toBe(true)
     expect(checkAnswer(tr, "Mening ismim Aziza va men o'n ikki yoshdaman").correct).toBe(true)
     // Apostrof umuman tushirib qo'yilsa ham rad etilmaydi.
@@ -130,7 +135,7 @@ describe('A1 o‘quvchi klaviaturasi — apostrof va bo‘shliq bardoshliligi', 
   const gap: Exercise = {
     ...base,
     kind: 'gap-fill',
-    instructionUz: 'Bo‘sh joyni to‘ldiring.',
+    instructionUz: 'Böş joyni töldiring.',
     text: 'He ___ any money.',
     answers: ["doesn't"],
   }
@@ -143,28 +148,28 @@ describe('A1 o‘quvchi klaviaturasi — apostrof va bo‘shliq bardoshliligi', 
   const wo: Exercise = {
     ...base,
     kind: 'word-order',
-    instructionUz: 'So‘zlarni tartib bilan tizing.',
+    instructionUz: 'Sözlarni tartib bilan tizing.',
     bank: ['a', 'doctor', 'She', 'is'],
     answer: ['She', 'is', 'a', 'doctor'],
     noteUz: 'Eslatma.',
   }
-  it('word-order: qator ko‘rinishidagi javob tokenlarga ajratiladi', () => {
+  it('word-order: qator körinişidagi javob tokenlarga ajratiladi', () => {
     const r = checkAnswer(wo, 'She  is a doctor.')
     expect(r.correct).toBe(true)
     const bad = checkAnswer(wo, 'is she a doctor')
     expect(bad.correct).toBe(false)
-    expect(bad.whyUz).toContain('1-o‘rin')
+    expect(bad.whyUz).toContain('1-örin')
   })
 
   const mc: Exercise = {
     ...base,
     kind: 'multiple-choice',
-    instructionUz: 'To‘g‘ri variantni tanlang.',
+    instructionUz: 'Töğri variantni tanlang.',
     question: 'She ___ to school every day.',
     options: ['go', 'goes', 'going'],
     answerIndex: 0,
   }
-  it('multiple-choice: javob BERILMAGAN bo‘lsa 0-variant „to‘g‘ri“ bo‘lmaydi', () => {
+  it('multiple-choice: javob BERILMAGAN bölsa 0-variant „töğri“ bölmaydi', () => {
     for (const empty of ['', null, undefined, '   ']) {
       const r = checkAnswer(mc, empty)
       expect(r.correct).toBe(false)

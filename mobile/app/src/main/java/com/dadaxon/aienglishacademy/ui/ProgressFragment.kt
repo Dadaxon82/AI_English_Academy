@@ -347,7 +347,7 @@ class ProgressFragment : Fragment() {
         b.rows.addView(
             Rows.primaryButton(ctx, getString(R.string.cert_make)).apply {
                 setOnClickListener {
-                    val name = d.profileName.ifBlank { "O‘quvchi" }
+                    val name = d.profileName.ifBlank { "Öquvçi" }
                     val date = java.text.SimpleDateFormat("dd.MM.yyyy", java.util.Locale.getDefault()).format(java.util.Date())
                     UsageTracker.track(ctx, "certificate", started = true)
                     certBitmap = CertificateDrawer.draw(info, name, date, getString(R.string.cert_disclaimer), acc)

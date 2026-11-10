@@ -21,7 +21,7 @@ class AnswerCheckerTest {
         Exercise(
             id = "x-1",
             kind = Kinds.MULTIPLE_CHOICE,
-            instructionUz = "To‘g‘ri variantni tanlang.",
+            instructionUz = "Töğri variantni tanlang.",
             level = Levels.A1,
             skill = Skills.GRAMMAR,
             difficulty = 2,
@@ -46,7 +46,7 @@ class AnswerCheckerTest {
         val first = mc.copy(answerIndex = 0)
         for (empty in listOf<Any?>("", null, "   ")) {
             val r = checkAnswer(first, empty)
-            assertFalse("$empty javobsiz hisoblanishi kerak edi", r.correct)
+            assertFalse("$empty javobsiz hisoblanişi kerak edi", r.correct)
             assertEquals("", r.given)
             assertEquals("go", r.expected)
         }
@@ -91,7 +91,7 @@ class AnswerCheckerTest {
         assertEquals("Not Given", r.expected)
         val bad = checkAnswer(tf, "true")
         assertFalse(bad.correct)
-        assertTrue(bad.whyUz.contains("To‘g‘ri javob — Not Given."))
+        assertTrue(bad.whyUz.contains("Töğri javob — Not Given."))
         assertTrue(bad.whyUz.contains("Matndagi asos: “Tom works from Monday to Saturday.”"))
     }
 
@@ -108,7 +108,7 @@ class AnswerCheckerTest {
         Exercise(
             id = "x-1",
             kind = Kinds.MATCHING,
-            instructionUz = "Juftlashtiring.",
+            instructionUz = "Juftlaştiring.",
             level = Levels.A1,
             skill = Skills.VOCABULARY,
             difficulty = 2,
@@ -133,7 +133,7 @@ class AnswerCheckerTest {
             val r = checkAnswer(match, noAnswer)
             assertFalse(r.correct)
             assertEquals(0.0, r.partial, 1e-9)
-            assertTrue(r.whyUz.startsWith("0/2 juftlik to‘g‘ri."))
+            assertTrue(r.whyUz.startsWith("0/2 juftlik töğri."))
             assertEquals("apple → —; bread → —", r.given)
         }
     }
@@ -152,7 +152,7 @@ class AnswerCheckerTest {
         Exercise(
             id = "x-1",
             kind = Kinds.GAP_FILL,
-            instructionUz = "Bo‘sh joyni to‘ldiring.",
+            instructionUz = "Böş joyni töldiring.",
             level = Levels.A1,
             skill = Skills.GRAMMAR,
             difficulty = 2,
@@ -168,7 +168,7 @@ class AnswerCheckerTest {
         val part = checkAnswer(gap, listOf("am", "are"))
         assertFalse(part.correct)
         assertEquals(0.5, part.partial, 1e-9)
-        assertTrue(part.whyUz.contains("2-bo‘shliq: sizda “are”, to‘g‘ri: “is”"))
+        assertTrue(part.whyUz.contains("2-böşliq: sizda “are”, töğri: “is”"))
     }
 
     @Test
@@ -176,7 +176,7 @@ class AnswerCheckerTest {
         val r = checkAnswer(gap, listOf("am"))
         assertFalse(r.correct)
         assertEquals(0.5, r.partial, 1e-9)
-        assertTrue(r.whyUz.contains("2-bo‘shliq: sizda “bo‘sh”, to‘g‘ri: “is”"))
+        assertTrue(r.whyUz.contains("2-böşliq: sizda “böş”, töğri: “is”"))
         val none = checkAnswer(gap, emptyList<String>())
         assertFalse(none.correct)
         assertEquals(0.0, none.partial, 1e-9)
@@ -186,7 +186,7 @@ class AnswerCheckerTest {
         Exercise(
             id = "x-1",
             kind = Kinds.GAP_FILL,
-            instructionUz = "Bo‘sh joyni to‘ldiring.",
+            instructionUz = "Böş joyni töldiring.",
             level = Levels.A1,
             skill = Skills.GRAMMAR,
             difficulty = 2,
@@ -215,7 +215,7 @@ class AnswerCheckerTest {
         Exercise(
             id = "x-1",
             kind = Kinds.WORD_ORDER,
-            instructionUz = "So‘zlarni tartib bilan tizing.",
+            instructionUz = "Sözlarni tartib bilan tizing.",
             level = Levels.A1,
             skill = Skills.GRAMMAR,
             difficulty = 2,
@@ -230,8 +230,8 @@ class AnswerCheckerTest {
         assertTrue(checkAnswer(wo, listOf("she", "IS", "a", "doctor.")).correct)
         val bad = checkAnswer(wo, listOf("is", "she", "a", "doctor"))
         assertFalse(bad.correct)
-        assertTrue(bad.whyUz.contains("1-o‘rin"))
-        assertTrue(bad.whyUz.contains("“She” turishi kerak edi"))
+        assertTrue(bad.whyUz.contains("1-örin"))
+        assertTrue(bad.whyUz.contains("“She” turişi kerak edi"))
         assertTrue(bad.whyUz.contains("sizda “is”"))
     }
 
@@ -244,7 +244,7 @@ class AnswerCheckerTest {
         assertEquals("She is a doctor.", r.given)
         val bad = checkAnswer(wo, "is she a doctor")
         assertFalse(bad.correct)
-        assertTrue(bad.whyUz.contains("1-o‘rin"))
+        assertTrue(bad.whyUz.contains("1-örin"))
     }
 
     @Test
@@ -297,6 +297,8 @@ class AnswerCheckerTest {
             )
         assertTrue(checkAnswer(uz, "Mening ismim Aziza va men oʻn ikki yoshdaman").correct)
         assertTrue(checkAnswer(uz, "Mening ismim Aziza va men o'n ikki yoshdaman").correct)
+        // Yangi alifbo (ö, ş) — eski yozuv bilan teng.
+        assertTrue(checkAnswer(uz, "Mening ismim Aziza va men ön ikki yoşdaman").correct)
         // Apostrof umuman tushirib qo'yilsa ham rad etilmaydi.
         assertTrue(checkAnswer(uz, "Mening ismim Aziza va men on ikki yoshdaman").correct)
     }
@@ -319,6 +321,9 @@ class AnswerCheckerTest {
         assertEquals("o'zbekiston", normalize("O‘zbekiston"))
         assertEquals("men o'n ikki yoshdaman", normalize("men oʻn ikki yoshdaman"))
         assertEquals("men o'n ikki yoshdaman", normalize("men o‘n ikki yoshdaman"))
+        // Yangi alifbo harflari eski shaklga keltiriladi (veb `foldUzLatin`).
+        assertEquals("men o'n ikki yoshdaman", normalize("men ön ikki yoşdaman"))
+        assertEquals("o'quvchi g'alaba", normalize("ÖQUVÇI ĞALABA"))
     }
 
     @Test
@@ -333,7 +338,7 @@ class AnswerCheckerTest {
     @Test
     fun `looseEquals - apostrofsiz variant ham teng`() {
         assertTrue(looseEquals("doesn't", "doesnt"))
-        assertTrue(looseEquals("TO'G'RI", "to‘g‘ri"))
+        assertTrue(looseEquals("TÖĞRI", "töğri"))
         assertFalse(looseEquals("isnt", "doesnt"))
         assertTrue(looseEquals("cafe", "café"))
     }
@@ -343,7 +348,7 @@ class AnswerCheckerTest {
     @Test
     fun `noma'lum mashq turida javob berilmagan deb hisoblanadi`() {
         val unknown = Exercise(id = "x-9", kind = "noma'lum-tur", explanationUz = "Izoh.")
-        val r = checkAnswer(unknown, "hech narsa")
+        val r = checkAnswer(unknown, "heç narsa")
         assertFalse(r.correct)
         assertEquals("", r.given)
         assertEquals("Izoh.", r.whyUz)

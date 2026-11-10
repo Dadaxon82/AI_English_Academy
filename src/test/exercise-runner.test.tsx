@@ -49,7 +49,7 @@ const CHOICE: Exercise = {
   skill: 'grammar',
   level: 'B1',
   difficulty: 2,
-  instructionUz: 'To‘g‘ri javobni tanlang.',
+  instructionUz: 'Töğri javobni tanlang.',
   question: 'She ___ to the market yesterday.',
   options: ['went', 'goes', 'going'],
   answerIndex: 0,
@@ -210,47 +210,47 @@ afterEach(async () => {
   localStorage.clear()
 })
 
-describe('A) Jonli progress chizig‘i — har javobdan keyin to‘ladi', () => {
-  it('mashq ochilganda bar HAQIQIY holatni ko‘rsatadi: 0 ta yakunlangan', () => {
+describe('A) Jonli progress çiziği — har javobdan keyin töladi', () => {
+  it('maşq oçilganda bar HAQIQIY holatni körsatadi: 0 ta yakunlangan', () => {
     mount(one({ exercise: CHOICE, index: 0, total: 5 }))
     const b = bar()
     expect(b.getAttribute('aria-valuemin')).toBe('0')
     expect(b.getAttribute('aria-valuemax')).toBe('5')
     expect(b.getAttribute('aria-valuenow')).toBe('0')
-    expect(b.getAttribute('aria-valuetext')).toBe('0 / 5 mashq yakunlandi')
+    expect(b.getAttribute('aria-valuetext')).toBe('0 / 5 maşq yakunlandi')
     expect(fill(b).style.width).toBe('0%')
   })
 
-  it('to‘g‘ri javobdan keyin bar keyingi qismga siljiydi (1/5 = 20%)', () => {
+  it('töğri javobdan keyin bar keyingi qismga siljiydi (1/5 = 20%)', () => {
     mount(one({ exercise: CHOICE, index: 0, total: 5 }))
     press('went')
-    press('Tekshirish')
+    press('Tekşiriş')
     const b = bar()
     expect(b.getAttribute('aria-valuenow')).toBe('1')
-    expect(b.getAttribute('aria-valuetext')).toBe('1 / 5 mashq yakunlandi')
+    expect(b.getAttribute('aria-valuetext')).toBe('1 / 5 maşq yakunlandi')
     expect(fill(b).style.width).toBe('20%')
   })
 
-  it('NOTO‘G‘RI javobda ham bar to‘ladi — jarayon siljiydi (jarimaga bog‘liq emas)', () => {
+  it('NOTÖĞRI javobda ham bar töladi — jarayon siljiydi (jarimaga boğliq emas)', () => {
     mount(one({ exercise: CHOICE, index: 0, total: 4 }))
     press('goes')
-    press('Tekshirish')
+    press('Tekşiriş')
     expect(fill(bar()).style.width).toBe('25%')
   })
 
-  it('oxirgi mashqda bar 100% bo‘ladi', () => {
+  it('oxirgi maşqda bar 100% böladi', () => {
     mount(one({ exercise: CHOICE, index: 4, total: 5 }))
     press('went')
-    press('Tekshirish')
+    press('Tekşiriş')
     expect(fill(bar()).style.width).toBe('100%')
   })
 
-  it('o‘rtadagi mashqda bar oldingi javoblar hisobidan boshlanadi (index emas, javoblar)', () => {
+  it('örtadagi maşqda bar oldingi javoblar hisobidan boşlanadi (index emas, javoblar)', () => {
     mount(one({ exercise: CHOICE, index: 2, total: 5 }))
     // 2 mashq oldin: ochilganda 40% (`answeredCount = index`).
     expect(fill(bar()).style.width).toBe('40%')
     press('went')
-    press('Tekshirish')
+    press('Tekşiriş')
     expect(fill(bar()).style.width).toBe('60%')
   })
 
@@ -260,20 +260,20 @@ describe('A) Jonli progress chizig‘i — har javobdan keyin to‘ladi', () => 
     expect(css).toContain('transition:widthvar(--aea-step)cubic-bezier(0.16,1,0.3,1);')
   })
 
-  it('harakat o‘chirilganda siljish o‘chadi (`no-motion` + `prefers-reduced-motion`)', () => {
+  it('harakat öçirilganda siljiş öçadi (`no-motion` + `prefers-reduced-motion`)', () => {
     const css = readFileSync(indexCss, 'utf8').replace(/\s+/g, '')
     // Bar `animation` EMAS, `transition` bilan ishlaydi — mavjud `no-motion`
     // qoidasi (`transition-duration:0.01ms`) uni o'chiradi: chiziq siljimaydi,
     // joyiga o'tadi. Shu qoida buzilsa test yiqiladi.
     const noMotion = /html\.no-motion[\s\S]{0,140}?transition-duration:\s*0\.01ms\s*!important/.test(css)
     const reduced = /@media\s*\(prefers-reduced-motion:\s*reduce\)[\s\S]{0,160}?transition-duration:\s*0\.01ms\s*!important/.test(css)
-    expect(noMotion, 'no-motion bloki transition ni o‘chirmayapti').toBe(true)
-    expect(reduced, 'prefers-reduced-motion bloki transition ni o‘chirmayapti').toBe(true)
+    expect(noMotion, 'no-motion bloki transition ni öçirmayapti').toBe(true)
+    expect(reduced, 'prefers-reduced-motion bloki transition ni öçirmayapti').toBe(true)
   })
 
   it('MOBIL tomonda ham bar bor — `exBar` (`fragment_exercise.xml`), parallellik buzilmagan', () => {
     const xml = readFileSync(mobileLayout, 'utf8')
-    expect(xml, 'mobilda `exBar` bo‘lishi kerak').toContain('android:id="@+id/exBar"')
+    expect(xml, 'mobilda `exBar` bölişi kerak').toContain('android:id="@+id/exBar"')
     expect(xml).toContain('com.google.android.material.progressindicator.LinearProgressIndicator')
     const kt = readFileSync(mobileFragment, 'utf8')
     // Mobil ham sonni `ex_index` orqali beradi (matn yo‘qolmagan, accessibility).
@@ -287,47 +287,47 @@ describe('A) Jonli progress chizig‘i — har javobdan keyin to‘ladi', () => 
 })
 
 describe('B) Fikr-mulohaza — ekrandagi son store hisobi bilan BIR XIL', () => {
-  it('to‘g‘ri javobda ko‘rsatilgan XP store dagi kundalik XP ga teng', () => {
+  it('töğri javobda körsatilgan XP store dagi kundalik XP ga teng', () => {
     mount(one({ exercise: CHOICE, index: 0, total: 3 }))
     press('went')
-    press('Tekshirish')
+    press('Tekşiriş')
     const nums = storeNums()
     expect(nums.xp).toBeGreaterThan(0)
-    const tag = host.querySelector('[aria-label*="Bu javob uchun"]')
+    const tag = host.querySelector('[aria-label*="Bu javob uçun"]')
     expect(tag, 'XP yozuvi topilmadi').toBeTruthy()
-    expect(tag!.getAttribute('aria-label')).toBe(`Bu javob uchun ${nums.xp} XP`)
+    expect(tag!.getAttribute('aria-label')).toBe(`Bu javob uçun ${nums.xp} XP`)
   })
 
   it('xato javobda XP = 1 va yurak bittaga kamayadi (gameConfig qoidasi)', () => {
     mount(one({ exercise: CHOICE, index: 0, total: 3 }))
     const heartsBefore = storeNums().hearts
     press('goes')
-    press('Tekshirish')
+    press('Tekşiriş')
     const nums = storeNums()
     expect(nums.xp).toBe(1)
     expect(nums.hearts).toBe(heartsBefore - 1)
   })
 
-  it('to‘g‘ri javob — zarba halqasi, noto‘g‘ri — silkinish sinfi (DULO mexanikasi, biznikigi)', () => {
+  it('töğri javob — zarba halqasi, notöğri — silkiniş sinfi (DULO mexanikasi, biznikigi)', () => {
     mount(one({ exercise: CHOICE, index: 0, total: 4 }))
     press('went')
-    press('Tekshirish')
-    expect(host.querySelector('.aea-outcome-correct'), 'to‘g‘ri kartada halqa sinfi yo‘q').toBeTruthy()
+    press('Tekşiriş')
+    expect(host.querySelector('.aea-outcome-correct'), 'töğri kartada halqa sinfi yöq').toBeTruthy()
     expect(host.querySelector('.aea-outcome-wrong')).toBeNull()
     unmount()
 
     mount(one({ exercise: CHOICE, index: 0, total: 4 }))
     press('goes')
-    press('Tekshirish')
-    expect(host.querySelector('.aea-outcome-wrong'), 'noto‘g‘ri kartada silkinish sinfi yo‘q').toBeTruthy()
+    press('Tekşiriş')
+    expect(host.querySelector('.aea-outcome-wrong'), 'notöğri kartada silkiniş sinfi yöq').toBeTruthy()
     // Qahramon bizniki (`MascotAvatar`) — tashqi brend belgisi qo'shilmagan.
     const mascot = host.querySelector('[aria-label*="qahramon" i], [aria-label*="Akira" i]')
     expect(mascot, 'qahramon topilmadi — u doim bizniki').toBeTruthy()
   })
 
-  it('MOBIL tomonda ham silkinish va javob ovozi bor — parallellik', () => {
+  it('MOBIL tomonda ham silkiniş va javob ovozi bor — parallellik', () => {
     const kt = readFileSync(mobileFragment, 'utf8')
-    expect(kt, 'mobilda `Motion.shake` chaqirilmayapti').toContain('Motion.shake(b.resultCard)')
+    expect(kt, 'mobilda `Motion.shake` çaqirilmayapti').toContain('Motion.shake(b.resultCard)')
     expect(kt).toContain('Motion.playFeedback(ctx, out.correct)')
     // Mobilda tebranish soni YANGI EMAS — mavjud `outcomeMs`.
     const motion = readFileSync(mobileMotion, 'utf8')
@@ -335,20 +335,20 @@ describe('B) Fikr-mulohaza — ekrandagi son store hisobi bilan BIR XIL', () => 
     expect(motion).toContain('sp.pressMs')
   })
 
-  it('audio FAYL qo‘shilmagan — ovoz sintez qilinadi (manifest qoidasi buzilmaydi)', () => {
+  it('audio FAYL qöşilmagan — ovoz sintez qilinadi (manifest qoidasi buzilmaydi)', () => {
     const runner = readFileSync(runnerSource, 'utf8')
-    expect(runner, 'ExerciseRunner javob ovozini chaqirmayapti').toContain("playFeedback(r.correct ? 'correct' : 'wrong'")
+    expect(runner, 'ExerciseRunner javob ovozini çaqirmayapti').toContain("playFeedback(r.correct ? 'correct' : 'wrong'")
     // `public/audio/manifest.json`dagı fayllar ro'yxati o'smagan (soxta audio yo'q).
     const manifest = JSON.parse(readFileSync(path.join(ROOT, 'public/audio/manifest.json'), 'utf8')) as unknown[]
     const names = JSON.stringify(manifest)
     for (const fake of ['correct', 'wrong', 'feedback']) {
       for (const ext of ['.mp3', '.ogg', '.wav', '.m4a']) {
-        expect(names, `audio manifestiga ${fake}${ext} qo'shilgan — fayl yo'q edi`).not.toContain(`${fake}${ext}`)
+        expect(names, `audio manifestiga ${fake}${ext} qöşilgan — fayl yöq edi`).not.toContain(`${fake}${ext}`)
       }
     }
   })
 
-  it(`jsdom'da AudioContext bo'lmasa ovoz jim jo'natiladi (xato tashlanmaydi)`, () => {
+  it(`jsdom'da AudioContext bölmasa ovoz jim jönatiladi (xato taşlanmaydi)`, () => {
     // Brauzer/API yo'q muhit — halol yo'l: "ishlamadi" deb xabar yoq, lekin
     // ilova ishlashda davom etadi (`feedbackSound.ts` dagi `try/catch`).
     expect(() => playFeedback('correct', true)).not.toThrow()
@@ -356,7 +356,7 @@ describe('B) Fikr-mulohaza — ekrandagi son store hisobi bilan BIR XIL', () => 
   })
 })
 
-describe('C) Combo — FAQAT haqiqiy holat ko‘rsatiladi', () => {
+describe('C) Combo — FAQAT haqiqiy holat körsatiladi', () => {
   /** Bitta store ichida ketma-ket mashq zanjiri. */
   function chain(comboTracked: boolean) {
     mount(
@@ -366,60 +366,60 @@ describe('C) Combo — FAQAT haqiqiy holat ko‘rsatiladi', () => {
     )
   }
 
-  it('birinchi to‘g‘ri javobdan keyin chip YO‘Q (combo = 1 — hali ahamiyatsiz)', () => {
+  it('birinçi töğri javobdan keyin chip YÖQ (combo = 1 — hali ahamiyatsiz)', () => {
     chain(true)
     press('went')
-    press('Tekshirish')
+    press('Tekşiriş')
     expect(storeNums().combo).toBe(1)
     expect(host.textContent ?? '').not.toContain('ketma-ket to')
   })
 
-  it('ikkinchi to‘g‘ri javobdan keyin chip store dagi sonni ko‘rsatadi', () => {
+  it('ikkinçi töğri javobdan keyin chip store dagi sonni körsatadi', () => {
     chain(true)
     press('went')
-    press('Tekshirish')
+    press('Tekşiriş')
     press('Keyingi')
     press('went')
-    press('Tekshirish')
+    press('Tekşiriş')
     const nums = storeNums()
     expect(nums.combo).toBe(2)
-    const chip = [...host.querySelectorAll('*')].find((el) => (el.textContent ?? '').trim().includes('ketma-ket to'))
-    expect(chip, 'combo chipi topilmadi').toBeTruthy()
+    const chip = [...host.querySelectorAll('*')].find((el) => (el.textContent ?? '').trim().includes('ketma-ket tö'))
+    expect(chip, 'combo çipi topilmadi').toBeTruthy()
     // Son IXTIR EMAS — store dagi hisob bilan bir xil.
-    expect(chip!.textContent).toContain(`${nums.combo} ketma-ket to`)
+    expect(chip!.textContent).toContain(`${nums.combo} ketma-ket tö`)
   })
 
-  it('noto‘g‘ri javob combo ni nolga tushiradi — chip yo‘qoladi (soxta son qolmaydi)', () => {
+  it('notöğri javob combo ni nolga tuşiradi — chip yöqoladi (soxta son qolmaydi)', () => {
     chain(true)
     press('went')
-    press('Tekshirish')
+    press('Tekşiriş')
     press('Keyingi')
     press('went')
-    press('Tekshirish')
+    press('Tekşiriş')
     expect(storeNums().combo).toBe(2)
     press('Keyingi')
     press('goes')
-    press('Tekshirish')
+    press('Tekşiriş')
     expect(storeNums().combo).toBe(0)
     expect(host.textContent ?? '').not.toContain('ketma-ket to')
   })
 
-  it("sahifa javobni yozmasa (comboTracked yo‘q) chip CHIZILMAYDI — store'da combo o'ssa ham", () => {
+  it("sahifa javobni yozmasa (comboTracked yöq) chip ÇIZILMAYDI — store'da combo össa ham", () => {
     // MockExam / Onboarding `recordAttempt` chaqirmaydi; himoya sifatida
     // `comboTracked = false` standarti chipni yashiradi. Bu yerda zanjir
     // `recordAttempt` QILADI (combo o'sadi), lekin belgi berilmagan — chip
     // baribir chizilmaydi (eski, ishonchsiz ko'rinish qaytmasin).
     chain(false)
     press('went')
-    press('Tekshirish')
+    press('Tekşiriş')
     press('Keyingi')
     press('went')
-    press('Tekshirish')
+    press('Tekşiriş')
     expect(storeNums().combo).toBe(2)
     expect(host.textContent ?? '').not.toContain('ketma-ket to')
   })
 
-  it('yurak qaytish soni gameConfig DAN olinadi — ixtir emas (veb ↔ mobil)', () => {
+  it('yurak qaytiş soni gameConfig DAN olinadi — ixtir emas (veb ↔ mobil)', () => {
     const runner = readFileSync(runnerSource, 'utf8')
     expect(runner).toContain('HEART_COMBO_STREAK')
     const cfg = readFileSync(path.join(ROOT, 'src/lib/gameConfig.ts'), 'utf8')
@@ -428,7 +428,7 @@ describe('C) Combo — FAQAT haqiqiy holat ko‘rsatiladi', () => {
     expect(mob).toContain(`HEART_COMBO_STREAK = ${HEART_COMBO_STREAK}`)
     // Matnlar ham ikkala tomonda bor (mobilda `strings.xml`).
     const strings = readFileSync(path.join(ROOT, 'mobile/app/src/main/res/values/strings.xml'), 'utf8')
-    expect(strings, 'mobilda combo matni yo‘q').toContain('ex_combo')
+    expect(strings, 'mobilda combo matni yöq').toContain('ex_combo')
   })
 
   it('variant tugmalari bosilganda JONLI: `--aea-press` + mobil `Motion.press`', () => {

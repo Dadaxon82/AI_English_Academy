@@ -86,7 +86,7 @@ export function buildReviewPlan(
     type: 'exercise',
     id: `review:word:${v.id}#${i}`,
     exercise: makeWordExercise(v),
-    badge: 'So‘z takrori',
+    badge: 'Söz takrori',
     badgeTone: 'new',
     vocabIds: [v.id],
   }))

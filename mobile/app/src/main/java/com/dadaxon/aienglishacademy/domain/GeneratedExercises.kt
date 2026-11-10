@@ -73,7 +73,7 @@ fun vocabPictureExercise(v: VocabularyItem, options: List<String> = listOf(v.wor
     Exercise(
         id = "$VOCAB_PIC_PREFIX${v.id}",
         kind = Kinds.MULTIPLE_CHOICE,
-        instructionUz = "«${v.translationUz.split(Regex("[,;]"))[0].trim()}» so‘zini tanlang",
+        instructionUz = "«${v.translationUz.split(Regex("[,;]"))[0].trim()}» sözini tanlang",
         level = v.level,
         skill = Skills.VOCABULARY,
         explanationUz = "${v.translationUz} — ${v.word}.",
@@ -88,7 +88,7 @@ fun vocabSentenceExercise(v: VocabularyItem, from: String): Exercise =
     Exercise(
         id = "$VOCAB_SENT_PREFIX$from-${v.id}",
         kind = Kinds.TRANSLATION,
-        instructionUz = if (from == "en") "O‘zbekchaga tarjima qiling" else "Inglizchaga tarjima qiling",
+        instructionUz = if (from == "en") "Özbekçaga tarjima qiling" else "Inglizçaga tarjima qiling",
         level = v.level,
         skill = Skills.VOCABULARY,
         explanationUz = "${v.exampleEn} — ${v.exampleUz}",
@@ -119,7 +119,7 @@ fun grammarExampleExercise(topic: GrammarTopic, i: Int): Exercise? {
     return Exercise(
         id = "$LESSON_GRAMMAR_PREFIX${topic.id}-$i",
         kind = Kinds.TRANSLATION,
-        instructionUz = "Inglizchaga tarjima qiling",
+        instructionUz = "Inglizçaga tarjima qiling",
         level = topic.level,
         skill = Skills.GRAMMAR,
         explanationUz = "${ex.uz} — ${ex.en}",
@@ -157,7 +157,7 @@ private fun wordOrder(id: String, sentence: String, level: String, skill: String
 
 fun writingSentenceExercise(task: WritingTask, i: Int): Exercise? {
     val s = shortSentences(task.modelAnswerEn ?: "").getOrNull(i) ?: return null
-    return wordOrder("$LESSON_WRITING_PREFIX${task.id}-$i", s, task.level, Skills.WRITING, "Gapni to‘g‘ri tartibda tuzing", "Namuna javobdan: “$s”")
+    return wordOrder("$LESSON_WRITING_PREFIX${task.id}-$i", s, task.level, Skills.WRITING, "Gapni töğri tartibda tuzing", "Namuna javobdan: “$s”")
 }
 
 fun speakingSentences(task: SpeakingTask): List<String> =
@@ -202,14 +202,14 @@ fun remixExercise(ex: Exercise, lastGiven: String = ""): Exercise? {
             }
             if (choices.any { it.size < 2 }) return null
             Exercise(
-                id = id, kind = Kinds.DROPDOWN_CLOZE, instructionUz = "Bo‘shliqlar uchun to‘g‘ri variantni tanlang.",
+                id = id, kind = Kinds.DROPDOWN_CLOZE, instructionUz = "Böşliqlar uçun töğri variantni tanlang.",
                 level = ex.level, skill = ex.skill, explanationUz = ex.explanationUz, difficulty = ex.difficulty, tags = tags,
                 text = ex.text, choices = choices, answers = answers,
             )
         }
         Kinds.DROPDOWN_CLOZE ->
             Exercise(
-                id = id, kind = Kinds.GAP_FILL, instructionUz = "Endi variantlarsiz — bo‘shliqlarni o‘zingiz yozing.",
+                id = id, kind = Kinds.GAP_FILL, instructionUz = "Endi variantlarsiz — böşliqlarni özingiz yozing.",
                 level = ex.level, skill = ex.skill, explanationUz = ex.explanationUz, difficulty = ex.difficulty, tags = tags,
                 text = ex.text, answers = ex.answers,
             )
@@ -229,7 +229,7 @@ fun remixExercise(ex: Exercise, lastGiven: String = ""): Exercise? {
             var bank: List<String> = seeded(answer, id)
             if (bank.joinToString(" ") == answer.joinToString(" ")) bank = bank.drop(1) + bank[0]
             Exercise(
-                id = id, kind = Kinds.WORD_ORDER, instructionUz = "Tarjimani so‘zlardan tuzing: “${ex.source}”",
+                id = id, kind = Kinds.WORD_ORDER, instructionUz = "Tarjimani sözlardan tuzing: “${ex.source}”",
                 level = ex.level, skill = ex.skill, explanationUz = ex.explanationUz, difficulty = ex.difficulty, tags = tags,
                 answers = answer, bank = bank,
             )

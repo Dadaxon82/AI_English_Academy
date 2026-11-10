@@ -29,7 +29,7 @@ function learned(dueAt: number, lapses = 0): SrsState {
 }
 
 describe('buildQuickDeck — kartalar tartibi', () => {
-  it('avval muddati kelgan takrorlar (xato qilinganlar birinchi), keyin bitta mavzudan yangi so‘zlar', () => {
+  it('avval muddati kelgan takrorlar (xato qilinganlar birinçi), keyin bitta mavzudan yangi sözlar', () => {
     const [a, b, c] = pool
     const srs: Record<string, SrsState> = {
       [a!.id]: learned(T0 - 1000),
@@ -49,7 +49,7 @@ describe('buildQuickDeck — kartalar tartibi', () => {
     expect(fresh.every((x) => srs[x.item.id] === undefined)).toBe(true)
   })
 
-  it('takrorlar soni chegaralanadi', () => {
+  it('takrorlar soni çegaralanadi', () => {
     const srs = Object.fromEntries(pool.map((v) => [v.id, learned(T0 - 1)]))
     const deck = buildQuickDeck(pool, srs, T0)
     expect(deck.dueCount).toBe(Math.min(QUICK_MAX_DUE, pool.length))
@@ -57,13 +57,13 @@ describe('buildQuickDeck — kartalar tartibi', () => {
     expect(deck.newTopic).toBeNull()
   })
 
-  it('hammasi o‘rganilgan va muddati kelmagan bo‘lsa — bo‘sh (soxta karta yo‘q)', () => {
+  it('hammasi örganilgan va muddati kelmagan bölsa — böş (soxta karta yöq)', () => {
     const srs = Object.fromEntries(pool.map((v) => [v.id, learned(T0 + DAY)]))
     const deck = buildQuickDeck(pool, srs, T0)
     expect(deck.cards).toEqual([])
   })
 
-  it('havuzda takrorlangan so‘z bitta karta bo‘ladi', () => {
+  it('havuzda takrorlangan söz bitta karta böladi', () => {
     const one = pool[0]!
     const deck = buildQuickDeck([one, one], {}, T0)
     expect(deck.cards.length).toBe(1)
@@ -71,7 +71,7 @@ describe('buildQuickDeck — kartalar tartibi', () => {
 })
 
 describe('swipeGrade / quickRemaining', () => {
-  it('o‘ngga — Bilaman, chapga — Yana, yetarli masofa bo‘lmasa — hech narsa', () => {
+  it('öngga — Bilaman, çapga — Yana, yetarli masofa bölmasa — heç narsa', () => {
     expect(swipeGrade(SWIPE_MIN_PX, 200)).toBe('good')
     expect(swipeGrade(-SWIPE_MIN_PX, 200)).toBe('again')
     expect(swipeGrade(SWIPE_MIN_PX - 1, 200)).toBeNull()
@@ -81,7 +81,7 @@ describe('swipeGrade / quickRemaining', () => {
     expect(swipeGrade(Number.NaN, 200)).toBeNull()
   })
 
-  it('qolgan vaqt manfiy bo‘lmaydi', () => {
+  it('qolgan vaqt manfiy bölmaydi', () => {
     expect(quickRemaining(0)).toBe(QUICK_SESSION_SEC)
     expect(quickRemaining(120.9)).toBe(QUICK_SESSION_SEC - 120)
     expect(quickRemaining(QUICK_SESSION_SEC + 50)).toBe(0)
@@ -95,7 +95,7 @@ describe('5 daqiqalik sessiya kunlik faollikka yoziladi va zanjirni saqlaydi', (
   })
   afterEach(() => vi.useRealTimers())
 
-  it('taymer → 5 daqiqa → to‘xtatish: bugun faol kun, zanjir ≥ 1', () => {
+  it('taymer → 5 daqiqa → töxtatiş: bugun faol kun, zanjir ≥ 1', () => {
     const today = todayKey()
     let s = emptyData('u-quick')
     s = reducer(s, { type: 'timer-start', sessionId: quickSessionId(today), skill: 'vocabulary' })
@@ -109,13 +109,13 @@ describe('5 daqiqalik sessiya kunlik faollikka yoziladi va zanjirni saqlaydi', (
     expect(s.settings.dailyMinutes).toBe(90)
   })
 
-  it('sessiya kaliti kunga bog‘liq', () => {
+  it('sessiya kaliti kunga boğliq', () => {
     expect(quickSessionId('2026-11-09')).toBe('quick-2026-11-09')
   })
 })
 
-describe('buildQuickDeck — yangi so‘zlar havuzi', () => {
-  it('newPool berilsa yangi so‘zlar faqat undan olinadi, takrorlar esa butun havuzdan', () => {
+describe('buildQuickDeck — yangi sözlar havuzi', () => {
+  it('newPool berilsa yangi sözlar faqat undan olinadi, takrorlar esa butun havuzdan', () => {
     const main = pool.slice(0, 20)
     const extra = pool.slice(20, 40).map((v) => ({ ...v, id: `g-${v.id}`, topic: 'matndan olingan' }))
     const savedExtra = extra[0]!

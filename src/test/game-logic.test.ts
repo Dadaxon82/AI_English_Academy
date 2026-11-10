@@ -66,7 +66,7 @@ const MIN = 60_000
 const DAY_MS = 86_400_000
 const T0 = Date.UTC(2026, 10, 7, 12, 0, 0) // 2026-11-07 (shanba) 12:00 UTC
 const DAY = '2026-11-07'
-const WEEK = '2026-11-02' // shu haftaning poneshanbasi
+const WEEK = '2026-11-02' // shu haftaning dushanbasi
 const UID = 'men'
 
 /** Faol kun yozuvi (zanjir measured: sekund ≥ 60 yoki urinish > 0). */
@@ -86,7 +86,7 @@ function fresh(over: Partial<GameState> = {}): AppData {
 /* --------------------------------- Yuraklar --------------------------------- */
 
 describe('Yuraklar (Duolingo: 5 ta, 1 xato = 1 yurak)', () => {
-  it('boshlanishda yuraklar tola — darvoza yopiq emas', () => {
+  it('boşlanişda yuraklar tola — darvoza yopiq emas', () => {
     const d = fresh()
     expect(d.game.hearts).toBe(HEARTS_MAX)
     expect(heartsBlocked(d.game, d, T0)).toBe(false)
@@ -94,7 +94,7 @@ describe('Yuraklar (Duolingo: 5 ta, 1 xato = 1 yurak)', () => {
     expect(heartsView(d, T0).blocked).toBe(false)
   })
 
-  it(`bitta xato ${HEARTS_COST_WRONG} ta yurak oladi, to‘g‘ri javob olmaydi`, () => {
+  it(`bitta xato ${HEARTS_COST_WRONG} ta yurak oladi, töğri javob olmaydi`, () => {
     let g = fresh().game
     g = afterAttempt(g, false, 'practice', 1, T0)
     expect(g.hearts).toBe(HEARTS_MAX - HEARTS_COST_WRONG)
@@ -102,7 +102,7 @@ describe('Yuraklar (Duolingo: 5 ta, 1 xato = 1 yurak)', () => {
     expect(g.hearts).toBe(HEARTS_MAX - HEARTS_COST_WRONG)
   })
 
-  it(`${HEARTS_MAX} xato yurakni 0 ga tushiradi va darvoza yopiladi`, () => {
+  it(`${HEARTS_MAX} xato yurakni 0 ga tuşiradi va darvoza yopiladi`, () => {
     let g = fresh().game
     for (let i = 0; i < HEARTS_MAX * HEARTS_COST_WRONG; i++) g = afterAttempt(g, false, 'practice', 1, T0)
     expect(g.hearts).toBe(0)
@@ -111,7 +111,7 @@ describe('Yuraklar (Duolingo: 5 ta, 1 xato = 1 yurak)', () => {
     expect(g.hearts < HEART_GATE_MIN).toBe(true)
   })
 
-  it("yuraklar sozlamadan O'CHIRILSA darvoza ishlamaydi, jarima ham yo'q", () => {
+  it("yuraklar sozlamadan ÖÇIRILSA darvoza işlamaydi, jarima ham yöq", () => {
     const off: AppData = { ...fresh({ hearts: 0 }), settings: { ...emptyData(UID).settings, heartsEnabled: false } }
     expect(heartsBlocked(off.game, off, T0)).toBe(false)
     expect(heartsView(off, T0).enabled).toBe(false)
@@ -133,12 +133,12 @@ describe('Yuraklar (Duolingo: 5 ta, 1 xato = 1 yurak)', () => {
     expect(g.hearts).toBe(HEARTS_MAX)
   })
 
-  it('yuraklar tola bo‘lsa `refillHearts` holatni UMUMAN o‘zgartirmaydi (keraksiz saqlash yo‘q)', () => {
+  it('yuraklar tola bölsa `refillHearts` holatni UMUMAN özgartirmaydi (keraksiz saqlaş yöq)', () => {
     const g = fresh({ hearts: HEARTS_MAX }).game
     expect(refillHearts(g, T0 + 10_000 * MIN)).toBe(g)
   })
 
-  it(`ketma-ket ${HEART_COMBO_STREAK} to‘g‘ri javob bitta yurak qaytaradi (Duolingo Energy qoidasi)`, () => {
+  it(`ketma-ket ${HEART_COMBO_STREAK} töğri javob bitta yurak qaytaradi (Duolingo Energy qoidasi)`, () => {
     let g = fresh({ hearts: 2 }).game
     for (let i = 0; i < HEART_COMBO_STREAK - 1; i++) g = afterAttempt(g, true, 'practice', 1, T0)
     expect(g.hearts).toBe(2)
@@ -159,13 +159,13 @@ describe('Yuraklar (Duolingo: 5 ta, 1 xato = 1 yurak)', () => {
     expect(g.practiceReviews).toBe(0)
   })
 
-  it('yangi so‘z takror sanalmaydi — faqat o‘zlashtirilgan so‘zning takrori hisobga olinadi', () => {
+  it('yangi söz takror sanalmaydi — faqat özlaştirilgan sözning takrori hisobga olinadi', () => {
     const g = afterReview(fresh({ hearts: 0 }).game, false, T0)
     expect(g.practiceReviews).toBe(0)
     expect(g.today.reviews).toBe(0)
   })
 
-  it("sinov, sanov va bo‘lim testlarida yurak jarimasi YO'Q (foydalanuvchi tanlovi)", () => {
+  it("sinov, sanov va bölim testlarida yurak jarimasi YÖQ (foydalanuvçi tanlovi)", () => {
     for (const src of ['mock_exam', 'diagnostic', 'section_test'] as const) {
       const g = afterAttempt(fresh().game, false, src, 1, T0)
       expect(g.hearts, `${src} yurak olmasligi kerak edi`).toBe(HEARTS_MAX)
@@ -183,7 +183,7 @@ describe('Yuraklar (Duolingo: 5 ta, 1 xato = 1 yurak)', () => {
 /* ------------------------------- XP va byust ------------------------------- */
 
 describe('XP va 2× byust (Duolingo: 2× / 15 daqiqa)', () => {
-  it('byust bo‘lmasa XP asos son `xpForAttempt` ga teng', () => {
+  it('byust bölmasa XP asos son `xpForAttempt` ga teng', () => {
     expect(xpGain(fresh().game, true, 3, T0)).toBe(xpForAttempt(true, 3, true))
   })
 
@@ -196,7 +196,7 @@ describe('XP va 2× byust (Duolingo: 2× / 15 daqiqa)', () => {
     expect(xpGain(g, true, 3, after)).toBe(base)
   })
 
-  it('dars bonusi faqat yetarli mashqdan keyin beriladi; xatosiz darsda ikki bonus', () => {
+  it('dars bonusi faqat yetarli maşqdan keyin beriladi; xatosiz darsda ikki bonus', () => {
     expect(lessonComplete(fresh(), 2, 0, T0).xp).toBe(0)
     expect(lessonComplete(fresh(), 5, 1, T0).xp).toBe(LESSON_BONUS_XP)
     const perfect = lessonComplete(fresh(), 5, 0, T0)
@@ -219,7 +219,7 @@ describe('Kundalik questlar (Duolingo: kuniga 3 ta)', () => {
     }
   })
 
-  it('kun sayin questlar ALMASHINADI (bir xil ro‘yxat qotib qolmaydi)', () => {
+  it('kun sayin questlar ALMAŞINADI (bir xil röyxat qotib qolmaydi)', () => {
     const sets = ['2026-11-01', '2026-11-02', '2026-11-03', '2026-11-04', '2026-11-05'].map((d) =>
       questsForDay(d)
         .map((q) => q.id)
@@ -228,7 +228,7 @@ describe('Kundalik questlar (Duolingo: kuniga 3 ta)', () => {
     expect(new Set(sets).size).toBeGreaterThan(1)
   })
 
-  it("quest bajarilishi `AppData` hisobidan keladi — sun'iy sanov yo‘q", () => {
+  it("quest bajarilişi `AppData` hisobidan keladi — sun'iy sanov yöq", () => {
     const d = fresh()
     const q = questsForDay(DAY)[0]!
     expect(questProgressOf(q, d.game.today, d.activity[DAY], []).done).toBe(false)
@@ -262,8 +262,8 @@ describe('Kundalik questlar (Duolingo: kuniga 3 ta)', () => {
 
 /* ---------------------------- Kunlik maqsad va sandiq ---------------------------- */
 
-describe('Kunlik maqsad (Duolingo 5 bosqichi ×10 masshtabda) va haftalik sandiq', () => {
-  it('maqsad Faqat eʼlon qilingan bosqichlardan biriga tekiladi', () => {
+describe('Kunlik maqsad (Duolingo 5 bosqiçi ×10 masştabda) va haftalik sandiq', () => {
+  it('maqsad Faqat eʼlon qilingan bosqiçlardan biriga tekiladi', () => {
     expect(XP_GOAL_TIERS.map((t) => t.xp)).toEqual([50, 100, 200, 300, 500])
     for (const [raw, want] of [
       [137, 100],
@@ -279,7 +279,7 @@ describe('Kunlik maqsad (Duolingo 5 bosqichi ×10 masshtabda) va haftalik sandiq
     expect(goalView(d).target).toBe(100)
   })
 
-  it('maqsadga yetish gemi KUNIGA BIR MARTA beriladi', () => {
+  it('maqsadga yetiş gemi KUNIGA BIR MARTA beriladi', () => {
     const d = fresh()
     d.game.today = { day: DAY, xp: 100_000, attempts: 0, reviews: 0, perfectLessons: 0 }
     const s1 = settle(d, T0, DAY)
@@ -289,7 +289,7 @@ describe('Kunlik maqsad (Duolingo 5 bosqichi ×10 masshtabda) va haftalik sandiq
     expect(s2.game.gems).toBe(s1.game.gems)
   })
 
-  it(`haftalik sandiq ${CHEST_MIN_ACTIVE_DAYS} faol kunda ochiladi va takrorlanmaydi`, () => {
+  it(`haftalik sandiq ${CHEST_MIN_ACTIVE_DAYS} faol kunda oçiladi va takrorlanmaydi`, () => {
     const days = ['2026-11-02', '2026-11-03', '2026-11-04', '2026-11-05'].slice(0, CHEST_MIN_ACTIVE_DAYS)
     const d = fresh()
     for (const k of days) d.activity[k] = act(k)
@@ -306,7 +306,7 @@ describe('Kunlik maqsad (Duolingo 5 bosqichi ×10 masshtabda) va haftalik sandiq
 
 /* ------------------------------ Streak va qalqon ----------------------------- */
 
-describe('Streak va streak freeze (Duolingo: 200 gem, omborda eng ko‘p 2 ta)', () => {
+describe('Streak va streak freeze (Duolingo: 200 gem, omborda eng köp 2 ta)', () => {
   it('qalqon uzilgan kunni qoplaydi — zanjir uzilmaydi', () => {
     const d = fresh()
     d.activity[DAY] = act(DAY)
@@ -319,7 +319,7 @@ describe('Streak va streak freeze (Duolingo: 200 gem, omborda eng ko‘p 2 ta)',
     expect(streakWithFreezes(after, DAY)).toBe(4)
   })
 
-  it('ketma-ketlik uzilmagan bo‘lsa qalqon SARFLANMAYDI', () => {
+  it('ketma-ketlik uzilmagan bölsa qalqon SARFLANMAYDI', () => {
     const d = fresh()
     d.activity[DAY] = act(DAY)
     d.activity['2026-11-06'] = act('2026-11-06')
@@ -328,7 +328,7 @@ describe('Streak va streak freeze (Duolingo: 200 gem, omborda eng ko‘p 2 ta)',
     expect(after.game.frozenDays).toEqual([])
   })
 
-  it('yangi o‘quvchida tarix yo‘q — qalqon bo‘shga sarflanmaydi', () => {
+  it('yangi öquvçida tarix yöq — qalqon böşga sarflanmaydi', () => {
     // Bugun boshlangan o'quvchi uchun "kecha uzilgan" degan tushuncha yo'q:
     // uzilishdan ortda faol kun bo'lishi shart.
     const d = fresh()
@@ -338,7 +338,7 @@ describe('Streak va streak freeze (Duolingo: 200 gem, omborda eng ko‘p 2 ta)',
     expect(after.game.frozenDays).toEqual([])
   })
 
-  it('uzilish bir necha kun oldin boshlansa ham qalqon uni topadi (2026-11-07 tuzatildi)', () => {
+  it('uziliş bir neça kun oldin boşlansa ham qalqon uni topadi (2026-11-07 tuzatildi)', () => {
     // ESKI XATO: izlash oynasi ombordagi son (`MAX_FREEZES`) edi — uzilish
     // 3-kundan ortiqroq bo'lsa qalqon uni ko'rmaskandi.
     const d = fresh()
@@ -357,7 +357,7 @@ describe('Streak va streak freeze (Duolingo: 200 gem, omborda eng ko‘p 2 ta)',
     expect(applyFreezes(s2, DAY).game.frozenDays.length).toBe(2)
   })
 
-  it('omborda MAX_FREEZES dan ko‘p qalqon bo‘lmaydi', () => {
+  it('omborda MAX_FREEZES dan köp qalqon bölmaydi', () => {
     const res = buy(fresh({ freezes: MAX_FREEZES, gems: 1000 }), 'freeze', T0)
     expect(res.ok).toBe(false)
     expect(res.reasonUz).toContain(String(MAX_FREEZES))
@@ -367,14 +367,14 @@ describe('Streak va streak freeze (Duolingo: 200 gem, omborda eng ko‘p 2 ta)',
 /* ---------------------------------- Yutuqlar --------------------------------- */
 
 describe('Yutuqlar (darajali — Duolingo achievement jadvallari)', () => {
-  it("yutuq darajasi chegaralar bo‘yicha o'sadi", () => {
+  it("yutuq darajasi çegaralar böyiça ösadi", () => {
     const spec = ACHIEVEMENTS.find((a) => a.id === 'a-wildfire')!
     expect(levelFor(spec, 0)).toBe(0)
     expect(levelFor(spec, spec.levels[0]!)).toBe(1)
     expect(levelFor(spec, spec.levels[spec.levels.length - 1]!)).toBe(spec.levels.length)
   })
 
-  it("yangi ochilgan yutuq nishon (`badges`) + gem beradi va takrorlanmaydi", () => {
+  it("yangi oçilgan yutuq nişon (`badges`) + gem beradi va takrorlanmaydi", () => {
     const spec = ACHIEVEMENTS.find((a) => a.metric === 'xp_total')!
     const d = fresh()
     d.xp = spec.levels[0]!
@@ -386,7 +386,7 @@ describe('Yutuqlar (darajali — Duolingo achievement jadvallari)', () => {
     expect(s2.game.gems).toBe(s1.game.gems)
   })
 
-  it('streak bosqichida qalqon beriladi (ombor chegarasi bilan)', () => {
+  it('streak bosqiçida qalqon beriladi (ombor çegarasi bilan)', () => {
     const d = fresh()
     for (let i = 0; i < 7; i++) {
       const k = new Date(Date.UTC(2026, 10, 7 - i)).toISOString().slice(0, 10)
@@ -399,21 +399,21 @@ describe('Yutuqlar (darajali — Duolingo achievement jadvallari)', () => {
     expect(s.game.freezes).toBeLessThanOrEqual(MAX_FREEZES)
   })
 
-  it("bo‘sh holatda `badges` bo‘sh qoladi — nishon ixtir qilinmaydi", () => {
+  it("böş holatda `badges` böş qoladi — nişon ixtir qilinmaydi", () => {
     expect(settle(fresh(), T0, DAY).badges).toEqual([])
   })
 })
 
 /* ----------------------------------- Do'kon ---------------------------------- */
 
-describe("Do'kon (Duolingo narxlari saqlangan, qolganlari biznik)", () => {
+describe("Dökon (Duolingo narxlari saqlangan, qolganlari biznik)", () => {
   it('narxlar `gameConfig.SHOP` da eʼlon qilinganidek', () => {
     expect(SHOP.refill).toBe(350)
     expect(SHOP.freeze).toBe(200)
     expect(SHOP.heart).toBe(70)
   })
 
-  it('gem yetmasa xarid SABABI bilan rad etiladi va holat o‘zgarmaydi', () => {
+  it('gem yetmasa xarid SABABI bilan rad etiladi va holat özgarmaydi', () => {
     const d = fresh()
     const res = buy(d, 'refill', T0)
     expect(res.ok).toBe(false)
@@ -421,20 +421,20 @@ describe("Do'kon (Duolingo narxlari saqlangan, qolganlari biznik)", () => {
     expect(res.data).toBe(d)
   })
 
-  it('yuraklar to‘la bo‘lsa yurak sotib bo‘lmaydi', () => {
+  it('yuraklar töla bölsa yurak sotib bölmaydi', () => {
     const res = buy(fresh({ hearts: HEARTS_MAX, gems: 1000 }), 'heart', T0)
     expect(res.ok).toBe(false)
     expect(res.reasonUz).toContain(String(HEARTS_MAX))
   })
 
-  it('bitta yurak xaridi tiklanish taymerini QAYTA BOSHLAMAYDI', () => {
+  it('bitta yurak xaridi tiklaniş taymerini QAYTA BOŞLAMAYDI', () => {
     const res = buy(fresh({ hearts: 2, gems: 1000, heartsAt: T0 }), 'heart', T0 + 5 * MIN)
     expect(res.ok).toBe(true)
     expect(res.data.game.hearts).toBe(3)
-    expect(res.data.game.heartsAt, 'taymer qayta boshlanmasligi kerak').toBe(T0)
+    expect(res.data.game.heartsAt, 'taymer qayta boşlanmasligi kerak').toBe(T0)
   })
 
-  it('yuraklarni to‘ldirish gemni oladi, yuraklarni to‘laydi va taymerni yangilaydi', () => {
+  it('yuraklarni töldiriş gemni oladi, yuraklarni tölaydi va taymerni yangilaydi', () => {
     const res = buy(fresh({ hearts: 1, gems: 1000, heartsAt: T0 }), 'refill', T0 + 5 * MIN)
     expect(res.ok).toBe(true)
     expect(res.data.game.hearts).toBe(HEARTS_MAX)
@@ -442,7 +442,7 @@ describe("Do'kon (Duolingo narxlari saqlangan, qolganlari biznik)", () => {
     expect(res.data.game.heartsAt).toBe(T0 + 5 * MIN)
   })
 
-  it('byust faol bo‘lsa ikkinchisi sotilmaydi; sotilganda tugash payti yoziladi', () => {
+  it('byust faol bölsa ikkinçisi sotilmaydi; sotilganda tugaş payti yoziladi', () => {
     const activeBuy = buy(fresh({ gems: 1000, boostUntil: T0 + XP_BOOST_MINUTES * MIN }), 'xpBoost', T0)
     expect(activeBuy.ok).toBe(false)
     const ok = buy(fresh({ gems: 1000 }), 'xpBoost', T0)
@@ -453,8 +453,8 @@ describe("Do'kon (Duolingo narxlari saqlangan, qolganlari biznik)", () => {
 
 /* --------------------------- Garov (Double or Nothing) --------------------------- */
 
-describe('Garov — Duolingo: 50 gem tikiladi, 7 kun streak bo‘lsa 100 gem', () => {
-  it('garov gemni oladi va takror ochilmaydi', () => {
+describe('Garov — Duolingo: 50 gem tikiladi, 7 kun streak bölsa 100 gem', () => {
+  it('garov gemni oladi va takror oçilmaydi', () => {
     const res = placeBet(fresh({ gems: 500 }), 1)
     expect(res.ok).toBe(true)
     expect(res.data.game.gems).toBe(500 - BET_COST_GEMS)
@@ -462,7 +462,7 @@ describe('Garov — Duolingo: 50 gem tikiladi, 7 kun streak bo‘lsa 100 gem', (
     expect(placeBet(res.data, 1).ok).toBe(false)
   })
 
-  it('7 kun o‘tib zanjir o‘sgan bo‘lsa gem qaytadi; o‘smasa yo‘qoladi', () => {
+  it('7 kun ötib zanjir ösgan bölsa gem qaytadi; ösmasa yöqoladi', () => {
     // `settleBet` bevosita tekshiriladi — `settle()` dagi quest/yutuq gemlari
     // bu yerda hisobga shovqin qo'shadi (ular sinfning yuqorisida alohida tekshirilgan).
     const bet = placeBet(fresh({ gems: 500 }), 1).data
@@ -486,7 +486,7 @@ describe('Garov — Duolingo: 50 gem tikiladi, 7 kun streak bo‘lsa 100 gem', (
 
 /* ------------------------------------ Liga ----------------------------------- */
 
-describe('Liga haftasi (Duolingo: 10 liga, har birida 30 kishi, promoteTop jadvali)', () => {
+describe('Liga haftasi (Duolingo: 10 liga, har birida 30 kişi, promoteTop jadvali)', () => {
   function attempt(at: number, correct: boolean, difficulty = 3): AttemptRecord {
     return {
       id: `a${at}`,
@@ -503,14 +503,14 @@ describe('Liga haftasi (Duolingo: 10 liga, har birida 30 kishi, promoteTop jadva
     }
   }
 
-  it('hafta boshi PONESHANBA; XP faqat o‘sha haftadagi urinishlardan hisoblanadi', () => {
+  it('hafta boşi PONEŞANBA; XP faqat öşa haftadagi urinişlardan hisoblanadi', () => {
     const d = fresh()
     d.attempts = [attempt(Date.UTC(2026, 10, 3), true), attempt(Date.UTC(2026, 10, 1), true), attempt(Date.UTC(2026, 10, 9), false)]
     expect(weeklyXp(d, WEEK)).toBe(xpForAttempt(true, 3, true))
     expect(leagueWeek(d, DAY).weekStart).toBe(WEEK)
   })
 
-  it('liga snapshoti bo‘lmasa XP chegarasiga qarab tanlanadi', () => {
+  it('liga snapşoti bölmasa XP çegarasiga qarab tanlanadi', () => {
     const d = fresh()
     d.attempts = Array.from({ length: 20 }, (_, i) => attempt(Date.UTC(2026, 10, 3, 0, i), true))
     const w = leagueWeek(d, DAY)
@@ -518,14 +518,14 @@ describe('Liga haftasi (Duolingo: 10 liga, har birida 30 kishi, promoteTop jadva
     expect(['silver', 'gold']).toContain(w.leagueId)
   })
 
-  it('liga HAFTA DAVOMIDA BARQAROR — XP chegarasi o‘rtada sakratmaydi', () => {
+  it('liga HAFTA DAVOMIDA BARQAROR — XP çegarasi örtada sakratmaydi', () => {
     const d = fresh()
     d.attempts = Array.from({ length: 60 }, (_, i) => attempt(Date.UTC(2026, 10, 3, 0, i), true))
     d.game.league = { weekStart: WEEK, leagueId: 'bronze', rank: 25, boardSize: LEAGUE_BOARD_SIZE, at: T0, entries: [], prizeClaimed: false }
     expect(leagueWeek(d, DAY).leagueId).toBe('bronze')
   })
 
-  it("oldingi hafta snapshotiga qarab faqat YUQORIGA ko‘tiladi (promoteTop)", () => {
+  it("oldingi hafta snapşotiga qarab faqat YUQORIGA kötiladi (promoteTop)", () => {
     const snap = { weekStart: '2026-10-26', leagueId: 'bronze', rank: 3, boardSize: LEAGUE_BOARD_SIZE, at: T0, entries: [], prizeClaimed: true }
     expect(promotedLeague(snap as never, UID)).toBe('silver')
     // Pasaytirish qoidasi MANBALARNING HICH BIRIDA yo'q — ixtir qilinmagan.
@@ -533,7 +533,7 @@ describe('Liga haftasi (Duolingo: 10 liga, har birida 30 kishi, promoteTop jadva
     expect(promotedLeague({ ...snap, leagueId: 'diamond', rank: 1 } as never, UID)).toBe('diamond')
   })
 
-  it("o‘rin tablodan aniq hisoblanadi; biz jadvalda bo‘lmasak 0 (son ixtir yo‘q)", () => {
+  it("örin tablodan aniq hisoblanadi; biz jadvalda bölmasak 0 (son ixtir yöq)", () => {
     const board = [
       { userId: 'a', name: 'A', xp: 300 },
       { userId: UID, name: 'Biz', xp: 200 },
@@ -543,7 +543,7 @@ describe('Liga haftasi (Duolingo: 10 liga, har birida 30 kishi, promoteTop jadva
     expect(rankOf(board, 'yok')).toBe(0)
   })
 
-  it('hafta yakunida top-3 gem oladi; biz jadvalda bo‘lmasak gem yo‘q va bir marta', () => {
+  it('hafta yakunida top-3 gem oladi; biz jadvalda bölmasak gem yöq va bir marta', () => {
     const lastWeek = {
       weekStart: '2026-10-26',
       leagueId: 'gold',
@@ -570,7 +570,7 @@ describe('Liga haftasi (Duolingo: 10 liga, har birida 30 kishi, promoteTop jadva
     expect(e.game.league?.prizeClaimed).toBe(true)
   })
 
-  it("davom etayotgan haftaga sovg‘a BERILMAYDI (halollik)", () => {
+  it("davom etayotgan haftaga sovğa BERILMAYDI (halollik)", () => {
     const d = fresh()
     d.game.league = { weekStart: WEEK, leagueId: 'gold', rank: 1, boardSize: LEAGUE_BOARD_SIZE, at: T0, entries: [{ userId: UID, name: 'Biz', xp: 900 }], prizeClaimed: false }
     const s = settle(d, T0, DAY)
@@ -582,9 +582,9 @@ describe('Liga haftasi (Duolingo: 10 liga, har birida 30 kishi, promoteTop jadva
   // uchun yuqoridagi sinov KUNGA qarab yiqilardi (devol 2026-11-08 da «hafta
   // hali davom etmoqda» derdi, 09-noyabrda — «yakunlangan»). Endi `today`
   // uzatiladi: natija FAQAT BERILGAN kundan keladi, devol sanasidan EMAS.
-  it("liga sovg‘asi FAQsAT BERILGAN KUNDAN keladi (devol sanasi ta'sir QILMAYDI)", () => {
+  it("liga sovğasi FAQsAT BERILGAN KUNDAN keladi (devol sanasi ta'sir QILMAYDI)", () => {
     const ongoing = { weekStart: WEEK, leagueId: 'gold', rank: 1, boardSize: LEAGUE_BOARD_SIZE, at: T0, entries: [{ userId: UID, name: 'Biz', xp: 900 }], prizeClaimed: false }
-    const board = new Date(WEEK + 'T00:00:00Z') // tekshiruv uchun: WEEK poneshanba
+    const board = new Date(WEEK + 'T00:00:00Z') // tekshiruv uchun: WEEK dushanba
     expect(board.getUTCDay()).toBe(1)
 
     // Bitta snapshot, bitta ma'lumot — faqat `today` boshqa.
@@ -610,13 +610,13 @@ describe('Liga haftasi (Duolingo: 10 liga, har birida 30 kishi, promoteTop jadva
 
 /* --------------------------- `settle()` — idempotentlik -------------------------- */
 
-describe('`settle()` — qayta-qaeta chaqirilsa ham sovg‘a takrorlanmaydi', () => {
-  it('hech narsa o‘zgarmasa SAYO bilan BIR XIL obyekt qaytadi (qayta render yo‘q)', () => {
+describe('`settle()` — qayta-qaeta çaqirilsa ham sovğa takrorlanmaydi', () => {
+  it('heç narsa özgarmasa SAYO bilan BIR XIL obyekt qaytadi (qayta render yöq)', () => {
     const d = fresh()
     expect(settle(d, T0, DAY)).toBe(d)
   })
 
-  it('bir nechta sovg‘a bo‘lsa ham ikkinchi chaqiruv HECH NARSA qo‘shmaydi', () => {
+  it('bir neçta sovğa bölsa ham ikkinçi çaqiruv HEÇ NARSA qöşmaydi', () => {
     const spec = ACHIEVEMENTS.find((a) => a.metric === 'xp_total')!
     const d = fresh()
     d.xp = spec.levels[0]!
@@ -630,7 +630,7 @@ describe('`settle()` — qayta-qaeta chaqirilsa ham sovg‘a takrorlanmaydi', ()
     expect(s2.game.chestsWeeks).toEqual(s1.game.chestsWeeks)
   })
 
-  it('kun o‘zgarsa kundalik hisoblar va quest belgilari qayta boshlanadi', () => {
+  it('kun özgarsa kundalik hisoblar va quest belgilari qayta boşlanadi', () => {
     const d = fresh()
     d.game.today = { day: DAY, xp: 500, attempts: 5, reviews: 5, perfectLessons: 1 }
     d.game.questsDone = [{ id: 'q-x-1', at: T0 }]
@@ -645,8 +645,8 @@ describe('`settle()` — qayta-qaeta chaqirilsa ham sovg‘a takrorlanmaydi', ()
 
 /* ------------------------- `normalizeGame` — buzilgan saqlanganma ------------------------ */
 
-describe('Eski/buzilgan saqlanganmadan o‘yin holatini xavfsizlashtirish', () => {
-  it('sonlar chegaraga keltiriladi, yetishmayan maydonlar standart bo‘ladi', () => {
+describe('Eski/buzilgan saqlanganmadan öyin holatini xavfsizlaştiriş', () => {
+  it('sonlar çegaraga keltiriladi, yetişmayan maydonlar standart böladi', () => {
     const g = normalizeGame({ hearts: 99, gems: -5, freezes: 12, combo: 4.7, version: 99 }, DAY) as GameState
     expect(g.hearts).toBe(HEARTS_MAX)
     expect(g.gems).toBe(0)
@@ -656,7 +656,7 @@ describe('Eski/buzilgan saqlanganmadan o‘yin holatini xavfsizlashtirish', () =
     expect(g.version).toBe(99) // versiya o'zi tekshirilmaydi — migrate uni biladi
   })
 
-  it("buzilgan liga snapshoti tashlab yuborilmaydi — tuzatiladi", () => {
+  it("buzilgan liga snapşoti taşlab yuborilmaydi — tuzatiladi", () => {
     // Maydonlar ATUNDAN TASHQARI ko'rinishda — `normalizeGame` tashqi (eski)
     // saqlanganmani himoya qiladi: son o'rniga boshqa tur kelsa tuzatadi.
     const buziq = { league: { weekStart: 5, leagueId: 'platina', entries: [{ userId: 'a' }, null] } } as unknown as Partial<GameState>
@@ -667,7 +667,7 @@ describe('Eski/buzilgan saqlanganmadan o‘yin holatini xavfsizlashtirish', () =
     expect(g.league?.weekStart).toBe(WEEK)
   })
 
-  it("bo‘sh/yo‘q saqlanganma to‘liq standart holatni beradi", () => {
+  it("böş/yöq saqlanganma töliq standart holatni beradi", () => {
     const g = normalizeGame(undefined, DAY)
     expect(g.hearts).toBe(HEARTS_MAX)
     expect(g.today.day).toBe(DAY)
@@ -675,7 +675,7 @@ describe('Eski/buzilgan saqlanganmadan o‘yin holatini xavfsizlashtirish', () =
     expect(g.goalRewardedDay).toBe('')
   })
 
-  it("ro'yxatlardagi bo'sh qiymatlar tashlanadi — mobil bilan BIR XIL", () => {
+  it("röyxatlardagi böş qiymatlar taşlanadi — mobil bilan BIR XIL", () => {
     // Mobil tomon `isNotBlank` / `jStrList` bilan bo'sh satrlarni tashlaydi,
     // shuning uchun veb ham tashlashi shart: ikkala mijoz BIR XIL holatda
     // davom etmasa, sinxronizatsiyadan keyin yana buzilgan ko'rinish chiqadi.
@@ -692,11 +692,11 @@ describe('Eski/buzilgan saqlanganmadan o‘yin holatini xavfsizlashtirish', () =
     expect(g.questsDone).toEqual([{ id: 'q-xp-100', at: 1 }])
     expect(g.frozenDays).toEqual(['2026-11-05'])
     expect(g.chestsWeeks).toEqual([WEEK])
-    expect(g.questsDay, "quest ro'yxati sanasi tiklanadi").toBe(DAY)
-    expect(g.today.day, 'sana son bo‘lsa bugungi kunga qaytadi').toBe(DAY)
+    expect(g.questsDay, "quest röyxati sanasi tiklanadi").toBe(DAY)
+    expect(g.today.day, 'sana son bölsa bugungi kunga qaytadi').toBe(DAY)
   })
 
-  it('heartsAt=0 tiklanish taymerini buzib yubormasin', () => {
+  it('heartsAt=0 tiklaniş taymerini buzib yubormasin', () => {
     // `emptyGame` har doim hozirgi vaqtni qo'yadi — 0 maydon UMUMAN YO'qligini
     // bildiradi. 0 qolsa «mangu vaqt o'tgan» hisoblanib yuraklar darhol
     // to'lar edi (mobil `normalizeGame` ham shu qoidani qiladi).

@@ -16,21 +16,21 @@ import { emptyData } from '../lib/types'
 
 const a1Days = getBundle('A1').days
 
-describe('Bo‘limlar rejasi', () => {
-  it('har CEFR darajasi 2 bo‘lim: A1.1 … C1.2', () => {
+describe('Bölimlar rejasi', () => {
+  it('har CEFR darajasi 2 bölim: A1.1 … C1.2', () => {
     expect(SECTION_PLAN.map((s) => `${s.level}.${s.part}`)).toEqual([
       'A1.1', 'A1.2', 'A2.1', 'A2.2', 'B1.1', 'B1.2', 'B2.1', 'B2.2', 'C1.1', 'C1.2',
     ])
   })
 
-  it('A1 kunlari bo‘limlarga to‘liq va takrorsiz taqsimlangan', () => {
+  it('A1 kunlari bölimlarga töliq va takrorsiz taqsimlangan', () => {
     const nums = SECTION_PLAN.filter((s) => s.level === 'A1').flatMap((s) => s.dayNumbers)
     expect([...nums].sort((a, b) => a - b)).toEqual(a1Days.map((d) => d.dayNumber))
   })
 })
 
 describe('buildSections — holatlar', () => {
-  it('yangi foydalanuvchi: A1.1 joriy, A1.2 va A2 qulflangan, kontentsizlari bo‘sh', () => {
+  it('yangi foydalanuvçi: A1.1 joriy, A1.2 va A2 qulflangan, kontentsizlari böş', () => {
     const cards = buildSections(emptyData('u'))
     expect(cards.map((c) => c.status)).toEqual(['current', 'locked', 'locked', 'locked', 'empty', 'empty', 'empty', 'empty', 'empty', 'empty'])
     expect(cards[0]!.daysDone).toBe(0)
@@ -56,8 +56,8 @@ describe('buildSections — holatlar', () => {
   })
 })
 
-describe('Sakrash testi', () => {
-  it('savollar o‘tkazib yuboriladigan har kundan JUMP_ITEMS_PER_DAY tadan', () => {
+describe('Sakraş testi', () => {
+  it('savollar ötkazib yuboriladigan har kundan JUMP_ITEMS_PER_DAY tadan', () => {
     const d = emptyData('u')
     const skipped = skippedDaysFor('a1-2', d)
     expect(skipped.map((x) => x.dayNumber)).toEqual([1, 2, 3, 4])
@@ -66,7 +66,7 @@ describe('Sakrash testi', () => {
     expect(ex.length).toBeGreaterThan(0)
   })
 
-  it('o‘tilsa: oldingi kunlar ochiladi, joriy kun A1.2 boshiga o‘tadi, daraja o‘zgarmaydi', () => {
+  it('ötilsa: oldingi kunlar oçiladi, joriy kun A1.2 boşiga ötadi, daraja özgarmaydi', () => {
     const before = emptyData('u')
     const after = reducer(before, { type: 'section-jump', sectionId: 'a1-2', score: JUMP_PASS_SCORE })
     expect(after.path.completedDays).toEqual(a1Days.filter((x) => x.dayNumber <= 4).map((x) => x.id))
@@ -76,7 +76,7 @@ describe('Sakrash testi', () => {
     expect(buildSections(after)[1]!.status).toBe('current')
   })
 
-  it('o‘tilmasa: kunlar o‘zgarmaydi, faqat eng yaxshi natija yoziladi', () => {
+  it('ötilmasa: kunlar özgarmaydi, faqat eng yaxşi natija yoziladi', () => {
     let s = emptyData('u')
     s = reducer(s, { type: 'section-jump', sectionId: 'a1-2', score: 60 })
     s = reducer(s, { type: 'section-jump', sectionId: 'a1-2', score: 40 })
@@ -85,14 +85,14 @@ describe('Sakrash testi', () => {
     expect(s.path.passedTests[jumpKey('a1-2')]).toBe(60)
   })
 
-  it('noma’lum bo‘lim e’tiborsiz qoldiriladi', () => {
+  it('noma’lum bölim e’tiborsiz qoldiriladi', () => {
     const s = emptyData('u')
     expect(reducer(s, { type: 'section-jump', sectionId: 'zz-9', score: 100 })).toBe(s)
   })
 })
 
 describe('currentSectionInfo — banner', () => {
-  it('yangi foydalanuvchi: A1.1, 1-kun', () => {
+  it('yangi foydalanuvçi: A1.1, 1-kun', () => {
     const info = currentSectionInfo(emptyData('u'))!
     expect(info.section.label).toBe('A1.1')
     expect(info.unitNumber).toBe(1)
@@ -115,7 +115,7 @@ describe('currentSectionInfo — banner', () => {
     expect(info.day.dayNumber).toBe(1)
   })
 
-  it('hamma kun tugasa: oxirgi bo‘limning oxirgi kuni', () => {
+  it('hamma kun tugasa: oxirgi bölimning oxirgi kuni', () => {
     const d = emptyData('u')
     d.path.completedDays = [...a1Days, ...getBundle('A2').days].map((x) => x.id)
     const info = currentSectionInfo(d)!
@@ -124,8 +124,8 @@ describe('currentSectionInfo — banner', () => {
   })
 })
 
-describe('pathLevel — o‘quv yo‘li darajasi', () => {
-  it('yangi foydalanuvchi: A1', () => {
+describe('pathLevel — öquv yöli darajasi', () => {
+  it('yangi foydalanuvçi: A1', () => {
     expect(pathLevel(emptyData('u'))).toBe('A1')
   })
   it('A1 kunlari tugasa: A2, lekin baholangan daraja A1 qoladi', () => {
@@ -134,13 +134,13 @@ describe('pathLevel — o‘quv yo‘li darajasi', () => {
     expect(pathLevel(d)).toBe('A2')
     expect(d.settings.currentLevel).toBe('A1')
   })
-  it('A2 dan boshlagan o‘quvchiga A1.1 ko‘rsatilmaydi', () => {
+  it('A2 dan boşlagan öquvçiga A1.1 körsatilmaydi', () => {
     const d = emptyData('u')
     d.settings.currentLevel = 'A2'
     expect(pathLevel(d)).toBe('A2')
     expect(currentSectionInfo(d)!.section.label).toBe('A2.1')
   })
-  it('kontenti yo‘q daraja (B1) baholangan bo‘lsa — B1 qaytadi (yo‘l “reja yo‘q” deydi)', () => {
+  it('kontenti yöq daraja (B1) baholangan bölsa — B1 qaytadi (yöl “reja yöq” deydi)', () => {
     const d = emptyData('u')
     d.settings.currentLevel = 'B1'
     expect(pathLevel(d)).toBe('B1')

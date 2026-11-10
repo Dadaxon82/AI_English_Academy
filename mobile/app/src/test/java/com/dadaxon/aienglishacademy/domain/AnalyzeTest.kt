@@ -37,7 +37,7 @@ class AnalyzeTest {
         assertEquals(0, countWords("   "))
         assertEquals(3, countWords("I am happy"))
         assertEquals(0, countWords("... -- !!"))
-        assertEquals(4, countWords("Men 12 yoshdaman. (hozir)"))
+        assertEquals(4, countWords("Men 12 yoşdaman. (hozir)"))
     }
 
     @Test
@@ -77,7 +77,7 @@ class AnalyzeTest {
         }
         val corrections = a.errors.map { it.correction }
         listOf("I", "don't", "can't", "a lot", "which", "because", "the", "receive", "isn't", "going to", "thanks", "am").forEach {
-            assertTrue("$corrections ichida $it bo'lishi kerak", corrections.contains(it))
+            assertTrue("$corrections içida $it bölişi kerak", corrections.contains(it))
         }
     }
 
@@ -108,7 +108,7 @@ class AnalyzeTest {
         val content = a.errors.filter { it.kind == "content" }
         assertEquals(1, content.size)
         assertEquals("my holiday travel", content[0].correction)
-        assertTrue(content[0].whyUz.contains("Topshiriqda bu ma‘no kutiladi"))
+        assertTrue(content[0].whyUz.contains("Topşiriqda bu ma’no kutiladi"))
     }
 
     @Test
@@ -126,13 +126,13 @@ class AnalyzeTest {
     fun `kuchli matn kuchli tomonlar ro'yxatini oladi`() {
         val a = analyzeWriting(cleanA1, stubTask)
         assertTrue(a.strengthsUz.any { it.contains("Hajm talabi bajarildi") })
-        assertTrue(a.strengthsUz.any { it.contains("Tekshirilgan asosiy xatolar topilmadi") })
+        assertTrue(a.strengthsUz.any { it.contains("Tekşirilgan asosiy xatolar topilmadi") })
     }
 
     @Test
     fun `criterionLabelUz o'zbekcha nomlar`() {
-        assertEquals("Topshiriq bajarilishi", criterionLabelUz("task_achievement"))
-        assertEquals("Mantiqiy bog‘lanish", criterionLabelUz("coherence"))
+        assertEquals("Topşiriq bajarilişi", criterionLabelUz("task_achievement"))
+        assertEquals("Mantiqiy boğlaniş", criterionLabelUz("coherence"))
         assertEquals("Aniqlik", criterionLabelUz("accuracy"))
         assertEquals("noma'lum", criterionLabelUz("noma'lum"))
     }
@@ -180,7 +180,7 @@ class AnalyzeTest {
         assertTrue(a.lexis > 0)
         assertEquals(Math.round(((a.grammar + a.lexis) / 2 / 5) * 100).toInt(), speakingScore(a))
         assertTrue(a.notesUz.first().contains("Matnli javob"))
-        assertTrue(a.disclaimerUz.contains("ravonlik o‘lchanmaydi"))
+        assertTrue(a.disclaimerUz.contains("ravonlik ölçanmaydi"))
     }
 
     @Test
