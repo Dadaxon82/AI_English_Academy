@@ -38,7 +38,7 @@ Loyiha talabnomasi (`AI English Academy_v2.docx`) to'liq bajarilgan:
 <!-- STATS:START -->
 _Avtomatik o‘lchandi (`npm run stats`, 2026-11-10). Qo‘lda tahrirlamang._
 
-**Testlar:** vitest **470/470** (46 fayl) · **Kod:** veb 167 fayl / 42221 qator (TS/TSX), mobil 97 fayl / 26514 qator (Kotlin)
+**Testlar:** vitest **490/490** (49 fayl) · **Kod:** veb 178 fayl / 43859 qator (TS/TSX), mobil 119 fayl / 29262 qator (Kotlin)
 
 | Daraja | Kun | Lug‘at | Mashq | Turlar | Audio fayl / tinglash | Mock |
 |---|---|---|---|---|---|---|
@@ -874,6 +874,62 @@ qo'shiladi (seed — mashq id'si).
 
 **Tekshiruv:** `testDebugUnitTest` **422/422**, `assembleDebug` va imzolangan `assembleRelease` o'tdi.
 Qurilmada sinalmagan: bu muhitda KVM yo'q, shuning uchun emulyator ishga tushirilmadi.
+
+## 5q. Admin panel (`/admin`) — statistika va foydalanuvchilarni boshqarish (2026-11-10)
+
+Faqat **faol admin** kiradi (`AdminRoute`), boshqalar Dashboard'ga qaytariladi. Menyuda «Admin panel»
+havolasi faqat adminga ko'rinadi. Haqiqiy himoya **serverda**: UI'ni chetlab o'tish hech narsa bermaydi.
+
+| Qism | Fayl |
+|---|---|
+| SQL: `profiles.role` / `status` / `avatar_url`, `is_admin()`, himoya trigger'i, admin RLS, bloklash, `admin_stats` / `admin_list_users` / `admin_delete_user` RPC'lari | `supabase/migrations/0007_admin.sql` |
+| Mijoz qatlami (so'rovlar, xato → o'zbekcha sabab, `useIsAdmin`) | `src/lib/admin.ts` |
+| Sahifa: 4 ta KPI, 30 kunlik ro'yxatdan o'tish (LineChart), darajalar taqsimoti (BarChart), jadval: qidiruv, rol/holat filtri, sahifalash, rolni joyida o'zgartirish | `src/pages/admin/AdminDashboard.tsx`, `src/components/admin/AdminCharts.tsx` |
+| Tahrirlash modali: ism, rasm havolasi, rol, holat; xavfli zona — email qayta yozilganda hisobni o'chirish | `src/components/admin/UserManagementModal.tsx` |
+| ProtectedRoute, skeleton, toast | `src/components/admin/AdminRoute.tsx`, `Skeleton.tsx`, `Toasts.tsx`, `useToasts.ts` |
+
+**Xavfsizlik qoidalari (SQL testlari bilan tasdiqlangan — `supabase/tests/admin.test.sql`):**
+- Mavjud «profiles: own row» siyosati o'z qatorini yozishga ruxsat beradi, shuning uchun `role` va `status`ni
+  **trigger** himoya qiladi. Oddiy foydalanuvchi o'zini admin qila olmaydi, o'chirib qayta yaratib ham bo'lmaydi
+  (INSERT'da rol majburan `user`).
+- Oxirgi faol admin rolidan tushirilmaydi va bloklanmaydi. Admin o'zini bloklay olmaydi, adminni o'chirib bo'lmaydi.
+- Admin RPC'lari `is_admin()`ni tekshiradi. Moderator va oddiy foydalanuvchiga ular yopiq, boshqalarning profili ko'rinmaydi.
+- **Bloklash haqiqiy ta'sir qiladi:** bloklangan foydalanuvchi hamjamiyatga javob, izoh yoki shikoyat yubora olmaydi,
+  javobni tekshirishga ololmaydi va AI xizmatidan foydalana olmaydi (RESTRICTIVE siyosatlar va trigger'lar).
+  Shaxsiy o'quv ma'lumoti o'chirilmaydi.
+- **Moderator** roli hozircha qo'shimcha huquq bermaydi: bu belgi kelajakdagi moderatsiya uchun.
+
+**Talabdan ongli chetga chiqishlar:**
+- XP, streak va daraja **qo'lda tahrirlanmaydi**. Ular o'quvchining haqiqiy yozuvlaridan hisoblanadi: XP `weekly_xp`dan
+  (urinishlardan), streak `daily_activity`dan (bugun yoki kecha bilan tugaydigan ketma-ket faol kunlar), daraja
+  `user_settings.current_level`dan. Qo'lda yozilgan son ilovaning o'z hisobi bilan zid bo'lib qolardi va loyiha
+  qoidasini buzardi (dalilsiz ball yo'q).
+- `full_name` mavjud `display_name` ustuni. Email nusxa qilinmaydi, `auth.users`dan o'qiladi.
+- Darajalar: Beginner — A1–A2, Intermediate — B1–B2, Advanced — C1.
+- Kod TypeScript'da, loyihaning mavjud tuzilmasiga mos. `supabaseClient.js` o'rniga mavjud `src/lib/supabase.ts` ishlatiladi.
+
+**O'rnatish:**
+
+```bash
+npm install --save-exact recharts@3.10.1 lucide-react@1.61.0 react-is@19.3.1
+```
+
+`.env` — mavjud `VITE_SUPABASE_URL` va `VITE_SUPABASE_ANON_KEY` yetarli. Migratsiya: `0007_admin.sql`.
+Birinchi adminni SQL Editor'da (server huquqi bilan) tayinlang:
+
+```sql
+update public.profiles set role = 'admin'
+where id = (select id from auth.users where email = 'SIZNING@EMAIL');
+```
+
+**Bundle:** Recharts va ikonkalar alohida `admin-vendor` chunk'ida, faqat `/admin` ochilganda yuklanadi. Ular
+PWA oflayn keshiga ham kirmaydi. Boshlang'ich JS 296.5 dan **182.6 KB gzip**ga tushdi: avval umumiy `vendor`
+chunk'iga tushib qolgan edi.
+
+**Testlar:** `admin.test.ts` (yordamchilar va so'rov shakli), `admin-route.test.tsx` (admin bo'lmagan foydalanuvchi
+yo'naltiriladi), `admin-page.test.tsx` (KPI, rolni o'zgartirish va toast, qidiruv debounce, filtr, modal, o'chirishni
+tasdiqlash, server xatosi), SQL `admin.test.sql`. Brauzerda soxta server javoblari bilan light/dark, 1280/375 px
+holatlarida axe xato topmadi va gorizontal siljish yo'q.
 
 ## 6. Arxitektura qisqacha
 

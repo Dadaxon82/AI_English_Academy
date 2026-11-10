@@ -4,6 +4,8 @@ import { useStore } from '../lib/storeContext'
 import { MOTION, motionVars } from '../lib/motionManifest'
 import { Button, Chip } from './ui'
 import { MascotAvatar } from './Mascot'
+import { useAuthActions } from '../lib/authContext'
+import { useIsAdmin } from '../lib/admin'
 
 /** Pastki panel — yo'l bo'yicha (indeks emas: menyuga band qo'shilsa siljimaydi). */
 const BOTTOM_PATHS = ['/dashboard', '/vocabulary', '/mock-exam', '/progress', '/settings']
@@ -25,6 +27,9 @@ const NAV = [
   { to: '/progress', label: 'Progress', icon: 'M4 19h16M7 16V8m5 8V5m5 11v-6' },
   { to: '/settings', label: 'Sozlamalar', icon: 'M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6Zm8 3a8 8 0 0 0-.2-1.7l2-1.5-2-3.5-2.4 1a8 8 0 0 0-2.9-1.7L14 2h-4l-.5 2.6a8 8 0 0 0-2.9 1.7l-2.4-1-2 3.5 2 1.5A8 8 0 0 0 4 12' },
 ]
+/** Faqat adminga ko'rinadi (server `is_admin()` tasdiqlagandan keyin). */
+const ADMIN_NAV = { to: '/admin', label: 'Admin panel', icon: 'M12 3 4 6v6c0 4.5 3.4 8.3 8 9 4.6-.7 8-4.5 8-9V6l-8-3Zm-3 9 2 2 4-4' }
+
 const BOTTOM_NAV = BOTTOM_PATHS.map((p) => NAV.find((n) => n.to === p)!)
 
 function useTheme(theme: 'light' | 'dark' | 'system') {
@@ -75,6 +80,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const theme = useTheme(data.settings.theme)
   useMotion(data.settings.motionEnabled)
   const loc = useLocation()
+  const isAdmin = useIsAdmin(useAuthActions()?.userId ?? null) === 'admin'
+  const navItems = useMemo(() => (isAdmin ? [...NAV, ADMIN_NAV] : NAV), [isAdmin])
   // Menyu QAYSI sahifada ochilgan — sahifa almashsa o'zi yopiladi
   // (effect orqali setState kerak emas).
   const [menuOpenAt, setMenuOpenAt] = useState<string | null>(null)
@@ -152,7 +159,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         {/* ---------- SIDEBAR (desktop) ---------- */}
         <nav aria-label="Asosiy navigatsiya" className="hidden lg:block w-56 shrink-0">
           <div className="sticky top-[4.6rem] grid gap-1">
-            {NAV.map((n) => (
+            {navItems.map((n) => (
               <NavLink
                 key={n.to}
                 to={n.to}
@@ -175,7 +182,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         {menuOpen && (
           <div className="fixed inset-x-0 top-14 bottom-0 z-20 bg-[var(--bg)] overflow-auto p-3 lg:hidden animate-[var(--animate-fade-in)]">
             <nav aria-label="Mobil navigatsiya" className="grid grid-cols-2 gap-2 max-w-md mx-auto">
-              {NAV.map((n) => (
+              {navItems.map((n) => (
                 <NavLink
                   key={n.to}
                   to={n.to}
