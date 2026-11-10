@@ -35,7 +35,7 @@ Deno.serve(async (req) => {
   if (req.method !== 'POST') return json(405, { error: 'method', reasonUz: 'Faqat POST.' })
 
   const provider = Deno.env.get('AI_PROVIDER') ?? 'anthropic'
-  const apiKey = Deno.env.get('AI_API_KEY')
+  const apiKey = Deno.env.get('AI_API_KEY') ?? Deno.env.get('ANTHROPIC_API_KEY')
   if (provider !== 'anthropic') return json(501, { error: 'provider', reasonUz: `AI_PROVIDER="${provider}" qo‘llab-quvvatlanmaydi.` })
   if (!apiKey) return json(503, { error: 'not_configured', reasonUz: 'AI kaliti serverda sozlanmagan.' })
 
