@@ -966,7 +966,7 @@ foydalanilmadi (mualliflik huquqi) va «haqiqiy odam» deb soxta video ko'rsatil
 | Qism | Fayl |
 |---|---|
 | Shortlar: 14 ta real hayot suhbatining har replikasi (85 ta: A1 — 43, A2 — 42), mashqlar `short-<suhbat>-<qator>-<m\|l>` (`findExercise` tiklaydi, Xatolar daftariga tushadi) | `src/content/shorts.ts` |
-| Pleyer: vertikal 9:16 sahna (kafe, vokzal, shifoxona…), personajlar (gapirayotgani oldinda), ovoz — qurilmaning ingliz TTS'i, aytilayotgan so'z subtitrda yonadi, «🐢 Sekin», qayta ko'rish | `src/components/ShortPlayer.tsx`, `src/lib/shortPlayback.ts`, `src/components/shortScene.ts` |
+| Pleyer: gorizontal 16:9 oyna (dars ustuni kengligida), sahna (kafe, vokzal, shifoxona…), personajlar (gapirayotgani oldinda), ovoz — qurilmaning ingliz TTS'i, aytilayotgan so'z subtitrda yonadi, «🐢 Sekin», qayta ko'rish | `src/components/ShortPlayer.tsx`, `src/lib/shortPlayback.ts`, `src/components/shortScene.ts` |
 | Mashq oqimi: suhbat darsiga 2 ta short (suhbatdoshning replikalari — bo'shliq javoblarini oshkor qilmaydi), `/shorts` sahifasida suhbat bo'yicha playlistlar | `src/lib/lessons.ts`, `src/pages/Shorts.tsx`, `ExerciseRunner` |
 
 **Mashq (Memrise uslubi):** avval tomosha → savol. **Eshitish** («Qaysi gapni eshitdingiz?») va **ma'no**

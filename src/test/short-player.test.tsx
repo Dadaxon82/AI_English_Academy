@@ -10,6 +10,8 @@ import { allShorts } from '../content/shorts'
 import { StoreProvider } from '../lib/store'
 import { parseVideoManifest, resetVideoManifest, wordAt, wordStarts } from '../lib/shortPlayback'
 import Shorts from '../pages/Shorts'
+import { roleEmoji } from '../components/shortScene'
+import { DIALOGUES } from '../content/dialogues'
 
 type Utter = {
   text: string
@@ -67,6 +69,18 @@ describe('so‘z indekslari', () => {
     expect(wordAt(s, 0)).toBe(0)
     expect(wordAt(s, 6)).toBe(1)
     expect(wordAt(s, 17)).toBe(3)
+  })
+})
+
+describe('personajlar', () => {
+  it('har rol uçun BITTA belgili emoji (ZWJ birikmasi Windows’da ikki bölak bölib çiqadi)', () => {
+    for (const d of DIALOGUES) {
+      for (const role of [d.roles.a, d.roles.b]) {
+        const e = roleEmoji(role)
+        expect(e.includes('\u200d'), `${role}: ${e}`).toBe(false)
+        expect([...e].length, `${role}: ${e}`).toBe(1)
+      }
+    }
   })
 })
 

@@ -1,5 +1,5 @@
 /**
- * VIDEO SHORT pleyeri (9:16) — Memrise «Learn with Locals» g'oyasi, bizning qoidalar bilan.
+ * VIDEO SHORT pleyeri (gorizontal 16:9) — Memrise «Learn with Locals» g'oyasi, bizning qoidalar bilan.
  *
  * Ikki rejim, ikkalasi ham OCHIQ belgilanadi:
  *  - «Video» — `public/video/manifest.json` da shu short uchun haqiqiy klip bo'lsa
@@ -80,7 +80,7 @@ export default function ShortPlayer({ short, revealed, autoPlay = false }: { sho
   return (
     <figure className="grid gap-2 justify-items-center" aria-label={`Video short: ${short.speaker}`}>
       <div
-        className={`relative w-full max-w-[17rem] aspect-[9/16] overflow-hidden rounded-3xl shadow-lg bg-gradient-to-b ${scene.bg} text-white`}
+        className={`relative w-full max-w-2xl aspect-video overflow-hidden rounded-2xl shadow-lg bg-gradient-to-br ${scene.bg} text-white`}
       >
         {video ? (
           <video
@@ -96,14 +96,14 @@ export default function ShortPlayer({ short, revealed, autoPlay = false }: { sho
         ) : (
           <>
             {/* Sahna */}
-            <span aria-hidden className="absolute -right-4 -top-2 text-[7rem] opacity-25 select-none">
+            <span aria-hidden className="absolute right-2 top-1 text-[4.5rem] sm:text-[8rem] leading-none opacity-25 select-none">
               {scene.emoji}
             </span>
             <span className="absolute left-3 top-3 rounded-full bg-black/35 px-2.5 py-1 text-[11px] font-bold">
               {scene.emoji} {scene.labelUz}
             </span>
             {/* Personajlar: gapirayotgani oldinda, kattaroq */}
-            <div className="absolute inset-x-0 bottom-[38%] flex items-end justify-center gap-3 px-3">
+            <div className="absolute inset-x-0 top-[10%] sm:top-[20%] flex items-end justify-center gap-6 sm:gap-12 px-3">
               <Character
                 active={!short.learnerSpeaks}
                 speaking={speaking && !short.learnerSpeaks}
@@ -116,10 +116,10 @@ export default function ShortPlayer({ short, revealed, autoPlay = false }: { sho
         )}
 
         {/* Subtitr hududi */}
-        <div className="absolute inset-x-0 bottom-0 p-3 pt-6 bg-gradient-to-t from-black/80 via-black/55 to-transparent">
+        <div className="absolute inset-x-0 bottom-0 px-3 pb-2.5 pt-6 sm:px-4 sm:pb-3 bg-gradient-to-t from-black/80 via-black/55 to-transparent">
           <p className="text-[11px] font-bold uppercase tracking-wider text-white/80">{short.speaker}</p>
           {captionsOpen ? (
-            <p className="text-base font-bold leading-snug" lang="en">
+            <p className="text-sm sm:text-lg font-bold leading-snug" lang="en">
               {words.map((w, i) => (
                 <span key={i} className={i === word ? 'rounded bg-yellow-300 px-0.5 text-black' : undefined}>
                   {w}
@@ -141,17 +141,19 @@ export default function ShortPlayer({ short, revealed, autoPlay = false }: { sho
           )}
         </div>
 
-        {/* Ijro tugmasi (animatsion rejim) */}
+        {/* Ijro: butun oyna — video pleyerlardagidek (personajlarni to'smaydi) */}
         {!video && phase !== 'no-tts' && !speaking && (
           <button
             type="button"
             onClick={play}
-            className="absolute left-1/2 top-[30%] -translate-x-1/2 grid h-16 w-16 place-items-center rounded-full bg-white/90 text-indigo-800 shadow-xl transition-transform hover:scale-105 focus-visible:outline-4 focus-visible:outline-yellow-300"
+            className="group absolute inset-0 grid place-items-center bg-black/20 transition-colors hover:bg-black/10 focus-visible:outline-4 focus-visible:-outline-offset-4 focus-visible:outline-yellow-300"
             aria-label={phase === 'done' ? 'Shortni qayta köriş' : 'Shortni köriş'}
           >
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-              {phase === 'done' ? <path d="M12 5V1L7 6l5 5V7a6 6 0 1 1-6 6H4a8 8 0 1 0 8-8Z" /> : <path d="M8 5v14l11-7z" />}
-            </svg>
+            <span className="grid h-14 w-14 sm:h-16 sm:w-16 place-items-center rounded-full bg-white/90 text-indigo-800 shadow-xl transition-transform group-hover:scale-105">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+                {phase === 'done' ? <path d="M12 5V1L7 6l5 5V7a6 6 0 1 1-6 6H4a8 8 0 1 0 8-8Z" /> : <path d="M8 5v14l11-7z" />}
+              </svg>
+            </span>
           </button>
         )}
       </div>
@@ -196,12 +198,12 @@ function Character({ active, speaking, label, emoji, mascot }: { active: boolean
   return (
     <div className={`grid justify-items-center gap-1 transition-all duration-300 ${active ? 'opacity-100' : 'opacity-60 scale-90'}`}>
       <div
-        className={`grid place-items-center rounded-full bg-white/15 ring-2 ${speaking ? 'ring-yellow-300 motion-safe:animate-[short-talk_0.5s_ease-in-out_infinite]' : 'ring-white/30'} ${active ? 'h-24 w-24' : 'h-16 w-16'}`}
+        className={`grid place-items-center rounded-full bg-white/15 ring-2 ${speaking ? 'ring-yellow-300 motion-safe:animate-[short-talk_0.5s_ease-in-out_infinite]' : 'ring-white/30'} ${active ? 'h-16 w-16 sm:h-28 sm:w-28' : 'h-12 w-12 sm:h-20 sm:w-20'}`}
       >
         {mascot ? (
           <img src={`${import.meta.env.BASE_URL}mascot/mascot-avatar-128.png`} alt="" className="h-[80%] w-[80%] object-contain" />
         ) : (
-          <span aria-hidden className={active ? 'text-5xl' : 'text-3xl'}>
+          <span aria-hidden className={active ? 'text-4xl sm:text-7xl' : 'text-2xl sm:text-5xl'}>
             {emoji}
           </span>
         )}
