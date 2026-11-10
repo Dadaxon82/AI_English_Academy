@@ -9,6 +9,8 @@ import { LoadingBlock, InfoBanner, Button } from './components/ui'
 import Login from './pages/Login'
 import { signOutCurrent } from './lib/auth'
 import AdminRoute from './components/admin/AdminRoute'
+import GuestUpsell, { GuestNotice } from './components/GuestUpsell'
+import { guestRemembered, isGuestAllowedPath, rememberGuest } from './lib/guest'
 
 // Sahifalar alohida chunk'larda — birinchi ochilishda faqat kerakli sahifa
 // yuklanadi (PWA service worker barchasini oflayn uchun oldindan keshlaydi).
@@ -56,6 +58,9 @@ function Shell({ auth, onAuth }: { auth: AuthState; onAuth: (s: AuthState) => vo
   // Onboarding yakunlanmagan bo'lsa taklif qilamiz. Diagnostikani o'tkazib
   // yuborish ham yakunlash hisoblanadi (`onboardedAt`).
   const needsOnboarding = data.diagnostic === null && data.onboardedAt === null
+  // Supabase ulangan saytdagi mehmon — faqat A1.1-bölim (`lib/guest.ts`).
+  const guest = supabaseConfigured && auth.kind === 'local-only'
+  const locked = guest && !isGuestAllowedPath(loc.pathname)
 
   if (!ready) {
     return (
@@ -72,41 +77,46 @@ function Shell({ auth, onAuth }: { auth: AuthState; onAuth: (s: AuthState) => vo
 
   return (
     <Layout>
+      {guest && !locked && loc.pathname !== '/login' && <GuestNotice />}
       <Suspense fallback={<LoadingBlock label="Sahifa yuklanmoqda…" />}>
-        <Routes>
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
-          <Route path="/login" element={<Login authState={auth} onAuth={onAuth} />} />
-          <Route path="/onboarding" element={<Onboarding />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/path" element={<LearningPath />} />
-          <Route path="/lesson/:dayId/:skill" element={<StepLesson />} />
-          <Route path="/sections" element={<Sections />} />
-          <Route path="/vocabulary" element={<Vocabulary />} />
-          <Route path="/quick" element={<QuickSession />} />
-          <Route path="/dialogues" element={<Dialogues />} />
-          <Route path="/shorts" element={<Shorts />} />
-          <Route path="/community" element={<Community />} />
-          <Route path="/conversation" element={<Conversation />} />
-          <Route path="/pronunciation" element={<Pronunciation />} />
-          <Route path="/grammar" element={<Grammar />} />
-          <Route path="/reading" element={<Reading />} />
-          <Route path="/listening" element={<Listening />} />
-          <Route path="/writing" element={<Writing />} />
-          <Route path="/speaking" element={<Speaking />} />
-          <Route path="/mock-exam" element={<MockExam />} />
-          <Route path="/errors" element={<ErrorLog />} />
-          <Route path="/progress" element={<Progress />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route
-            path="/admin"
-            element={
-              <AdminRoute>
-                <AdminDashboard />
-              </AdminRoute>
-            }
-          />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        {locked ? (
+          <GuestUpsell />
+        ) : (
+            <Routes>
+              <Route path="/" element={<Navigate to="/dashboard" replace />} />
+              <Route path="/login" element={<Login authState={auth} onAuth={onAuth} />} />
+              <Route path="/onboarding" element={<Onboarding />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/path" element={<LearningPath />} />
+              <Route path="/lesson/:dayId/:skill" element={<StepLesson />} />
+              <Route path="/sections" element={<Sections />} />
+              <Route path="/vocabulary" element={<Vocabulary />} />
+              <Route path="/quick" element={<QuickSession />} />
+              <Route path="/dialogues" element={<Dialogues />} />
+              <Route path="/shorts" element={<Shorts />} />
+              <Route path="/community" element={<Community />} />
+              <Route path="/conversation" element={<Conversation />} />
+              <Route path="/pronunciation" element={<Pronunciation />} />
+              <Route path="/grammar" element={<Grammar />} />
+              <Route path="/reading" element={<Reading />} />
+              <Route path="/listening" element={<Listening />} />
+              <Route path="/writing" element={<Writing />} />
+              <Route path="/speaking" element={<Speaking />} />
+              <Route path="/mock-exam" element={<MockExam />} />
+              <Route path="/errors" element={<ErrorLog />} />
+              <Route path="/progress" element={<Progress />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route
+                path="/admin"
+                element={
+                  <AdminRoute>
+                    <AdminDashboard />
+                  </AdminRoute>
+                }
+              />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+        )}
       </Suspense>
       {needsOnboarding && loc.pathname === '/dashboard' && <FirstRunHint />}
     </Layout>
@@ -167,17 +177,21 @@ export default function App() {
       if (!alive) return
       if (data.session?.user) {
         setAuth({ kind: 'signed-in', userId: data.session.user.id, email: data.session.user.email ?? null })
+      } else if (guestRemembered()) {
+        // Avval «Mehmon sifatida davom etiş» tanlangan — mehmon hisobi (faqat A1.1).
+        setAuth({ kind: 'local-only', userId: localGuestId() })
       } else {
-        // Mahalliy ishlatuvchi bo'lsa uni saqlab qolamiz, aks holda login
         setAuth({ kind: 'signed-out' })
       }
       const { data: sub } = sb.auth.onAuthStateChange((_e, session) => {
         if (!alive) return
-        setAuth(
-          session?.user
-            ? { kind: 'signed-in', userId: session.user.id, email: session.user.email ?? null }
-            : { kind: 'signed-out' },
-        )
+        if (session?.user) {
+          rememberGuest(false)
+          setAuth({ kind: 'signed-in', userId: session.user.id, email: session.user.email ?? null })
+        } else {
+          // Sessiya yo'q: mehmon bo'lsa mehmonligicha qoladi, aks holda login.
+          setAuth((prev) => (prev.kind === 'local-only' ? prev : { kind: 'signed-out' }))
+        }
       })
       cleanup.push(() => sub.subscription.unsubscribe())
     }
@@ -208,8 +222,16 @@ export default function App() {
     })()
   }, [auth.kind, userId])
 
+  // Login'dan kelgan holat: mehmon tanlovi eslab qolinadi, hisobga kirilsa unutiladi.
+  const onAuth = useCallback((s: AuthState) => {
+    if (s.kind === 'local-only') rememberGuest(true)
+    if (s.kind === 'signed-in') rememberGuest(false)
+    setAuth(s)
+  }, [])
+
   const signedInId = auth.kind === 'signed-in' ? auth.userId : null
-  const authValue = useMemo(() => ({ signOut, userId: signedInId }), [signOut, signedInId])
+  const guest = supabaseConfigured && auth.kind === 'local-only'
+  const authValue = useMemo(() => ({ signOut, userId: signedInId, guest }), [signOut, signedInId, guest])
 
   // BrowserRouter uchun base (masalan custom domain ostidagi `/aea/`).
   // HashRouter o'zi ham `/AI_English_Academy/#/dashboard` dan ishlaydi.
@@ -220,7 +242,7 @@ export default function App() {
     <Router {...routerProps}>
       <AuthContext.Provider value={authValue}>
         <StoreProvider userId={userId} remoteSync={auth.kind === 'signed-in'}>
-          <Shell auth={auth} onAuth={setAuth} />
+          <Shell auth={auth} onAuth={onAuth} />
         </StoreProvider>
       </AuthContext.Provider>
     </Router>
