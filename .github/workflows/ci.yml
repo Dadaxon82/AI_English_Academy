@@ -43,6 +43,28 @@ jobs:
           path: dist
           retention-days: 3
 
+  # Supabase migratsiyalari va RLS qoidalari — haqiqiy Postgres'da
+  # (`supabase/tests/*.test.sql`: hamjamiyat tekshiruvi ruxsatlari, moderatsiya).
+  sql:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      PGHOST: localhost
+      PGPORT: 5432
+      PGUSER: postgres
+      PGPASSWORD: postgres
+    steps:
+      - uses: actions/checkout@v4
+      - run: bash scripts/test-sql.sh
+
   e2e:
     needs: checks
     runs-on: ubuntu-latest

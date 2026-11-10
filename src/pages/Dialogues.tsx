@@ -121,7 +121,7 @@ export default function Dialogues() {
   }
 
   return (
-    <div className="grid gap-4">
+    <div className="grid content-start gap-4">
       <Card className="grid gap-3">
         <div className="grid sm:grid-cols-[1fr_auto] items-center gap-3">
           <div className="grid gap-1.5">

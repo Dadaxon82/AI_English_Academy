@@ -28,6 +28,7 @@ const Settings = lazy(() => import('./pages/Settings'))
 const StepLesson = lazy(() => import('./pages/StepLesson'))
 const QuickSession = lazy(() => import('./pages/QuickSession'))
 const Dialogues = lazy(() => import('./pages/Dialogues'))
+const Community = lazy(() => import('./pages/Community'))
 
 /**
  * Router tanlovi:
@@ -77,6 +78,7 @@ function Shell({ auth, onAuth }: { auth: AuthState; onAuth: (s: AuthState) => vo
           <Route path="/vocabulary" element={<Vocabulary />} />
           <Route path="/quick" element={<QuickSession />} />
           <Route path="/dialogues" element={<Dialogues />} />
+          <Route path="/community" element={<Community />} />
           <Route path="/grammar" element={<Grammar />} />
           <Route path="/reading" element={<Reading />} />
           <Route path="/listening" element={<Listening />} />

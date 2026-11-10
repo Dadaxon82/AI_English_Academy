@@ -18,6 +18,7 @@ import { LOADED_LEVELS, getBundle } from '../content'
 import { CEFR_LEVELS } from '../content/types'
 import { DiagnosticStep } from './Onboarding'
 import SelfAssessment from '../components/SelfAssessment'
+import CertificateCard from '../components/CertificateCard'
 import type { SkillEvidence } from '../lib/skillScoring'
 
 export default function Progress() {
@@ -115,6 +116,9 @@ export default function Progress() {
       {/* --- Faoliyat grafigi --- */}
       {/* --- O'z-o'zini baholash (Likert) — darajaga ta'sir qilmaydi --- */}
       <SelfAssessment />
+
+      {/* --- Daraja yakunlash guvohnomasi (rasmiy emas) --- */}
+      <CertificateCard />
 
       <Card className="grid gap-3">
         <div className="flex flex-wrap items-center gap-2">

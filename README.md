@@ -7,6 +7,7 @@ Loyiha talabnomasi (`AI English Academy_v2.docx`) to'liq bajarilgan:
 - ✅ To'liq **o'zbek tilli interfeys**
 - ✅ **A1, A2, B1, B2, C1** darajalar; daraja faqat **ko'p ko'nikma dalili** bilan ko'tariladi (XP yoki kunlar emas), mock imtihon esa doim **"mashq uchun yaratilgan namuna"** deb yozilgan
 - ✅ **90 daqiqalik** asosiy kunlik reja (Vocab 10 / Grammar 15 / Reading 15 / Listening 15 / Writing 20 / Speaking 15) — zaif ko'nikma va imtihon sanasiga qarab qayta taqsimlanadi
+- ✅ **Hamjamiyat tekshiruvi** (`/community`), «Men qila olaman» dalili va yakunlash guvohnomasi — 5l-bo'lim
 - ✅ **Real hayot suhbatlari** (`/dialogues`) — A1/A2 da 14 stsenariy va **Takrorlash menejeri** (xatolar + so'zlar bitta navbatda) — 5k-bo'lim
 - ✅ **«5 daqiqa» tezkor sessiya** (`/quick`) — takror + bitta mavzudan yangi so'zlar, surish bilan baholash (5j-bo'lim)
 - ✅ **14 sahifa**: Dashboard, Learning Path, Vocabulary, Grammar, Reading, Listening, Writing, Speaking, Mock Exam, Progress, Error Log, Settings, Login, 404
@@ -32,9 +33,9 @@ Loyiha talabnomasi (`AI English Academy_v2.docx`) to'liq bajarilgan:
 ### Joriy sonlar
 
 <!-- STATS:START -->
-_Avtomatik o‘lchandi (`npm run stats`, 2026-11-09). Qo‘lda tahrirlamang._
+_Avtomatik o‘lchandi (`npm run stats`, 2026-11-10). Qo‘lda tahrirlamang._
 
-**Testlar:** vitest **425/425** (39 fayl) · **Kod:** veb 145 fayl / 39225 qator (TS/TSX), mobil 97 fayl / 26514 qator (Kotlin)
+**Testlar:** vitest **444/444** (42 fayl) · **Kod:** veb 154 fayl / 40416 qator (TS/TSX), mobil 97 fayl / 26514 qator (Kotlin)
 
 | Daraja | Kun | Lug‘at | Mashq | Turlar | Audio fayl / tinglash | Mock |
 |---|---|---|---|---|---|---|
@@ -712,6 +713,47 @@ tuzilmasi, holat), `review-manager.test.ts` (birlashtirish, tartib, chegara),
 `dialogues-page.test.tsx` (suhbat oxirigacha; menejerda SRS bir marta baholanishi),
 e2e `flows.spec.ts` (suhbat → xatolar menejerda) va `a11y.spec.ts` (`/dialogues` hamda
 dars ichida; light/dark; 1280 va 375 px).
+
+## 5l. «Men qila olaman» dalili, hamjamiyat tekshiruvi va guvohnoma — Busuu g'oyasi, 3-bosqich (2026-11-10)
+
+`docs/TIL_PLATFORMALARI_TAHLIL_VA_PROMPT.md` rejasining 3-bosqichi. **Faqat veb** (mobil — keyinroq).
+
+| Nima | Qayerda |
+|---|---|
+| Har «Men qila olaman» da'vosi ostida haqiqiy dalil: shu daraja va ko'nikma bo'yicha urinishlar + mock imtihon bo'limlari. Holat: «dalil yo'q / yetarli emas / mashq kerak / natija bilan tasdiqlandi» | `src/lib/canDoEvidence.ts`, `src/components/SelfAssessment.tsx` (Progress) |
+| Hamjamiyat tekshiruvi: yozma javob yoki nutq **matni** (audio emas) rozilik bilan yuboriladi. Server tekshiruvchiga bitta javob **tayinlaydi**: baho 1–5 va izoh 10–1000 belgi. Shikoyat va avtomatik yashirish bor | `supabase/migrations/0006_peer_review.sql`, `src/lib/peer.ts`, `src/pages/Community.tsx` (`/community`, menyuda «Hamjamiyat») |
+| Daraja yakunlash guvohnomasi (PNG, brauzerda chiziladi). Ochilish sharti — darajaning barcha kunlari yakunlangan bo'lishi. Matnda doim **«rasmiy sertifikat emas»** deb yoziladi | `src/lib/certificate.ts`, `src/lib/certificateDraw.ts`, `src/components/CertificateCard.tsx` (Progress) |
+
+**Server qoidalari (0006):**
+- Tekshiruvchi faqat o'ziga tayinlangan va yashirilmagan javobni ko'radi.
+- Muallif faqat o'zinikini va unga kelgan yashirilmagan izohlarni ko'radi.
+- Bir javobga bir tekshiruvchi bitta izoh yozadi. Har javobga ko'pi bilan 2 ta izoh.
+- Tayinlovni yig'ib olib bo'lmaydi: bir vaqtda bitta ochiq tayinlov.
+- Kuniga ko'pi bilan 5 ta javob yuborish mumkin.
+- Javobga 2 ta shikoyat tushsa u yashiriladi. Izohga muallif shikoyat qilsa izoh yashiriladi.
+- Shikoyat qilgan tekshiruvchiga o'sha javob qayta tayinlanmaydi.
+- Hech bir jadvalda UPDATE ruxsati yo'q: holatni faqat triggerlar o'zgartiradi.
+
+Migratsiya qo'llanmagan bazada sahifa buni ochiq aytadi va fayl nomini ko'rsatadi
+(`peerErrorUz`). Mehmon rejimida yoki server ulanmaganda ham faqat sabab ko'rsatiladi,
+soxta ro'yxat chiqmaydi.
+
+**SQL testlari (yangi):** `supabase/tests/peer_review.test.sql`. Ular lokal Postgres'da
+`_supabase_stub.sql` orqali Supabase'ning `auth.uid()` va rollarini taqlid qiladi.
+
+```bash
+PGHOST=/var/run/postgresql PGUSER=postgres bash scripts/test-sql.sh   # → peer_review: OK
+```
+
+CI'da alohida `sql` job (Postgres 16 xizmati) ularni har PR'da ishga tushiradi. Testlarning
+o'zi ham tekshirildi: bitta RLS qoidasi ataylab buzilganda test darhol yiqildi.
+
+**Testlar:** `peer.test.ts` (chegaralar, xato → sabab, so'rovlar, mehmon/server yo'q holati),
+`community-page.test.tsx`, `cando-certificate.test.ts`; a11y: `/community` (light/dark, 1280 va 375 px).
+
+**Qilinmagan:** tekshiruvchiga gem mukofoti. O'yin sonlari veb, `game_manifest.json` va
+`GameConfig.kt` da bir xil turishi shart, shuning uchun mukofot mobil parite bilan birga
+qo'shiladi.
 
 ## 6. Arxitektura qisqacha
 
