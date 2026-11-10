@@ -25,6 +25,9 @@ import { CAN_DO, LIKERT_LABELS } from ${JSON.stringify(path.join(ROOT, 'src', 'c
 export const canDo = { labels: LIKERT_LABELS, statements: CAN_DO }
 import { remixExercise } from ${JSON.stringify(path.join(ROOT, 'src', 'content', 'remix.ts').replace(/\\/g, '/'))}
 import * as LS from ${JSON.stringify(path.join(ROOT, 'src', 'lib', 'lessons.ts').replace(/\\/g, '/'))}
+import * as DLG from ${JSON.stringify(path.join(ROOT, 'src', 'content', 'dialogues.ts').replace(/\\/g, '/'))}
+/** Real hayot suhbatlari — bitta manba (veb \`dialogues.ts\`). */
+export const dialogues = DLG.DIALOGUES
 
 /** Mobil paritet testi uchun: veb yasagan mashqlar (Kotlin xuddi shuni yasashi shart). */
 export function makeParity() {
@@ -47,6 +50,8 @@ export function makeParity() {
     }
     for (const e of C.allExercises(l)) add(remixExercise(e))
   }
+  // Suhbat bo'shliqlari (\`dlg-<suhbat>-<qator>\`) — Kotlin ham aynan shuni yasashi shart.
+  for (const e of DLG.allDialogueExercises()) add(e)
   return out
 }
 // A2 … alohida chunk'larda (dinamik import) — avval hammasi yuklanadi.
@@ -120,6 +125,9 @@ async function main() {
 
   // O'z-o'zini baholash da'volari (Likert) — bitta manba (veb `canDo.ts`).
   writeFileSync(path.join(OUT, 'content', 'can-do.json'), JSON.stringify(nodeRequire(path.join(TMP, 'bundle.cjs')).canDo, null, 1), 'utf8')
+
+  // Real hayot suhbatlari (2-bosqich) — bitta manba (veb \`dialogues.ts\`).
+  writeFileSync(path.join(OUT, 'content', 'dialogues.json'), JSON.stringify(nodeRequire(path.join(TMP, 'bundle.cjs')).dialogues, null, 1), 'utf8')
 
   // Mobil paritet fixture (faqat testlar uchun — APK'ga kirmaydi).
   const testRes = path.join(ROOT, 'mobile', 'app', 'src', 'test', 'resources')

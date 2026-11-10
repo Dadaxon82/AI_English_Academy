@@ -279,6 +279,20 @@ export default function Dashboard() {
         />
       </div>
 
+      {/* ---------- «5 daqiqa» tezkor sessiya (/quick) ---------- */}
+      <Card as="section" className="flex flex-wrap items-center gap-3">
+        <span className="text-3xl" aria-hidden="true">⚡</span>
+        <div className="grid gap-0.5 flex-1 min-w-48">
+          <h2 className="font-bold">Vaqtingiz kammi? 5 daqiqa yetadi</h2>
+          <p className="text-sm muted">
+            {dueCount > 0 ? `${dueCount} ta takror` : 'Takror navbati bo‘sh'} + bitta mavzudan yangi so‘zlar. Kunlik zanjir saqlanadi.
+          </p>
+        </div>
+        <Link to="/quick" className={linkPrimary}>
+          5 daqiqa boshlash
+        </Link>
+      </Card>
+
       {/* O‘yin qatlami ko‘rsatkichlari (yurak / kunlik XP / gem / questlar) —
           o'ng paneldagi `LeaguePanel`da ko'rsatiladi, bu yerda takrorlanmaydi. */}
 

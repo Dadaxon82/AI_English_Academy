@@ -10,6 +10,8 @@
  * SOF funksiyalar — kontent obyektlaridan tashqari hech narsaga bog'liq emas.
  */
 
+import { dialogueExercise, dialogueExerciseId, gapLineIndexes } from '../content/dialogues'
+import type { AttemptRecord } from './types'
 import {
   grammarExampleExercise,
   shortSentences,
@@ -18,6 +20,7 @@ import {
   writingSentenceExercise,
 } from '../content'
 import type {
+  Dialogue,
   Exercise,
   GrammarTopic,
   ListeningTask,
@@ -127,3 +130,29 @@ export function speechMatch(expected: string, heard: string): number {
 
 /** Talaffuz "to'g'ri" deb qabul qilinadigan chegara — BIZNING qarorimiz. */
 export const SPEECH_PASS = 0.7
+
+/**
+ * Suhbat darsi: vaziyat va suhbat (bo'shliqlar bilan) → har bo'shliq mashq
+ * (suhbat matni qayta ochiladi) → «Nega shunday?» izohi.
+ */
+export function dialogueLesson(d: Dialogue): LessonStep[] {
+  const steps: LessonStep[] = [{ type: 'info', id: `${d.id}:read`, info: 'passage', titleUz: d.titleUz }]
+  for (const i of gapLineIndexes(d)) {
+    const ex = dialogueExercise(d, i)
+    if (ex) steps.push({ type: 'exercise', id: ex.id, exercise: ex, context: 'passage' })
+  }
+  steps.push({ type: 'info', id: `${d.id}:note`, info: 'rule', titleUz: `Nega shunday? ${d.note.titleUz}` })
+  return steps
+}
+
+/** Har bo'shliqning oxirgi urinishi bo'yicha: nechtasi to'g'ri, nechtasi urinilgan. */
+export function dialogueProgress(d: Dialogue, attempts: readonly AttemptRecord[]): { correct: number; tried: number; total: number } {
+  const ids = gapLineIndexes(d).map((i) => dialogueExerciseId(d, i))
+  const last = new Map<string, AttemptRecord>()
+  for (const a of attempts) {
+    if (!ids.includes(a.exerciseId)) continue
+    const prev = last.get(a.exerciseId)
+    if (!prev || a.at >= prev.at) last.set(a.exerciseId, a)
+  }
+  return { correct: [...last.values()].filter((a) => a.correct).length, tried: last.size, total: ids.length }
+}

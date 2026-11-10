@@ -43,10 +43,21 @@ object Nav {
      */
     const val ARG_SECTION_ID = "sectionId"
 
+    /**
+     * "1" — pleyer so'z bilan bog'liq mashq javobini SRS'ga ham yozadi
+     * (Takrorlash menejeri; har mashq uchun faqat birinchi urinish).
+     */
+    const val ARG_GRADE_VOCAB = "gradeVocab"
+
     /** Barcha batafsil manzillar (orqaga qaytishda ro'yxat holati saqlanadi). */
     val DETAIL_DESTINATIONS = setOf(
         R.id.exerciseFragment,
         R.id.vocabReviewFragment,
+        R.id.quickSessionFragment,
+        R.id.dialoguesFragment,
+        R.id.communityFragment,
+        R.id.conversationFragment,
+        R.id.pronunciationFragment,
         R.id.grammarTopicFragment,
         R.id.readingFragment,
         R.id.listeningFragment,
@@ -92,6 +103,8 @@ object Nav {
         title: String,
         /** `false` — tartib saqlanadi (xatolar o'yini o'zi tartiblaydi). */
         reorder: Boolean = true,
+        /** Javob SRS'ga ham yozilsinmi (Takrorlash menejeri). */
+        gradeVocab: Boolean = false,
     ) {
         val ordered = if (reorder && source == com.dadaxon.aienglishacademy.data.Source.PRACTICE) {
             val cr = runCatching { f.requireActivity().container().content }.getOrNull()
@@ -112,6 +125,7 @@ object Nav {
                 ARG_DAY_ID to dayId,
                 ARG_SOURCE to source,
                 ARG_TITLE to title,
+                ARG_GRADE_VOCAB to if (gradeVocab) "1" else null,
             ),
         )
     }

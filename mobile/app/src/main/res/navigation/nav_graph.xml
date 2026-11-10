@@ -58,6 +58,36 @@
         android:name="com.dadaxon.aienglishacademy.ui.runner.ExerciseFragment"
         android:label="@string/ex_title" />
 
+    <!-- «5 daqiqa» tezkor sessiya (veb `/quick`, `src/pages/QuickSession.tsx`). -->
+    <fragment
+        android:id="@+id/quickSessionFragment"
+        android:name="com.dadaxon.aienglishacademy.ui.QuickSessionFragment"
+        android:label="@string/quick_dash_start" />
+
+    <!-- Real hayot suhbatlari (veb `/dialogues`). -->
+    <fragment
+        android:id="@+id/dialoguesFragment"
+        android:name="com.dadaxon.aienglishacademy.ui.DialoguesFragment"
+        android:label="@string/dlg_title" />
+
+    <!-- Hamjamiyat tekshiruvi (veb `/community`). -->
+    <fragment
+        android:id="@+id/communityFragment"
+        android:name="com.dadaxon.aienglishacademy.ui.CommunityFragment"
+        android:label="@string/com_title" />
+
+    <!-- AI suhbatdosh (veb `/conversation`). -->
+    <fragment
+        android:id="@+id/conversationFragment"
+        android:name="com.dadaxon.aienglishacademy.ui.ConversationFragment"
+        android:label="@string/conv_title" />
+
+    <!-- Talaffuz mashqi (veb `/pronunciation`). -->
+    <fragment
+        android:id="@+id/pronunciationFragment"
+        android:name="com.dadaxon.aienglishacademy.ui.PronunciationFragment"
+        android:label="@string/pron_title" />
+
     <fragment
         android:id="@+id/vocabReviewFragment"
         android:name="com.dadaxon.aienglishacademy.ui.VocabReviewFragment"

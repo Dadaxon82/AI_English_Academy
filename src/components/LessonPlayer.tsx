@@ -243,7 +243,7 @@ function ContextToggle({ kind, children }: { kind: 'passage' | 'audio'; children
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
-        className="justify-self-start inline-flex items-center gap-1.5 rounded-xl border-2 border-b-4 px-3 py-1.5 text-xs font-extrabold uppercase tracking-wide text-sky-600 dark:text-sky-400 bg-[var(--panel)] hover:bg-[var(--panel-2)]"
+        className="justify-self-start inline-flex items-center gap-1.5 rounded-xl border-2 border-b-4 px-3 py-1.5 text-xs font-extrabold uppercase tracking-wide text-sky-700 dark:text-sky-300 bg-[var(--panel)] hover:bg-[var(--panel-2)]"
       >
         {kind === 'passage' ? '📖' : '🎧'} {open ? 'Yopish' : kind === 'passage' ? 'Matnni ko‘rish' : 'Audioni qayta tinglash'}
       </button>

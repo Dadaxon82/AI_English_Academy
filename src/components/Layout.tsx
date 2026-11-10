@@ -5,6 +5,9 @@ import { MOTION, motionVars } from '../lib/motionManifest'
 import { Button, Chip } from './ui'
 import { MascotAvatar } from './Mascot'
 
+/** Pastki panel — yo'l bo'yicha (indeks emas: menyuga band qo'shilsa siljimaydi). */
+const BOTTOM_PATHS = ['/dashboard', '/vocabulary', '/mock-exam', '/progress', '/settings']
+
 const NAV = [
   { to: '/dashboard', label: 'Dashboard', icon: 'M3 12 12 4l9 8M5 11v9h14v-9' },
   { to: '/path', label: "O'quv yo'li", icon: 'M4 18h4V6H4v12Zm6 0h4V6h-4v12Zm6 0h4V6h-4v12Z' },
@@ -15,11 +18,14 @@ const NAV = [
   { to: '/listening', label: 'Tinglash', icon: 'M4 12a8 8 0 0 1 16 0M6 12v4a2 2 0 0 0 4 0v-4m4 0v4a2 2 0 0 0 4 0v-4' },
   { to: '/writing', label: 'Yozish', icon: 'M4 20l4-1 11-11-3-3L5 16l-1 4Z' },
   { to: '/speaking', label: "Gapirish", icon: 'M12 3a4 4 0 0 1 4 4v4a4 4 0 0 1-8 0V7a4 4 0 0 1 4-4Zm-7 8a7 7 0 0 0 14 0M12 18v3' },
+  { to: '/dialogues', label: 'Suhbatlar', icon: 'M4 5h16v10H9l-5 4V5Zm4 4h8m-8 3h5' },
+  { to: '/community', label: 'Hamjamiyat', icon: 'M8 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm8 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM2 20a6 6 0 0 1 12 0m-2-6a6 6 0 0 1 10 6' },
   { to: '/mock-exam', label: 'Mock Exam', icon: 'M6 3h12v18H6zM9 8h6M9 12h6M9 16h4' },
   { to: '/errors', label: 'Xatolar daftari', icon: 'M12 8v5m0 3.5.01 0M5 4h14v16H5z' },
   { to: '/progress', label: 'Progress', icon: 'M4 19h16M7 16V8m5 8V5m5 11v-6' },
   { to: '/settings', label: 'Sozlamalar', icon: 'M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6Zm8 3a8 8 0 0 0-.2-1.7l2-1.5-2-3.5-2.4 1a8 8 0 0 0-2.9-1.7L14 2h-4l-.5 2.6a8 8 0 0 0-2.9 1.7l-2.4-1-2 3.5 2 1.5A8 8 0 0 0 4 12' },
 ]
+const BOTTOM_NAV = BOTTOM_PATHS.map((p) => NAV.find((n) => n.to === p)!)
 
 function useTheme(theme: 'light' | 'dark' | 'system') {
   const [resolved, setResolved] = useState<'light' | 'dark'>('light')
@@ -195,7 +201,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       {/* ---------- BOTTOM NAV (mobil) ---------- */}
       <nav aria-label="Tez navigatsiya" className="lg:hidden fixed bottom-0 inset-x-0 z-30 border-t bg-[var(--panel)] pb-[env(safe-area-inset-bottom)]">
         <div className="grid grid-cols-5">
-          {[NAV[0], NAV[3], NAV[9], NAV[11], NAV[12]].map((n) => (
+          {BOTTOM_NAV.map((n) => (
             <NavLink
               key={n.to}
               to={n.to}

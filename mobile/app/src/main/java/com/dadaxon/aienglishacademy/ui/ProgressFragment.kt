@@ -1,5 +1,8 @@
 package com.dadaxon.aienglishacademy.ui
 
+import com.dadaxon.aienglishacademy.domain.CanDoStatus
+import com.dadaxon.aienglishacademy.domain.canDoEvidence
+import com.dadaxon.aienglishacademy.domain.certificateInfo
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -164,6 +167,12 @@ class ProgressFragment : Fragment() {
         /* ---- o'z-o'zini baholash (Likert) — veb `SelfAssessment.tsx` ---- */
         addSelfAssessment(d)
 
+        /* ---- daraja yakunlash guvohnomasi (rasmiy emas) — veb `CertificateCard.tsx` ---- */
+        addCertificate(d)
+
+        /* ---- yangi funksiyalardan foydalanish (faqat qurilmada) — veb `UsageCard.tsx` ---- */
+        addUsage()
+
         /* ---- so'zlar statistikasi ---- */
         val srs = d.srs.values.toList()
         b.rows.addView(Rows.sectionTitle(ctx, getString(R.string.progress_words_title)))
@@ -260,9 +269,116 @@ class ProgressFragment : Fragment() {
             }
             box.addView(row)
             box.addView(Rows.small(ctx, cur?.let { file.labels[it - 1] } ?: getString(R.string.progress_self_none)))
+            // Haqiqiy dalil (veb `canDoEvidence`): shu daraja va ko'nikma natijalari.
+            val ev = canDoEvidence(st, d.attempts, d.mockAttempts, System.currentTimeMillis(), ::examLevel)
+            box.addView(
+                Rows.small(
+                    ctx,
+                    when (ev.status) {
+                        CanDoStatus.NONE -> getString(R.string.cando_none, st.level, Rows.skillName(ctx, st.skill).lowercase())
+                        CanDoStatus.FEW -> getString(R.string.cando_few, ev.count, ev.score ?: 0, ev.needed)
+                        CanDoStatus.PRACTICE -> getString(R.string.cando_practice, ev.count, ev.score ?: 0)
+                        else -> getString(R.string.cando_confirmed, ev.count, ev.score ?: 0)
+                    },
+                ),
+            )
             card.addView(box)
             b.rows.addView(card)
         }
+    }
+
+    private fun addUsage() {
+        val ctx = requireContext()
+        val stats = UsageTracker.stats(ctx)
+        b.rows.addView(Rows.sectionTitle(ctx, getString(R.string.usage_title)))
+        b.rows.addView(Rows.small(ctx, getString(R.string.usage_hint)))
+        for (f in com.dadaxon.aienglishacademy.domain.USAGE_FEATURES) {
+            val s = stats[f.id]
+            val pct = com.dadaxon.aienglishacademy.domain.completionPct(s)
+            b.rows.addView(
+                Rows.row(
+                    ctx,
+                    f.titleUz,
+                    getString(R.string.usage_row, s?.started ?: 0, s?.finished ?: 0, f.finishedUz),
+                    pct?.let { "$it%" } ?: "—",
+                ),
+            )
+        }
+        if (stats.isNotEmpty()) {
+            b.rows.addView(Rows.button(ctx, getString(R.string.usage_clear)).apply { setOnClickListener { UsageTracker.clear(ctx); render() } })
+        }
+    }
+
+    /** Mock imtihon id'si → daraja (kontentdagi `mockExam.id`). */
+    private fun examLevel(examId: String): String? {
+        val cr = container().content
+        return runCatching { cr.levels().firstOrNull { cr.bundle(it).mockExam?.id == examId } }.getOrNull()
+    }
+
+    private var certBitmap: android.graphics.Bitmap? = null
+
+    private fun addCertificate(d: com.dadaxon.aienglishacademy.data.AppData) {
+        val ctx = requireContext()
+        val cr = container().content
+        val level = d.settings.currentLevel
+        val bundle = runCatching { cr.bundle(level) }.getOrNull() ?: return
+        val ids = (bundle.vocab + runCatching { cr.allGlossaryVocab() }.getOrElse { emptyList() }.filter { it.level == level }).map { it.id }
+        val claims = runCatching { cr.canDo().statements }.getOrElse { emptyList() }
+        val info = certificateInfo(d, level, bundle.days, ids, claims, System.currentTimeMillis(), ::examLevel)
+        b.rows.addView(Rows.sectionTitle(ctx, getString(R.string.cert_title)))
+        b.rows.addView(Rows.small(ctx, getString(R.string.cert_disclaimer)))
+        val acc = info.accuracy?.let { getString(R.string.cert_accuracy, it) } ?: getString(R.string.cert_no_accuracy)
+        b.rows.addView(
+            Rows.small(ctx, getString(R.string.cert_stats, info.daysDone, info.daysTotal, info.attempts, acc, info.wordsLearned, info.canDoConfirmed, info.canDoTotal)),
+        )
+        if (!info.eligible) {
+            b.rows.addView(Rows.body(ctx, getString(R.string.cert_locked, level, info.daysTotal, info.daysTotal - info.daysDone)))
+            return
+        }
+        val image = android.widget.ImageView(ctx).apply {
+            adjustViewBounds = true
+            contentDescription = getString(R.string.cert_title)
+            certBitmap?.let { setImageBitmap(it) } ?: run { visibility = View.GONE }
+        }
+        val save = Rows.button(ctx, getString(R.string.cert_save)).apply {
+            visibility = if (certBitmap == null) View.GONE else View.VISIBLE
+            setOnClickListener { certBitmap?.let { bmp -> saveCertificate(bmp, level) } }
+        }
+        b.rows.addView(
+            Rows.primaryButton(ctx, getString(R.string.cert_make)).apply {
+                setOnClickListener {
+                    val name = d.profileName.ifBlank { "O‘quvchi" }
+                    val date = java.text.SimpleDateFormat("dd.MM.yyyy", java.util.Locale.getDefault()).format(java.util.Date())
+                    UsageTracker.track(ctx, "certificate", started = true)
+                    certBitmap = CertificateDrawer.draw(info, name, date, getString(R.string.cert_disclaimer), acc)
+                    UsageTracker.track(ctx, "certificate", started = false)
+                    image.setImageBitmap(certBitmap)
+                    image.visibility = View.VISIBLE
+                    save.visibility = View.VISIBLE
+                }
+            },
+        )
+        b.rows.addView(image)
+        b.rows.addView(save)
+    }
+
+    /** MediaStore orqali «Rasmlar»ga (Android 10+; undan pastda ruxsatsiz yo'q — sabab aytiladi). */
+    private fun saveCertificate(bmp: android.graphics.Bitmap, level: String) {
+        val ctx = requireContext()
+        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.Q) {
+            android.widget.Toast.makeText(ctx, R.string.cert_save_old, android.widget.Toast.LENGTH_LONG).show()
+            return
+        }
+        val ok = runCatching {
+            val values = android.content.ContentValues().apply {
+                put(android.provider.MediaStore.Images.Media.DISPLAY_NAME, "guvohnoma-$level.png")
+                put(android.provider.MediaStore.Images.Media.MIME_TYPE, "image/png")
+                put(android.provider.MediaStore.Images.Media.RELATIVE_PATH, "Pictures/AI English Academy")
+            }
+            val uri = ctx.contentResolver.insert(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values) ?: error("uri")
+            ctx.contentResolver.openOutputStream(uri)!!.use { bmp.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, it) }
+        }.isSuccess
+        android.widget.Toast.makeText(ctx, if (ok) R.string.cert_saved else R.string.cert_save_fail, android.widget.Toast.LENGTH_LONG).show()
     }
 
     private fun rangeDaysOrAll(): Int = if (rangeDays <= 0) 365 else rangeDays

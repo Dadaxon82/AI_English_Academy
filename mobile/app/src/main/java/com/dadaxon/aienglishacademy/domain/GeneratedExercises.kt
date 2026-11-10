@@ -33,7 +33,7 @@ const val REMIX_PREFIX = "remix-"
 /** Plitkalar uchun gap uzunligi chegarasi (so'z) — veb `LESSON_SENTENCE_MAX`. */
 const val LESSON_SENTENCE_MAX = 12
 
-private fun wordsOf(s: String): List<String> = s.trim().split(Regex("\\s+")).filter { it.isNotEmpty() }
+internal fun wordsOf(s: String): List<String> = s.trim().split(Regex("\\s+")).filter { it.isNotEmpty() }
 
 /**
  * Veb `seededShuffle`/`seeded` bilan bir xil 32-bit xesh (FNV-1a + LCG).
@@ -61,7 +61,7 @@ private fun <T> seeded(arr: List<T>, seed: String): MutableList<T> {
 }
 
 /** Veb `seededShuffle`: aralash natija javobning o'zi bo'lib qolmasin. */
-private fun <T> seededShuffle(arr: List<T>, seed: String): List<T> {
+internal fun <T> seededShuffle(arr: List<T>, seed: String): List<T> {
     val out = seeded(arr, seed)
     if (out.size > 1 && out.indices.all { out[it] == arr[it] }) out.add(out.removeAt(0))
     return out

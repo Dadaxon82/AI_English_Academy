@@ -124,6 +124,29 @@ class DashboardFragment : Fragment() {
             ),
         )
 
+        /* 2a) «5 daqiqa» tezkor sessiya — veb `Dashboard.tsx` kartasi. */
+        addQuickCard(countDue(srs))
+        b.rows.addView(
+            Rows.row(ctx, getString(R.string.dlg_dash_title), getString(R.string.dlg_dash_body), null) {
+                findNavController().navigate(R.id.dialoguesFragment)
+            },
+        )
+        b.rows.addView(
+            Rows.row(ctx, getString(R.string.com_title), getString(R.string.com_dash_body), null) {
+                findNavController().navigate(R.id.communityFragment)
+            },
+        )
+        b.rows.addView(
+            Rows.row(ctx, getString(R.string.conv_title), getString(R.string.conv_dash_body), null) {
+                findNavController().navigate(R.id.conversationFragment)
+            },
+        )
+        b.rows.addView(
+            Rows.row(ctx, getString(R.string.pron_title), getString(R.string.pron_dash_body), null) {
+                findNavController().navigate(R.id.pronunciationFragment)
+            },
+        )
+
         /* 2b) O'yin qatlami plitkalari — veb `Dashboard.tsx`dagi ikkinchi
                qatorning moslamasi (yurak / kunlik XP / gem / qalqon).
                Sonlar `GameLogic.heartsView` va `goalView`dan olinadi,
@@ -245,6 +268,28 @@ class DashboardFragment : Fragment() {
                 else -> R.string.dash_greeting_good_evening
             },
         )
+    }
+
+    /* ------------------------ «5 daqiqa» kartasi ----------------------- */
+
+    private fun addQuickCard(due: Int) {
+        val ctx = requireContext()
+        val card = Rows.card(ctx)
+        val box = LinearLayout(ctx).apply { orientation = LinearLayout.VERTICAL }
+        box.addView(Rows.sectionTitle(ctx, "⚡ " + getString(R.string.quick_dash_title)))
+        box.addView(
+            Rows.small(
+                ctx,
+                if (due > 0) getString(R.string.quick_dash_body, due) else getString(R.string.quick_dash_body_empty),
+            ),
+        )
+        box.addView(
+            Rows.primaryButton(ctx, getString(R.string.quick_dash_start)).apply {
+                setOnClickListener { findNavController().navigate(R.id.quickSessionFragment) }
+            },
+        )
+        card.addView(box)
+        b.rows.addView(card)
     }
 
     /* ---------------------------- taymer kartasi ----------------------- */

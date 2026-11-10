@@ -218,6 +218,31 @@ class SupabaseClient(
         return parseRows(resp)
     }
 
+    /**
+     * `POST <table>` oddiy INSERT (upsert emas). `returning = true` — server
+     * yozilgan qatorni qaytaradi (`Prefer: return=representation`), aks holda
+     * `return=minimal`. Hamjamiyat tekshiruvi (`0006_peer_review.sql`).
+     */
+    fun insert(table: String, row: JsonElement, session: String?, returning: Boolean = false): DbResult {
+        val headers = baseHeaders(session) + mapOf(
+            "Content-Type" to "application/json",
+            "Accept" to "application/json",
+            "Prefer" to if (returning) "return=representation" else "return=minimal",
+        )
+        val resp = transport.request("POST", config.rest(table), headers, gson.toJson(row))
+        return parseRows(resp)
+    }
+
+    /** `POST rest/v1/rpc/<fn>` — Postgres funksiyasi (masalan `peer_claim`). */
+    fun rpc(fn: String, args: JsonObject, session: String?): DbResult {
+        val headers = baseHeaders(session) + mapOf(
+            "Content-Type" to "application/json",
+            "Accept" to "application/json",
+        )
+        val resp = transport.request("POST", config.rest("rpc/$fn"), headers, gson.toJson(args))
+        return parseRows(resp)
+    }
+
     /** `DELETE <table>?<filter>` — vebdagi `delete().eq(...)`. */
     fun delete(table: String, filter: String, session: String?): DbResult {
         val url = config.rest(table) + "?" + filter

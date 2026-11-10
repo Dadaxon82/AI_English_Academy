@@ -6,6 +6,10 @@
  */
 
 import { useState } from 'react'
+import { mockExamA1 } from '../content'
+import { CAN_DO_STATUS_UZ, canDoEvidence } from '../lib/canDoEvidence'
+import { useNow } from '../lib/clock'
+import { MIN_EVIDENCE_PER_SKILL, PROMOTION_THRESHOLD } from '../lib/skillScoring'
 import { CEFR_LEVELS, type CefrLevel } from '../content/types'
 import { LIKERT_LABELS, canDoFor } from '../content/canDo'
 import { skillLabelUz } from '../lib/planning'
@@ -24,6 +28,9 @@ export default function SelfAssessment() {
   const { data, actions } = useStore()
   const [level, setLevel] = useState<CefrLevel>(data.settings.currentLevel)
   const items = canDoFor(level)
+  const now = useNow()
+  const examLevel = (id: string) => (id === mockExamA1.id ? mockExamA1.level : null)
+  const confirmed = items.filter((s) => canDoEvidence(s, data.attempts, data.mockAttempts, now, examLevel).status === 'confirmed').length
   const rated = items.filter((s) => data.selfAssessment[s.id])
   const avg = rated.length === 0 ? null : rated.reduce((a, s) => a + data.selfAssessment[s.id]!.score, 0) / rated.length
 
@@ -33,11 +40,15 @@ export default function SelfAssessment() {
         <h2 className="font-bold">O‘zingizni baholang</h2>
         <Chip>{rated.length}/{items.length} baholangan</Chip>
         {avg !== null && <Chip tone={avg >= 4 ? 'ok' : avg >= 3 ? 'brand' : 'warn'}>o‘rtacha {avg.toFixed(1)} / 5</Chip>}
+        <Chip tone={confirmed > 0 ? 'ok' : 'default'}>
+          {confirmed}/{items.length} natija bilan tasdiqlangan
+        </Chip>
       </div>
       <p className="text-sm muted">
         Har da’voga 1 dan 5 gacha baho bering: 1 — {LIKERT_LABELS[0]!.toLowerCase()}, 5 — {LIKERT_LABELS[4]!.toLowerCase()}. Bu baho
         darajangizni o‘zgartirmaydi va XP bermaydi — faqat o‘zingizni qanday his qilishingizni ko‘rsatadi. Haqiqiy natija
-        yuqoridagi “Ko‘nikma isbotlari”da.
+        yuqoridagi “Ko‘nikma isbotlari”da. Har da’vo ostida — shu daraja va ko‘nikma bo‘yicha haqiqiy mashq natijalari: kamida {MIN_EVIDENCE_PER_SKILL} ta
+        natija va {PROMOTION_THRESHOLD}% dan yuqori ball bo‘lsa «natija bilan tasdiqlandi» (daraja qoidasi bilan bir xil chegaralar).
       </p>
       <div className="flex flex-wrap gap-1.5" role="tablist" aria-label="Daraja">
         {CEFR_LEVELS.map((l) => (
@@ -56,6 +67,7 @@ export default function SelfAssessment() {
       <ol className="grid gap-2.5">
         {items.map((s) => {
           const cur = data.selfAssessment[s.id]?.score ?? 0
+          const ev = canDoEvidence(s, data.attempts, data.mockAttempts, now, examLevel)
           return (
             <li key={s.id} className="rounded-2xl border-2 p-3 grid gap-2">
               <div className="flex flex-wrap items-start gap-2">
@@ -85,6 +97,16 @@ export default function SelfAssessment() {
                 })}
               </div>
               {cur > 0 && <p className="text-[11px] muted">{LIKERT_LABELS[cur - 1]}</p>}
+              <p className="flex flex-wrap items-center gap-1.5 text-xs" data-testid={`cando-${s.id}`}>
+                <Chip tone={ev.status === 'confirmed' ? 'ok' : ev.status === 'practice' ? 'warn' : 'default'}>{CAN_DO_STATUS_UZ[ev.status]}</Chip>
+                <span className="muted">
+                  {ev.status === 'none'
+                    ? `${s.level} ${skillLabelUz(s.skill).toLowerCase()} mashqlari natijasi hali yo‘q.`
+                    : ev.status === 'few'
+                      ? `${ev.count} ta natija (${ev.score}%) — tasdiqlash uchun yana ${ev.needed} ta kerak.`
+                      : `${ev.count} ta natija, og‘irlikli ball ${ev.score}%.`}
+                </span>
+              </p>
             </li>
           )
         })}

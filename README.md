@@ -7,6 +7,12 @@ Loyiha talabnomasi (`AI English Academy_v2.docx`) to'liq bajarilgan:
 - ✅ To'liq **o'zbek tilli interfeys**
 - ✅ **A1, A2, B1, B2, C1** darajalar; daraja faqat **ko'p ko'nikma dalili** bilan ko'tariladi (XP yoki kunlar emas), mock imtihon esa doim **"mashq uchun yaratilgan namuna"** deb yozilgan
 - ✅ **90 daqiqalik** asosiy kunlik reja (Vocab 10 / Grammar 15 / Reading 15 / Listening 15 / Writing 20 / Speaking 15) — zaif ko'nikma va imtihon sanasiga qarab qayta taqsimlanadi
+- ✅ **Foydalanish o'lchovi** (Progress, faqat qurilmada) — 5o-bo'lim
+- ✅ **Talaffuz mashqi** (`/pronunciation`) va **Immersion rejimi** (tarjimasiz) — 5n-bo'lim
+- ✅ **AI suhbatdosh** (`/conversation`) — rol o'yini, AI bo'lmasa stsenariy, xatolar mashqqa aylanadi (5m-bo'lim)
+- ✅ **Hamjamiyat tekshiruvi** (`/community`), «Men qila olaman» dalili va yakunlash guvohnomasi — 5l-bo'lim
+- ✅ **Real hayot suhbatlari** (`/dialogues`) — A1/A2 da 14 stsenariy va **Takrorlash menejeri** (xatolar + so'zlar bitta navbatda) — 5k-bo'lim
+- ✅ **«5 daqiqa» tezkor sessiya** (`/quick`) — takror + bitta mavzudan yangi so'zlar, surish bilan baholash (5j-bo'lim)
 - ✅ **14 sahifa**: Dashboard, Learning Path, Vocabulary, Grammar, Reading, Listening, Writing, Speaking, Mock Exam, Progress, Error Log, Settings, Login, 404
 - ✅ Premium **dark/light** mavzu, to'liq **responsiv**; har joyda **loading / empty / success / error** holatlari
 - ✅ **SRS lug'at** (SM-2): har so'z statistikasida tekshiruvlar ikki marta sanalmaydi; Reading matnidan saqlangan glossariy so'zlari ham Lug'at bo'limida qayta ko'rinadi va takrorlanadi
@@ -15,7 +21,7 @@ Loyiha talabnomasi (`AI English Academy_v2.docx`) to'liq bajarilgan:
 - ✅ **Jonli taymer** — sahifa yangilansa ham vaqt yo'qolmaydi (IndexedDB'da saqlanadi)
 - ✅ **Offline / PWA**: sync navbati, Service Worker; logout'da avval sinxronlanadi (yuborilmagan narsa qolsa tasdiq so'raladi), so'ng kesh tozalanadi
 - ✅ **Mobil ilova**: Dashboard yuqorisidagi blok PWA'ni bosh ekranga o'rnatadi (Android/kompyuter — "Ilovani o'rnatish" tugmasi, iPhone — yo'riqnoma); APK fayl shart emas
-- ✅ **Native Android ilovasi** (`mobile/` — Kotlin + XML Views, `com.dadaxon.aienglishacademy`): bitta baza va bitta auth, **377 unit test**, qahramon har ekranda; DULO_mod.apk dan o'lchangan **darslar ketma-ketligi va harakat byudjeti** ikkala platformada — quyida 5b-bo'lim va
+- ✅ **Native Android ilovasi** (`mobile/` — Kotlin + XML Views, `com.dadaxon.aienglishacademy`): bitta baza va bitta auth, **422 unit test**, qahramon har ekranda; DULO_mod.apk dan o'lchangan **darslar ketma-ketligi va harakat byudjeti** ikkala platformada — quyida 5b-bo'lim va
 `mobile/MOBIL_ARXITEKTURA.md` 8-bo'limi
 - ✅ **Server bilan ikki tomonlama**: hisobga kirganda progress serverdan tiklanadi va qurilmadagisi bilan birlashtiriladi
 - ✅ **Baza eski sxemada ham sinxron islaydi** (2026-11-08): `0003/0004` migratsiyalari qo'llanmagan bazada sozlamalar
@@ -30,9 +36,9 @@ Loyiha talabnomasi (`AI English Academy_v2.docx`) to'liq bajarilgan:
 ### Joriy sonlar
 
 <!-- STATS:START -->
-_Avtomatik o‘lchandi (`npm run stats`, 2026-11-09). Qo‘lda tahrirlamang._
+_Avtomatik o‘lchandi (`npm run stats`, 2026-11-10). Qo‘lda tahrirlamang._
 
-**Testlar:** vitest **383/383** (34 fayl) · **Kod:** veb 134 fayl / 36713 qator (TS/TSX), mobil 93 fayl / 25583 qator (Kotlin)
+**Testlar:** vitest **470/470** (46 fayl) · **Kod:** veb 167 fayl / 42221 qator (TS/TSX), mobil 97 fayl / 26514 qator (Kotlin)
 
 | Daraja | Kun | Lug‘at | Mashq | Turlar | Audio fayl / tinglash | Mock |
 |---|---|---|---|---|---|---|
@@ -262,13 +268,15 @@ gradle --offline :app:assembleRelease      # 2026-11-08: lint-gradle kechada bo'
                                            # uchun `:app:lintVitalRelease` alohida tarmoqda bajarildi
 ```
 
-Tekshirilgan holat (2026-11-09): **377 unit test o'tdi** (33 klass, 0 fail /
+Tekshirilgan holat (2026-11-09): **397 unit test o'tdi** (36 klass, 0 fail /
 0 error / 0 skip — `:app:testDebugUnitTest` XML laridan sanalgan). Son zanjiri
 halol yozib qo'yiladi: 2026-11-06 dagi 268 → o'yin qatlami va mashq jarayoni
 qo'shilgach **349** (§5d–§5e) → §5f Bo'limlar ikki klassi (`domain/SectionsTest`
 12 ta, `domain/SectionJumpLogicTest` 7 ta) bilan **368 / 30 klass** → PR #6 ning
 mobil klasslari (`domain/NewKindsCheckerTest` 7, `domain/ExportedContentParityTest` 1,
-`domain/SelfAssessmentMergeTest` 1) rebase'dan keyin **377 / 33 klass**.
+`domain/SelfAssessmentMergeTest` 1) rebase'dan keyin **377 / 33 klass**. → keyingi PR'larda (A2 pariteti va boshqalar) **387**; 2026-11-09 o'lchovida
+ulardan bittasi eskirgan edi (`ContentRepositoryTest` — A2 qo'shilgach `[A1]` kutardi) →
+tuzatildi; §5j «5 daqiqa» (`domain/QuickSessionTest` 10 ta) bilan **397 / 36 klass, 0 fail**.
 `store/GameOpsTest` 15 ta — jonli do'kon `AppStore.reduceLocal` o'yin qatlamini
 HAQIQATAN qo'llashini tekshiradi. API 26+
 emulatorda barcha ekranlar ochiladi, ANR yo'q (`/data/anr/` bo'sh; Lug'at 117
@@ -621,6 +629,251 @@ smoke, `render:check` 16 marshrut.
 
 **Mobilda hali YO'Q** — xarita (`DuoPathMap`/`pathMap`) mobil tomonda yo'q (§5f
 ro'yxatidagidek); PR #9 shu paritetni ochiq qoldiradi.
+
+## 5j. «5 daqiqa» tezkor sessiya — Drops g'oyasi, 1-bosqich (2026-11-09)
+
+`docs/TIL_PLATFORMALARI_TAHLIL_VA_PROMPT.md` dagi rejaning 1-bosqichi. G'oya Drops'dan
+olingan (qisqa kunlik odat + vizual karta + surish), nom, dizayn va kontent bizniki.
+Veb va mobil ilovada bir xil ishlaydi (mobil: 1.4.0 / versionCode 5).
+
+| Nima | Qayerda |
+|---|---|
+| Karta navbati: avval muddati kelgan SRS so'zlari (xato qilinganlar birinchi, ko'pi bilan 12 ta), keyin **bitta mavzudan** 5 ta yangi so'z (faqat asosiy lug'atdan, chunki glossariy so'zlarida misol gap yo'q) | `src/lib/quickSession.ts::buildQuickDeck` |
+| Surish: o'ngga «Bilaman» (`good`), chapga «Yana» (`again`). Chegara 80 px yoki karta enining 25 % i (qaysi biri katta bo'lsa) | `swipeGrade` |
+| Sahifa `/quick`: rasm (`vocabEmoji.ts`, faqat aniq tasvirlanadigan so'zlarda), talaffuz, ← / → / Space, har harakatning tugma muqobili | `src/pages/QuickSession.tsx` |
+| Dashboard kartasi «5 daqiqa boshlash» | `src/pages/Dashboard.tsx` |
+
+**Halol qoidalar:**
+- Vaqt mavjud devor-soat taymeri bilan o'lchanadi (`timer.ts`, sessiya kaliti `quick-<kun>`).
+  Sahifa yangilansa qolgan vaqt saqlanadi. Sahifadan chiqilsa taymer **pauza** qilinadi,
+  ko'rilmagan vaqt sanalmaydi.
+- Vaqt yoki kartalar tugasa taymer to'xtaydi va haqiqatan o'tgan sekundlar kunlik faollikka
+  (`activity[kun].skills.vocabulary`) yoziladi.
+- Zanjir (streak) uchun yangi qoida yo'q. Mavjud `gameCore.ts::activeDayKeys` qoidasi
+  (kunda ≥ 60 s faollik) 5 daqiqalik sessiyani o'zi qamraydi, bu testda tekshirilgan.
+- 90 daqiqalik kunlik reja (`planning.ts`) o'zgarmaydi, «5 daqiqa» qo'shimcha «minimal kun».
+- Karta yo'q bo'lsa (navbat bo'sh, hamma so'z o'rganilgan) «Boshlash» tugmasi ko'rsatilmaydi,
+  o'rniga sababi va Lug'at bo'limiga havola chiqadi.
+
+**Mobil (`mobile/`)** — bir xil qoidalar:
+
+| Nima | Qayerda |
+|---|---|
+| Navbat, surish, qolgan vaqt (veb `quickSession.ts` ning nusxasi) | `domain/QuickSession.kt` |
+| So'z rasmlari (veb `vocabEmoji.ts` bilan juftma-juft bir xil) | `data/VocabEmoji.kt` |
+| Ekran: kirish / davom etish / ish / natija; barmoq bilan surish, «← Yana» / «Bilaman →» tugmalari, TTS talaffuz | `ui/QuickSessionFragment.kt` (`R.id.quickSessionFragment`) |
+| Dashboard kartasi «5 daqiqa boshlash» | `ui/DashboardFragment.kt::addQuickCard` |
+| Matnlar (`quick_*`) | `res/values/strings_extra.xml` |
+
+Ekran ko'rinmay qolsa (`onPause`) taymer pauza qilinadi, qaytganda «Davom etish» chiqadi.
+**Taymer pariteti tuzatildi:** mobil `TimerStart` pauzadagi XUDDI SHU sessiyani endi davom
+ettiradi (veb `timer.ts::startTimer` bilan bir xil). Oldin yig'ilgan sekundlarni yozib, hisobni
+noldan boshlardi: vaqt yo'qolmasdi, lekin sessiyaning qolgan vaqti tiklanmasdi.
+
+**Testlar:** `src/test/quick-session.test.ts` (navbat tartibi, chegaralar, surish, zanjir),
+`src/test/quick-session-page.test.tsx` (boshlash, klaviatura/tugma baholash, vaqt tugashi,
+pauza va qayta ochilganda davom etish), e2e `flows.spec.ts` (Dashboard → sessiya → surish),
+`a11y.spec.ts` (`/quick` va sessiya ichida, light/dark, kompyuter va 375 px). Mobil:
+`QuickSessionTest.kt` (10 test: veb bilan bir xil holatlar, veb fayllaridan o'qib sonlar va
+89 ta so'z rasmi pariteti, zanjir qoidasi). `gradle testDebugUnitTest`: **397/397**
+(2026-11-09). Shu o'lchovda eskirgan bitta test ham tuzatildi:
+`ContentRepositoryTest` manifestda faqat `[A1]` kutardi, A2 esa `7df8def` da qo'shilgan edi.
+
+## 5k. Real hayot suhbatlari va Takrorlash menejeri — Babbel g'oyasi, 2-bosqich (2026-11-09)
+
+`docs/TIL_PLATFORMALARI_TAHLIL_VA_PROMPT.md` rejasining 2-bosqichi. G'oya Babbel'dan
+olingan (real vaziyatdagi dialoglar + xatoga asoslangan takrorlash), matnlar va dizayn
+bizniki. **Faqat veb**: mobil ilovaga keyingi PR'da qo'shiladi.
+
+| Nima | Qayerda |
+|---|---|
+| Kontent turi `Dialogue` (rollar, replikalar, o'zbekcha tarjima, bo'shliq + izoh, «Nega shunday?») | `src/content/types.ts` |
+| 14 ta suhbat: A1 va A2 ning har kuniga bittadan, kun mavzusiga mos (kafe, vokzal, shifokor, ish suhbati…), har birida 3 ta bo'shliq | `src/content/dialogues.ts` |
+| Bo'shliq → tanlov mashqi `dlg-<suhbat>-<qator>`; `findExercise()` uni id'dan tiklaydi | `dialogueExercise`, `src/content/index.ts` |
+| Dars: o'qish (tarjima tugmasi, TTS) → 3 bo'shliq (suhbat qayta ochiladi) → «Nega shunday?» | `src/lib/lessons.ts::dialogueLesson`, `src/pages/Dialogues.tsx` (`/dialogues`, menyuda «Suhbatlar») |
+| Takrorlash menejeri: tuzatilmagan xatolar va muddati kelgan so'zlar bitta navbatda (navbatma-navbat, ko'pi bilan 12) | `src/lib/reviewManager.ts`, `src/pages/ErrorLog.tsx` |
+
+**Halol qoidalar:**
+- Suhbat holati alohida saqlanmaydi: «2/3 to‘g‘ri» har bo'shliqning eng oxirgi urinishidan
+  hisoblanadi (`dialogueProgress`).
+- Har javob `recordAttempt` orqali yoziladi. XP, yuraklar va xatolar daftari alohida kodsiz ishlaydi.
+- **Bitta xato ikki marta sanalmaydi.** Agar xato so'z bilan bog'liq bo'lsa (`vocab-quiz-`,
+  `vocab-pic-`, `vocab-sent-`) va o'sha so'zning takrorlash vaqti ham kelgan bo'lsa, ular
+  bitta qadamga birlashadi. Javob SRS'ga **qadam uchun bir marta** yoziladi: dars oxiridagi
+  qayta urinish ikkinchi baho bermaydi.
+- Lug'at savoli id'dan tiklanganda faqat to'g'ri javobga ega bo'ladi. Shuning uchun
+  Takrorlash menejeri bunday savolni to'liq variantlar bilan qayta yasaydi (id o'zgarmaydi).
+- Kontent auditi (`src/test/dialogues.test.ts`) quyidagilarni tekshiradi: har kunga bitta
+  suhbat, 3 ta bo'shliq, `___` aynan bitta, javob variantlar ichida bir marta, variantlar
+  takrorlanmaydi, tarjima va izoh bo'sh emas, to'g'ri javob o'rni har xil.
+
+**Yo'l-yo'lakay tuzatilgan:** dars ichidagi «Matnni ko‘rish» tugmasi (`LessonPlayer`, O'qish
+darslarida ham bor) `text-sky-600` rangda edi va oq fonda kontrast ~4,1:1 bo'lardi. Endi
+`sky-700 / dark:sky-300` (WCAG AA). Buni yangi a11y testi (dars ichida savol qadami) topdi.
+
+**Testlar:** `dialogues.test.ts` (kontent auditi, id'dan tiklash, xatolar daftari, dars
+tuzilmasi, holat), `review-manager.test.ts` (birlashtirish, tartib, chegara),
+`dialogues-page.test.tsx` (suhbat oxirigacha; menejerda SRS bir marta baholanishi),
+e2e `flows.spec.ts` (suhbat → xatolar menejerda) va `a11y.spec.ts` (`/dialogues` hamda
+dars ichida; light/dark; 1280 va 375 px).
+
+## 5l. «Men qila olaman» dalili, hamjamiyat tekshiruvi va guvohnoma — Busuu g'oyasi, 3-bosqich (2026-11-10)
+
+`docs/TIL_PLATFORMALARI_TAHLIL_VA_PROMPT.md` rejasining 3-bosqichi. **Faqat veb** (mobil — keyinroq).
+
+| Nima | Qayerda |
+|---|---|
+| Har «Men qila olaman» da'vosi ostida haqiqiy dalil: shu daraja va ko'nikma bo'yicha urinishlar + mock imtihon bo'limlari. Holat: «dalil yo'q / yetarli emas / mashq kerak / natija bilan tasdiqlandi» | `src/lib/canDoEvidence.ts`, `src/components/SelfAssessment.tsx` (Progress) |
+| Hamjamiyat tekshiruvi: yozma javob yoki nutq **matni** (audio emas) rozilik bilan yuboriladi. Server tekshiruvchiga bitta javob **tayinlaydi**: baho 1–5 va izoh 10–1000 belgi. Shikoyat va avtomatik yashirish bor | `supabase/migrations/0006_peer_review.sql`, `src/lib/peer.ts`, `src/pages/Community.tsx` (`/community`, menyuda «Hamjamiyat») |
+| Daraja yakunlash guvohnomasi (PNG, brauzerda chiziladi). Ochilish sharti — darajaning barcha kunlari yakunlangan bo'lishi. Matnda doim **«rasmiy sertifikat emas»** deb yoziladi | `src/lib/certificate.ts`, `src/lib/certificateDraw.ts`, `src/components/CertificateCard.tsx` (Progress) |
+
+**Server qoidalari (0006):**
+- Tekshiruvchi faqat o'ziga tayinlangan va yashirilmagan javobni ko'radi.
+- Muallif faqat o'zinikini va unga kelgan yashirilmagan izohlarni ko'radi.
+- Bir javobga bir tekshiruvchi bitta izoh yozadi. Har javobga ko'pi bilan 2 ta izoh.
+- Tayinlovni yig'ib olib bo'lmaydi: bir vaqtda bitta ochiq tayinlov.
+- Kuniga ko'pi bilan 5 ta javob yuborish mumkin.
+- Javobga 2 ta shikoyat tushsa u yashiriladi. Izohga muallif shikoyat qilsa izoh yashiriladi.
+- Shikoyat qilgan tekshiruvchiga o'sha javob qayta tayinlanmaydi.
+- Hech bir jadvalda UPDATE ruxsati yo'q: holatni faqat triggerlar o'zgartiradi.
+
+Migratsiya qo'llanmagan bazada sahifa buni ochiq aytadi va fayl nomini ko'rsatadi
+(`peerErrorUz`). Mehmon rejimida yoki server ulanmaganda ham faqat sabab ko'rsatiladi,
+soxta ro'yxat chiqmaydi.
+
+**SQL testlari (yangi):** `supabase/tests/peer_review.test.sql`. Ular lokal Postgres'da
+`_supabase_stub.sql` orqali Supabase'ning `auth.uid()` va rollarini taqlid qiladi.
+
+```bash
+PGHOST=/var/run/postgresql PGUSER=postgres bash scripts/test-sql.sh   # → peer_review: OK
+```
+
+CI'da alohida `sql` job (Postgres 16 xizmati) ularni har PR'da ishga tushiradi. Testlarning
+o'zi ham tekshirildi: bitta RLS qoidasi ataylab buzilganda test darhol yiqildi.
+
+**Testlar:** `peer.test.ts` (chegaralar, xato → sabab, so'rovlar, mehmon/server yo'q holati),
+`community-page.test.tsx`, `cando-certificate.test.ts`; a11y: `/community` (light/dark, 1280 va 375 px).
+
+**Qilinmagan:** tekshiruvchiga gem mukofoti. O'yin sonlari veb, `game_manifest.json` va
+`GameConfig.kt` da bir xil turishi shart, shuning uchun mukofot mobil parite bilan birga
+qo'shiladi.
+
+## 5m. AI suhbatdosh (rol o'yini) — Memrise / Ling g'oyasi, 4-bosqich (2026-11-10)
+
+`docs/TIL_PLATFORMALARI_TAHLIL_VA_PROMPT.md` rejasining 4-bosqichi. **Faqat veb** (mobil — keyinroq).
+
+| Nima | Qayerda |
+|---|---|
+| Server: hamsuhbat rolida keyingi replika, o'quvchining oxirgi replikasidagi xatolar (≤ 3) va foydali so'zlar (≤ 3). Javob JSON schema bilan tuzilgan. Model `claude-opus-5-5`, `effort: low`. Zaxira model (`fallbacks: default`) va `ai_usage` kunlik limiti `ai-feedback` bilan umumiy | `supabase/functions/ai-roleplay/index.ts`, `supabase/functions/_shared/roleplay.ts` |
+| Mijoz: chaqiruv, stsenariy rejimi, namuna bilan solishtirish, lug'atdagi so'zni topish | `src/lib/roleplay.ts`, `src/lib/ai.ts::callAiFunction` |
+| Sahifa `/conversation`: vaziyat tanlanadi (14 ta suhbat bilan bir xil), javob yoziladi yoki aytiladi (Web Speech API, qo'llanmasa sabab aytiladi) | `src/pages/Conversation.tsx`, `src/lib/useSpeechInput.ts`; havolalar «Suhbatlar» va «Gapirish» sahifalarida |
+| Tuzatish → «to'g'ri gapni tuzing» mashqi. Ma'lumot to'liq id ichida (`rpfix-` + base64url), `findExercise()` uni tiklaydi | `src/content/index.ts::roleplayFixId / roleplayFixExercise` |
+
+**Halol qoidalar:**
+- Dvigatel ekranda doim yoziladi: «AI hamsuhbat» yoki «Oldindan yozilgan stsenariy».
+- AI ulanmagan bo'lsa (bayroq o'chiq, internet yo'q yoki server sozlanmagan) suhbat stsenariy
+  bo'yicha boradi. Javob namuna bilan so'zma-so'z solishtiriladi va «bu baho emas» deb yoziladi;
+  soxta ball yoki soxta xato chiqmaydi.
+- AI xatosida (limit, tarmoq, sxemaga mos emas) o'quvchi replikasi yo'qolmaydi. Sabab ko'rsatiladi
+  va ikki tanlov taklif qilinadi: qayta yuborish yoki stsenariy bilan boshidan boshlash.
+- Suhbatdagi xato «noto'g'ri urinish» sifatida yozilmaydi: aks holda o'quvchi har xato uchun yurak
+  yo'qotardi. Buning o'rniga yakunda «Xatolar ustida ishlash» darsi taklif qilinadi. Unda
+  noto'g'ri yechilgan mashq Xatolar daftari va Takrorlash menejeriga tushadi.
+- AI aytgan so'zlardan faqat **lug'atimizda bor** bo'lganlari SRS'ga saqlanadi. Lug'atda yo'qlari
+  shunchaki ko'rsatiladi, yangi lug'at yozuvi yaratilmaydi.
+- Audio hech qayerga yuborilmaydi: faqat brauzer tanigan matn ketadi.
+
+**Joylash:** `supabase functions deploy ai-roleplay` (sekretlar `ai-feedback` bilan umumiy,
+`VITE_AI_ENABLED=true`).
+
+**Testlar:** `roleplay.test.ts` (so'rov va javob tekshiruvi, sxema, mijoz, stsenariy, solishtirish,
+tuzatish mashqi), `conversation-page.test.tsx` (stsenariy oxirigacha; AI javobi → mashq va SRS;
+AI xatosi → sabab va stsenariyga o'tish); e2e `flows.spec.ts` va a11y `/conversation`.
+
+**Qilinmagan:** «real nutq klipi» (ona tili egasining audio yoki videosi). Litsenziyasi aniq
+yozuvlar yo'q, shuning uchun bo'lim umuman ko'rsatilmaydi: soxta audio yoki video qo'shilmagan.
+Edge funksiya bu muhitda Deno'da ishga tushirib ko'rilmadi (Deno yo'q). Umumiy mantiq
+`_shared/roleplay.ts` vitest bilan tekshirilgan, funksiyaning o'zi esa `ai-feedback` andozasini
+qatorma-qator takrorlaydi.
+
+## 5n. Talaffuz mashqi va Immersion rejimi — Rosetta Stone g'oyasi, 5-bosqich (2026-11-10)
+
+`docs/TIL_PLATFORMALARI_TAHLIL_VA_PROMPT.md` rejasining 5-bosqichi. **Faqat veb** (mobil — keyinroq).
+
+| Nima | Qayerda |
+|---|---|
+| Talaffuz: gap tinglanadi (TTS) → aytiladi → brauzer tanigan matn namuna bilan so'zma-so'z (LCS) solishtiriladi. Natija: yashil (tanildi), qizil (tanilmadi), ortiqcha so'zlar va **taxminiy** moslik %. Gaplar suhbatlar kontentidan (3–12 so'z) | `src/lib/pronunciation.ts`, `src/pages/Pronunciation.tsx` (`/pronunciation`, havola Gapirish sahifasida) |
+| Nutqni tanish (Web Speech API), umumiy hook | `src/lib/useSpeechInput.ts` |
+| Immersion: o'zbekcha tarjima yashiriladi, so'z ma'nosi inglizcha izoh va misol orqali beriladi. «Tarjimani ko'rsatish» tugmasi doim bor | `src/lib/prefs.ts`, `src/components/UzTranslation.tsx`; Sozlamalar → «Immersion rejimi» |
+
+**Halol qoidalar:**
+- Talaffuz natijasi «taxminiy moslik» deb yoziladi, rasmiy talaffuz bahosi emas: brauzer nutqni qanday
+  tanigani o'lchanadi. Brauzer nutqni tanimasa (Safari/Firefox) sabab oldindan aytiladi,
+  «Aytish» o'chiriladi va ball chiqmaydi. Tinglash baribir ishlaydi.
+- Brauzer bergan ishonch darajasi (`confidence`) faqat brauzer uni bersagina ko'rsatiladi.
+- Talaffuz urinishlari kundalik urinishlarga (`attempts`) yozilmaydi: nutqni tanish xatosi
+  ko'nikma dalilini buzmasligi uchun. Sessiya hisobi faqat ekranda ko'rinadi.
+- Immersion rejimi **qurilma sozlamasi** (`localStorage`): hisob sozlamalari `user_settings`
+  ustunlari orqali mobil ilova bilan bo'lishiladi, yangi ustun esa migratsiya va mobil paritetni
+  talab qiladi. Bu Sozlamalarda ochiq yozilgan.
+- Tarjima yashiriladigan joylar: lug'at ro'yxati va kartalari, «5 daqiqa», O'quv yo'li so'zlari,
+  Suhbatdosh maslahati. Topshiriq va izohlar o'zbekcha qoladi.
+- Karta `<button>` ichida bo'lgani uchun «Tarjimani ko'rsatish» tugmasi kartadan tashqariga
+  qo'yilgan (ichma-ich interaktiv element bo'lmasin, axe talabi).
+
+**Testlar:** `pronunciation-immersion.test.tsx` (moslash: tinish belgisi, apostrof, raqam,
+tushib qolgan va ortiqcha so'z; gaplar ro'yxati; Immersion o'chiq/yoqilgan/ochish; sahifa nutqni
+tanish yo'q va bor holatlarda, soxta `SpeechRecognition` bilan); e2e: Sozlama → lug'at kartasi,
+a11y `/pronunciation`.
+
+## 5o. Yangi funksiyalardan foydalanish o'lchovi — 6-bosqich (2026-11-10)
+
+`docs/TIL_PLATFORMALARI_TAHLIL_VA_PROMPT.md` rejasining 6-bosqichi: qaysi funksiya haqiqatan
+ishlatilayotganini va oxirigacha yetkazilayotganini ko'rish uchun.
+
+| Nima | Qayerda |
+|---|---|
+| 8 ta funksiya uchun «boshlangan / yakunlangan» hisoblagichi va oxirgi sana. «Yakunlangan»ning ma'nosi har funksiyada ochiq yozilgan: masalan «5 daqiqa» — vaqt yoki kartalar tugaguncha, talaffuz — moslik ≥ 80% | `src/lib/usage.ts` (`FEATURES`) |
+| Progress → «Yangi funksiyalardan foydalanish» jadvali: soni, tugatish foizi, «Tozalash» tugmasi | `src/components/UsageCard.tsx` |
+| Hodisalar ulangan joylar: «5 daqiqa», Suhbatlar, Takrorlash menejeri, Suhbatdosh, Talaffuz, Hamjamiyat (yuborish va tekshirish), Guvohnoma | tegishli sahifalar |
+
+**Maxfiylik:** hisob faqat shu qurilmada (`localStorage`) saqlanadi va hech qayerga
+yuborilmaydi. Matn yoki javob saqlanmaydi, faqat sonlar va sana. Saqlov buzilgan bo'lsa,
+noma'lum kalitlar va noto'g'ri sonlar tashlanadi (`parseUsage`). «Yakunlangan» soni hech qachon
+«boshlangan»dan oshmaydi. Server jadvali ataylab qo'shilmadi: foydalanish ma'lumotini serverga
+yig'ish alohida rozilik va maxfiylik siyosatini talab qiladi.
+
+**Testlar:** `usage.test.tsx` (hisob, foiz, buzilgan saqlov, karta va tozalash) hamda sahifa
+testlarida haqiqiy hodisa: «5 daqiqa» va Suhbat darsi tugaganda `finished` oshadi.
+
+## 5p. Mobil ilova: 2–6-bosqichlar pariteti (2026-11-10, 1.5.0 / versionCode 6)
+
+Vebdagi 2–6-bosqichlar Android ilovaga ko'chirildi. Qoidalar veb bilan bir xil, domen mantiqi
+Kotlin'ga satrma-satr ko'chirilgan va testlar ham vebdagi holatlarni takrorlaydi.
+
+| Bosqich | Mobil fayllar |
+|---|---|
+| 2. Suhbatlar + Takrorlash menejeri | `domain/Dialogues.kt`, `domain/ReviewManager.kt`, `ui/DialoguesFragment.kt`, `ErrorLogFragment` (menejer), `assets/content/dialogues.json` (eksport: veb `dialogues.ts` — bitta manba) |
+| 3. «Men qila olaman» dalili, hamjamiyat, guvohnoma | `domain/CanDoEvidence.kt`, `domain/Peer.kt`, `data/PeerRepository.kt` (`SupabaseClient.insert/rpc`), `ui/CommunityFragment.kt`, `domain/Certificate.kt`, `ui/CertificateDrawer.kt` (Progress) |
+| 4. AI suhbatdosh | `domain/Roleplay.kt`, `data/RoleplayClient.kt`, `ui/ConversationFragment.kt` (`BuildConfig.AI_ENABLED=false` — veb deploy bilan bir xil) |
+| 5. Talaffuz + Immersion | `domain/Pronunciation.kt`, `ui/PronunciationFragment.kt`, `ui/DevicePrefs.kt` (Sozlamalar; lug'at ro'yxati, flashcard, «5 daqiqa», Talaffuz) |
+| 6. Foydalanish o'lchovi | `domain/Usage.kt`, `ui/UsageTracker.kt` (faqat qurilmada), Progress jadvali |
+
+Kirish nuqtalari Dashboard'da: Suhbatlar, Hamjamiyat, Suhbatdosh, Talaffuz.
+
+**Paritet kafolatlari (testlar):**
+- `DialoguesParityTest`: 42 ta `dlg-` mashq veb eksporti bilan maydonma-maydon bir xil.
+- `RoleplayTest`: `rpfix-` id'si veb `roleplayFixId` bilan baytma-bayt bir xil (pin qiymatlar).
+- `PeerAndCertificateTest`: hamjamiyat chegaralari veb `peer.ts` faylidan o'qib solishtiriladi;
+  soxta HTTP transport bilan so'rov shakli (muallif id'si yuborilmaydi, JWT bor) tekshiriladi.
+- `PronunciationTest`: A1 bo'yicha 43 ta gap, xuddi vebdagi kabi.
+
+**Yo'l-yo'lakay tuzatilgan:** mobil mashq pleyerida id'dan tiklangan lug'at savoli bitta variantga
+ega edi (xatolar o'yinlarida ham). Endi havuzdan 3 ta boshqa tarjima barqaror tasodifiy usulda
+qo'shiladi (seed — mashq id'si).
+
+**Tekshiruv:** `testDebugUnitTest` **422/422**, `assembleDebug` va imzolangan `assembleRelease` o'tdi.
+Qurilmada sinalmagan: bu muhitda KVM yo'q, shuning uchun emulyator ishga tushirilmadi.
 
 ## 6. Arxitektura qisqacha
 

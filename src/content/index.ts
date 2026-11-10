@@ -3,6 +3,8 @@
  * Yangi daraja qo'shish uchun faqat shu fayl va yangi papka kifoya.
  */
 
+import { DIALOGUE_PREFIX, findDialogueExercise } from './dialogues'
+import { CEFR_LEVELS } from './types'
 import type {
   CefrLevel,
   DailyPlanDay,
@@ -465,6 +467,69 @@ function lessonExercise(id: string): Exercise | undefined {
   return undefined
 }
 
+/* ---------------- AI suhbatdosh tuzatishlari (id'dan tiklanadi) ---------------- */
+
+/**
+ * Suhbatda topilgan xato → «to'g'ri gapni tuzing» mashqi. Ma'lumot (asl gap,
+ * tuzatilgan gap, izoh, daraja) to'liq ID ichida (base64url JSON) — saqlash
+ * kerak emas, `findExercise()` uni qayta yasaydi va Xatolar daftari ishlaydi.
+ */
+export const ROLEPLAY_FIX_PREFIX = 'rpfix-'
+/** Uzun gaplar plitkada noqulay — undan uzun tuzatish mashqqa aylanmaydi. */
+export const ROLEPLAY_FIX_MAX_WORDS = 14
+
+function b64urlEncode(text: string): string {
+  const bytes = new TextEncoder().encode(text)
+  let bin = ''
+  for (const b of bytes) bin += String.fromCharCode(b)
+  return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
+}
+
+function b64urlDecode(s: string): string | null {
+  try {
+    const bin = atob(s.replace(/-/g, '+').replace(/_/g, '/'))
+    return new TextDecoder().decode(Uint8Array.from(bin, (c) => c.charCodeAt(0)))
+  } catch {
+    return null
+  }
+}
+
+/** Tuzatish mashq bo'la oladimi bo'lsa — uning ID'si, aks holda null. */
+export function roleplayFixId(fix: { original: string; corrected: string; whyUz: string }, level: CefrLevel): string | null {
+  const words = wordsOf(fix.corrected)
+  if (words.length < 2 || words.length > ROLEPLAY_FIX_MAX_WORDS) return null
+  const payload = JSON.stringify({ o: fix.original.slice(0, 200), c: fix.corrected.slice(0, 200), w: fix.whyUz.slice(0, 200), l: level })
+  return `${ROLEPLAY_FIX_PREFIX}${b64urlEncode(payload)}`
+}
+
+export function roleplayFixExercise(id: string): WordOrderExercise | undefined {
+  if (!id.startsWith(ROLEPLAY_FIX_PREFIX)) return undefined
+  const raw = b64urlDecode(id.slice(ROLEPLAY_FIX_PREFIX.length))
+  if (!raw) return undefined
+  let v: { o?: unknown; c?: unknown; w?: unknown; l?: unknown }
+  try {
+    v = JSON.parse(raw) as typeof v
+  } catch {
+    return undefined
+  }
+  if (typeof v.o !== 'string' || typeof v.c !== 'string' || typeof v.w !== 'string' || typeof v.l !== 'string') return undefined
+  if (!(CEFR_LEVELS as readonly string[]).includes(v.l)) return undefined
+  const answer = wordsOf(v.c)
+  if (answer.length < 2 || answer.length > ROLEPLAY_FIX_MAX_WORDS) return undefined
+  return {
+    id,
+    kind: 'word-order',
+    instructionUz: `Suhbatda shunday dedingiz: “${v.o}”. To‘g‘ri gapni so‘zlardan tuzing.`,
+    level: v.l as CefrLevel,
+    skill: 'grammar',
+    explanationUz: `${v.w} To‘g‘ri: “${v.c}”.`,
+    difficulty: 2,
+    tags: ['roleplay'],
+    answer,
+    bank: seededShuffle(answer, id),
+  }
+}
+
 export function findExercise(id: string): Exercise | undefined {
   // Xatolar daftari o'yini: "boshqa ko'rinishda" — asl mashqdan qayta quriladi.
   if (id.startsWith(REMIX_PREFIX)) {
@@ -472,6 +537,9 @@ export function findExercise(id: string): Exercise | undefined {
     return orig ? remixExercise(orig) ?? undefined : undefined
   }
   if (id.startsWith('lesson-')) return lessonExercise(id)
+  if (id.startsWith(ROLEPLAY_FIX_PREFIX)) return roleplayFixExercise(id)
+  // Real hayot suhbatlari (`dialogues.ts`) — `dlg-<suhbat>-<qator>`.
+  if (id.startsWith(DIALOGUE_PREFIX)) return findDialogueExercise(id)
   const vocabById = (vid: string) => [...allVocab(), ...allGlossaryVocab()].find((x) => x.id === vid)
   if (id.startsWith(VOCAB_PIC_PREFIX)) {
     const v = vocabById(id.slice(VOCAB_PIC_PREFIX.length))

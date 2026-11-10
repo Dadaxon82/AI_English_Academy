@@ -354,7 +354,18 @@ class VocabularyFragment : Fragment() {
         }
         box.addView(labelled(ctx, v.word, R.style.Text_Aea_Body, true))
         v.ipa?.takeIf { it.isNotBlank() }?.let { box.addView(labelled(ctx, getString(R.string.vocab_ipa, it), R.style.Text_Aea_Small, false)) }
-        box.addView(labelled(ctx, v.translationUz, R.style.Text_Aea_Body, false))
+        // Immersion: tarjima yashirin, bosilsa ochiladi (veb `UzTranslation`).
+        if (DevicePrefs.immersion(ctx)) {
+            box.addView(
+                labelled(ctx, getString(R.string.imm_reveal), R.style.Text_Aea_Small, true).apply {
+                    isClickable = true
+                    isFocusable = true
+                    setOnClickListener { text = v.translationUz; setTextAppearance(R.style.Text_Aea_Body); isClickable = false }
+                },
+            )
+        } else {
+            box.addView(labelled(ctx, v.translationUz, R.style.Text_Aea_Body, false))
+        }
         if (v.explanationEn.isNotBlank()) box.addView(Rows.small(ctx, v.explanationEn))
 
         // Misola jumlalar — kontentda yozilgan bo'lsa chiziladi; bo'lmasa

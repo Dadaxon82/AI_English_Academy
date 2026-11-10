@@ -13,6 +13,7 @@
  * Kun taymeri store.ga bog'langan (sessionId = dayId).
  */
 
+import UzTranslation from '../components/UzTranslation'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import DuoPathMap from '../components/DuoPathMap'
@@ -647,7 +648,10 @@ function SectionDetail({ day, section, bundle }: { day: DailyPlanDay; section: D
                     className="flex flex-wrap items-center gap-2 rounded-lg bg-[var(--panel-2)] px-3 py-2 text-sm"
                   >
                     <span className="font-semibold">
-                      {v.word} <span className="muted font-normal">— {v.translationUz}</span>
+                      {v.word}{' '}
+                      <span className="muted font-normal">
+                        — <UzTranslation>{v.translationUz}</UzTranslation>
+                      </span>
                     </span>
                     {v.ipa && <span className="text-xs muted">{v.ipa}</span>}
                     <span className="flex-1" />

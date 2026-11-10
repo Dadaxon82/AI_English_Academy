@@ -9,7 +9,7 @@
  */
 
 import { useEffect, useRef, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { Button, Card, Chip, EmptyState, InfoBanner, LoadingBlock, SuccessBanner } from '../components/ui'
 import { useStore } from '../lib/storeContext'
 import { LessonStartCard, SpeakingLesson } from '../components/SectionLessons'
@@ -171,6 +171,14 @@ export default function Speaking() {
         <p className="muted text-sm">
           Kunlik mavzu va savollar. Ovoz yozuvi faqat shu brauzer seansida turadi (sahifa yopilsa o‘chadi) —
           roziligingizsiz serverga hech qachon yuborilmaydi.
+        </p>
+        <p className="text-sm">
+          <Link to="/conversation" className="font-semibold underline">
+            Suhbatdosh bilan rol o‘ynash →
+          </Link>{' '}
+          <Link to="/pronunciation" className="font-semibold underline ml-2">
+            Talaffuz mashqi →
+          </Link>
         </p>
         <div className="flex flex-wrap gap-1.5">
           {tasks.map((t) => (

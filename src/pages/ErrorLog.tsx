@@ -5,11 +5,12 @@
  * Talab: foydalanuvchi o'z xatolarini ko'radi va ular ustida ishlaydi.
  */
 
-import { useMemo, useState } from 'react'
+import { trackUsage } from '../lib/usage'
+import { useMemo, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Button, Card, Chip, EmptyState, Field, InfoBanner, inputCls } from '../components/ui'
 import { useStore } from '../lib/storeContext'
-import { findExercise } from '../content'
+import { allGlossaryVocab, allVocab, findExercise, vocabQuizExercise } from '../content'
 import LessonPlayer from '../components/LessonPlayer'
 import MistakeGames from '../components/MistakeGames'
 import type { LessonStep } from '../lib/lessons'
@@ -19,24 +20,43 @@ import { skillLabelUz } from '../lib/planning'
 import type { AttemptRecord, AttemptSource } from '../lib/types'
 import type { Skill } from '../content/types'
 import { useNow } from '../lib/clock'
+import { REVIEW_MAX, buildReviewPlan } from '../lib/reviewManager'
+import type { VocabularyItem } from '../content/types'
+import { chunkyGreen } from '../components/chunky'
 
 type Range = 'all' | '7' | '30'
 
 const SKILL_ORDER: Skill[] = ['vocabulary', 'grammar', 'reading', 'listening', 'writing', 'speaking']
 
 export default function ErrorLog() {
-  const { data } = useStore()
+  const { data, actions } = useStore()
   const nav = useNavigate()
   const [skill, setSkill] = useState<Skill | 'all'>('all')
   const [range, setRange] = useState<Range>('all')
   const [source, setSource] = useState<AttemptSource | 'all'>('all')
   const [q, setQ] = useState('')
-  const [game, setGame] = useState<{ steps: LessonStep[]; timed: boolean } | null>(null)
+  const [game, setGame] = useState<{ steps: LessonStep[]; timed: boolean; srs?: boolean } | null>(null)
 
   /** Tuzatilmagan xatolar (oxirgi urinish noto'g'ri) — o'yinlar uchun. */
   const mistakes = useMemo(() => unresolvedMistakes(data.attempts, findExercise), [data.attempts])
 
   const now = useNow()
+
+  /** Takrorlash menejeri: xatolar + muddati kelgan so'zlar BITTA navbatda. */
+  const vocabPool = useMemo(() => [...allVocab(), ...allGlossaryVocab()], [])
+  const reviewPreview = useMemo(
+    () => buildReviewPlan(mistakes, data.srs, vocabPool, now, (v) => vocabQuizExercise(v)),
+    [mistakes, data.srs, vocabPool, now],
+  )
+  /** Shu sessiyada SRS'ga yozilgan qadamlar — dars oxiridagi qayta urinish ikkinchi baho bermaydi. */
+  const srsGraded = useRef(new Set<string>())
+  const startReview = () => {
+    srsGraded.current = new Set()
+    trackUsage('review', 'started')
+    // Variantlar (3 ta noto'g'ri tarjima) boshlash paytida bir marta yasaladi.
+    const plan = buildReviewPlan(mistakes, data.srs, vocabPool, Date.now(), (v) => vocabQuizExercise(v, quizOptions(v, vocabPool)))
+    setGame({ steps: plan.steps, timed: false, srs: true })
+  }
   const errors = useMemo(() => {
     const cutoff = range === 'all' ? 0 : now - (range === '7' ? 7 : 30) * 86_400_000
     return data.attempts
@@ -67,7 +87,22 @@ export default function ErrorLog() {
   if (game) {
     return (
       <Card className="p-4 sm:p-6">
-        <LessonPlayer steps={game.steps} onClose={() => setGame(null)} timeLimitSec={game.timed ? TIMED_SECONDS : undefined} />
+        <LessonPlayer
+          steps={game.steps}
+          onClose={() => setGame(null)}
+          timeLimitSec={game.timed ? TIMED_SECONDS : undefined}
+          onFinish={game.srs ? () => trackUsage('review', 'finished') : undefined}
+          onAnswer={
+            game.srs
+              ? (step, correct) => {
+                  // So'z bilan bog'liq qadam — SRS bahosi ham (bitta javob = bitta baho).
+                  if (step.type !== 'exercise' || srsGraded.current.has(step.id)) return
+                  srsGraded.current.add(step.id)
+                  for (const vid of step.vocabIds ?? []) actions.gradeVocab(vid, correct ? 'good' : 'again')
+                }
+              : undefined
+          }
+        />
       </Card>
     )
   }
@@ -81,6 +116,26 @@ export default function ErrorLog() {
           eng avval ishlash kerak bo‘lgan joylar.
         </p>
         <ExportButtons rows={errors} />
+      </Card>
+
+      <Card className="grid gap-3 p-4 sm:p-6 border-2 border-sky-300 dark:border-sky-700">
+        <div className="grid gap-1.5">
+          <p className="text-[11px] font-extrabold uppercase tracking-wider text-sky-700 dark:text-sky-300">Takrorlash menejeri</p>
+          <h2 className="text-xl font-extrabold">
+            {reviewPreview.steps.length > 0
+              ? `Bugungi takror: ${reviewPreview.mistakes} ta xato + ${reviewPreview.words} ta so‘z`
+              : 'Hozircha takrorlanadigan narsa yo‘q'}
+          </h2>
+          <p className="text-sm muted">
+            Tuzatilmagan xatolar va takrorlash vaqti kelgan so‘zlar bitta navbatda (ko‘pi bilan {REVIEW_MAX} ta). So‘z bilan bog‘liq xato
+            ikki marta sanalmaydi: bitta javob ham xatoni, ham so‘z takrorini yangilaydi.
+          </p>
+        </div>
+        <div className="flex justify-end">
+          <button type="button" className={`${chunkyGreen} !px-4 !py-2`} disabled={reviewPreview.steps.length === 0} onClick={startReview}>
+            Takrorlashni boshlash
+          </button>
+        </div>
       </Card>
 
       <MistakeGames
@@ -277,4 +332,19 @@ function pathForSkill(s: Skill) {
     writing: '/writing',
     speaking: '/speaking',
   }[s]
+}
+
+/** Lug'at savoli uchun variantlar: to'g'ri tarjima + 3 ta boshqa tarjima, aralash. */
+function quizOptions(v: VocabularyItem, pool: readonly VocabularyItem[]): string[] {
+  const others = [...new Set(pool.map((x) => x.translationUz).filter((t) => t !== v.translationUz))]
+  for (let i = others.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[others[i], others[j]] = [others[j]!, others[i]!]
+  }
+  const opts = [v.translationUz, ...others.slice(0, 3)]
+  for (let i = opts.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[opts[i], opts[j]] = [opts[j]!, opts[i]!]
+  }
+  return opts
 }

@@ -38,7 +38,8 @@ class ContentRepositoryTest {
         // 5 YANGI mashq turi qo'shildi, 211 → 246). Son fayldan oladi.
         assertEquals(246, info.exercises)
         assertTrue(info.bytes > 0)
-        assertEquals(listOf(Levels.A1), r.levels())
+        // A2 kontenti `7df8def` da eksport qilingan (manifest: A1, A2) — test o'shanda yangilanmagan edi.
+        assertEquals(listOf(Levels.A1, Levels.A2), r.levels())
     }
 
     @Test
