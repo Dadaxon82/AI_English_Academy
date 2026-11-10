@@ -28,6 +28,8 @@ import { choiceCount, choiceValue, initialAnswer, isAnswerEmpty, kindLabel, prom
 import { AnswerInput, SpeakIcon } from './exercise/inputs'
 import { CHUNKY_GO, CHUNKY_NO, CHUNKY_OFF } from './chunky'
 import { chunkyBtn } from './exercise/styles'
+import ShortPlayer from './ShortPlayer'
+import { findShort } from '../content/shorts'
 
 export interface ExerciseRunProps {
   exercise: Exercise
@@ -315,6 +317,9 @@ export default function ExerciseRunner({
 
       {context}
 
+      {/* Video short (Memrise uslubi): avval tomoşa, subtitr — javobdan keyin */}
+      {exercise.kind === 'multiple-choice' && exercise.shortId && <ExerciseShort shortId={exercise.shortId} revealed={state === 'answered'} />}
+
       {'passageExcerpt' in exercise && exercise.passageExcerpt && (
         <blockquote className="rounded-2xl border-2 bg-[var(--panel-2)] p-3.5 text-sm italic">“{exercise.passageExcerpt}”</blockquote>
       )}
@@ -417,4 +422,9 @@ export default function ExerciseRunner({
       </div>
     </div>
   )
+}
+
+function ExerciseShort({ shortId, revealed }: { shortId: string; revealed: boolean }) {
+  const short = findShort(shortId)
+  return short ? <ShortPlayer key={short.id} short={short} revealed={revealed} autoPlay /> : null
 }

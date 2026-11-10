@@ -22,6 +22,7 @@ const NAV = [
   { to: '/writing', label: 'Yoziş', icon: 'M4 20l4-1 11-11-3-3L5 16l-1 4Z' },
   { to: '/speaking', label: "Gapiriş", icon: 'M12 3a4 4 0 0 1 4 4v4a4 4 0 0 1-8 0V7a4 4 0 0 1 4-4Zm-7 8a7 7 0 0 0 14 0M12 18v3' },
   { to: '/dialogues', label: 'Suhbatlar', icon: 'M4 5h16v10H9l-5 4V5Zm4 4h8m-8 3h5' },
+  { to: '/shorts', label: 'Video shortlar', icon: 'M7 3h10a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Zm3 6v6l5-3-5-3Z' },
   { to: '/community', label: 'Hamjamiyat', icon: 'M8 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm8 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM2 20a6 6 0 0 1 12 0m-2-6a6 6 0 0 1 10 6' },
   { to: '/mock-exam', label: 'Mock Exam', icon: 'M6 3h12v18H6zM9 8h6M9 12h6M9 16h4' },
   { to: '/errors', label: 'Xatolar daftari', icon: 'M12 8v5m0 3.5.01 0M5 4h14v16H5z' },

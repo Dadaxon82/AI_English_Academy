@@ -89,10 +89,13 @@ describe('Suhbat → maşq', () => {
     expect(unresolvedMistakes([a], findExercise).map((m) => m.exercise.id)).toEqual([ex.id])
   })
 
-  it('dars: öqiş → 3 böşliq (suhbat qayta oçiladi) → «Nega şunday?»', () => {
+  it('dars: öqiş → 3 böşliq (suhbat qayta oçiladi) → 2 video short → «Nega şunday?»', () => {
     const steps = dialogueLesson(d)
-    expect(steps.map((s) => s.type)).toEqual(['info', 'exercise', 'exercise', 'exercise', 'info'])
-    expect(steps.filter((s) => s.type === 'exercise').every((s) => s.type === 'exercise' && s.context === 'passage')).toBe(true)
+    expect(steps.map((s) => s.type)).toEqual(['info', 'exercise', 'exercise', 'exercise', 'exercise', 'exercise', 'info'])
+    const ex = steps.filter((s) => s.type === 'exercise')
+    // Böşliqlar suhbat matni bilan, shortlar — öz pleyeri bilan (matn oşkor bölmaydi).
+    expect(ex.slice(0, 3).every((s) => s.type === 'exercise' && s.context === 'passage')).toBe(true)
+    expect(ex.slice(3).every((s) => s.type === 'exercise' && s.exercise.id.startsWith('short-') && s.context === undefined)).toBe(true)
     const last = steps[steps.length - 1]!
     expect(last.type === 'info' && last.info).toBe('rule')
   })

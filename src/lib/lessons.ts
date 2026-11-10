@@ -19,6 +19,7 @@ import {
   speakingSentences,
   writingSentenceExercise,
 } from '../content'
+import { lessonShortExercises, shortExercisesOf } from '../content/shorts'
 import type {
   Dialogue,
   Exercise,
@@ -141,6 +142,8 @@ export function dialogueLesson(d: Dialogue): LessonStep[] {
     const ex = dialogueExercise(d, i)
     if (ex) steps.push({ type: 'exercise', id: ex.id, exercise: ex, context: 'passage' })
   }
+  // Video shortlar: suhbatdoşning replikalari — tomoşa qiliş + eşitiş/ma'no savoli.
+  for (const ex of lessonShortExercises(d)) steps.push({ type: 'exercise', id: ex.id, exercise: ex })
   steps.push({ type: 'info', id: `${d.id}:note`, info: 'rule', titleUz: `Nega şunday? ${d.note.titleUz}` })
   return steps
 }
@@ -155,4 +158,16 @@ export function dialogueProgress(d: Dialogue, attempts: readonly AttemptRecord[]
     if (!prev || a.at >= prev.at) last.set(a.exerciseId, a)
   }
   return { correct: [...last.values()].filter((a) => a.correct).length, tried: last.size, total: ids.length }
+}
+
+/** Har short mashqining OXIRGI urinishi: nechtasi to'g'ri, nechtasi ko'rilgan. */
+export function shortsProgress(d: Dialogue, attempts: readonly AttemptRecord[]): { correct: number; tried: number; total: number } {
+  const ids = new Set(shortExercisesOf(d).map((e) => e.id))
+  const last = new Map<string, AttemptRecord>()
+  for (const a of attempts) {
+    if (!ids.has(a.exerciseId)) continue
+    const prev = last.get(a.exerciseId)
+    if (!prev || a.at >= prev.at) last.set(a.exerciseId, a)
+  }
+  return { correct: [...last.values()].filter((a) => a.correct).length, tried: last.size, total: ids.size }
 }
