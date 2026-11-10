@@ -10,6 +10,11 @@ export interface AuthActions {
   signOut(): void
   /** Supabase'ga kirgan foydalanuvchi id'si (mehmon rejimida — null). */
   userId?: string | null
+  /**
+   * Cheklangan mehmon rejimi (Supabase ulangan, lekin ro'yxatdan o'tilmagan):
+   * faqat A1.1-bölim ochiq (`lib/guest.ts`).
+   */
+  guest?: boolean
 }
 
 export const AuthContext = createContext<AuthActions | null>(null)

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { Button, Card, Field, InfoBanner, inputCls } from '../components/ui'
 import { MascotFigure } from '../components/Mascot'
 import { CHUNKY, CHUNKY_GO } from '../components/chunky'
@@ -7,7 +7,9 @@ import { getSupabase, localGuestId, safeErrorMessage, supabaseConfigured, type A
 
 export default function Login({ onAuth, authState }: { onAuth: (s: AuthState) => void; authState: AuthState }) {
   const nav = useNavigate()
-  const [mode, setMode] = useState<'sign-in' | 'sign-up'>('sign-in')
+  // Mehmon «Röyxatdan ötiş» taklifidan kelsa — darhol röyxatdan ötiş formasi.
+  const wanted = (useLocation().state as { mode?: string } | null)?.mode
+  const [mode, setMode] = useState<'sign-in' | 'sign-up'>(wanted === 'sign-up' && supabaseConfigured ? 'sign-up' : 'sign-in')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [name, setName] = useState('')
@@ -142,10 +144,11 @@ export default function Login({ onAuth, authState }: { onAuth: (s: AuthState) =>
               <Button type="submit" busy={busy} size="lg" disabled={!supabaseConfigured}>
                 {mode === 'sign-in' ? 'Kiriş' : 'Hisob yaratiş'}
               </Button>
-              {!supabaseConfigured && (
-                <Button type="button" onClick={guest} variant="secondary" size="lg">
-                  Mehmon sifatida davom etiş
-                </Button>
+              <Button type="button" onClick={guest} variant="secondary" size="lg">
+                Mehmon sifatida davom etiş
+              </Button>
+              {supabaseConfigured && (
+                <p className="text-xs muted text-center -mt-1">Mehmon sifatida faqat A1.1-bölim oçiq böladi.</p>
               )}
             </form>
           </Card>

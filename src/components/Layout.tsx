@@ -7,6 +7,7 @@ import { MascotAvatar } from './Mascot'
 import { useAuthActions } from '../lib/authContext'
 import { useIsAdmin } from '../lib/admin'
 import SignOutButton from './SignOutButton'
+import { isGuestAllowedPath } from '../lib/guest'
 
 /** Pastki panel — yo'l bo'yicha (indeks emas: menyuga band qo'shilsa siljimaydi). */
 const BOTTOM_PATHS = ['/dashboard', '/vocabulary', '/mock-exam', '/progress', '/settings']
@@ -81,7 +82,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const theme = useTheme(data.settings.theme)
   useMotion(data.settings.motionEnabled)
   const loc = useLocation()
-  const isAdmin = useIsAdmin(useAuthActions()?.userId ?? null) === 'admin'
+  const authActions = useAuthActions()
+  const isAdmin = useIsAdmin(authActions?.userId ?? null) === 'admin'
+  // Mehmon rejimida yopiq sahifalar yonida qulf belgisi (bosilsa — ro'yxatdan o'tish taklifi).
+  const lockedFor = (to: string) => Boolean(authActions?.guest) && !isGuestAllowedPath(to)
   const navItems = useMemo(() => (isAdmin ? [...NAV, ADMIN_NAV] : NAV), [isAdmin])
   // Menyu QAYSI sahifada ochilgan — sahifa almashsa o'zi yopiladi
   // (effect orqali setState kerak emas).
@@ -176,6 +180,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   <path d={n.icon} />
                 </svg>
                 {n.label}
+                {lockedFor(n.to) && (
+                  <span className="ml-auto text-xs" aria-label="röyxatdan ötganlar uçun">
+                    🔒
+                  </span>
+                )}
               </NavLink>
             ))}
           </div>
@@ -196,6 +205,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   }
                 >
                   {n.label}
+                  {lockedFor(n.to) && <span aria-label="röyxatdan ötganlar uçun"> 🔒</span>}
                 </NavLink>
               ))}
             </nav>

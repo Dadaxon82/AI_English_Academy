@@ -17,6 +17,9 @@ import { JUMP_PASS_SCORE, buildSections, jumpTestExercises, skippedDaysFor, type
 import { levelLabel } from '../lib/skillScoring'
 import { useStore } from '../lib/storeContext'
 import { CHUNKY, CHUNKY_ALT, CHUNKY_GO, CHUNKY_PLAIN } from '../components/chunky'
+import { useOpenSignUp } from '../lib/useOpenSignUp'
+import { useAuthActions } from '../lib/authContext'
+import { GUEST_SECTION_ID } from '../lib/guest'
 
 
 const STATUS_CHIP: Record<SectionCard['status'], { text: string; tone: 'ok' | 'brand' | 'warn' | 'default' }> = {
@@ -92,6 +95,9 @@ function SectionCardView({
   onCloseJump: () => void
 }) {
   const nav = useNavigate()
+  const openSignUp = useOpenSignUp()
+  // Mehmon rejimida faqat A1.1 ochiq — qolganida ro'yxatdan o'tish taklifi.
+  const guestLocked = Boolean(useAuthActions()?.guest) && s.id !== GUEST_SECTION_ID && s.status !== 'empty'
   const [open, setOpen] = useState(false)
   const chip = STATUS_CHIP[s.status]
   const total = s.days.length
@@ -192,23 +198,31 @@ function SectionCardView({
         </div>
       )}
 
-      {s.status === 'current' && (
+      {guestLocked && (
+        <>
+          <p className="text-sm font-semibold">🔒 Bu bölim röyxatdan ötganlar uçun oçiq.</p>
+          <button type="button" className={chunkyGreen} onClick={openSignUp}>
+            Röyxatdan ötiş
+          </button>
+        </>
+      )}
+      {!guestLocked && s.status === 'current' && (
         <button type="button" className={chunkyGreen} onClick={() => nav('/path')}>
           Davom etiş
         </button>
       )}
-      {s.status === 'done' && (
+      {!guestLocked && s.status === 'done' && (
         <button type="button" className={chunkyPlain} onClick={() => nav('/path')}>
           Takrorlaş
         </button>
       )}
-      {s.canJump && !jumping && (
+      {!guestLocked && s.canJump && !jumping && (
         <button type="button" className={chunkyBlue} onClick={onJump}>
           {s.label} ga sakraş testi
         </button>
       )}
 
-      {jumping && <JumpTest section={s} onClose={onCloseJump} />}
+      {!guestLocked && jumping && <JumpTest section={s} onClose={onCloseJump} />}
     </article>
   )
 }
