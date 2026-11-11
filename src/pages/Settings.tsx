@@ -50,6 +50,7 @@ export default function Settings() {
   const [confirmReset, setConfirmReset] = useState(false)
   const [pwOpen, setPwOpen] = useState(false)
   const [resetDone, setResetDone] = useState(false)
+  const [planSaved, setPlanSaved] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [deleteError, setDeleteError] = useState<string | null>(null)
   // Do'kon xaridining natija xabari (muvaffaqiyat yoki sababi bilan).
@@ -196,6 +197,31 @@ export default function Settings() {
             </div>
             <p className="mt-2 text-[11px] muted">{promotion.reasonUz}</p>
           </details>
+        </div>
+
+        {/* Özgarişlar yuqorida darhol (mahalliy) saqlanadi; şu tugma — hisobi
+            bor foydalanuvchi uçun serverga darhol yuboriş (keyingi qurilmada
+            ham köriniş uçun), mehmon uçun esa mahalliy saqlanganini tasdiqlaydi. */}
+        <div className="flex flex-wrap items-center gap-2">
+          <Button
+            busy={syncing}
+            onClick={async () => {
+              setPlanSaved(false)
+              if (!hasServerCopy) {
+                setPlanSaved(true)
+                return
+              }
+              setSyncing(true)
+              const res = await actions.sync()
+              setSyncing(false)
+              setSyncMsg({ ok: res.ok, text: res.ok ? 'Öquv rejasi saqlandi va serverga yuborildi.' : (res.reasonUz ?? 'Yuborib bölmadi — navbat saqlandi.') })
+              const q = await loadQueue(data.userId)
+              setQueueLen(q.length)
+            }}
+          >
+            Saqlaş
+          </Button>
+          {planSaved && <SuccessBanner>Öquv rejasi saqlandi.</SuccessBanner>}
         </div>
       </Card>
 

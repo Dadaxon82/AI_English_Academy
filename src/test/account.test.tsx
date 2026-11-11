@@ -128,3 +128,19 @@ describe('Barça ma’lumotni öçiriş — hisobga kirgan foydalanuvçida serve
     expect(server.rows('exercise_attempts')).toHaveLength(1)
   })
 })
+
+describe('Öquv rejasi — «Saqlaş» tugmasi', () => {
+  it('bosilsa hisobi bor foydalanuvçi uçun serverga darhol yuboradi', async () => {
+    renderSettings(vi.fn())
+    fireEvent.click(await screen.findByRole('button', { name: 'Saqlaş' }))
+    expect(await screen.findByText('Öquv rejasi saqlandi va serverga yuborildi.')).toBeInTheDocument()
+    expect(server.rows('user_settings')).toHaveLength(1)
+  })
+
+  it('serverga yetkazib bölmasa sabab körsatiladi', async () => {
+    server.network = true
+    renderSettings(vi.fn())
+    fireEvent.click(await screen.findByRole('button', { name: 'Saqlaş' }))
+    expect(await screen.findByText(/Yuborib bölmadi|Serverdagi ma’lumotni/)).toBeInTheDocument()
+  })
+})
