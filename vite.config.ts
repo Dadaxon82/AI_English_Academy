@@ -141,8 +141,14 @@ export default defineConfig({
           if (id.includes('@supabase')) return 'supabase'
           // Faqat admin panel ishlatadi — boshlang'ich yuklanishga kirmasin
           // (Recharts + uning bog'liqliklari, ikonkalar).
-          if (/node_modules\/(recharts|victory-vendor|d3-[a-z-]+|internmap|@reduxjs|redux|react-redux|reselect|immer|es-toolkit|decimal\.js-light|eventemitter3|tiny-invariant|clsx|use-sync-external-store|react-is|lucide-react)\//.test(id))
+          if (/node_modules\/(recharts|victory-vendor|d3-[a-z-]+|internmap|@reduxjs|redux|react-redux|reselect|immer|es-toolkit|decimal\.js-light|eventemitter3|tiny-invariant|clsx|react-is|lucide-react)\//.test(id))
             return 'admin-vendor'
+          // 3D olam (three + fiber + drei va ularning bog'liqliklari) — faqat 3D rejimda
+          // yuklanadi. Nomli bo'lakka QO'YILMAYDI (Rollup umumiy yordamchilarni o'sha bo'lakka
+          // solib, uni boshlang'ich yuklanishga tortib ketardi): `undefined` — Rollup ularni
+          // dangasa `World3D` bo'lagi yoniga o'zi joylaydi.
+          if (/node_modules\/(three|@react-three|three-stdlib|three-mesh-bvh|zustand|its-fine|suspend-react|react-reconciler|maath|troika-[a-z-]+|bidi-js|webgl-sdf-generator|meshline|camera-controls|detect-gpu|hls\.js|stats-gl|stats\.js|tunnel-rat|@monogrid|@mediapipe|glsl-noise|draco3d|fflate|potpack|react-use-measure|utility-types|@use-gesture)\//.test(id))
+            return undefined
           return 'vendor'
         },
       },

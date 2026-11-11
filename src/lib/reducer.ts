@@ -7,6 +7,7 @@ import type { CefrLevel, CoreSkill, Skill } from '../content/types'
 import { getBundle } from '../content/index'
 import { initialSrsState, review, type SrsGrade } from './srs'
 import { MAX_CONTINUOUS_SEC, currentElapsed, pauseTimer, startTimer, stopTimer } from './timer'
+import { coinBuy, type CoinItemId } from './world3d'
 import { afterAttempt, afterReview, buy as buyItem, lessonComplete, placeBet, settle, streakWithFreezes, xpGain } from './game'
 import type { ShopItemId } from './gameConfig'
 import { mergeRemote, type RemoteSnapshot } from './merge'
@@ -49,6 +50,8 @@ export type Action =
   | { type: 'lesson-complete'; exercises: number; mistakes: number }
   /** Do'kon xaridi (gem). */
   | { type: 'game-buy'; item: ShopItemId }
+  /** 3D olam: kumush tangaga xarid (`world3d.ts::coinBuy`). */
+  | { type: 'coin-buy'; item: CoinItemId }
   /** "Double or Nothing" garovi. */
   | { type: 'game-bet' }
 
@@ -296,6 +299,10 @@ export function reducer(state: AppData, action: Action): AppData {
       return settled(lessonComplete(state, action.exercises, action.mistakes))
     case 'game-buy': {
       const res = buyItem(state, action.item)
+      return res.ok ? settled(res.data) : state
+    }
+    case 'coin-buy': {
+      const res = coinBuy(state, action.item)
       return res.ok ? settled(res.data) : state
     }
     case 'game-bet': {
