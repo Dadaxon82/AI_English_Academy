@@ -1,77 +1,105 @@
 /**
- * Stansiya: rangli uycha, oldida darvoza (qulf bo'lsa — panjara), yonida NPC,
- * tepasida bayroq va (yakunlangan bo'lsa) yulduzlar, ustida yorliq.
+ * Stansiya: 1-stansiya — poxol tomli yog'och kulba, qolganlari — shifer tomli tosh uy.
+ * Oldida darvoza (qulf bo'lsa panjara), yonida NPC, bayroq, yog'och lavha, yulduzlar.
+ * Qulflangan stansiya xira (kulrang) ko'rinadi.
  */
-import { useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { Sparkles } from '@react-three/drei'
 import { useFrame, type ThreeEvent } from '@react-three/fiber'
-import { Vector3, type Group, type Mesh } from 'three'
+import { CanvasTexture, SRGBColorSpace, Vector3, type Group, type Mesh, type Texture } from 'three'
 import type { StationState } from '../../lib/world3d'
 import Label from './Label'
+import { useTex } from './texContext'
 
 const tmp = new Vector3()
+const DIM = '#9aa1a8'
 
 export function Npc({ color, getPlayer }: { color: string; getPlayer: () => [number, number] }) {
   const ref = useRef<Group>(null)
   useFrame(({ clock }) => {
     const g = ref.current
     if (!g) return
-    g.position.y = Math.sin(clock.elapsedTime * 2.2 + g.position.x) * 0.04
-    // NPC qahramonga qarab turadi
+    g.position.y = Math.sin(clock.elapsedTime * 2.2 + g.position.x) * 0.03
     const p = getPlayer()
     g.getWorldPosition(tmp)
     g.rotation.y = Math.atan2(p[0] - tmp.x, p[1] - tmp.z)
   })
   return (
-    <group ref={ref} position={[1.55, 0, 1.7]}>
-      <mesh rotation-x={-Math.PI / 2} position-y={0.02}>
-        <circleGeometry args={[0.42, 16]} />
-        <meshBasicMaterial color="#000" transparent opacity={0.2} />
+    <group ref={ref} position={[1.75, 0, 2.1]}>
+      {[-0.13, 0.13].map((x) => (
+        <mesh key={x} position={[x, 0.3, 0]} castShadow>
+          <capsuleGeometry args={[0.1, 0.4, 4, 8]} />
+          <meshStandardMaterial color="#4b3b2a" roughness={0.9} />
+        </mesh>
+      ))}
+      <mesh position-y={0.95} castShadow>
+        <capsuleGeometry args={[0.28, 0.45, 6, 12]} />
+        <meshStandardMaterial color={color} roughness={0.8} />
       </mesh>
-      <mesh position-y={0.7}>
-        <capsuleGeometry args={[0.3, 0.6, 6, 12]} />
-        <meshStandardMaterial color={color} />
+      {[-1, 1].map((s) => (
+        <mesh key={s} position={[s * 0.36, 0.95, 0]} rotation-z={s * 0.25} castShadow>
+          <capsuleGeometry args={[0.08, 0.38, 4, 8]} />
+          <meshStandardMaterial color={color} roughness={0.8} />
+        </mesh>
+      ))}
+      <mesh position-y={1.58} castShadow>
+        <sphereGeometry args={[0.27, 18, 14]} />
+        <meshStandardMaterial color="#f1c9a0" roughness={0.7} />
       </mesh>
-      <mesh position-y={1.45}>
-        <sphereGeometry args={[0.3, 18, 14]} />
-        <meshStandardMaterial color="#f5d0a9" />
+      <mesh position={[0, 1.5, 0.2]}>
+        <sphereGeometry args={[0.17, 12, 10, 0, Math.PI * 2, Math.PI * 0.45, Math.PI * 0.5]} />
+        <meshStandardMaterial color="#f5f5f4" roughness={1} />
       </mesh>
-      <mesh position={[-0.1, 1.5, 0.27]}>
-        <sphereGeometry args={[0.04, 8, 8]} />
-        <meshBasicMaterial color="#1f2937" />
+      {[-0.1, 0.1].map((x) => (
+        <mesh key={x} position={[x, 1.63, 0.24]}>
+          <sphereGeometry args={[0.035, 8, 8]} />
+          <meshBasicMaterial color="#1f2937" />
+        </mesh>
+      ))}
+      {/* shlyapa */}
+      <mesh position-y={1.8} castShadow>
+        <cylinderGeometry args={[0.42, 0.42, 0.04, 16]} />
+        <meshStandardMaterial color="#a16207" roughness={0.9} />
       </mesh>
-      <mesh position={[0.1, 1.5, 0.27]}>
-        <sphereGeometry args={[0.04, 8, 8]} />
-        <meshBasicMaterial color="#1f2937" />
-      </mesh>
-      <mesh position-y={1.78}>
-        <coneGeometry args={[0.34, 0.3, 12]} />
-        <meshStandardMaterial color="#f8fafc" />
+      <mesh position-y={1.9} castShadow>
+        <cylinderGeometry args={[0.2, 0.24, 0.2, 14]} />
+        <meshStandardMaterial color="#a16207" roughness={0.9} />
       </mesh>
     </group>
   )
 }
 
-/** Darvoza: ikki ustun + to'sin; qulf bo'lsa — panjara. */
+/** Ikki nishabli tom (uchburchak prizma): eni w, chuqurligi d, balandligi h; asosi y = 0 da. */
+export function GableRoof({ w, d, h, map, color = '#ffffff' }: { w: number; d: number; h: number; map: Texture; color?: string }) {
+  return (
+    <mesh rotation-x={-Math.PI / 2} position-y={h / 3} scale={[w / 1.732, d, h / 1.5]} castShadow receiveShadow>
+      <cylinderGeometry args={[1, 1, 1, 3, 1]} />
+      <meshStandardMaterial map={map} bumpMap={map} bumpScale={1.2} color={color} roughness={0.95} flatShading />
+    </mesh>
+  )
+}
+
+/** Darvoza: ikki yog'och ustun + to'sin; qulf bo'lsa — temir panjara. */
 export function Gate({ state, color, width = 1.5 }: { state: StationState; color: string; width?: number }) {
+  const tex = useTex()
   const bars = [-0.45, -0.15, 0.15, 0.45].map((k) => k * width)
   return (
-    <group position={[0, 0, 1.75]}>
+    <group position={[0, 0, 2.15]}>
       {[-1, 1].map((s) => (
-        <mesh key={s} position={[(s * width) / 2 + s * 0.12, 0.95, 0]}>
-          <boxGeometry args={[0.24, 1.9, 0.24]} />
-          <meshStandardMaterial color="#f8fafc" flatShading />
+        <mesh key={s} position={[(s * width) / 2 + s * 0.12, 0.95, 0]} castShadow>
+          <boxGeometry args={[0.2, 1.9, 0.2]} />
+          <meshStandardMaterial map={tex.planks} color="#b98a55" roughness={0.9} />
         </mesh>
       ))}
-      <mesh position={[0, 2, 0]}>
-        <boxGeometry args={[width + 0.7, 0.26, 0.3]} />
-        <meshStandardMaterial color={state === 'locked' ? '#94a3b8' : color} flatShading />
+      <mesh position={[0, 1.98, 0]} castShadow>
+        <boxGeometry args={[width + 0.7, 0.2, 0.26]} />
+        <meshStandardMaterial map={tex.planks} color={state === 'locked' ? DIM : color} roughness={0.9} />
       </mesh>
       {state === 'locked' &&
         bars.map((x) => (
-          <mesh key={x} position={[x, 0.95, 0]}>
-            <cylinderGeometry args={[0.05, 0.05, 1.9, 6]} />
-            <meshStandardMaterial color="#475569" metalness={0.5} roughness={0.4} />
+          <mesh key={x} position={[x, 0.95, 0]} castShadow>
+            <cylinderGeometry args={[0.045, 0.045, 1.9, 6]} />
+            <meshStandardMaterial color="#3f4650" metalness={0.7} roughness={0.35} />
           </mesh>
         ))}
     </group>
@@ -89,7 +117,7 @@ export function Stars({ count, y }: { count: number; y: number }) {
       {Array.from({ length: count }, (_, i) => (
         <mesh key={i} position={[(i - (count - 1) / 2) * 0.6, 0, 0]}>
           <octahedronGeometry args={[0.22, 0]} />
-          <meshStandardMaterial color="#fde047" emissive="#f59e0b" emissiveIntensity={0.6} flatShading />
+          <meshStandardMaterial color="#fde047" emissive="#f59e0b" emissiveIntensity={0.7} flatShading />
         </mesh>
       ))}
     </group>
@@ -102,15 +130,187 @@ function Flag({ color }: { color: string }) {
     if (cloth.current) cloth.current.rotation.y = Math.sin(clock.elapsedTime * 3) * 0.35
   })
   return (
-    <group position={[-1.2, 0, -0.2]}>
-      <mesh position-y={2.2}>
-        <cylinderGeometry args={[0.04, 0.04, 4.4, 6]} />
-        <meshStandardMaterial color="#e2e8f0" />
+    <group position={[-1.9, 0, 1.6]}>
+      <mesh position-y={1.7} castShadow>
+        <cylinderGeometry args={[0.04, 0.05, 3.4, 6]} />
+        <meshStandardMaterial color="#6b4423" roughness={0.9} />
       </mesh>
-      <mesh ref={cloth} position={[0.4, 4, 0]}>
-        <boxGeometry args={[0.8, 0.5, 0.03]} />
-        <meshStandardMaterial color={color} />
+      <mesh ref={cloth} position={[0.42, 3.05, 0]} castShadow>
+        <boxGeometry args={[0.84, 0.52, 0.025]} />
+        <meshStandardMaterial color={color} roughness={0.8} />
       </mesh>
+    </group>
+  )
+}
+
+/** Yog'och lavha: ustun + stansiya nomi yozilgan taxta. */
+export function Signpost({ text, position }: { text: string; position: [number, number, number] }) {
+  const tex = useTex()
+  const board = useMemo(() => {
+    const c = document.createElement('canvas')
+    c.width = 384
+    c.height = 128
+    const g = c.getContext('2d')!
+    g.fillStyle = '#b0803f'
+    g.fillRect(0, 0, 384, 128)
+    g.strokeStyle = 'rgba(70,40,10,0.35)'
+    for (let i = 0; i < 14; i++) {
+      g.beginPath()
+      g.moveTo(0, 6 + i * 9)
+      g.bezierCurveTo(130, 2 + i * 9, 260, 11 + i * 9, 384, 6 + i * 9)
+      g.stroke()
+    }
+    g.strokeStyle = '#5b3a17'
+    g.lineWidth = 8
+    g.strokeRect(4, 4, 376, 120)
+    g.fillStyle = '#fff7e6'
+    g.font = '700 54px Inter, system-ui, sans-serif'
+    g.textAlign = 'center'
+    g.textBaseline = 'middle'
+    g.shadowColor = 'rgba(40,20,0,0.7)'
+    g.shadowBlur = 6
+    g.fillText(text, 192, 68, 350)
+    const t = new CanvasTexture(c)
+    t.colorSpace = SRGBColorSpace
+    return t
+  }, [text])
+  useEffect(() => () => board.dispose(), [board])
+  return (
+    <group position={position} rotation-y={-0.25}>
+      <mesh position-y={0.45} castShadow>
+        <boxGeometry args={[0.1, 0.9, 0.1]} />
+        <meshStandardMaterial map={tex.planks} color="#8a5a2b" roughness={0.9} />
+      </mesh>
+      <mesh position-y={0.95} castShadow>
+        <boxGeometry args={[1.25, 0.42, 0.07]} />
+        <meshStandardMaterial map={tex.planks} color="#8a5a2b" roughness={0.9} />
+      </mesh>
+      <mesh position={[0, 0.95, 0.04]}>
+        <planeGeometry args={[1.17, 0.36]} />
+        <meshStandardMaterial map={board} roughness={0.85} />
+      </mesh>
+    </group>
+  )
+}
+
+function WarmWindow({ position, lit }: { position: [number, number, number]; lit: boolean }) {
+  const tex = useTex()
+  return (
+    <group position={position}>
+      <mesh>
+        <boxGeometry args={[0.6, 0.6, 0.08]} />
+        <meshStandardMaterial map={tex.planks} color="#6b4423" roughness={0.9} />
+      </mesh>
+      <mesh position-z={0.045}>
+        <planeGeometry args={[0.46, 0.46]} />
+        <meshStandardMaterial color={lit ? '#ffd27a' : '#374151'} emissive={lit ? '#ffb347' : '#000000'} emissiveIntensity={lit ? 1.4 : 0} roughness={0.4} />
+      </mesh>
+      <mesh position-z={0.05}>
+        <boxGeometry args={[0.04, 0.46, 0.02]} />
+        <meshStandardMaterial color="#6b4423" />
+      </mesh>
+      <mesh position-z={0.05}>
+        <boxGeometry args={[0.46, 0.04, 0.02]} />
+        <meshStandardMaterial color="#6b4423" />
+      </mesh>
+    </group>
+  )
+}
+
+/** Poxol tomli yog'och kulba (1-stansiya). */
+function Cabin({ dim }: { dim: boolean }) {
+  const tex = useTex()
+  const tint = dim ? DIM : '#ffffff'
+  return (
+    <group>
+      <mesh position-y={0.85} castShadow receiveShadow>
+        <boxGeometry args={[2.7, 1.7, 2.3]} />
+        <meshStandardMaterial map={tex.wood} bumpMap={tex.wood} bumpScale={2.5} color={tint} roughness={0.9} />
+      </mesh>
+      {/* burchak xodalari */}
+      {[-1, 1].flatMap((sx) =>
+        [-1, 1].map((sz) => (
+          <mesh key={`${sx}${sz}`} position={[sx * 1.37, 0.85, sz * 1.17]} castShadow>
+            <cylinderGeometry args={[0.11, 0.11, 1.74, 8]} />
+            <meshStandardMaterial map={tex.planks} color={dim ? DIM : '#8a5a2b'} roughness={0.9} />
+          </mesh>
+        )),
+      )}
+      <group position-y={1.68}>
+        <GableRoof w={3.5} d={2.9} h={1.55} map={tex.thatch} color={tint} />
+      </group>
+      {/* eshik */}
+      <mesh position={[-0.45, 0.62, 1.17]}>
+        <boxGeometry args={[0.72, 1.24, 0.07]} />
+        <meshStandardMaterial map={tex.planks} color={dim ? DIM : '#6b4423'} roughness={0.9} />
+      </mesh>
+      <mesh position={[-0.2, 0.62, 1.22]}>
+        <sphereGeometry args={[0.045, 8, 8]} />
+        <meshStandardMaterial color="#d4a017" metalness={0.8} roughness={0.3} />
+      </mesh>
+      <WarmWindow position={[0.65, 0.95, 1.17]} lit={!dim} />
+      {/* bochka */}
+      <mesh position={[1.75, 0.38, 0.6]} castShadow>
+        <cylinderGeometry args={[0.3, 0.26, 0.76, 12]} />
+        <meshStandardMaterial map={tex.planks} color="#9a6a3a" roughness={0.9} />
+      </mesh>
+      {/* to'siq */}
+      {[-1.7, -2.3, -2.9].map((x) => (
+        <mesh key={x} position={[x, 0.36, -0.4]} castShadow>
+          <boxGeometry args={[0.1, 0.72, 0.1]} />
+          <meshStandardMaterial map={tex.planks} color="#a8794a" roughness={0.9} />
+        </mesh>
+      ))}
+      {[0.28, 0.52].map((y) => (
+        <mesh key={y} position={[-2.3, y, -0.4]} castShadow>
+          <boxGeometry args={[1.4, 0.07, 0.05]} />
+          <meshStandardMaterial map={tex.planks} color="#a8794a" roughness={0.9} />
+        </mesh>
+      ))}
+    </group>
+  )
+}
+
+/** Shifer tomli tosh uy: arkali eshik, zinapoya, mo'ri, iliq derazalar. */
+function StoneHouse({ dim, accent }: { dim: boolean; accent: string }) {
+  const tex = useTex()
+  const tint = dim ? DIM : '#ffffff'
+  return (
+    <group>
+      <mesh position-y={1} castShadow receiveShadow>
+        <boxGeometry args={[2.6, 2, 2.3]} />
+        <meshStandardMaterial map={tex.stone} bumpMap={tex.stone} bumpScale={2} color={tint} roughness={0.95} />
+      </mesh>
+      <group position-y={1.98}>
+        <GableRoof w={3.3} d={2.8} h={1.7} map={tex.slate} color={tint} />
+      </group>
+      {/* mo'ri */}
+      <mesh position={[0.8, 3.1, -0.5]} castShadow>
+        <boxGeometry args={[0.42, 1, 0.42]} />
+        <meshStandardMaterial map={tex.stone} color={tint} roughness={0.95} />
+      </mesh>
+      {/* arkali eshik */}
+      <mesh position={[0, 0.68, 1.16]}>
+        <boxGeometry args={[0.86, 1.1, 0.08]} />
+        <meshStandardMaterial map={tex.planks} color={dim ? DIM : '#6b4423'} roughness={0.9} />
+      </mesh>
+      <mesh position={[0, 1.23, 1.16]} rotation-x={Math.PI / 2}>
+        <cylinderGeometry args={[0.43, 0.43, 0.08, 20, 1, false, -Math.PI / 2, Math.PI]} />
+        <meshStandardMaterial map={tex.planks} color={dim ? DIM : '#6b4423'} roughness={0.9} />
+      </mesh>
+      <mesh position={[0, 1.25, 1.14]} rotation-x={Math.PI / 2}>
+        <cylinderGeometry args={[0.56, 0.56, 0.1, 20, 1, false, -Math.PI / 2, Math.PI]} />
+        <meshStandardMaterial color={dim ? DIM : accent} roughness={0.8} />
+      </mesh>
+      {/* zinapoya */}
+      {[0, 1].map((i) => (
+        <mesh key={i} position={[0, 0.07 + i * 0.1, 1.5 - i * 0.2]} receiveShadow castShadow>
+          <boxGeometry args={[1.4 - i * 0.25, 0.12, 0.4]} />
+          <meshStandardMaterial map={tex.stone} color={tint} roughness={0.95} />
+        </mesh>
+      ))}
+      <WarmWindow position={[-0.85, 1.2, 1.16]} lit={!dim} />
+      <WarmWindow position={[0.85, 1.2, 1.16]} lit={!dim} />
     </group>
   )
 }
@@ -136,36 +336,27 @@ export default function StationNode({
   getPlayer: () => [number, number]
   onPick: () => void
 }) {
-  const tint = state === 'locked' ? '#cbd5e1' : color
+  const tex = useTex()
+  const dim = state === 'locked'
   const pick = (e: ThreeEvent<PointerEvent>) => {
     e.stopPropagation()
     onPick()
   }
   return (
     <group position={[position[0], 0, position[1]]} onPointerDown={pick}>
-      <mesh position-y={0.06}>
-        <cylinderGeometry args={[2.5, 2.7, 0.14, 24]} />
-        <meshStandardMaterial color={state === 'done' ? '#fde68a' : '#f1f5f9'} flatShading />
+      {/* hovli: toptalgan yer */}
+      <mesh position-y={0.025} receiveShadow>
+        <cylinderGeometry args={[3, 3.1, 0.05, 28]} />
+        <meshStandardMaterial map={tex.sand} color={state === 'done' ? '#e8c877' : '#c9ad7a'} roughness={1} />
       </mesh>
-      {/* uycha */}
-      <mesh position-y={0.95}>
-        <boxGeometry args={[2.1, 1.7, 1.9]} />
-        <meshStandardMaterial color={tint} flatShading />
-      </mesh>
-      <mesh position-y={2.35} rotation-y={Math.PI / 4}>
-        <coneGeometry args={[1.85, 1.2, 4]} />
-        <meshStandardMaterial color={state === 'locked' ? '#94a3b8' : '#1e293b'} flatShading />
-      </mesh>
-      <mesh position={[0, 0.7, 0.96]}>
-        <boxGeometry args={[0.6, 1.1, 0.06]} />
-        <meshStandardMaterial color="#78350f" />
-      </mesh>
+      {index === 0 ? <Cabin dim={dim} /> : <StoneHouse dim={dim} accent={color} />}
       <Gate state={state} color={color} />
-      <Flag color={tint} />
-      <Npc color={state === 'locked' ? '#94a3b8' : color} getPlayer={getPlayer} />
-      <Stars count={stars} y={4.55} />
-      {isTarget && <Sparkles count={24} scale={[4.5, 3, 4.5]} position-y={1.8} size={5} speed={0.6} color="#fde047" />}
-      <Label y={3.75} text={`${state === 'locked' ? '🔒' : state === 'done' ? '✅' : '▶'} ${index + 1}. ${label}`} />
+      <Flag color={dim ? DIM : color} />
+      <Signpost text={`${index + 1}. ${label}`} position={[-1.55, 0, 2.6]} />
+      <Npc color={dim ? '#8b939b' : color} getPlayer={getPlayer} />
+      <Stars count={stars} y={4.7} />
+      {isTarget && <Sparkles count={26} scale={[5, 3.2, 5]} position-y={2} size={5} speed={0.6} color="#fde047" />}
+      <Label y={4.05} height={0.5} text={`${state === 'locked' ? '🔒' : state === 'done' ? '✅' : '▶'} ${index + 1}. ${label}`} />
     </group>
   )
 }

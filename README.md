@@ -1041,6 +1041,12 @@ Server qismi — `supabase/migrations/0009_support.sql`, testlari — `supabase/
 - **HUD va tanga do'koni:** yulduz, XP, yurak, gem, qalqon, tanga — profil bilan bir xil manbadan. Tangaga yurak (30),
   20 gem (60) yoki streak qalqoni (150) olinadi.
 
+**Ko'rinish (2026-11-11 yangilanishi):** qumli sohil va o'tloq, jonli suv (shader: to'lqin, qirg'oq ko'pigi, quyosh
+yaltirashi), oltin tosh yo'lak, bargli daraxtlar, o't va gullar. 1-stansiya — poxol tomli yog'och kulba, qolganlari —
+shifer tomli tosh uylar (arkali eshik, zinapoya, iliq derazalar), har birida yog'och lavha. Iliq quyosh soyalar bilan,
+protsedura osmoni, yengil tuman. Barcha teksturalar brauzerda Canvas'da chiziladi (`world3d/textures.ts`) — tashqi rasm,
+model yoki HDR yuklanmaydi (CSP va litsenziya muammosi yo'q).
+
 Texnik: `three` + `@react-three/fiber` + `@react-three/drei` faqat 3D rejim tanlanganda yuklanadi (alohida chunk,
 boshlang'ich yuklanish o'zgarmaydi). Mantiq — `src/lib/world3d.ts` (sof funksiyalar, `src/test/world3d.test.ts`), sahna —
 `src/components/world3d/`. Sinxron sxemasi va mobil ilova o'zgarmagan; 3D rejim hozircha faqat vebda.

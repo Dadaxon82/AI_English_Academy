@@ -33,26 +33,21 @@ export default function PlayerCharacter({ ctrl, solids }: { ctrl: Controls; soli
 
   return (
     <group ref={root}>
-      {/* soya */}
-      <mesh rotation-x={-Math.PI / 2} position-y={0.02}>
-        <circleGeometry args={[0.5, 20]} />
-        <meshBasicMaterial color="#000" transparent opacity={0.22} />
-      </mesh>
       {/* oyoqlar */}
       <group ref={legL} position={[-0.16, 0.55, 0]}>
-        <mesh position-y={-0.27}>
+        <mesh position-y={-0.27} castShadow>
           <capsuleGeometry args={[0.11, 0.34, 4, 8]} />
           <meshStandardMaterial color="#1e3a8a" />
         </mesh>
       </group>
       <group ref={legR} position={[0.16, 0.55, 0]}>
-        <mesh position-y={-0.27}>
+        <mesh position-y={-0.27} castShadow>
           <capsuleGeometry args={[0.11, 0.34, 4, 8]} />
           <meshStandardMaterial color="#1e3a8a" />
         </mesh>
       </group>
       {/* chopon (tana) va belbog' */}
-      <mesh position-y={0.92}>
+      <mesh position-y={0.92} castShadow>
         <capsuleGeometry args={[0.3, 0.42, 6, 12]} />
         <meshStandardMaterial color="#0d9488" />
       </mesh>
@@ -62,19 +57,19 @@ export default function PlayerCharacter({ ctrl, solids }: { ctrl: Controls; soli
       </mesh>
       {/* qo'llar */}
       <group ref={armL} position={[-0.4, 1.12, 0]}>
-        <mesh position-y={-0.22}>
+        <mesh position-y={-0.22} castShadow>
           <capsuleGeometry args={[0.085, 0.3, 4, 8]} />
           <meshStandardMaterial color="#0f766e" />
         </mesh>
       </group>
       <group ref={armR} position={[0.4, 1.12, 0]}>
-        <mesh position-y={-0.22}>
+        <mesh position-y={-0.22} castShadow>
           <capsuleGeometry args={[0.085, 0.3, 4, 8]} />
           <meshStandardMaterial color="#0f766e" />
         </mesh>
       </group>
       {/* bosh */}
-      <mesh position-y={1.62}>
+      <mesh position-y={1.62} castShadow>
         <sphereGeometry args={[0.33, 20, 16]} />
         <meshStandardMaterial color="#f2c9a0" />
       </mesh>
@@ -91,7 +86,7 @@ export default function PlayerCharacter({ ctrl, solids }: { ctrl: Controls; soli
         <meshBasicMaterial color="#b45309" />
       </mesh>
       {/* do'ppi: to'rt qirrali qora qalpoq, oq naqsh */}
-      <mesh position-y={1.93} rotation-y={Math.PI / 4}>
+      <mesh position-y={1.93} rotation-y={Math.PI / 4} castShadow>
         <cylinderGeometry args={[0.2, 0.34, 0.24, 4]} />
         <meshStandardMaterial color="#111827" flatShading />
       </mesh>

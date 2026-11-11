@@ -5,7 +5,8 @@ import { useFrame, type ThreeEvent } from '@react-three/fiber'
 import type { Group } from 'three'
 import type { StationState } from '../../lib/world3d'
 import Label from './Label'
-import { Gate, Npc } from './StationNode'
+import { Gate, Npc, Signpost } from './StationNode'
+import { useTex } from './texContext'
 
 export function Trophy({ scale = 1 }: { scale?: number }) {
   const ref = useRef<Group>(null)
@@ -50,44 +51,46 @@ export default function FinishArena({
   getPlayer: () => [number, number]
   onPick: () => void
 }) {
-  const wall = state === 'locked' ? '#cbd5e1' : '#fbbf24'
-  const roof = state === 'locked' ? '#94a3b8' : '#b45309'
+  const tex = useTex()
+  const wall = state === 'locked' ? '#9aa1a8' : '#f6c453'
+  const roof = state === 'locked' ? '#7b838c' : '#b45309'
   const pick = (e: ThreeEvent<PointerEvent>) => {
     e.stopPropagation()
     onPick()
   }
   return (
     <group position={[position[0], 0, position[1]]} onPointerDown={pick}>
-      <mesh position-y={0.08}>
-        <cylinderGeometry args={[3.6, 3.9, 0.18, 28]} />
-        <meshStandardMaterial color={state === 'locked' ? '#f1f5f9' : '#fef3c7'} flatShading />
+      <mesh position-y={0.08} receiveShadow>
+        <cylinderGeometry args={[4.2, 4.4, 0.16, 32]} />
+        <meshStandardMaterial map={tex.stone} color={state === 'locked' ? '#b8bec5' : '#f3dc9a'} roughness={0.9} />
       </mesh>
-      <mesh position-y={1.25}>
+      <mesh position-y={1.25} castShadow receiveShadow>
         <boxGeometry args={[3.4, 2.3, 2.4]} />
-        <meshStandardMaterial color={wall} flatShading metalness={state === 'locked' ? 0 : 0.35} roughness={0.5} />
+        <meshStandardMaterial map={tex.stone} bumpMap={tex.stone} bumpScale={2} color={wall} metalness={state === 'locked' ? 0 : 0.3} roughness={0.55} />
       </mesh>
       {[-1, 1].flatMap((sx) =>
         [-1, 1].map((sz) => (
           <group key={`${sx}${sz}`} position={[sx * 1.9, 0, sz * 1.3]}>
-            <mesh position-y={1.6}>
-              <cylinderGeometry args={[0.55, 0.6, 3.2, 10]} />
-              <meshStandardMaterial color={wall} flatShading metalness={state === 'locked' ? 0 : 0.35} roughness={0.5} />
+            <mesh position-y={1.6} castShadow receiveShadow>
+              <cylinderGeometry args={[0.55, 0.6, 3.2, 14]} />
+              <meshStandardMaterial map={tex.stone} bumpMap={tex.stone} bumpScale={2} color={wall} metalness={state === 'locked' ? 0 : 0.3} roughness={0.55} />
             </mesh>
-            <mesh position-y={3.75}>
-              <coneGeometry args={[0.75, 1.1, 10]} />
-              <meshStandardMaterial color={roof} flatShading />
+            <mesh position-y={3.75} castShadow>
+              <coneGeometry args={[0.78, 1.15, 14]} />
+              <meshStandardMaterial map={tex.slate} color={roof} roughness={0.8} />
             </mesh>
           </group>
         )),
       )}
       <mesh position={[0, 0.85, 1.21]}>
         <boxGeometry args={[0.95, 1.5, 0.06]} />
-        <meshStandardMaterial color="#78350f" />
+        <meshStandardMaterial map={tex.planks} color="#6b4423" roughness={0.9} />
       </mesh>
-      <group position={[0, 0, 0.55]}>
+      <group position={[0, 0, 0.75]}>
         <Gate state={state} color="#f59e0b" width={2} />
       </group>
-      <group position={[0.9, 0, 0.9]}>
+      <Signpost text="Finiş" position={[-2.2, 0, 3.4]} />
+      <group position={[0.7, 0, 0.9]}>
         <Npc color={state === 'locked' ? '#94a3b8' : '#7c3aed'} getPlayer={getPlayer} />
       </group>
       {state === 'done' && (
