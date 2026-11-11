@@ -7,6 +7,7 @@ import { DIALOGUE_PREFIX, findDialogueExercise } from './dialogues'
 import { SHORT_PREFIX, findShortExercise } from './shorts'
 import { CEFR_LEVELS } from './types'
 import type {
+  AudioMatchingExercise,
   CefrLevel,
   DailyPlanDay,
   Exercise,
@@ -280,6 +281,7 @@ export function vocabQuizExercise(v: VocabularyItem, options: string[] = [v.tran
 export const VOCAB_PIC_PREFIX = 'vocab-pic-'
 export const VOCAB_SENT_PREFIX = 'vocab-sent-'
 export const VOCAB_MATCH_PREFIX = 'vocab-match-'
+export const VOCAB_AUDIO_MATCH_PREFIX = 'vocab-audiomatch-'
 
 /** Rasmli tanlov: «X» so'zini tanlang — variantlar inglizcha so'zlar. */
 export function vocabPictureExercise(v: VocabularyItem, options: string[] = [v.word]): MultipleChoiceExercise {
@@ -327,6 +329,29 @@ export function vocabMatchExercise(vs: readonly VocabularyItem[]): MatchingExerc
     difficulty: 1,
     tags: ['vocab game'],
     pairs: vs.map((v) => ({ left: v.word, right: v.translationUz })),
+  }
+}
+
+/**
+ * Tinglab juftlashtirish — Duolingo "Выберите пары слов" ko'rinishi
+ * (id'da so'z id'lari `~` bilan). `vocabMatchExercise`ning audio variantidek:
+ * pronunciation mavjud bo'lsa u, aks holda browser-tts (`v.word`) ishlatiladi
+ * — son ixtiro qilinmaydi, faqat mavjud `VocabularyItem`lar guruhlanadi.
+ */
+export function vocabAudioMatchExercise(vs: readonly VocabularyItem[]): AudioMatchingExercise {
+  return {
+    id: `${VOCAB_AUDIO_MATCH_PREFIX}${vs.map((v) => v.id).join('~')}`,
+    kind: 'audio-matching',
+    instructionUz: 'Tovuşni tinglang, möslaşadigan tarjimani tanlang',
+    level: vs[0]?.level ?? 'A1',
+    skill: 'vocabulary',
+    explanationUz: vs.map((v) => `${v.word} — ${v.translationUz}`).join('; '),
+    difficulty: 1,
+    tags: ['vocab game'],
+    pairs: vs.map((v) => ({
+      left: { word: v.word, pronunciation: v.pronunciation ?? { kind: 'browser-tts', ttsText: v.word, lang: 'en-US' } },
+      right: v.translationUz,
+    })),
   }
 }
 
@@ -557,6 +582,10 @@ export function findExercise(id: string): Exercise | undefined {
   if (id.startsWith(VOCAB_MATCH_PREFIX)) {
     const vs = id.slice(VOCAB_MATCH_PREFIX.length).split('~').map(vocabById)
     return vs.every((v): v is VocabularyItem => v !== undefined) && vs.length > 0 ? vocabMatchExercise(vs) : undefined
+  }
+  if (id.startsWith(VOCAB_AUDIO_MATCH_PREFIX)) {
+    const vs = id.slice(VOCAB_AUDIO_MATCH_PREFIX.length).split('~').map(vocabById)
+    return vs.every((v): v is VocabularyItem => v !== undefined) && vs.length > 0 ? vocabAudioMatchExercise(vs) : undefined
   }
   // ESKI KAMCHILIK: lug'at testi savollari hech qayerda ro'yxatda yo'q edi —
   // Xatolar daftari ular uchun to'g'ri javob o'rniga "—" ko'rsatardi.

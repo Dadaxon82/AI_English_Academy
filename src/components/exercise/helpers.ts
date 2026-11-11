@@ -18,6 +18,8 @@ export function initialAnswer(ex: Exercise): unknown {
       return ex.answers.map(() => '')
     case 'matching':
       return {}
+    case 'audio-matching':
+      return {}
     case 'word-order':
       return []
     case 'translation':
@@ -118,6 +120,8 @@ export function isAnswerEmpty(ex: Exercise, a: unknown): boolean {
       return !Array.isArray(a) || a.every((x) => String(x).trim() === '')
     case 'matching':
       return !a || Object.keys(a as object).length < ex.pairs.length || Object.values(a as Record<string, string>).some((v) => !v)
+    case 'audio-matching':
+      return !a || Object.keys(a as object).length < ex.pairs.length || Object.values(a as Record<string, string>).some((v) => !v)
     case 'word-order':
       return !Array.isArray(a) || a.length < ex.answer.length
     case 'translation':
@@ -140,6 +144,7 @@ export function kindLabel(k: Exercise['kind']): string {
     'multiple-choice': 'Tanlov',
     'true-false-notgiven': 'True / False / Not Given',
     matching: 'Juftlik',
+    'audio-matching': 'Tinglab juftlaştiriş',
     'gap-fill': 'Böşliq',
     'word-order': 'Söz tartibi',
     translation: 'Tarjima',

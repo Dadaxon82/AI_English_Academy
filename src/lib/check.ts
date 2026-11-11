@@ -59,6 +59,8 @@ export function checkAnswer(exercise: Exercise, answer: unknown): CheckResult {
       return checkTfng(exercise, answer)
     case 'matching':
       return checkMatching(exercise, answer)
+    case 'audio-matching':
+      return checkAudioMatching(exercise, answer)
     case 'gap-fill':
       return checkGapFill(exercise, answer)
     case 'word-order':
@@ -246,6 +248,28 @@ function checkMatching(exercise: Extract<Exercise, { kind: 'matching' }>, answer
     correct: ok === total,
     given: exercise.pairs.map((p) => `${p.left} → ${map[p.left] ?? '—'}`).join('; '),
     expected: exercise.pairs.map((p) => `${p.left} → ${p.right}`).join('; '),
+    whyUz:
+      ok === total
+        ? exercise.explanationUz
+        : `${ok}/${total} juftlik töğri. Xatolar: ${wrongPairs.slice(0, 4).join(', ')}. ${exercise.explanationUz}`,
+    partial,
+  }
+}
+
+function checkAudioMatching(exercise: Extract<Exercise, { kind: 'audio-matching' }>, answer: unknown): CheckResult {
+  const map = (answer ?? {}) as Record<string, string>
+  let ok = 0
+  const wrongPairs: string[] = []
+  for (const pair of exercise.pairs) {
+    if (norm(map[pair.left.word] ?? '') === norm(pair.right)) ok += 1
+    else wrongPairs.push(`“${pair.left.word}” → ${pair.right}`)
+  }
+  const total = exercise.pairs.length
+  const partial = total === 0 ? 0 : ok / total
+  return {
+    correct: ok === total,
+    given: exercise.pairs.map((p) => `${p.left.word} → ${map[p.left.word] ?? '—'}`).join('; '),
+    expected: exercise.pairs.map((p) => `${p.left.word} → ${p.right}`).join('; '),
     whyUz:
       ok === total
         ? exercise.explanationUz

@@ -14,7 +14,9 @@ describe('Luğat öyini — sessiya tuzilişi', () => {
     const ids = new Set(steps.flatMap((s) => s.vocabIds))
     expect(ids.size).toBe(WORDS_PER_GAME)
     expect(steps.filter((s) => s.isNew).length).toBe(WORDS_PER_GAME)
-    expect(steps.at(-1)!.exercise.kind).toBe('matching')
+    // Oxirgi ikki qadam: juftlik, so'ng uning tinglab juftlashtirish versiyasi.
+    expect(steps.at(-2)!.exercise.kind).toBe('matching')
+    expect(steps.at(-1)!.exercise.kind).toBe('audio-matching')
   })
 
   it('takrori yetgan sözlar birinçi tanlanadi', () => {
@@ -46,6 +48,7 @@ describe('Luğat öyini — sessiya tuzilişi', () => {
         if (ex.kind === 'multiple-choice') answer = ex.answerIndex
         else if (ex.kind === 'translation') answer = [ex.accepted[0]]
         else if (ex.kind === 'matching') answer = Object.fromEntries(ex.pairs.map((p) => [p.left, p.right]))
+        else if (ex.kind === 'audio-matching') answer = Object.fromEntries(ex.pairs.map((p) => [p.left.word, p.right]))
         expect(checkAnswer(ex, answer).correct, ex.id).toBe(true)
         expect(findExercise(ex.id), ex.id).toBeDefined()
       }

@@ -12,7 +12,7 @@
  * SOF funksiya: tasodif `rand` orqali beriladi (testda deterministik).
  */
 
-import { vocabMatchExercise, vocabPictureExercise, vocabQuizExercise, vocabSentenceExercise } from '../content'
+import { vocabAudioMatchExercise, vocabMatchExercise, vocabPictureExercise, vocabQuizExercise, vocabSentenceExercise } from '../content'
 import type { Exercise, VocabularyItem } from '../content/types'
 import { vocabEmoji } from '../content/vocabEmoji'
 import { isDue, type SrsState } from './srs'
@@ -127,6 +127,9 @@ export function buildWordGame(
   }
   if (matchable.length >= 3) {
     steps.push({ exercise: vocabMatchExercise(matchable), vocabIds: matchable.map((m) => m.id), isNew: false })
+    // Tinglab juftlashtirish (Duolingo "Выберите пары слов") — xuddi shu
+    // so'z guruhidan, lekin ovoz orqali (pronunciation yo'q bo'lsa TTS).
+    steps.push({ exercise: vocabAudioMatchExercise(matchable), vocabIds: matchable.map((m) => m.id), isNew: false })
   }
   return steps
 }

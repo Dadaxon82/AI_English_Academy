@@ -99,6 +99,7 @@ export type ExerciseKind =
   | 'multiple-choice'
   | 'true-false-notgiven'
   | 'matching'
+  | 'audio-matching'
   | 'gap-fill'
   | 'word-order'
   | 'translation'
@@ -148,6 +149,18 @@ export interface TrueFalseNotGivenExercise extends ExerciseBase {
 export interface MatchingExercise extends ExerciseBase {
   kind: 'matching'
   pairs: { left: string; right: string }[]
+}
+
+/**
+ * Tinglab juftlashtirish — Duolingo "Выберите пары слов" ko'rinishi: chapda
+ * raqamlangan tovush kartalari (`left.pronunciation`, yo'q bo'lsa `left.word`
+ * browser TTS bilan o'qiladi), o'ngda raqamlangan aralashtirilgan tarjima
+ * kartalari. Select/dropdown emas — to'g'ridan-to'g'ri bosish bilan
+ * juftlashtiriladi.
+ */
+export interface AudioMatchingExercise extends ExerciseBase {
+  kind: 'audio-matching'
+  pairs: { left: { word: string; pronunciation?: PronunciationSource }; right: string }[]
 }
 
 export interface GapFillExercise extends ExerciseBase {
@@ -239,6 +252,7 @@ export type Exercise =
   | ShortAnswerExercise
   | TrueFalseNotGivenExercise
   | MatchingExercise
+  | AudioMatchingExercise
   | GapFillExercise
   | WordOrderExercise
   | TranslationExercise

@@ -58,6 +58,29 @@ describe('checkAnswer — 6 maşq turi', () => {
     expect(r.whyUz).toContain('1/2')
   })
 
+  const audioMatch: Exercise = {
+    ...base,
+    kind: 'audio-matching',
+    instructionUz: 'Tovuşni tinglang, möslaşadigan sözni tanlang.',
+    pairs: [
+      { left: { word: 'hot', pronunciation: { kind: 'browser-tts', ttsText: 'hot', lang: 'en-US' } }, right: 'issiq' },
+      { left: { word: 'tea', pronunciation: { kind: 'browser-tts', ttsText: 'tea', lang: 'en-US' } }, right: 'çay' },
+      { left: { word: 'coffee', pronunciation: { kind: 'browser-tts', ttsText: 'coffee', lang: 'en-US' } }, right: 'kofe' },
+    ],
+  }
+  it('audio-matching: hammasi töğri bölsa correct=true', () => {
+    const r = checkAnswer(audioMatch, { hot: 'issiq', tea: 'çay', coffee: 'kofe' })
+    expect(r.correct).toBe(true)
+    expect(r.partial).toBe(1)
+  })
+  it('audio-matching: qisman hisob va xato juftlik izohi', () => {
+    const r = checkAnswer(audioMatch, { hot: 'issiq', tea: 'kofe', coffee: 'çay' })
+    expect(r.correct).toBe(false)
+    expect(r.partial).toBeCloseTo(1 / 3)
+    expect(r.whyUz).toContain('1/3')
+    expect(r.whyUz).toContain('tea')
+  })
+
   const gap: Exercise = {
     ...base,
     kind: 'gap-fill',
