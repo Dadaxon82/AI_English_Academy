@@ -16,6 +16,7 @@ import { loadCacheMeta, loadQueue, purgeUserData, storageBackend } from '../lib/
 import { MOTION, motionAllowed } from '../lib/motionManifest'
 import { GameIcon } from '../components/icons'
 import SignOutButton from '../components/SignOutButton'
+import ChangePasswordModal from '../components/ChangePasswordModal'
 import { BET_COST_GEMS, BET_DAYS, BET_STREAK_DAYS, BET_WIN_GEMS, GOAL_GEM_REWARD, HEARTS_COST_WRONG, HEARTS_MAX, HEART_COMBO_STREAK, HEART_PRACTICE_REVIEWS, HEART_REFILL_MINUTES, MAX_FREEZES, XP_GOAL_TIERS } from '../lib/gameConfig'
 import { supabaseConfigured, safeErrorMessage } from '../lib/supabase'
 import { deleteRemoteData } from '../lib/sync'
@@ -47,6 +48,7 @@ export default function Settings() {
   const [syncMsg, setSyncMsg] = useState<{ ok: boolean; text: string } | null>(null)
   const [syncing, setSyncing] = useState(false)
   const [confirmReset, setConfirmReset] = useState(false)
+  const [pwOpen, setPwOpen] = useState(false)
   const [resetDone, setResetDone] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [deleteError, setDeleteError] = useState<string | null>(null)
@@ -475,14 +477,25 @@ export default function Settings() {
       <Card className="grid gap-3 border-l-4 !border-l-[var(--bad)]">
         <h2 className="font-bold text-[var(--bad)]">Xavf zonasi</h2>
         <p className="text-sm muted">
-          Quyidagi amallar qaytarib bölmaydi. Ma’lumotlar şu qurilmadagi keşdan, sinxron navbatidan va offline
+          Ma’lumotni öçiriş qaytarib bölmaydi: ular şu qurilmadagi keşdan, sinxron navbatidan va offline
           fayllardan{hasServerCopy ? ', şuningdek serverdan' : ''} öçiriladi.
         </p>
         <div className="flex flex-wrap gap-2">
+          {hasServerCopy && (
+            <>
+              <Button variant="secondary" onClick={() => setPwOpen(true)}>
+                🔑 Parolni özgartiriş
+              </Button>
+              <Link to="/support">
+                <Button variant="secondary">💬 Adminga murojaat</Button>
+              </Link>
+            </>
+          )}
           <Button variant="danger" disabled={syncing} onClick={() => setConfirmReset(true)}>
             Barça ma’lumotni öçiriş
           </Button>
         </div>
+        <ChangePasswordModal open={pwOpen} onClose={() => setPwOpen(false)} />
         {resetDone && <SuccessBanner>Ma’lumotlar öçirildi — ilova boşlanğiç holatga qaytdi.</SuccessBanner>}
       </Card>
 
