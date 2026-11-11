@@ -47,7 +47,7 @@ export type LessonStep =
       icons?: string[]
       vocabIds?: string[]
     }
-  | { type: 'speak'; id: string; sentence: string; fallback: WordOrderExercise }
+  | { type: 'speak'; id: string; sentence: string; fallback: WordOrderExercise; vocabIds?: string[] }
 
 /** Qadam javob talab qiladimi (aniqlik/XP hisobiga kiradimi). */
 export function isGraded(step: LessonStep): boolean {

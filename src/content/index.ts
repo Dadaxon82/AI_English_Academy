@@ -12,6 +12,9 @@ import type {
   DailyPlanDay,
   Exercise,
   GrammarTopic,
+  ListeningChoiceExercise,
+  ListeningFillExercise,
+  ListeningSelectExercise,
   ListeningTask,
   MatchingExercise,
   MockExamSpec,
@@ -355,6 +358,95 @@ export function vocabAudioMatchExercise(vs: readonly VocabularyItem[]): AudioMat
   }
 }
 
+export const VOCAB_LISTEN_SELECT_PREFIX = 'vocab-lsel-'
+export const VOCAB_LISTEN_FILL_PREFIX = 'vocab-lfill-'
+export const VOCAB_LISTEN_CHOICE_PREFIX = 'vocab-lchoice-'
+
+/**
+ * «Что вы услышали?» — audio (yoki TTS) orqali so'z o'qiladi, o'quvchi
+ * plitkalardan eshitgan so'zni tanlaydi. Chalg'ituvchi so'zlar — shu
+ * daraja lug'atidan, deterministik aralashtirilgan (son ixtiro qilinmaydi).
+ * Id'da so'z id'lari `~` bilan (birinchisi — javob, qolganlari — plitkadagi
+ * chalg'ituvchilar) — `findExercise` guruhni TO'LIQ qayta tiklaydi.
+ */
+export function vocabListenSelectExercise(v: VocabularyItem, distractors: readonly VocabularyItem[]): ListeningSelectExercise {
+  const bank = seededShuffle([v.word, ...distractors.map((d) => d.word)], `${v.id}:lsel`)
+  return {
+    id: `${VOCAB_LISTEN_SELECT_PREFIX}${[v, ...distractors].map((x) => x.id).join('~')}`,
+    kind: 'listening-select',
+    instructionUz: 'Tovuşni tinglang va eşitgan sözni tanlang',
+    level: v.level,
+    skill: 'vocabulary',
+    explanationUz: `Eşitilgan söz: “${v.word}” — ${v.translationUz}.`,
+    difficulty: 1,
+    tags: ['vocab game', v.topic],
+    pronunciation: v.pronunciation,
+    targetText: v.word,
+    answer: [v.word],
+    bank,
+  }
+}
+
+/**
+ * So'zni misol gapda (`exampleEn`) topib bo'shliqqa aylantiradi (katta-kichik
+ * harfga bardoshli, bir so'zlik chegarada). So'z gapda aniq uchramasa (masalan
+ * ko'plik/boshqa shakl) `undefined` qaytadi — bo'shliq ixtiro qilinmaydi.
+ */
+function blankOutWord(sentence: string, word: string): { text: string; before: string } | undefined {
+  const re = new RegExp(`\\b${word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i')
+  const m = re.exec(sentence)
+  if (!m) return undefined
+  return { text: `${sentence.slice(0, m.index)}___${sentence.slice(m.index + m[0].length)}`, before: sentence.slice(0, m.index) }
+}
+
+/**
+ * «Введите пропущенное слово» — misol gap (`exampleEn`) TTS orqali to'liq
+ * o'qiladi, so'z o'rni bo'shliqqa aylantiriladi, o'quvchi klaviaturadan
+ * javob yozadi. So'z gapda topilmasa `undefined` (mashq yaratilmaydi).
+ */
+export function vocabListenFillExercise(v: VocabularyItem): ListeningFillExercise | undefined {
+  const blanked = blankOutWord(v.exampleEn, v.word)
+  if (!blanked) return undefined
+  return {
+    id: `${VOCAB_LISTEN_FILL_PREFIX}${v.id}`,
+    kind: 'listening-fill',
+    instructionUz: 'Gapni tinglang va tüşgan sözni yozing',
+    level: v.level,
+    skill: 'vocabulary',
+    explanationUz: `${v.exampleEn} — ${v.exampleUz}`,
+    difficulty: 2,
+    tags: ['vocab game', v.topic],
+    audioText: v.exampleEn,
+    text: blanked.text,
+    answer: v.word,
+  }
+}
+
+/**
+ * «Послушайте и заполните пропуск» — misol gap TTS orqali o'qiladi, o'quvchi
+ * bo'shliqni to'ldiruvchi so'zni 2 AUDIO variantdan (to'g'risi + chalg'ituvchi)
+ * tanlaydi. So'z gapda topilmasa yoki chalg'ituvchi berilmasa `undefined`.
+ */
+export function vocabListenChoiceExercise(v: VocabularyItem, distractor: VocabularyItem | undefined): ListeningChoiceExercise | undefined {
+  const blanked = blankOutWord(v.exampleEn, v.word)
+  if (!blanked || !distractor) return undefined
+  const options = seededShuffle([v.word, distractor.word], `${v.id}:lchoice`)
+  return {
+    id: `${VOCAB_LISTEN_CHOICE_PREFIX}${v.id}~${distractor.id}`,
+    kind: 'listening-choice',
+    instructionUz: 'Gapni tinglang va böşliqqa mos audio variantni tanlang',
+    level: v.level,
+    skill: 'vocabulary',
+    explanationUz: `${v.exampleEn} — ${v.exampleUz}`,
+    difficulty: 2,
+    tags: ['vocab game', v.topic],
+    text: blanked.text,
+    audioText: v.exampleEn,
+    options,
+    answerIndex: options.indexOf(v.word),
+  }
+}
+
 /* -------- Bo'lim DARSLARI (o'yin) uchun yasalgan topshiriqlar (id'dan tiklanadi) -------- */
 
 export const LESSON_GRAMMAR_PREFIX = 'lesson-gtr-'
@@ -416,7 +508,14 @@ export function shortSentences(text: string, max = 4): string[] {
     .slice(0, max)
 }
 
-function wordOrder(id: string, sentence: string, level: CefrLevel, skill: 'writing' | 'speaking', instructionUz: string, note: string): WordOrderExercise {
+function wordOrder(
+  id: string,
+  sentence: string,
+  level: CefrLevel,
+  skill: 'writing' | 'speaking' | 'vocabulary',
+  instructionUz: string,
+  note: string,
+): WordOrderExercise {
   const answer = wordsOf(sentence)
   return {
     id,
@@ -452,6 +551,22 @@ export function speakingRepeatExercise(task: SpeakingTask, i: number): WordOrder
   const s = speakingSentences(task)[i]
   if (!s) return undefined
   return wordOrder(`${LESSON_SPEAK_PREFIX}${task.id}-${i}`, s, task.level, 'speaking', 'Gapni tinglang va takrorlang', `Savol: “${s}”`)
+}
+
+export const VOCAB_REPEAT_PREFIX = 'vocab-repeat-'
+
+/**
+ * «Повторите это предложение вслух» — lug'at misol gapini (`exampleEn`)
+ * ovoz chiqarib takrorlash; mikrofon yöq qurilmalarda plitkalardan yig'ish
+ * (`WordOrderExercise` fallback, `speakingRepeatExercise` bilan bir xil
+ * mexanika). Gap juda uzun bo'lsa (`LessonPlayer`dagi mikrofon rejimi matn
+ * uzunligidan qat'i nazar işlaydi, lekin plitka fallback uzun gapda
+ * noqulay) mashq yaratilmaydi.
+ */
+export function vocabRepeatExercise(v: VocabularyItem): WordOrderExercise | undefined {
+  const n = wordsOf(v.exampleEn).length
+  if (n < 2 || n > LESSON_SENTENCE_MAX) return undefined
+  return wordOrder(`${VOCAB_REPEAT_PREFIX}${v.id}`, v.exampleEn, v.level, 'vocabulary', 'Gapni tinglang va takrorlang', `Söz: “${v.word}” — ${v.translationUz}.`)
 }
 
 function allWritingTasks(): WritingTask[] {
@@ -586,6 +701,24 @@ export function findExercise(id: string): Exercise | undefined {
   if (id.startsWith(VOCAB_AUDIO_MATCH_PREFIX)) {
     const vs = id.slice(VOCAB_AUDIO_MATCH_PREFIX.length).split('~').map(vocabById)
     return vs.every((v): v is VocabularyItem => v !== undefined) && vs.length > 0 ? vocabAudioMatchExercise(vs) : undefined
+  }
+  if (id.startsWith(VOCAB_LISTEN_SELECT_PREFIX)) {
+    const vs = id.slice(VOCAB_LISTEN_SELECT_PREFIX.length).split('~').map(vocabById)
+    return vs.every((v): v is VocabularyItem => v !== undefined) && vs.length > 0 ? vocabListenSelectExercise(vs[0]!, vs.slice(1)) : undefined
+  }
+  if (id.startsWith(VOCAB_LISTEN_FILL_PREFIX)) {
+    const v = vocabById(id.slice(VOCAB_LISTEN_FILL_PREFIX.length))
+    return v ? vocabListenFillExercise(v) : undefined
+  }
+  if (id.startsWith(VOCAB_LISTEN_CHOICE_PREFIX)) {
+    const [vid, did] = id.slice(VOCAB_LISTEN_CHOICE_PREFIX.length).split('~')
+    const v = vid ? vocabById(vid) : undefined
+    const d = did ? vocabById(did) : undefined
+    return v ? vocabListenChoiceExercise(v, d) : undefined
+  }
+  if (id.startsWith(VOCAB_REPEAT_PREFIX)) {
+    const v = vocabById(id.slice(VOCAB_REPEAT_PREFIX.length))
+    return v ? vocabRepeatExercise(v) : undefined
   }
   // ESKI KAMCHILIK: lug'at testi savollari hech qayerda ro'yxatda yo'q edi —
   // Xatolar daftari ular uchun to'g'ri javob o'rniga "—" ko'rsatardi.

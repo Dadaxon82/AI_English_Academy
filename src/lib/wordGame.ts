@@ -12,7 +12,16 @@
  * SOF funksiya: tasodif `rand` orqali beriladi (testda deterministik).
  */
 
-import { vocabAudioMatchExercise, vocabMatchExercise, vocabPictureExercise, vocabQuizExercise, vocabSentenceExercise } from '../content'
+import {
+  vocabAudioMatchExercise,
+  vocabListenChoiceExercise,
+  vocabListenFillExercise,
+  vocabListenSelectExercise,
+  vocabMatchExercise,
+  vocabPictureExercise,
+  vocabQuizExercise,
+  vocabSentenceExercise,
+} from '../content'
 import type { Exercise, VocabularyItem } from '../content/types'
 import { vocabEmoji } from '../content/vocabEmoji'
 import { isDue, type SrsState } from './srs'
@@ -117,6 +126,20 @@ export function buildWordGame(
       steps.push({ exercise: vocabSentenceExercise(v, sentenceFlip ? 'uz' : 'en'), vocabIds: [v.id], isNew: false })
       sentenceFlip = !sentenceFlip
     }
+
+    // «Что вы услышали?» — tinglab so'zni tanlash (3 plitka: javob + 2 chalg'ituvchi).
+    const selectDistractors = shuffled(others, rand).slice(0, 2)
+    if (selectDistractors.length === 2) {
+      steps.push({ exercise: vocabListenSelectExercise(v, selectDistractors), vocabIds: [v.id], isNew: false })
+    }
+
+    // «Введите пропущенное слово» / «Послушайте и заполните пропуск» — misol
+    // gapda so'z aniq uchrasagina (blankOutWord ichida tekshiriladi).
+    const fillEx = vocabListenFillExercise(v)
+    if (fillEx) steps.push({ exercise: fillEx, vocabIds: [v.id], isNew: false })
+    const choiceDistractor = shuffled(others, rand)[0]
+    const choiceEx = vocabListenChoiceExercise(v, choiceDistractor)
+    if (choiceEx) steps.push({ exercise: choiceEx, vocabIds: [v.id], isNew: false })
   }
 
   const matchable: VocabularyItem[] = []

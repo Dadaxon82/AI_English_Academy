@@ -9,6 +9,7 @@
  */
 
 import { useMemo, useState } from 'react'
+import { vocabRepeatExercise } from '../content'
 import type { VocabularyItem } from '../content/types'
 import type { LessonStep } from '../lib/lessons'
 import { useStore } from '../lib/storeContext'
@@ -30,18 +31,26 @@ export default function WordGame({ pool }: { pool: VocabularyItem[] }) {
   }, [pool, data.srs, now])
 
   const start = () => {
-    setSteps(
-      buildWordGame(pool, data.srs).map(
-        (g, i): LessonStep => ({
-          type: 'exercise',
-          id: `${g.exercise.id}#${i}`,
-          exercise: g.exercise,
-          badge: g.isNew ? 'Yangi söz' : undefined,
-          icons: g.icons,
-          vocabIds: g.vocabIds,
-        }),
-      ),
+    const game = buildWordGame(pool, data.srs)
+    const steps: LessonStep[] = game.map(
+      (g, i): LessonStep => ({
+        type: 'exercise',
+        id: `${g.exercise.id}#${i}`,
+        exercise: g.exercise,
+        badge: g.isNew ? 'Yangi söz' : undefined,
+        icons: g.icons,
+        vocabIds: g.vocabIds,
+      }),
     )
+    // «Повторите это предложение вслух» — har so'zning misol gapi uchun (mavjud
+    // bo'lsa), game.ts'dagi so'zlar bilan bir xil so'zlardan (ixtiro qilinmaydi).
+    const pickedIds = new Set(game.flatMap((g) => g.vocabIds))
+    for (const v of pool) {
+      if (!pickedIds.has(v.id)) continue
+      const fb = vocabRepeatExercise(v)
+      if (fb) steps.push({ type: 'speak', id: `${fb.id}#speak`, sentence: v.exampleEn, fallback: fb, vocabIds: [v.id] })
+    }
+    setSteps(steps)
   }
 
   if (pool.length < 4) {
@@ -55,7 +64,7 @@ export default function WordGame({ pool }: { pool: VocabularyItem[] }) {
           steps={steps}
           onClose={() => setSteps(null)}
           onAnswer={(step, correct) => {
-            if (step.type !== 'exercise') return
+            if (step.type !== 'exercise' && step.type !== 'speak') return
             for (const id of step.vocabIds ?? []) actions.gradeVocab(id, correct ? 'good' : 'again')
           }}
         />

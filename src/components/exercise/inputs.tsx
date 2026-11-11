@@ -5,6 +5,7 @@ import { choiceLabels, choiceValue, count, toggleIndex } from './helpers'
 import { cardCls, cardOn, tileCls } from './styles'
 import { CategorizeInput, DropdownInput, SequenceInput } from './structuredInputs'
 import { AudioMatchingInput, MatchingInput, TileBuilder, TranslationInput } from './tileInputs'
+import { ListeningChoiceInput, ListeningFillInput, ListeningSelectInput } from './audioInputs'
 /** Gap pufagidagi karnay — matnni brauzer TTS bilan o'qiydi (fayl yo'q). */
 export function SpeakIcon({ text }: { text: string }) {
   if (typeof window === 'undefined' || !('speechSynthesis' in window)) return null
@@ -174,6 +175,12 @@ export function AnswerInput({
       return <MatchingInput exercise={exercise} answer={answer} onChange={onChange} locked={locked} />
     case 'audio-matching':
       return <AudioMatchingInput exercise={exercise} answer={answer} onChange={onChange} locked={locked} />
+    case 'listening-select':
+      return <ListeningSelectInput exercise={exercise} answer={answer} onChange={onChange} locked={locked} />
+    case 'listening-fill':
+      return <ListeningFillInput exercise={exercise} answer={answer} onChange={onChange} locked={locked} />
+    case 'listening-choice':
+      return <ListeningChoiceInput exercise={exercise} answer={answer} onChange={onChange} locked={locked} />
     case 'word-order':
       return (
         <TileBuilder

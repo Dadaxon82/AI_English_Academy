@@ -100,6 +100,9 @@ export type ExerciseKind =
   | 'true-false-notgiven'
   | 'matching'
   | 'audio-matching'
+  | 'listening-select'
+  | 'listening-fill'
+  | 'listening-choice'
   | 'gap-fill'
   | 'word-order'
   | 'translation'
@@ -161,6 +164,53 @@ export interface MatchingExercise extends ExerciseBase {
 export interface AudioMatchingExercise extends ExerciseBase {
   kind: 'audio-matching'
   pairs: { left: { word: string; pronunciation?: PronunciationSource }; right: string }[]
+}
+
+/**
+ * «Что вы услышали?» — tinglab so'zni tanlash. Audio (`pronunciation`, bo'lmasa
+ * TTS orqali `targetText`) o'ynatiladi, o'quvchi plitkalardan ESHITGAN matnni
+ * (bir yoki bir nechta so'z) tartib bilan yig'adi.
+ */
+export interface ListeningSelectExercise extends ExerciseBase {
+  kind: 'listening-select'
+  pronunciation?: PronunciationSource
+  /** TTS uchun aytiladigan/tinglanadigan matn */
+  targetText: string
+  /** TO'G'RI tartibdagi so'zlar (javob) */
+  answer: string[]
+  /** O'quvchiga ko'rsatiladigan plitkalar (javob so'zlari + chalg'ituvchilar, aralash) */
+  bank: string[]
+}
+
+/**
+ * «Введите пропущенное слово» — gapni tinglab (TTS), bo'shliqqa erkin matn
+ * kiritish (klaviatura). `gap-fill`ning audio bilan boyitilgan versiyasi —
+ * bitta bo'shliq, transkript oldindan ko'rsatilmaydi.
+ */
+export interface ListeningFillExercise extends ExerciseBase {
+  kind: 'listening-fill'
+  /** TTS/audio orqali o'qiladigan to'liq gap (bo'shliqsiz) */
+  audioText: string
+  /** Bo'shliqli ko'rinish — ___ belgisi bilan */
+  text: string
+  answer: string
+  acceptAlternatives?: string[]
+}
+
+/**
+ * «Послушайте и заполните пропуск» — gapni tinglab (TTS), bo'shliqni
+ * to'ldiruvchi so'zni 2 ta AUDIO variantdan tanlash (variantlar ham TTS
+ * bilan o'qiladi, matn oldindan ko'rinmaydi).
+ */
+export interface ListeningChoiceExercise extends ExerciseBase {
+  kind: 'listening-choice'
+  /** Bo'shliqli gap matni (___ bilan) — faqat tuzatish/izoh uchun ko'rsatiladi */
+  text: string
+  /** TTS orqali o'qiladigan to'liq gap (audioText — bo'shliqsiz, to'g'ri variant bilan) */
+  audioText: string
+  /** Audio variantlar (bittasi to'g'ri) */
+  options: string[]
+  answerIndex: number
 }
 
 export interface GapFillExercise extends ExerciseBase {
@@ -253,6 +303,9 @@ export type Exercise =
   | TrueFalseNotGivenExercise
   | MatchingExercise
   | AudioMatchingExercise
+  | ListeningSelectExercise
+  | ListeningFillExercise
+  | ListeningChoiceExercise
   | GapFillExercise
   | WordOrderExercise
   | TranslationExercise

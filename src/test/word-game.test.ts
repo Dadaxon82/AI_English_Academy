@@ -49,6 +49,9 @@ describe('Luğat öyini — sessiya tuzilişi', () => {
         else if (ex.kind === 'translation') answer = [ex.accepted[0]]
         else if (ex.kind === 'matching') answer = Object.fromEntries(ex.pairs.map((p) => [p.left, p.right]))
         else if (ex.kind === 'audio-matching') answer = Object.fromEntries(ex.pairs.map((p) => [p.left.word, p.right]))
+        else if (ex.kind === 'listening-select') answer = ex.answer
+        else if (ex.kind === 'listening-fill') answer = [ex.answer]
+        else if (ex.kind === 'listening-choice') answer = ex.answerIndex
         expect(checkAnswer(ex, answer).correct, ex.id).toBe(true)
         expect(findExercise(ex.id), ex.id).toBeDefined()
       }

@@ -20,6 +20,12 @@ export function initialAnswer(ex: Exercise): unknown {
       return {}
     case 'audio-matching':
       return {}
+    case 'listening-select':
+      return []
+    case 'listening-fill':
+      return ['']
+    case 'listening-choice':
+      return -1
     case 'word-order':
       return []
     case 'translation':
@@ -122,6 +128,12 @@ export function isAnswerEmpty(ex: Exercise, a: unknown): boolean {
       return !a || Object.keys(a as object).length < ex.pairs.length || Object.values(a as Record<string, string>).some((v) => !v)
     case 'audio-matching':
       return !a || Object.keys(a as object).length < ex.pairs.length || Object.values(a as Record<string, string>).some((v) => !v)
+    case 'listening-select':
+      return !Array.isArray(a) || a.length < ex.answer.length
+    case 'listening-fill':
+      return !Array.isArray(a) || String(a[0] ?? '').trim() === ''
+    case 'listening-choice':
+      return typeof a !== 'number' || a < 0
     case 'word-order':
       return !Array.isArray(a) || a.length < ex.answer.length
     case 'translation':
@@ -145,6 +157,9 @@ export function kindLabel(k: Exercise['kind']): string {
     'true-false-notgiven': 'True / False / Not Given',
     matching: 'Juftlik',
     'audio-matching': 'Tinglab juftlaştiriş',
+    'listening-select': 'Tinglab sözni tanlaş',
+    'listening-fill': 'Tinglab yozib töldiriş',
+    'listening-choice': 'Tinglab variant tanlaş',
     'gap-fill': 'Böşliq',
     'word-order': 'Söz tartibi',
     translation: 'Tarjima',

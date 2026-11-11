@@ -61,6 +61,12 @@ export function checkAnswer(exercise: Exercise, answer: unknown): CheckResult {
       return checkMatching(exercise, answer)
     case 'audio-matching':
       return checkAudioMatching(exercise, answer)
+    case 'listening-select':
+      return checkListeningSelect(exercise, answer)
+    case 'listening-fill':
+      return checkListeningFill(exercise, answer)
+    case 'listening-choice':
+      return checkListeningChoice(exercise, answer)
     case 'gap-fill':
       return checkGapFill(exercise, answer)
     case 'word-order':
@@ -275,6 +281,50 @@ function checkAudioMatching(exercise: Extract<Exercise, { kind: 'audio-matching'
         ? exercise.explanationUz
         : `${ok}/${total} juftlik töğri. Xatolar: ${wrongPairs.slice(0, 4).join(', ')}. ${exercise.explanationUz}`,
     partial,
+  }
+}
+
+/** «Что вы услышали?» — plitkalardan tartib bilan yig'ilgan matn so'z-so'z solishtiriladi. */
+function checkListeningSelect(exercise: Extract<Exercise, { kind: 'listening-select' }>, answer: unknown): CheckResult {
+  const given = toList(answer)
+  const correct = given.length === exercise.answer.length && given.every((w, i) => norm(w) === norm(exercise.answer[i] ?? ''))
+  const ok = exercise.answer.filter((w, i) => norm(given[i] ?? '') === norm(w)).length
+  const total = exercise.answer.length
+  return {
+    correct,
+    given: given.join(' '),
+    expected: exercise.answer.join(' '),
+    whyUz: correct ? exercise.explanationUz : `Eşitilgan matn: “${exercise.answer.join(' ')}”. ${exercise.explanationUz}`,
+    partial: total === 0 ? 0 : ok / total,
+  }
+}
+
+/** «Введите пропущенное слово» — audio orqali eşitilgan gapdagi bo'shliqqa klaviaturadan yozilgan javob. */
+function checkListeningFill(exercise: Extract<Exercise, { kind: 'listening-fill' }>, answer: unknown): CheckResult {
+  const given = toList(answer)[0] ?? ''
+  const acceptable = [exercise.answer, ...(exercise.acceptAlternatives ?? [])]
+  const correct = given.trim() !== '' && acceptable.some((a) => looseEquals(a, given))
+  return {
+    correct,
+    given,
+    expected: exercise.answer,
+    whyUz: correct ? exercise.explanationUz : `Töğri söz: “${exercise.answer}”. ${exercise.explanationUz}`,
+    partial: correct ? 1 : 0,
+  }
+}
+
+/** «Послушайте и заполните пропуск» — 2 audio variantdan töğrisini tanlash (multiple-choice bilan bir xil shartnoma). */
+function checkListeningChoice(exercise: Extract<Exercise, { kind: 'listening-choice' }>, answer: unknown): CheckResult {
+  const answered = typeof answer === 'number' ? Number.isFinite(answer) : answer !== null && answer !== undefined && String(answer).trim() !== ''
+  const idx = answered ? (typeof answer === 'number' ? answer : Number(answer)) : -1
+  const chosen = idx >= 0 ? exercise.options[idx] ?? '' : ''
+  const correct = answered && idx === exercise.answerIndex
+  return {
+    correct,
+    given: chosen,
+    expected: exercise.options[exercise.answerIndex] ?? '',
+    whyUz: correct ? exercise.explanationUz : `Töğri variant eşitilgan gapqa mos keladi: “${exercise.options[exercise.answerIndex]}”. ${exercise.explanationUz}`,
+    partial: correct ? 1 : 0,
   }
 }
 

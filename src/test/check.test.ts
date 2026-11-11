@@ -81,6 +81,53 @@ describe('checkAnswer — 6 maşq turi', () => {
     expect(r.whyUz).toContain('tea')
   })
 
+  const listenSelect: Exercise = {
+    ...base,
+    kind: 'listening-select',
+    instructionUz: 'Tovuşni tinglang va eşitgan sözni tanlang.',
+    pronunciation: { kind: 'browser-tts', ttsText: 'coffee', lang: 'en-US' },
+    targetText: 'coffee',
+    answer: ['coffee'],
+    bank: ['tea', 'coffee', 'sugar'],
+  }
+  it("listening-select: töğri so'z tanlansa correct=true", () => {
+    const r = checkAnswer(listenSelect, ['coffee'])
+    expect(r.correct).toBe(true)
+  })
+  it("listening-select: başqa so'z tanlansa correct=false", () => {
+    const r = checkAnswer(listenSelect, ['tea'])
+    expect(r.correct).toBe(false)
+    expect(r.expected).toBe('coffee')
+  })
+
+  const listenFill: Exercise = {
+    ...base,
+    kind: 'listening-fill',
+    instructionUz: 'Gapni tinglang va tüşgan sözni yozing.',
+    audioText: 'I drink coffee every morning.',
+    text: 'I drink ___ every morning.',
+    answer: 'coffee',
+    acceptAlternatives: ['Coffee'],
+  }
+  it('listening-fill: töğri javob (katta-kiçik harfga bardoşli)', () => {
+    expect(checkAnswer(listenFill, ['Coffee']).correct).toBe(true)
+    expect(checkAnswer(listenFill, ['tea']).correct).toBe(false)
+  })
+
+  const listenChoice: Exercise = {
+    ...base,
+    kind: 'listening-choice',
+    instructionUz: 'Gapni tinglang va böşliqqa mos audio variantni tanlang.',
+    text: 'I drink ___ every morning.',
+    audioText: 'I drink coffee every morning.',
+    options: ['tea', 'coffee'],
+    answerIndex: 1,
+  }
+  it('listening-choice: indeks böyiça tekşiradi', () => {
+    expect(checkAnswer(listenChoice, 1).correct).toBe(true)
+    expect(checkAnswer(listenChoice, 0).correct).toBe(false)
+  })
+
   const gap: Exercise = {
     ...base,
     kind: 'gap-fill',
