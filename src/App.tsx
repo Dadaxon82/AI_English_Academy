@@ -37,6 +37,8 @@ const Pronunciation = lazy(() => import('./pages/Pronunciation'))
 const Shorts = lazy(() => import('./pages/Shorts'))
 // Admin panel — alohida chunk (grafik kutubxonasi faqat adminga yuklanadi).
 const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'))
+const AdminSupport = lazy(() => import('./pages/admin/AdminSupport'))
+const Support = lazy(() => import('./pages/Support'))
 
 /**
  * Router tanlovi:
@@ -106,11 +108,20 @@ function Shell({ auth, onAuth }: { auth: AuthState; onAuth: (s: AuthState) => vo
               <Route path="/errors" element={<ErrorLog />} />
               <Route path="/progress" element={<Progress />} />
               <Route path="/settings" element={<Settings />} />
+              <Route path="/support" element={<Support />} />
               <Route
                 path="/admin"
                 element={
                   <AdminRoute>
                     <AdminDashboard />
+                  </AdminRoute>
+                }
+              />
+              <Route
+                path="/admin/support"
+                element={
+                  <AdminRoute>
+                    <AdminSupport />
                   </AdminRoute>
                 }
               />

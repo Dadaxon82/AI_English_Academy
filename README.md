@@ -994,6 +994,30 @@ emoji bilan ko'rsatiladi. Rasm qo'shilsa, `src/components/shortScene.ts` dagi `R
 
 **Hali qilinmagan:** mobil ilovada shortlar yo'q. Haqiqiy video kliplar ham yo'q, ularni yozib olish kerak.
 
+## 5t. Parolni o'zgartirish va adminga murojaat (2026-11-11)
+
+**Sozlamalar → Xavf zonasi** — hisobga kirgan har bir foydalanuvchida ikkita yangi tugma bor:
+
+- **Parolni o'zgartirish.** Yangi parol kamida 8 belgi bo'lishi va harf hamda raqamdan iborat bo'lishi kerak. Serverda
+  «qayta tasdiqlash» yoqilgan: sessiya eski bo'lsa, emailga 6 xonali kod keladi va parol shu kod bilan saqlanadi.
+- **Adminga murojaat** (`/support`). Foydalanuvchi mavzu va xabar yozadi, **rasm (PNG/JPG/WebP) yoki PDF** (≤ 5 MB) ilova
+  qiladi. Yozishma davom etadi va murojaatni yopish mumkin. Admin javobi shu sahifada ko'rinadi.
+
+**Admin panel → Murojaatlar** (`/admin/support`): murojaatlar holat bo'yicha saralanadi (javob kutilmoqda, javob berildi,
+yopilgan). Har murojaatning to'liq yozishmasi ko'rinadi. Admin ilova bilan javob yozadi, murojaatni yopadi yoki qayta
+ochadi, kerak bo'lsa fayllari bilan birga o'chiradi.
+
+Server qismi — `supabase/migrations/0009_support.sql`, testlari — `supabase/tests/support.test.sql`:
+
+| Himoya | Qanday |
+|---|---|
+| Kim ko'radi | RLS: murojaat va xabarlarni faqat egasi va admin ko'radi |
+| Soxta «admin» javobi | Muallif va admin belgisini trigger `auth.uid()` va `is_admin()` dan qo'yadi |
+| Holat | Holatni faqat trigger yoki `support_set_status` o'zgartiradi. Egasi murojaatni faqat yopa oladi |
+| Fayllar | Yopiq `support` bucket, faqat PNG/JPEG/WebP/PDF, ≤ 5 MB. Yo'l `<egasi>/<murojaat>/<uuid>.<ext>`. Fayl 10 daqiqalik imzolangan havola orqali ochiladi, PDF yuklab olinadi |
+| Soxta fayl | Mijoz faylning birinchi baytlarini tekshiradi: `.png` deb nomlangan HTML qabul qilinmaydi. Server MIME turini cheklaydi |
+| Spam | Bir vaqtda 5 tadan ortiq ochiq murojaat bo'lmaydi. Soatiga 20 tagacha xabar va 10 tagacha fayl yuboriladi. Bloklangan foydalanuvchi yoza olmaydi |
+
 ## 6. Arxitektura qisqacha
 
 ```

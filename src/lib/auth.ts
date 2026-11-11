@@ -1,5 +1,6 @@
 /** Hisobdan chiqish: Supabase sessiyasi, mahalliy ma'lumot va SW keshlari tozalanadi. */
 import { purgeUserData } from './storage'
+import type { SupabaseClient } from '@supabase/supabase-js'
 import { getSupabase } from './supabase'
 
 export async function signOutCurrent(userId: string) {
@@ -31,4 +32,57 @@ export function validateNewPassword(pw: string): string | null {
 /** Email tasdiq havolasi qaytadigan manzil (saytning öz bazasi; localhost emas). */
 export function authRedirectUrl(): string {
   return new URL(import.meta.env.BASE_URL || '/', window.location.origin).toString()
+}
+
+/* ------------------------------ parolni almashtirish ------------------------------ */
+
+type AuthClient = { auth: Pick<SupabaseClient['auth'], 'updateUser' | 'reauthenticate'> }
+
+export type PasswordChangeResult = { ok: true } | { ok: false; needsCode: true } | { ok: false; needsCode?: false; reasonUz: string }
+
+export function passwordErrorUz(err: unknown): string {
+  const e = (err ?? {}) as { code?: string; message?: string; status?: number }
+  const msg = (e.message ?? '').toLowerCase()
+  if (e.code === 'same_password' || msg.includes('different from the old')) return 'Yangi parol eskisidan farq qilsin.'
+  if (e.code === 'weak_password' || msg.includes('weak')) return 'Parol juda oddiy: kamida 8 belgi, harf va raqam bölsin.'
+  if (e.code === 'reauthentication_not_valid' || msg.includes('nonce') || msg.includes('otp')) return 'Tasdiq kodi notöğri yoki muddati tugagan. Yangi kod oling.'
+  if (e.code === 'over_email_send_rate_limit' || e.status === 429) return 'Juda köp urinish. Birozdan keyin qayta urinib köring.'
+  if (msg.includes('failed to fetch') || msg.includes('network')) return 'Internet aloqasi yöq.'
+  return 'Parolni özgartirib bölmadi. Birozdan keyin qayta urinib köring.'
+}
+
+/**
+ * Parolni almashtirish. Serverda «qayta tasdiqlash» yoqilgan: sessiya eski
+ * bo'lsa server kod so'raydi — shunda `needsCode` qaytadi va `sendReauthCode`
+ * emailga 6 xonali kod yuboradi; keyin shu funksiya `nonce` bilan chaqiriladi.
+ */
+export async function changePassword(
+  newPassword: string,
+  nonce?: string,
+  getClient: () => Promise<AuthClient | null> = getSupabase,
+): Promise<PasswordChangeResult> {
+  const bad = validateNewPassword(newPassword)
+  if (bad) return { ok: false, reasonUz: bad }
+  const sb = await getClient()
+  if (!sb) return { ok: false, reasonUz: 'Server (Supabase) ulanmagan.' }
+  try {
+    const { error } = await sb.auth.updateUser(nonce ? { password: newPassword, nonce: nonce.trim() } : { password: newPassword })
+    if (!error) return { ok: true }
+    const code = (error as { code?: string }).code
+    if (!nonce && (code === 'reauthentication_needed' || /reauthenticat/i.test(error.message))) return { ok: false, needsCode: true }
+    return { ok: false, reasonUz: passwordErrorUz(error) }
+  } catch (err) {
+    return { ok: false, reasonUz: passwordErrorUz(err) }
+  }
+}
+
+export async function sendReauthCode(getClient: () => Promise<AuthClient | null> = getSupabase): Promise<{ ok: true } | { ok: false; reasonUz: string }> {
+  const sb = await getClient()
+  if (!sb) return { ok: false, reasonUz: 'Server (Supabase) ulanmagan.' }
+  try {
+    const { error } = await sb.auth.reauthenticate()
+    return error ? { ok: false, reasonUz: passwordErrorUz(error) } : { ok: true }
+  } catch (err) {
+    return { ok: false, reasonUz: passwordErrorUz(err) }
+  }
 }

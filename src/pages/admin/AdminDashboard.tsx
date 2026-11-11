@@ -6,11 +6,12 @@
  * server javob bermasa sabab ko'rsatiladi.
  */
 import { useEffect, useId, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import {
   ChevronLeft,
   ChevronRight,
   Flame,
+  Inbox,
   Pencil,
   RefreshCw,
   Search,
@@ -268,9 +269,16 @@ export default function AdminDashboard() {
           <h1 className="text-2xl font-bold">Admin panel</h1>
           <p className="text-sm muted">Platforma statistikasi va foydalanuvçilarni boşqariş.</p>
         </div>
-        <Button variant="secondary" size="sm" onClick={refresh} busy={statsLoading || usersLoading}>
-          <RefreshCw aria-hidden="true" className="h-4 w-4" /> Yangilaş
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Link to="/admin/support">
+            <Button variant="secondary" size="sm">
+              <Inbox aria-hidden="true" className="h-4 w-4" /> Murojaatlar
+            </Button>
+          </Link>
+          <Button variant="secondary" size="sm" onClick={refresh} busy={statsLoading || usersLoading}>
+            <RefreshCw aria-hidden="true" className="h-4 w-4" /> Yangilaş
+          </Button>
+        </div>
       </header>
 
       {/* ---------- statistika ---------- */}
