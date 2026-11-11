@@ -18,7 +18,7 @@ import {
   validateSubject,
   type CheckedFile,
 } from '../lib/support'
-import { changePassword } from '../lib/auth'
+import { changePassword, requestPasswordReset, setNewPasswordAfterRecovery } from '../lib/auth'
 
 const PNG = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0, 0, 0]
 const PDF = [0x25, 0x50, 0x44, 0x46, 0x2d, 0x31, 0x2e, 0x37]
@@ -164,5 +164,41 @@ describe('parolni özgartiriş', () => {
     expect(await changePassword('qisqa1', undefined, client)).toMatchObject({ ok: false, reasonUz: expect.stringMatching(/kamida 8/) })
     expect(updateUser).not.toHaveBeenCalled()
     expect(await changePassword('salom2026', undefined, client)).toMatchObject({ ok: false, reasonUz: expect.stringMatching(/farq/) })
+  })
+})
+
+describe('parolni tiklaş (unutilgan parol)', () => {
+  it('töğri email uçun tiklaş havolasi sörasa — saytga qaytadigan redirectTo bilan', async () => {
+    const resetPasswordForEmail = vi.fn().mockResolvedValue({ error: null })
+    const client = async () => ({ auth: { resetPasswordForEmail } }) as never
+    expect(await requestPasswordReset('sardor@example.com', client)).toEqual({ ok: true })
+    expect(resetPasswordForEmail).toHaveBeenCalledWith('sardor@example.com', { redirectTo: expect.any(String) })
+  })
+
+  it('notöğri email formatida serverga murojaat qilinmaydi', async () => {
+    const resetPasswordForEmail = vi.fn()
+    const client = async () => ({ auth: { resetPasswordForEmail } }) as never
+    expect(await requestPasswordReset('notöğri', client)).toMatchObject({ ok: false, reasonUz: expect.stringMatching(/notöğri/) })
+    expect(resetPasswordForEmail).not.toHaveBeenCalled()
+  })
+
+  it('server xato qaytarsa — sabab özbekçe körinadi', async () => {
+    const resetPasswordForEmail = vi.fn().mockResolvedValue({ error: { status: 429, message: 'rate limit' } })
+    const client = async () => ({ auth: { resetPasswordForEmail } }) as never
+    expect(await requestPasswordReset('sardor@example.com', client)).toMatchObject({ ok: false, reasonUz: expect.stringMatching(/Juda köp/) })
+  })
+
+  it('tiklaş sessiyasida yangi parolni saqlaydi', async () => {
+    const updateUser = vi.fn().mockResolvedValue({ error: null })
+    const client = async () => ({ auth: { updateUser, signOut: vi.fn() } }) as never
+    expect(await setNewPasswordAfterRecovery('yangi2026', client)).toEqual({ ok: true })
+    expect(updateUser).toHaveBeenCalledWith({ password: 'yangi2026' })
+  })
+
+  it('zaif yangi parol serverga yuborilmaydi', async () => {
+    const updateUser = vi.fn()
+    const client = async () => ({ auth: { updateUser, signOut: vi.fn() } }) as never
+    expect(await setNewPasswordAfterRecovery('qisqa1', client)).toMatchObject({ ok: false, reasonUz: expect.stringMatching(/kamida 8/) })
+    expect(updateUser).not.toHaveBeenCalled()
   })
 })

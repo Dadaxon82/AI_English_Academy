@@ -86,3 +86,52 @@ export async function sendReauthCode(getClient: () => Promise<AuthClient | null>
     return { ok: false, reasonUz: passwordErrorUz(err) }
   }
 }
+
+/* ------------------------------ parolni tiklash (unutilgan parol) ------------------------------ */
+
+type ResetRequestClient = { auth: Pick<SupabaseClient['auth'], 'resetPasswordForEmail'> }
+
+/**
+ * Kirmagan foydalanuvchi uçun: emailga parolni tiklaş havolasi yuboriladi.
+ * Havola saytga qaytadi (`authRedirectUrl`), Supabase uni URL'dan avtomatik
+ * oqiydi (`detectSessionInUrl`) va `PASSWORD_RECOVERY` hodisasini qötaradi —
+ * şunda App.tsx yangi parol sorovini körsatadi.
+ */
+export async function requestPasswordReset(
+  email: string,
+  getClient: () => Promise<ResetRequestClient | null> = getSupabase,
+): Promise<{ ok: true } | { ok: false; reasonUz: string }> {
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return { ok: false, reasonUz: 'Email manzil notöğri körinmoqda.' }
+  const sb = await getClient()
+  if (!sb) return { ok: false, reasonUz: 'Server (Supabase) ulanmagan.' }
+  try {
+    const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: authRedirectUrl() })
+    return error ? { ok: false, reasonUz: passwordErrorUz(error) } : { ok: true }
+  } catch (err) {
+    return { ok: false, reasonUz: passwordErrorUz(err) }
+  }
+}
+
+type SetNewPasswordClient = { auth: Pick<SupabaseClient['auth'], 'updateUser' | 'signOut'> }
+
+/**
+ * `PASSWORD_RECOVERY` hodisasidan keyingi vaqtinça sessiyada yangi parolni
+ * saqlaydi. Muvaffaqiyatli bölsa — foydalanuvchi endi şu parol bilan
+ * kirişi kerak (sessiya özi saqlanib qoladi, lekin aniqlik uçun çiqariladi).
+ */
+export async function setNewPasswordAfterRecovery(
+  newPassword: string,
+  getClient: () => Promise<SetNewPasswordClient | null> = getSupabase,
+): Promise<{ ok: true } | { ok: false; reasonUz: string }> {
+  const bad = validateNewPassword(newPassword)
+  if (bad) return { ok: false, reasonUz: bad }
+  const sb = await getClient()
+  if (!sb) return { ok: false, reasonUz: 'Server (Supabase) ulanmagan.' }
+  try {
+    const { error } = await sb.auth.updateUser({ password: newPassword })
+    if (error) return { ok: false, reasonUz: passwordErrorUz(error) }
+    return { ok: true }
+  } catch (err) {
+    return { ok: false, reasonUz: passwordErrorUz(err) }
+  }
+}

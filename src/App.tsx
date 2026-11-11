@@ -7,6 +7,7 @@ import { useStore } from './lib/storeContext'
 import { getSupabase, localGuestId, supabaseConfigured, type AuthState } from './lib/supabase'
 import { LoadingBlock, InfoBanner, Button } from './components/ui'
 import Login from './pages/Login'
+import ResetPassword from './pages/ResetPassword'
 import { signOutCurrent } from './lib/auth'
 import AdminRoute from './components/admin/AdminRoute'
 import GuestUpsell, { GuestNotice } from './components/GuestUpsell'
@@ -54,9 +55,25 @@ const useHashRoutes =
   Boolean((import.meta as ImportMeta).env?.VITE_HASH_ROUTES)
 const Router = useHashRoutes ? HashRouter : BrowserRouter
 
-function Shell({ auth, onAuth }: { auth: AuthState; onAuth: (s: AuthState) => void }) {
+function Shell({
+  auth,
+  onAuth,
+  recovering,
+  onRecoveryDone,
+}: {
+  auth: AuthState
+  onAuth: (s: AuthState) => void
+  recovering: boolean
+  onRecoveryDone: () => void
+}) {
   const { ready, data } = useStore()
   const loc = useLocation()
+
+  // Emaildagi «parolni tiklaş» havolasidan kelingan bölsa — qaysi sahifada
+  // bölmasin, avval yangi parol örnatiş talab qilinadi.
+  if (recovering) {
+    return <ResetPassword onDone={onRecoveryDone} />
+  }
   // Onboarding yakunlanmagan bo'lsa taklif qilamiz. Diagnostikani o'tkazib
   // yuborish ham yakunlash hisoblanadi (`onboardedAt`).
   const needsOnboarding = data.diagnostic === null && data.onboardedAt === null
@@ -170,6 +187,10 @@ function NotFound() {
 
 export default function App() {
   const [auth, setAuth] = useState<AuthState>({ kind: 'checking' })
+  // Emaildagi tiklaş havolasidan kelgan `PASSWORD_RECOVERY` hodisasi — true
+  // bölsa, foydalanuvchi kirgan-kirmaganidan qatъi nazar, yangi parol
+  // örnatiş ekrani körsatiladi (vaqtinça sessiya shu uçun yetarli).
+  const [recovering, setRecovering] = useState(false)
 
   useEffect(() => {
     let alive = true
@@ -194,8 +215,12 @@ export default function App() {
       } else {
         setAuth({ kind: 'signed-out' })
       }
-      const { data: sub } = sb.auth.onAuthStateChange((_e, session) => {
+      const { data: sub } = sb.auth.onAuthStateChange((event, session) => {
         if (!alive) return
+        if (event === 'PASSWORD_RECOVERY') {
+          setRecovering(true)
+          return
+        }
         if (session?.user) {
           rememberGuest(false)
           setAuth({ kind: 'signed-in', userId: session.user.id, email: session.user.email ?? null })
@@ -240,6 +265,17 @@ export default function App() {
     setAuth(s)
   }, [])
 
+  // Yangi parol örnatilgandan keyin: vaqtinça (tiklaş) sessiyadan çiqamiz —
+  // foydalanuvchi endi yangi paroli bilan ongşa kirişi kerak.
+  const onRecoveryDone = useCallback(() => {
+    void (async () => {
+      const sb = await getSupabase()
+      if (sb) await sb.auth.signOut()
+      setRecovering(false)
+      setAuth({ kind: 'signed-out' })
+    })()
+  }, [])
+
   const signedInId = auth.kind === 'signed-in' ? auth.userId : null
   const guest = supabaseConfigured && auth.kind === 'local-only'
   const authValue = useMemo(() => ({ signOut, userId: signedInId, guest }), [signOut, signedInId, guest])
@@ -253,7 +289,7 @@ export default function App() {
     <Router {...routerProps}>
       <AuthContext.Provider value={authValue}>
         <StoreProvider userId={userId} remoteSync={auth.kind === 'signed-in'}>
-          <Shell auth={auth} onAuth={onAuth} />
+          <Shell auth={auth} onAuth={onAuth} recovering={recovering} onRecoveryDone={onRecoveryDone} />
         </StoreProvider>
       </AuthContext.Provider>
     </Router>

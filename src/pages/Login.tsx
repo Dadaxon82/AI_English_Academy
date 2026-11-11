@@ -4,25 +4,41 @@ import { Button, Card, Field, InfoBanner, inputCls } from '../components/ui'
 import { MascotFigure } from '../components/Mascot'
 import { CHUNKY, CHUNKY_GO } from '../components/chunky'
 import { getSupabase, localGuestId, safeErrorMessage, supabaseConfigured, type AuthState } from '../lib/supabase'
-import { NEW_PASSWORD_MIN, authRedirectUrl, validateNewPassword } from '../lib/auth'
+import { NEW_PASSWORD_MIN, authRedirectUrl, requestPasswordReset, validateNewPassword } from '../lib/auth'
 
 export default function Login({ onAuth, authState }: { onAuth: (s: AuthState) => void; authState: AuthState }) {
   const nav = useNavigate()
   // Mehmon «Röyxatdan ötiş» taklifidan kelsa — darhol röyxatdan ötiş formasi.
   const wanted = (useLocation().state as { mode?: string } | null)?.mode
-  const [mode, setMode] = useState<'sign-in' | 'sign-up'>(wanted === 'sign-up' && supabaseConfigured ? 'sign-up' : 'sign-in')
+  const [mode, setMode] = useState<'sign-in' | 'sign-up' | 'reset'>(wanted === 'sign-up' && supabaseConfigured ? 'sign-up' : 'sign-in')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [name, setName] = useState('')
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState<string | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
+  const [resetSent, setResetSent] = useState(false)
   const emailRef = useRef<HTMLInputElement>(null)
 
   // allaqachon kirilgan bo'lsa — dashboardga
   useEffect(() => {
     if (authState.kind === 'signed-in') nav('/dashboard', { replace: true })
   }, [authState, nav])
+
+  const submitReset = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setErr(null)
+    setNotice(null)
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
+      setErr('Email manzil notöğri körinmoqda.')
+      return
+    }
+    setBusy(true)
+    const res = await requestPasswordReset(email)
+    setBusy(false)
+    if (res.ok) setResetSent(true)
+    else setErr(res.reasonUz)
+  }
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -115,45 +131,100 @@ export default function Login({ onAuth, authState }: { onAuth: (s: AuthState) =>
           )}
 
           <Card>
-            <form onSubmit={submit} className="grid gap-3.5">
-              <div className="flex gap-1.5 p-1 rounded-xl bg-[var(--panel-2)]">
-                {(['sign-in', 'sign-up'] as const).map((m) => (
-                  <button
-                    key={m}
-                    type="button"
-                    onClick={() => setMode(m)}
-                    className={`flex-1 py-2 rounded-lg text-sm font-semibold ${mode === m ? 'bg-[var(--panel)] shadow-sm' : 'muted'}`}
-                  >
-                    {m === 'sign-in' ? 'Kiriş' : "Röyxatdan ötiş"}
-                  </button>
-                ))}
-              </div>
+            {mode === 'reset' ? (
+              <form onSubmit={submitReset} className="grid gap-3.5">
+                <h2 className="text-lg font-bold">Parolni tiklaş</h2>
+                {resetSent ? (
+                  <>
+                    <InfoBanner>
+                      Agar <b>{email}</b> manzili röyxatdan ötgan bölsa, oğa parolni tiklaş havolasi yuborildi.
+                      Emailingizni (shu jumladan spam papkasini) tekşiring.
+                    </InfoBanner>
+                    <Button type="button" variant="secondary" size="lg" onClick={() => setMode('sign-in')}>
+                      Kirişga qaytiş
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-sm muted -mt-1">Hisobingizga bog'langan emailni kiriting — parolni tiklaş havolasini yuboramiz.</p>
+                    <Field label="Email" htmlFor="reset-email">
+                      <input
+                        id="reset-email"
+                        className={inputCls}
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        autoComplete="email"
+                        required
+                        autoFocus
+                        placeholder="siz@example.com"
+                      />
+                    </Field>
+                    {err && <InfoBanner tone="warn">{err}</InfoBanner>}
+                    <Button type="submit" busy={busy} size="lg" disabled={!supabaseConfigured}>
+                      Tiklaş havolasini yuboriş
+                    </Button>
+                    <button type="button" className="justify-self-center text-sm underline muted" onClick={() => setMode('sign-in')}>
+                      Kirişga qaytiş
+                    </button>
+                  </>
+                )}
+              </form>
+            ) : (
+              <form onSubmit={submit} className="grid gap-3.5">
+                <div className="flex gap-1.5 p-1 rounded-xl bg-[var(--panel-2)]">
+                  {(['sign-in', 'sign-up'] as const).map((m) => (
+                    <button
+                      key={m}
+                      type="button"
+                      onClick={() => setMode(m)}
+                      className={`flex-1 py-2 rounded-lg text-sm font-semibold ${mode === m ? 'bg-[var(--panel)] shadow-sm' : 'muted'}`}
+                    >
+                      {m === 'sign-in' ? 'Kiriş' : "Röyxatdan ötiş"}
+                    </button>
+                  ))}
+                </div>
 
-              {mode === 'sign-up' && (
-                <Field label="Ism" htmlFor="login-name">
-                  <input id="login-name" className={inputCls} value={name} onChange={(e) => setName(e.target.value)} autoComplete="name" placeholder="Sardor" />
+                {mode === 'sign-up' && (
+                  <Field label="Ism" htmlFor="login-name">
+                    <input id="login-name" className={inputCls} value={name} onChange={(e) => setName(e.target.value)} autoComplete="name" placeholder="Sardor" />
+                  </Field>
+                )}
+                <Field label="Email" htmlFor="login-email">
+                  <input id="login-email" ref={emailRef} className={inputCls} type="email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" required placeholder="siz@example.com" />
                 </Field>
-              )}
-              <Field label="Email" htmlFor="login-email">
-                <input id="login-email" ref={emailRef} className={inputCls} type="email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" required placeholder="siz@example.com" />
-              </Field>
-              <Field label="Parol" htmlFor="login-pass" hint={mode === 'sign-up' ? `Kamida ${NEW_PASSWORD_MIN} belgi, harf va raqam bilan` : undefined}>
-                <input id="login-pass" className={inputCls} type="password" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete={mode === 'sign-in' ? 'current-password' : 'new-password'} required minLength={mode === 'sign-up' ? NEW_PASSWORD_MIN : 6} />
-              </Field>
+                <Field label="Parol" htmlFor="login-pass" hint={mode === 'sign-up' ? `Kamida ${NEW_PASSWORD_MIN} belgi, harf va raqam bilan` : undefined}>
+                  <input id="login-pass" className={inputCls} type="password" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete={mode === 'sign-in' ? 'current-password' : 'new-password'} required minLength={mode === 'sign-up' ? NEW_PASSWORD_MIN : 6} />
+                </Field>
+                {mode === 'sign-in' && supabaseConfigured && (
+                  <button
+                    type="button"
+                    className="justify-self-end -mt-2 text-xs underline muted"
+                    onClick={() => {
+                      setErr(null)
+                      setNotice(null)
+                      setResetSent(false)
+                      setMode('reset')
+                    }}
+                  >
+                    Parolni unutdingizmi?
+                  </button>
+                )}
 
-              {err && <InfoBanner tone="warn">{err}</InfoBanner>}
-              {notice && <InfoBanner>{notice}</InfoBanner>}
+                {err && <InfoBanner tone="warn">{err}</InfoBanner>}
+                {notice && <InfoBanner>{notice}</InfoBanner>}
 
-              <Button type="submit" busy={busy} size="lg" disabled={!supabaseConfigured}>
-                {mode === 'sign-in' ? 'Kiriş' : 'Hisob yaratiş'}
-              </Button>
-              <Button type="button" onClick={guest} variant="secondary" size="lg">
-                Mehmon sifatida davom etiş
-              </Button>
-              {supabaseConfigured && (
-                <p className="text-xs muted text-center -mt-1">Mehmon sifatida faqat A1.1-bölim oçiq böladi.</p>
-              )}
-            </form>
+                <Button type="submit" busy={busy} size="lg" disabled={!supabaseConfigured}>
+                  {mode === 'sign-in' ? 'Kiriş' : 'Hisob yaratiş'}
+                </Button>
+                <Button type="button" onClick={guest} variant="secondary" size="lg">
+                  Mehmon sifatida davom etiş
+                </Button>
+                {supabaseConfigured && (
+                  <p className="text-xs muted text-center -mt-1">Mehmon sifatida faqat A1.1-bölim oçiq böladi.</p>
+                )}
+              </form>
+            )}
           </Card>
 
           <div className="grid gap-2 text-center">
