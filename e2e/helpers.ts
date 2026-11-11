@@ -52,6 +52,12 @@ export async function skipThroughLesson(page: Page, maxSteps = 80): Promise<void
       await cont.first().click()
       continue
     }
+    // Gapirish mashqi (mikrofon kerak): avval so'z bo'laklari rejimiga o'tiladi.
+    const noMic = lesson.getByRole('button', { name: 'Hozir gapira olmayman' })
+    if (await noMic.count()) {
+      await noMic.click()
+      continue
+    }
     const skip = lesson.getByRole('button', { name: 'Ötkazib yuboriş' })
     if (await skip.count()) {
       await skip.click()
