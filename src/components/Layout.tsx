@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from 'react'
-import { NavLink, useLocation } from 'react-router-dom'
+import { useEffect, useId, useMemo, useState } from 'react'
+import { NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { useStore } from '../lib/storeContext'
 import { MOTION, motionVars } from '../lib/motionManifest'
 import { Button, Chip } from './ui'
@@ -12,28 +12,175 @@ import { isGuestAllowedPath } from '../lib/guest'
 /** Pastki panel — yo'l bo'yicha (indeks emas: menyuga band qo'shilsa siljimaydi). */
 const BOTTOM_PATHS = ['/dashboard', '/vocabulary', '/mock-exam', '/progress', '/settings']
 
-const NAV = [
-  { to: '/dashboard', label: 'Dashboard', icon: 'M3 12 12 4l9 8M5 11v9h14v-9' },
-  { to: '/path', label: "Öquv yöli", icon: 'M4 18h4V6H4v12Zm6 0h4V6h-4v12Zm6 0h4V6h-4v12Z' },
-  { to: '/sections', label: "Bölimlar", icon: 'M4 5h16v4H4zM4 11h16v4H4zM4 17h10v3H4z' },
-  { to: '/vocabulary', label: "Luğat", icon: 'M4 5h12a2 2 0 0 1 2 2v12H6a2 2 0 0 1-2-2V5Zm14 3h2v11H6' },
-  { to: '/grammar', label: 'Grammatika', icon: 'M5 5h14M12 5v14M7 19h10' },
-  { to: '/reading', label: "Öqiş", icon: 'M4 6h16v12H4zM8 10h8M8 14h5' },
-  { to: '/listening', label: 'Tinglaş', icon: 'M4 12a8 8 0 0 1 16 0M6 12v4a2 2 0 0 0 4 0v-4m4 0v4a2 2 0 0 0 4 0v-4' },
-  { to: '/writing', label: 'Yoziş', icon: 'M4 20l4-1 11-11-3-3L5 16l-1 4Z' },
-  { to: '/speaking', label: "Gapiriş", icon: 'M12 3a4 4 0 0 1 4 4v4a4 4 0 0 1-8 0V7a4 4 0 0 1 4-4Zm-7 8a7 7 0 0 0 14 0M12 18v3' },
-  { to: '/dialogues', label: 'Suhbatlar', icon: 'M4 5h16v10H9l-5 4V5Zm4 4h8m-8 3h5' },
-  { to: '/shorts', label: 'Video shortlar', icon: 'M7 3h10a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Zm3 6v6l5-3-5-3Z' },
-  { to: '/community', label: 'Hamjamiyat', icon: 'M8 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm8 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM2 20a6 6 0 0 1 12 0m-2-6a6 6 0 0 1 10 6' },
-  { to: '/mock-exam', label: 'Mock Exam', icon: 'M6 3h12v18H6zM9 8h6M9 12h6M9 16h4' },
-  { to: '/errors', label: 'Xatolar daftari', icon: 'M12 8v5m0 3.5.01 0M5 4h14v16H5z' },
+interface NavItem {
+  to: string
+  label: string
+  icon: string
+}
+interface NavGroup {
+  id: string
+  label: string
+  icon: string
+  /** Guruh sarlavhasi bosilganda ochiladigan sahifa (bo'lmasa — faqat ochib-yopadi). */
+  to?: string
+  items: NavItem[]
+}
+
+/** Yon menyu: uchta ochiladigan guruh, keyin alohida bandlar. */
+const NAV_GROUPS: NavGroup[] = [
+  {
+    id: 'practice',
+    label: 'Asosiy maşqlar',
+    icon: 'M3 12 12 4l9 8M5 11v9h14v-9',
+    to: '/dashboard',
+    items: [
+      { to: '/path', label: "Öquv yöli", icon: 'M4 18h4V6H4v12Zm6 0h4V6h-4v12Zm6 0h4V6h-4v12Z' },
+      { to: '/sections', label: "Bölimlar", icon: 'M4 5h16v4H4zM4 11h16v4H4zM4 17h10v3H4z' },
+      { to: '/vocabulary', label: "Luğat", icon: 'M4 5h12a2 2 0 0 1 2 2v12H6a2 2 0 0 1-2-2V5Zm14 3h2v11H6' },
+    ],
+  },
+  {
+    id: 'lessons',
+    label: 'Asosiy darslar',
+    icon: 'M4 6h16v12H4zM8 10h8M8 14h5',
+    items: [
+      { to: '/grammar', label: 'Grammatika', icon: 'M5 5h14M12 5v14M7 19h10' },
+      { to: '/reading', label: "Öqiş", icon: 'M4 6h16v12H4zM8 10h8M8 14h5' },
+      { to: '/listening', label: 'Tinglaş', icon: 'M4 12a8 8 0 0 1 16 0M6 12v4a2 2 0 0 0 4 0v-4m4 0v4a2 2 0 0 0 4 0v-4' },
+      { to: '/writing', label: 'Yoziş', icon: 'M4 20l4-1 11-11-3-3L5 16l-1 4Z' },
+      { to: '/speaking', label: "Gapiriş", icon: 'M12 3a4 4 0 0 1 4 4v4a4 4 0 0 1-8 0V7a4 4 0 0 1 4-4Zm-7 8a7 7 0 0 0 14 0M12 18v3' },
+    ],
+  },
+  {
+    id: 'extra',
+    label: 'Qöşimça darslar',
+    icon: 'M12 5v14M5 12h14',
+    items: [
+      { to: '/dialogues', label: 'Suhbatlar', icon: 'M4 5h16v10H9l-5 4V5Zm4 4h8m-8 3h5' },
+      { to: '/shorts', label: 'Video shortlar', icon: 'M7 3h10a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Zm3 6v6l5-3-5-3Z' },
+      { to: '/community', label: 'Hamjamiyat', icon: 'M8 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm8 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM2 20a6 6 0 0 1 12 0m-2-6a6 6 0 0 1 10 6' },
+      { to: '/mock-exam', label: 'Mock Exam', icon: 'M6 3h12v18H6zM9 8h6M9 12h6M9 16h4' },
+      { to: '/errors', label: 'Xatolar daftari', icon: 'M12 8v5m0 3.5.01 0M5 4h14v16H5z' },
+    ],
+  },
+]
+const NAV_FLAT: NavItem[] = [
   { to: '/progress', label: 'Progress', icon: 'M4 19h16M7 16V8m5 8V5m5 11v-6' },
   { to: '/settings', label: 'Sozlamalar', icon: 'M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6Zm8 3a8 8 0 0 0-.2-1.7l2-1.5-2-3.5-2.4 1a8 8 0 0 0-2.9-1.7L14 2h-4l-.5 2.6a8 8 0 0 0-2.9 1.7l-2.4-1-2 3.5 2 1.5A8 8 0 0 0 4 12' },
 ]
 /** Faqat adminga ko'rinadi (server `is_admin()` tasdiqlagandan keyin). */
-const ADMIN_NAV = { to: '/admin', label: 'Admin panel', icon: 'M12 3 4 6v6c0 4.5 3.4 8.3 8 9 4.6-.7 8-4.5 8-9V6l-8-3Zm-3 9 2 2 4-4' }
+const ADMIN_NAV: NavItem = { to: '/admin', label: 'Admin panel', icon: 'M12 3 4 6v6c0 4.5 3.4 8.3 8 9 4.6-.7 8-4.5 8-9V6l-8-3Zm-3 9 2 2 4-4' }
 
-const BOTTOM_NAV = BOTTOM_PATHS.map((p) => NAV.find((n) => n.to === p)!)
+const ALL_ITEMS: NavItem[] = [
+  { to: '/dashboard', label: 'Asosiy', icon: NAV_GROUPS[0]!.icon },
+  ...NAV_GROUPS.flatMap((g) => g.items),
+  ...NAV_FLAT,
+]
+const BOTTOM_NAV = BOTTOM_PATHS.map((p) => ALL_ITEMS.find((n) => n.to === p)!)
+
+function groupHasPath(g: NavGroup, pathname: string): boolean {
+  return g.to === pathname || g.items.some((i) => pathname === i.to || pathname.startsWith(`${i.to}/`))
+}
+
+const sideCls = (active: boolean) =>
+  `flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-medium transition-colors ${
+    active ? 'bg-navy-700 text-white dark:bg-navy-300 dark:text-navy-950' : 'hover:bg-[var(--panel-2)] muted'
+  }`
+const mobileCls = (active: boolean) =>
+  `px-3.5 py-3 rounded-xl text-sm font-semibold border ${
+    active ? 'bg-navy-700 text-white dark:bg-navy-300 dark:text-navy-950 border-transparent' : 'panel !rounded-xl'
+  }`
+
+function NavIcon({ d }: { d: string }) {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden className="shrink-0">
+      <path d={d} />
+    </svg>
+  )
+}
+
+function Lock() {
+  return (
+    <span className="ml-auto text-xs" aria-label="röyxatdan ötganlar uçun">
+      🔒
+    </span>
+  )
+}
+
+function SideLink({ item, locked }: { item: NavItem; locked: boolean }) {
+  return (
+    <NavLink to={item.to} className={({ isActive }) => sideCls(isActive)}>
+      <NavIcon d={item.icon} />
+      {item.label}
+      {locked && <Lock />}
+    </NavLink>
+  )
+}
+
+function MobileLink({ item, locked }: { item: NavItem; locked: boolean }) {
+  return (
+    <NavLink to={item.to} className={({ isActive }) => `flex items-center ${mobileCls(isActive)}`}>
+      {item.label}
+      {locked && <Lock />}
+    </NavLink>
+  )
+}
+
+/**
+ * Ochiladigan menyu guruhi. Sarlavha — tugma (`aria-expanded`); guruhning o'z
+ * sahifasi bo'lsa (`to`), bosilganda o'sha sahifa ham ochiladi.
+ */
+function NavGroupBlock({
+  group,
+  open,
+  onOpen,
+  pathname,
+  lockedFor,
+  mobile = false,
+}: {
+  group: NavGroup
+  open: boolean
+  onOpen: (open: boolean) => void
+  pathname: string
+  lockedFor: (to: string) => boolean
+  mobile?: boolean
+}) {
+  const navigate = useNavigate()
+  const panelId = useId()
+  const here = group.to === pathname
+  const click = () => {
+    // Kompyuterda boshqa sahifadan bosilsa — guruh sahifasiga o'tadi va ochiladi; aks holda ochib-yopadi.
+    // Telefonda faqat ochib-yopadi (sahifa almashsa menyu yopilib qolardi; bosh sahifa pastki panelda bor).
+    if (group.to && !here && !mobile) {
+      navigate(group.to)
+      onOpen(true)
+    } else onOpen(!open)
+  }
+  const chevron = (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden className={`ml-auto shrink-0 transition-transform ${open ? 'rotate-90' : ''}`}>
+      <path d="m9 6 6 6-6 6" />
+    </svg>
+  )
+  return (
+    <div className="grid gap-1">
+      <button
+        type="button"
+        onClick={click}
+        aria-expanded={open}
+        aria-controls={panelId}
+        aria-current={here ? 'page' : undefined}
+        className={mobile ? `flex w-full items-center gap-2.5 text-left ${mobileCls(here)}` : `w-full text-left font-semibold ${sideCls(here)}`}
+      >
+        <NavIcon d={group.icon} />
+        {group.label}
+        {chevron}
+      </button>
+      <div id={panelId} hidden={!open} className={mobile ? 'grid grid-cols-2 gap-2 pl-3' : 'grid gap-1 pl-3 ml-3 border-l'}>
+        {group.items.map((n) => (mobile ? <MobileLink key={n.to} item={n} locked={lockedFor(n.to)} /> : <SideLink key={n.to} item={n} locked={lockedFor(n.to)} />))}
+      </div>
+    </div>
+  )
+}
 
 function useTheme(theme: 'light' | 'dark' | 'system') {
   const [resolved, setResolved] = useState<'light' | 'dark'>('light')
@@ -87,7 +234,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const isAdmin = useIsAdmin(authActions?.userId ?? null) === 'admin'
   // Mehmon rejimida yopiq sahifalar yonida qulf belgisi (bosilsa — ro'yxatdan o'tish taklifi).
   const lockedFor = (to: string) => Boolean(authActions?.guest) && !isGuestAllowedPath(to)
-  const navItems = useMemo(() => (isAdmin ? [...NAV, ADMIN_NAV] : NAV), [isAdmin])
+  const flatItems = useMemo(() => (isAdmin ? [...NAV_FLAT, ADMIN_NAV] : NAV_FLAT), [isAdmin])
+  // Guruh: foydalanuvchi o'zi ochgan/yopgan bo'lsa — shu tanlov, aks holda joriy sahifa guruhi ochiq.
+  const [groupOpen, setGroupOpen] = useState<Record<string, boolean>>({})
+  const isOpen = (g: NavGroup) => groupOpen[g.id] ?? groupHasPath(g, loc.pathname)
+  const setOpen = (g: NavGroup, v: boolean) => setGroupOpen((o) => ({ ...o, [g.id]: v }))
   // Menyu QAYSI sahifada ochilgan — sahifa almashsa o'zi yopiladi
   // (effect orqali setState kerak emas).
   const [menuOpenAt, setMenuOpenAt] = useState<string | null>(null)
@@ -166,27 +317,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <div className="mx-auto w-full max-w-6xl px-3 sm:px-5 flex-1 flex gap-5 py-4">
         {/* ---------- SIDEBAR (desktop) ---------- */}
         <nav aria-label="Asosiy navigatsiya" className="hidden lg:block w-56 shrink-0">
-          <div className="sticky top-[4.6rem] grid gap-1">
-            {navItems.map((n) => (
-              <NavLink
-                key={n.to}
-                to={n.to}
-                className={({ isActive }) =>
-                  `flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-medium transition-colors ${
-                    isActive ? 'bg-navy-700 text-white dark:bg-navy-300 dark:text-navy-950' : 'hover:bg-[var(--panel-2)] muted'
-                  }`
-                }
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden>
-                  <path d={n.icon} />
-                </svg>
-                {n.label}
-                {lockedFor(n.to) && (
-                  <span className="ml-auto text-xs" aria-label="röyxatdan ötganlar uçun">
-                    🔒
-                  </span>
-                )}
-              </NavLink>
+          <div className="sticky top-[4.6rem] grid gap-1 max-h-[calc(100dvh-5.6rem)] overflow-y-auto">
+            {NAV_GROUPS.map((g) => (
+              <NavGroupBlock key={g.id} group={g} open={isOpen(g)} onOpen={(v) => setOpen(g, v)} pathname={loc.pathname} lockedFor={lockedFor} />
+            ))}
+            {flatItems.map((n) => (
+              <SideLink key={n.to} item={n} locked={lockedFor(n.to)} />
             ))}
           </div>
         </nav>
@@ -194,21 +330,15 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         {/* ---------- MENU (mobil) ---------- */}
         {menuOpen && (
           <div className="fixed inset-x-0 top-14 bottom-0 z-20 bg-[var(--bg)] overflow-auto p-3 lg:hidden animate-[var(--animate-fade-in)]">
-            <nav aria-label="Mobil navigatsiya" className="grid grid-cols-2 gap-2 max-w-md mx-auto">
-              {navItems.map((n) => (
-                <NavLink
-                  key={n.to}
-                  to={n.to}
-                  className={({ isActive }) =>
-                    `px-3.5 py-3 rounded-xl text-sm font-semibold border ${
-                      isActive ? 'bg-navy-700 text-white dark:bg-navy-300 dark:text-navy-950 border-transparent' : 'panel !rounded-xl'
-                    }`
-                  }
-                >
-                  {n.label}
-                  {lockedFor(n.to) && <span aria-label="röyxatdan ötganlar uçun"> 🔒</span>}
-                </NavLink>
+            <nav aria-label="Mobil navigatsiya" className="grid gap-2 max-w-md mx-auto">
+              {NAV_GROUPS.map((g) => (
+                <NavGroupBlock key={g.id} group={g} open={isOpen(g)} onOpen={(v) => setOpen(g, v)} pathname={loc.pathname} lockedFor={lockedFor} mobile />
               ))}
+              <div className="grid grid-cols-2 gap-2">
+                {flatItems.map((n) => (
+                  <MobileLink key={n.to} item={n} locked={lockedFor(n.to)} />
+                ))}
+              </div>
             </nav>
           </div>
         )}

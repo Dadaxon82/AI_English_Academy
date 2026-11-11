@@ -82,7 +82,10 @@ jobs:
         with:
           name: dist
           path: dist
-      - run: npx playwright install --with-deps chromium
+      # apt serverlari javob bermasa (DNS) o'rnatish 10 daqiqagacha osilib qoladi: 4 daqiqa
+      # kutamiz, bo'lmasa tizim paketlarisiz o'rnatamiz (runner'da Chromium kutubxonalari bor).
+      - name: Playwright Chromium
+        run: timeout 240 npx playwright install --with-deps chromium || npx playwright install chromium
       # 5 asosiy oqim, 1280px va 375px (konsol xatosi va gorizontal scroll yo'q)
       - run: npm run e2e
       # 16 marshrut — Playwright Chromium bilan render tekshiruvi
