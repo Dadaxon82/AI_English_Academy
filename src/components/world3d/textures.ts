@@ -1,9 +1,9 @@
 /**
  * Protsedura teksturalari — brauzerda Canvas'da chiziladi (tashqi rasm, litsenziya
- * va CSP muammosi yo'q). Har biri rang xaritasi sifatida ham, relyef (`bumpMap`)
- * sifatida ham ishlatiladi. Sahna yopilganda `disposeTextures` bilan bo'shatiladi.
+ * va CSP muammosi yo'q). Ular sahna ochilishi bilan tayyor; keyin o'rniga foto (PBR)
+ * teksturalar yuklanadi (`loadPhotoTextures`). Foto fayllar kelmasa — shular qoladi.
  */
-import { CanvasTexture, RepeatWrapping, SRGBColorSpace } from 'three'
+import { CanvasTexture, RepeatWrapping, SRGBColorSpace, TextureLoader, type Texture } from 'three'
 
 function rng(seed: number) {
   let a = seed >>> 0
@@ -213,32 +213,88 @@ const leaves: Draw = (g, s, r) => {
   g.globalAlpha = 1
 }
 
-export interface WorldTextures {
-  grass: CanvasTexture
-  sand: CanvasTexture
-  wood: CanvasTexture
-  planks: CanvasTexture
-  stone: CanvasTexture
-  thatch: CanvasTexture
-  slate: CanvasTexture
-  cobble: CanvasTexture
-  leaves: CanvasTexture
+/** Bitta material xaritalari — `<meshStandardMaterial {...tex.stone} />` ko'rinishida beriladi. */
+export interface MatMaps {
+  map: Texture
+  normalMap?: Texture
+  roughnessMap?: Texture
+  bumpMap?: Texture
+  bumpScale?: number
 }
 
+export type MatName = 'grass' | 'sand' | 'wood' | 'planks' | 'stone' | 'thatch' | 'slate' | 'cobble' | 'bark' | 'leaves'
+export type WorldTextures = Record<MatName, MatMaps>
+
+/** Takrorlanish (u, v) — protsedura va foto teksturalar uchun bir xil. */
+const REPEAT: Record<MatName, [number, number]> = {
+  grass: [14, 22],
+  sand: [22, 30],
+  wood: [1, 1],
+  planks: [1, 1],
+  stone: [1.5, 1],
+  thatch: [2, 1],
+  slate: [2.5, 1.5],
+  cobble: [1, 1],
+  bark: [1, 1],
+  leaves: [2, 2],
+}
+
+const proc = (t: CanvasTexture, bumpScale: number): MatMaps => ({ map: t, bumpMap: t, bumpScale })
+
+/** Darhol tayyor bo'ladigan protsedura to'plami (foto teksturalar yuklanguncha va oflayn zaxira). */
 export function createTextures(): WorldTextures {
   return {
-    grass: make(512, 11, grass, [14, 22]),
-    sand: make(256, 12, sand, [10, 16]),
-    wood: make(256, 13, wood, [1, 1]),
-    planks: make(256, 14, planks, [1, 1]),
-    stone: make(256, 15, stone, [1.5, 1]),
-    thatch: make(256, 16, thatch, [2, 1]),
-    slate: make(256, 17, slate, [2, 1]),
-    cobble: make(256, 18, cobble, [1, 1]),
-    leaves: make(256, 19, leaves, [2, 2]),
+    grass: proc(make(512, 11, grass, REPEAT.grass), 0.6),
+    sand: proc(make(256, 12, sand, REPEAT.sand), 0.4),
+    wood: proc(make(256, 13, wood, REPEAT.wood), 2.5),
+    planks: proc(make(256, 14, planks, REPEAT.planks), 1),
+    stone: proc(make(256, 15, stone, REPEAT.stone), 2),
+    thatch: proc(make(256, 16, thatch, REPEAT.thatch), 1.2),
+    slate: proc(make(256, 17, slate, REPEAT.slate), 1.2),
+    cobble: proc(make(256, 18, cobble, REPEAT.cobble), 1),
+    bark: proc(make(256, 14, planks, REPEAT.bark), 1),
+    leaves: proc(make(256, 19, leaves, REPEAT.leaves), 0.8),
+  }
+}
+
+/** Foto (PBR) teksturalar: `public/textures/world/` (Poly Haven, CC0 — README shu papkada). */
+const PHOTO: Exclude<MatName, 'leaves'>[] = ['grass', 'sand', 'wood', 'planks', 'stone', 'thatch', 'slate', 'cobble', 'bark']
+
+/**
+ * Foto teksturalarni yuklaydi. Hammasi kelgach bitta to'plam qaytadi (barglar protsedura bo'lib qoladi).
+ * Biror fayl yuklanmasa (oflayn, kesh yo'q) — `null`: sahna protsedura teksturalarida qoladi.
+ */
+export async function loadPhotoTextures(base: string, fallback: WorldTextures): Promise<WorldTextures | null> {
+  const loader = new TextureLoader()
+  const one = async (name: MatName, kind: 'diff' | 'nor' | 'rough'): Promise<Texture> => {
+    const t = await loader.loadAsync(`${base}textures/world/${name}_${kind}.webp`)
+    t.wrapS = RepeatWrapping
+    t.wrapT = RepeatWrapping
+    t.repeat.set(REPEAT[name][0], REPEAT[name][1])
+    t.anisotropy = 8
+    if (kind === 'diff') t.colorSpace = SRGBColorSpace
+    return t
+  }
+  const loaded: Texture[] = []
+  try {
+    const sets = await Promise.all(
+      PHOTO.map(async (name) => {
+        const [map, normalMap, roughnessMap] = await Promise.all([one(name, 'diff'), one(name, 'nor'), one(name, 'rough')])
+        loaded.push(map, normalMap, roughnessMap)
+        return [name, { map, normalMap, roughnessMap } satisfies MatMaps] as const
+      }),
+    )
+    return { ...fallback, ...Object.fromEntries(sets) } as WorldTextures
+  } catch {
+    for (const t of loaded) t.dispose()
+    return null
   }
 }
 
 export function disposeTextures(t: WorldTextures): void {
-  for (const tex of Object.values(t)) (tex as CanvasTexture).dispose()
+  for (const m of Object.values(t)) {
+    m.map.dispose()
+    m.normalMap?.dispose()
+    m.roughnessMap?.dispose()
+  }
 }

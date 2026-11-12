@@ -1044,8 +1044,13 @@ Server qismi — `supabase/migrations/0009_support.sql`, testlari — `supabase/
 **Ko'rinish (2026-11-11 yangilanishi):** qumli sohil va o'tloq, jonli suv (shader: to'lqin, qirg'oq ko'pigi, quyosh
 yaltirashi), oltin tosh yo'lak, bargli daraxtlar, o't va gullar. 1-stansiya — poxol tomli yog'och kulba, qolganlari —
 shifer tomli tosh uylar (arkali eshik, zinapoya, iliq derazalar), har birida yog'och lavha. Iliq quyosh soyalar bilan,
-protsedura osmoni, yengil tuman. Barcha teksturalar brauzerda Canvas'da chiziladi (`world3d/textures.ts`) — tashqi rasm,
-model yoki HDR yuklanmaydi (CSP va litsenziya muammosi yo'q).
+protsedura osmoni, yengil tuman.
+
+**Materiallar — haqiqiy foto (PBR) teksturalar:** o't, qum, yog'och, tosh devor, poxol, shifer, tosh yo'l va daraxt
+po'stlog'i uchun rang, normal va g'adir-budurlik xaritalari (`public/textures/world/`, jami ≈ 2,3 MB WebP). Manba —
+Poly Haven, litsenziya **CC0**; aktivlar va mualliflar ro'yxati o'sha papkadagi `README.md`da. Fayllar saytning o'zidan
+yuklanadi (CSP o'zgarmagan) va faqat 3D rejimda. Ular kelguncha yoki kelmasa (oflayn) sahna Canvas'da chizilgan
+protsedura teksturalarida ishlaydi (`world3d/textures.ts`). Barglar va suv — protsedura.
 
 Texnik: `three` + `@react-three/fiber` + `@react-three/drei` faqat 3D rejim tanlanganda yuklanadi (alohida chunk,
 boshlang'ich yuklanish o'zgarmaydi). Mantiq — `src/lib/world3d.ts` (sof funksiyalar, `src/test/world3d.test.ts`), sahna —
