@@ -62,29 +62,29 @@ export default function FinishArena({
     <group position={[position[0], 0, position[1]]} onPointerDown={pick}>
       <mesh position-y={0.08} receiveShadow>
         <cylinderGeometry args={[4.2, 4.4, 0.16, 32]} />
-        <meshStandardMaterial map={tex.stone} color={state === 'locked' ? '#b8bec5' : '#f3dc9a'} roughness={0.9} />
+        <meshStandardMaterial {...tex.stone} color={state === 'locked' ? '#b8bec5' : '#f3dc9a'} roughness={0.9} />
       </mesh>
       <mesh position-y={1.25} castShadow receiveShadow>
         <boxGeometry args={[3.4, 2.3, 2.4]} />
-        <meshStandardMaterial map={tex.stone} bumpMap={tex.stone} bumpScale={2} color={wall} metalness={state === 'locked' ? 0 : 0.3} roughness={0.55} />
+        <meshStandardMaterial {...tex.stone} color={wall} metalness={state === 'locked' ? 0 : 0.3} roughness={0.55} />
       </mesh>
       {[-1, 1].flatMap((sx) =>
         [-1, 1].map((sz) => (
           <group key={`${sx}${sz}`} position={[sx * 1.9, 0, sz * 1.3]}>
             <mesh position-y={1.6} castShadow receiveShadow>
               <cylinderGeometry args={[0.55, 0.6, 3.2, 14]} />
-              <meshStandardMaterial map={tex.stone} bumpMap={tex.stone} bumpScale={2} color={wall} metalness={state === 'locked' ? 0 : 0.3} roughness={0.55} />
+              <meshStandardMaterial {...tex.stone} color={wall} metalness={state === 'locked' ? 0 : 0.3} roughness={0.55} />
             </mesh>
             <mesh position-y={3.75} castShadow>
               <coneGeometry args={[0.78, 1.15, 14]} />
-              <meshStandardMaterial map={tex.slate} color={roof} roughness={0.8} />
+              <meshStandardMaterial {...tex.slate} color={roof} roughness={0.8} />
             </mesh>
           </group>
         )),
       )}
       <mesh position={[0, 0.85, 1.21]}>
         <boxGeometry args={[0.95, 1.5, 0.06]} />
-        <meshStandardMaterial map={tex.planks} color="#6b4423" roughness={0.9} />
+        <meshStandardMaterial {...tex.planks} color="#b8906a" roughness={0.9} />
       </mesh>
       <group position={[0, 0, 0.75]}>
         <Gate state={state} color="#f59e0b" width={2} />

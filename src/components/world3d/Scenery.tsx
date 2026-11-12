@@ -5,7 +5,7 @@
  */
 import { useLayoutEffect, useMemo, useRef } from 'react'
 import { useFrame, type ThreeEvent } from '@react-three/fiber'
-import { BufferAttribute, Color, DoubleSide, Object3D, PlaneGeometry, Shape, ShapeGeometry, type InstancedMesh, type ShaderMaterial } from 'three'
+import { BufferAttribute, BufferGeometry, Color, DoubleSide, Object3D, PlaneGeometry, Shape, ShapeGeometry, type InstancedMesh, type ShaderMaterial } from 'three'
 import { ISLAND, pathPoints } from '../../lib/world3d'
 import { coastFactor, useTex } from './texContext'
 
@@ -138,8 +138,9 @@ export function Island({ onGround }: { onGround: (x: number, z: number) => void 
     g.rotateX(-Math.PI / 2)
     const pos = g.attributes.position as BufferAttribute
     const col = new Float32Array(pos.count * 3)
-    const dry = new Color('#f3dda2')
-    const wet = new Color('#c9ab6e')
+    // Tekstura o'zi qum rangida — bu yerda faqat quruq/ho'l farqi (ko'paytiruvchi)
+    const dry = new Color('#ffffff')
+    const wet = new Color('#bfae92')
     const c = new Color()
     for (let i = 0; i < pos.count; i++) {
       const x = pos.getX(i)
@@ -190,10 +191,10 @@ export function Island({ onGround }: { onGround: (x: number, z: number) => void 
   return (
     <>
       <mesh geometry={beach} receiveShadow onPointerDown={down}>
-        <meshStandardMaterial map={tex.sand} bumpMap={tex.sand} bumpScale={0.4} vertexColors roughness={0.95} />
+        <meshStandardMaterial {...tex.sand} vertexColors roughness={0.95} />
       </mesh>
       <mesh geometry={meadow} position-y={0.012} receiveShadow onPointerDown={down}>
-        <meshStandardMaterial map={tex.grass} bumpMap={tex.grass} bumpScale={0.6} roughness={0.9} side={DoubleSide} />
+        <meshStandardMaterial {...tex.grass} roughness={0.9} side={DoubleSide} />
       </mesh>
     </>
   )
@@ -203,41 +204,43 @@ export function Island({ onGround }: { onGround: (x: number, z: number) => void 
 
 export function PathStones({ reached }: { reached: number }) {
   const tex = useTex()
-  const ref = useRef<InstancedMesh>(null)
-  const list = useMemo(() => {
-    const r = rng(77)
-    const out: { x: number; z: number; s: number; rot: number; seg: number }[] = []
-    for (const s of roadSamples(0.62)) {
-      for (const lane of [-0.62, 0, 0.62]) {
-        if (r() < 0.12) continue
-        const off = lane + (r() - 0.5) * 0.28
-        out.push({ x: s.p[0] + s.n[0] * off + (r() - 0.5) * 0.2, z: s.p[1] + s.n[1] * off + (r() - 0.5) * 0.2, s: 0.75 + r() * 0.5, rot: r() * 6.28, seg: s.seg })
+  // Yo'l o'qi bo'ylab lenta: UV uzunlik bo'yicha takrorlanadi; o'tilgan qism oltin, qolgani och rang
+  const geo = useMemo(() => {
+    const W = 1.05
+    const pts = roadSamples(0.5)
+    const pos: number[] = []
+    const uv: number[] = []
+    const col: number[] = []
+    const idx: number[] = []
+    const gold = new Color('#ffd257')
+    const pale = new Color('#efe3c6')
+    let len = 0
+    pts.forEach((s, i) => {
+      if (i > 0) len += Math.hypot(s.p[0] - pts[i - 1]!.p[0], s.p[1] - pts[i - 1]!.p[1])
+      const c = s.seg < reached ? gold : pale
+      for (const side of [-1, 1]) {
+        pos.push(s.p[0] + s.n[0] * W * side, 0.03, s.p[1] + s.n[1] * W * side)
+        uv.push(side < 0 ? 0 : 1, len / (W * 2))
+        col.push(c.r, c.g, c.b)
       }
-    }
-    return out
-  }, [])
-  useLayoutEffect(() => {
-    const m = ref.current
-    if (!m) return
-    const o = new Object3D()
-    const gold = [new Color('#f6c945'), new Color('#eeb93a'), new Color('#fbd768')]
-    const pale = [new Color('#d9c9a0'), new Color('#cdbb8f'), new Color('#e3d5b0')]
-    list.forEach((s, i) => {
-      o.position.set(s.x, 0.035, s.z)
-      o.rotation.set(0, s.rot, 0)
-      o.scale.set(s.s, 1, s.s * 0.85)
-      o.updateMatrix()
-      m.setMatrixAt(i, o.matrix)
-      m.setColorAt(i, (s.seg < reached ? gold : pale)[i % 3]!)
+      if (i > 0) {
+        const k = i * 2
+        idx.push(k - 2, k, k - 1, k - 1, k, k + 1)
+      }
     })
-    m.instanceMatrix.needsUpdate = true
-    if (m.instanceColor) m.instanceColor.needsUpdate = true
-  }, [list, reached])
+    const g = new BufferGeometry()
+    g.setAttribute('position', new BufferAttribute(new Float32Array(pos), 3))
+    g.setAttribute('uv', new BufferAttribute(new Float32Array(uv), 2))
+    g.setAttribute('color', new BufferAttribute(new Float32Array(col), 3))
+    g.setIndex(idx)
+    g.computeVertexNormals()
+    return g
+  }, [reached])
+  useLayoutEffect(() => () => geo.dispose(), [geo])
   return (
-    <instancedMesh ref={ref} args={[undefined, undefined, list.length]} receiveShadow>
-      <cylinderGeometry args={[0.3, 0.34, 0.07, 8]} />
-      <meshStandardMaterial bumpMap={tex.sand} bumpScale={0.5} roughness={0.7} />
-    </instancedMesh>
+    <mesh geometry={geo} receiveShadow>
+      <meshStandardMaterial {...tex.cobble} vertexColors roughness={0.85} side={DoubleSide} polygonOffset polygonOffsetFactor={-2} />
+    </mesh>
   )
 }
 
@@ -360,19 +363,19 @@ export function Trees({ avoid }: { avoid: readonly [number, number][] }) {
     <>
       <instancedMesh ref={trunks} args={[undefined, undefined, leaf.length + pine.length]} castShadow>
         <cylinderGeometry args={[0.13, 0.2, 1, 7]} />
-        <meshStandardMaterial color="#7a4a22" map={tex.planks} roughness={0.9} />
+        <meshStandardMaterial {...tex.bark} roughness={0.95} />
       </instancedMesh>
       <instancedMesh ref={blobs} args={[undefined, undefined, leaf.length * BLOBS]} castShadow receiveShadow>
         <icosahedronGeometry args={[1, 1]} />
-        <meshStandardMaterial map={tex.leaves} bumpMap={tex.leaves} bumpScale={0.8} roughness={0.85} flatShading />
+        <meshStandardMaterial {...tex.leaves} roughness={0.85} flatShading />
       </instancedMesh>
       <instancedMesh ref={pines} args={[undefined, undefined, pine.length * 3]} castShadow>
         <coneGeometry args={[0.95, 1.5, 9]} />
-        <meshStandardMaterial map={tex.leaves} roughness={0.9} flatShading />
+        <meshStandardMaterial {...tex.leaves} roughness={0.9} flatShading />
       </instancedMesh>
       <instancedMesh ref={bushes} args={[undefined, undefined, bush.length * 3]} castShadow receiveShadow>
         <icosahedronGeometry args={[1, 1]} />
-        <meshStandardMaterial map={tex.leaves} roughness={0.9} flatShading />
+        <meshStandardMaterial {...tex.leaves} roughness={0.9} flatShading />
       </instancedMesh>
       <instancedMesh ref={tufts} args={[undefined, undefined, grassTufts.length]}>
         <coneGeometry args={[0.07, 0.2, 4]} />

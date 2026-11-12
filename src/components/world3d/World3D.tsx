@@ -16,7 +16,7 @@ import FinishArena from './FinishArena'
 import PlayerCharacter from './PlayerCharacter'
 import { Island, PathStones, TargetRing, Trees, Water } from './Scenery'
 import { TexContext } from './texContext'
-import { createTextures, disposeTextures } from './textures'
+import { createTextures, disposeTextures, loadPhotoTextures, type WorldTextures } from './textures'
 import StationNode from './StationNode'
 import type { Controls, Solid } from './controls'
 
@@ -54,9 +54,26 @@ function Rig({ ctrl, world, onNear }: { ctrl: Controls; world: World; onNear: (i
 }
 
 export default function World3D({ world, ctrl, onNear }: { world: World; ctrl: Controls; onNear: (id: NearId) => void }) {
-  // Protsedura teksturalari: sahna bilan birga yaratiladi va bo'shatiladi
-  const tex = useMemo(() => createTextures(), [])
-  useEffect(() => () => disposeTextures(tex), [tex])
+  // Teksturalar: sahna bilan birga yaratiladi va bo'shatiladi
+  const [tex, setTex] = useState(createTextures)
+  // Foto (PBR) teksturalar fonida yuklanadi; kelmasa sahna protsedura teksturalarida qoladi
+  useEffect(() => {
+    let alive = true
+    let photo: WorldTextures | null = null
+    void loadPhotoTextures(import.meta.env.BASE_URL, tex).then((t) => {
+      if (!t) return
+      if (!alive) return disposeTextures(t)
+      photo = t
+      setTex(t)
+    })
+    return () => {
+      alive = false
+      disposeTextures(photo ?? tex)
+      if (photo) disposeTextures(tex)
+    }
+    // `tex` — boshlang'ich (protsedura) to'plam: effekt faqat bir marta ishlaydi
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
   // Telefonda yengilroq: soya xaritasi va piksel zichligi kichikroq
   const [lite] = useState(() => window.matchMedia('(pointer: coarse)').matches)
   const getPlayer = useMemo(() => () => ctrl.pos, [ctrl])
@@ -104,8 +121,8 @@ export default function World3D({ world, ctrl, onNear }: { world: World; ctrl: C
       {/* Oltin soat: iliq quyosh (soya bilan), yumshoq osmon yorug'i, yengil tuman */}
       <Sky distance={4500} sunPosition={SUN} turbidity={5} rayleigh={1.4} mieCoefficient={0.006} mieDirectionalG={0.85} />
       <fogExp2 attach="fog" args={['#dfeaf2', 0.0075]} />
-      <hemisphereLight args={['#eaf4ff', '#6fa85a', 0.75]} />
-      <ambientLight intensity={0.12} />
+      <hemisphereLight args={['#eaf4ff', '#8fbf74', 1.0]} />
+      <ambientLight intensity={0.25} />
       <directionalLight
         position={SUN}
         intensity={3.1}
