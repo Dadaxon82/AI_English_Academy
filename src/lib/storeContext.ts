@@ -1,5 +1,6 @@
 /** Store konteksti va `useStore` hook'i (provider — store.tsx). */
 
+import type { CoinItemId } from './world3d'
 import { createContext, useContext } from 'react'
 import type { CefrLevel, CoreSkill, Exercise, Skill } from '../content/types'
 import { type SrsGrade } from './srs'
@@ -73,6 +74,8 @@ export interface StoreValue {
     completeLesson(exercises: number, mistakes: number): void
     /** Do'kon xaridi. Natija: ok/sabab (gem yetmasa, chegarada bo'lsa). */
     buy(item: ShopItemId): { ok: boolean; reasonUz: string | null }
+    /** 3D olam do'koni: kumush tangaga yurak / gem / qalqon. */
+    coinBuy(item: CoinItemId): { ok: boolean; reasonUz: string | null }
     /** "Double or Nothing" garovi (streak 7 kun o'ssa gem qaytadi). */
     placeStreakBet(): { ok: boolean; reasonUz: string | null }
     /** O'yin hisoblarini qayta yig'ish (vaqt o'tishi bilan — yurak/quest). */

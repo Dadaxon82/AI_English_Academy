@@ -12,6 +12,7 @@ import { allGlossaryVocab, allVocab, getBundle, LOADED_LEVELS, loadLevels } from
 import { type SrsGrade } from './srs'
 import { currentElapsed, formatDuration, planProgress } from './timer'
 import { streakFor, evaluateLevelPromotion } from './skillScoring'
+import { coinBuy } from './world3d'
 import { achievementViews, buy as buyItem, goalView, heartsView, leagueWeek, placeBet, questView, streakWithFreezes } from './game'
 import { SHOP_ITEMS } from './game'
 import { analyzeSpeaking, analyzeSpeakingText, analyzeWriting, countWords } from './analyze'
@@ -299,6 +300,15 @@ export function StoreProvider({
     [data],
   )
 
+  const coinBuyAction = useCallback<StoreValue['actions']['coinBuy']>(
+    (item) => {
+      const res = coinBuy(data, item)
+      if (res.ok) dispatch({ type: 'coin-buy', item })
+      return { ok: res.ok, reasonUz: res.reasonUz }
+    },
+    [data],
+  )
+
   const placeStreakBet = useCallback<StoreValue['actions']['placeStreakBet']>(() => {
     const res = placeBet(data, streakWithFreezes(data, todayKey()))
     if (res.ok) dispatch({ type: 'game-bet' })
@@ -456,6 +466,7 @@ export function StoreProvider({
       resetAll,
       completeLesson,
       buy: buyAction,
+      coinBuy: coinBuyAction,
       placeStreakBet,
       settleGame,
       sync,

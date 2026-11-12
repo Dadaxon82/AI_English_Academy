@@ -1018,6 +1018,39 @@ Server qismi — `supabase/migrations/0009_support.sql`, testlari — `supabase/
 | Soxta fayl | Mijoz faylning birinchi baytlarini tekshiradi: `.png` deb nomlangan HTML qabul qilinmaydi. Server MIME turini cheklaydi |
 | Spam | Bir vaqtda 5 tadan ortiq ochiq murojaat bo'lmaydi. Soatiga 20 tagacha xabar va 10 tagacha fayl yuboriladi. Bloklangan foydalanuvchi yoza olmaydi |
 
+## 5u. 3D olam — «Öquv yöli»ning o'yin ko'rinishi (2026-11-11)
+
+**Öquv yöli → «🗺️ 2D xarita / 🏝️ 3D olam»** tugmasi. Tanlov qurilmada eslab qolinadi; 2D xarita o'zgarmagan.
+
+3D olam **yangi kontent yaratmaydi** — u joriy kun zanjirining (`lessonChain.ts`) boshqa ko'rinishi:
+
+| 3D olamda | Aslida |
+|---|---|
+| 6 stansiya: Luğat → Grammatika → Öqiş → Tinglaş → Yoziş → Gapiriş | Kunning olti bo'limi; topshiriqlar soni kontentdan olinadi |
+| Oltin «Finiş» qasri | Kun yakuniy testi (shu sahifada, 3D olam ostida ochiladi) |
+| Stansiya darvozasi qulfi | Oldingi BARCHA stansiyalar yakunlanmaguncha yopiq (faqat 3D rejim qoidasi) |
+| ⭐ yulduzlar | Bo'lim darsi natijasi: 90+ → 3, 70+ → 2, yakunlangan → 1 |
+| 🪙 kumush tanga | Natijalardan hisoblanadi: yulduz × 10 + yakunlangan kun × 100; sarf — `passedTests['coins:spent']` |
+
+- **Boshqaruv:** W A S D yoki strelkalar, yerni/stansiyani bosish, sensorli ekranda virtual joystik. Stansiya yonida
+  «gaplaşiş» tugmasi (yoki `E`). Sahna ostidagi stansiyalar ro'yxati — klaviatura va ekran o'quvchisi uchun to'liq muqobil.
+- **NPC suhbati:** NPC inglizcha gapiradi (qurilmaning nutq sintezi), o'quvchi mikrofon orqali yoki tugma bilan javob
+  beradi. Ovoz ishlamasa — matn bilan.
+- **Mukofot:** darsdan qaytgach yulduz, XP va tanga ko'rsatiladi — faqat HAQIQATAN qo'shilgan farq. Kun testi
+  topshirilsa — «Ğalaba» ekrani (kubok, konfetti) va keyingi kun olami ochiladi.
+- **HUD va tanga do'koni:** yulduz, XP, yurak, gem, qalqon, tanga — profil bilan bir xil manbadan. Tangaga yurak (30),
+  20 gem (60) yoki streak qalqoni (150) olinadi.
+
+**Ko'rinish (2026-11-11 yangilanishi):** qumli sohil va o'tloq, jonli suv (shader: to'lqin, qirg'oq ko'pigi, quyosh
+yaltirashi), oltin tosh yo'lak, bargli daraxtlar, o't va gullar. 1-stansiya — poxol tomli yog'och kulba, qolganlari —
+shifer tomli tosh uylar (arkali eshik, zinapoya, iliq derazalar), har birida yog'och lavha. Iliq quyosh soyalar bilan,
+protsedura osmoni, yengil tuman. Barcha teksturalar brauzerda Canvas'da chiziladi (`world3d/textures.ts`) — tashqi rasm,
+model yoki HDR yuklanmaydi (CSP va litsenziya muammosi yo'q).
+
+Texnik: `three` + `@react-three/fiber` + `@react-three/drei` faqat 3D rejim tanlanganda yuklanadi (alohida chunk,
+boshlang'ich yuklanish o'zgarmaydi). Mantiq — `src/lib/world3d.ts` (sof funksiyalar, `src/test/world3d.test.ts`), sahna —
+`src/components/world3d/`. Sinxron sxemasi va mobil ilova o'zgarmagan; 3D rejim hozircha faqat vebda.
+
 ## 6. Arxitektura qisqacha
 
 ```

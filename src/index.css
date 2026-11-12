@@ -360,3 +360,18 @@ html.no-motion *, html.no-motion *::before, html.no-motion *::after {
     animation: var(--animate-shake);
   }
 }
+
+/* 3D olam: g'alaba konfettisi */
+@keyframes world-confetti-fall {
+  to {
+    translate: 0 110vh;
+    rotate: 720deg;
+  }
+}
+.world-confetti {
+  animation: world-confetti-fall linear infinite;
+}
+.no-motion .world-confetti {
+  animation: none;
+  display: none;
+}

@@ -213,3 +213,40 @@ test('video shortlar: playlist oxirigaça, short pleyer va javobdan keyin subtit
   await expect(page.getByText('Dars tugadi!')).toBeVisible()
   await expectClean(page, errors)
 })
+
+test('3D olam: rejim tugmasi, NPC suhbati, stansiya darsi va qaytgach mukofot', async ({ page }) => {
+  const errors = watchErrors(page)
+  await disableHearts(page)
+  await page.goto('path')
+  await page.getByRole('button', { name: /3D olam/ }).click()
+  // Stansiyalar ro'yxati — sahnaning muqobili (WebGL bo'lmasa ham ishlaydi)
+  const list = page.getByRole('list', { name: 'Stansiyalar' })
+  await expect(list.getByRole('button', { name: /1\. Luğat/ })).toBeVisible()
+  await expect(page.getByRole('group', { name: 'Öyin körsatkiçlari' })).toContainText('0/18')
+
+  // Qulflangan stansiya: NPC sababini aytadi, boshlash tugmasi yo'q
+  await list.getByRole('button', { name: /2\. Grammatika/ }).click()
+  const locked = page.getByRole('dialog', { name: /2-stansiya/ })
+  await expect(locked).toContainText('«Luğat» stansiyasini yakunlang')
+  await expect(locked.getByRole('button', { name: /boşlaş/ })).toHaveCount(0)
+  await locked.getByRole('button', { name: 'Tuşunarli' }).click()
+
+  // Ochiq stansiya → haqiqiy dars
+  await list.getByRole('button', { name: /1\. Luğat/ }).click()
+  const dlg = page.getByRole('dialog', { name: /1-stansiya: Luğat/ })
+  await expect(dlg).toContainText('Are you ready?')
+  await dlg.getByRole('button', { name: 'Javob beriş va boşlaş' }).click()
+  await expect(page).toHaveURL(/lesson\/a1-day-01\/vocabulary/)
+  await skipThroughLesson(page)
+  await waitPersist(page)
+
+  // Qaytish: 3D rejim saqlangan, mukofot oynasi, keyingi stansiya ochilgan
+  await page.getByRole('link', { name: /Öquv yöli/ }).first().click()
+  const reward = page.getByRole('dialog', { name: 'Stansiya mukofoti' })
+  await expect(reward).toContainText('Stansiya yakunlandi')
+  await expect(reward).toContainText('🪙 +10')
+  await reward.getByRole('button', { name: 'Davom etiş' }).click()
+  await expect(list.getByRole('button', { name: /✅ 1\. Luğat/ })).toBeVisible()
+  await expect(list.getByRole('button', { name: /▶ 2\. Grammatika/ })).toBeVisible()
+  await expectClean(page, errors)
+})

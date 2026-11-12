@@ -14,7 +14,7 @@
  */
 
 import UzTranslation from '../components/UzTranslation'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { Suspense, lazy, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import DuoPathMap from '../components/DuoPathMap'
 import SectionBanner from '../components/SectionBanner'
@@ -28,11 +28,15 @@ import { buildChain, chainAudit, exerciseIdsForSection } from '../lib/lessonChai
 import { buildPathLayout, focalNode } from '../lib/pathMap'
 import { pathMilestoneSpecs, pathLevel } from '../lib/sections'
 import { stepDoneChecker, stepScoreReader } from '../lib/stepProgress'
+import { buildWorld, loadPathView, savePathView, type PathView } from '../lib/world3d'
 import { skillLabelUz } from '../lib/planning'
 import { useStore } from '../lib/storeContext'
 import { currentElapsed, formatDuration } from '../lib/timer'
 import { todayKey } from '../lib/types'
 import type { AppData } from '../lib/types'
+
+// 3D olam — alohida chunk (`three` faqat 3D rejim tanlanganda yuklanadi).
+const WorldView = lazy(() => import('../components/world3d/WorldView'))
 
 const SKILL_ROUTE: Record<Skill, string> = {
   vocabulary: '/vocabulary',
@@ -134,6 +138,29 @@ export default function LearningPath() {
     [chains, pLevel, stepDone, stepScore],
   )
   const focus = useMemo(() => focalNode(layout), [layout])
+
+  // ---------- 2D xarita / 3D olam ----------
+  const [view, setView] = useState<PathView>(loadPathView)
+  const pickView = (v: PathView) => {
+    setView(v)
+    savePathView(v)
+  }
+  // 3D olam — JORIY kun zanjirining boshqa ko'rinishi (kontent va qulf manbasi o'sha).
+  const worldChain = chains[currentIdx]
+  const world = useMemo(
+    () => (worldChain ? buildWorld(worldChain, stepDone, stepScore, completed.includes(worldChain.day.id)) : null),
+    [worldChain, stepDone, stepScore, completed],
+  )
+  // G'alaba ekrani: shu sahifa ochiq paytda yangi kun yakunlansa ko'rsatiladi.
+  const [ackDays, setAckDays] = useState(completed.length)
+  const wonDay = completed.length > ackDays ? days.find((d) => d.id === completed[completed.length - 1]) : undefined
+  const dayCardRef = useRef<HTMLDivElement>(null)
+  const startDayTest = (dayId: string) => {
+    const d = days.find((x) => x.id === dayId)
+    if (d?.sectionTest) actions.startTimer(d.id, d.sectionTest.section)
+    setOpenOverride(dayId)
+    setAutoTest((a) => ({ dayId, nonce: (a?.nonce ?? 0) + 1 }))
+  }
   // Xaritada tanlangan tugun — bosilganda shu KUN kartasi pastda ochiladi
   // (bitta bo'lim emas, butun kun: ExerciseRunner/test mantiqi kun darajasida).
   const selectedNodeId = openDayId
@@ -194,10 +221,67 @@ export default function LearningPath() {
       {/* ---------- Yo'l xaritasi (Duolingo uslubida, yilonsimon) ---------- */}
       <Card as="section" className="grid gap-3">
         <div className="flex flex-wrap items-center gap-2">
-          <h2 className="font-bold">Darslar xaritasi</h2>
-          <Chip>{stepsTotal} qadam</Chip>
-          <Chip>{chains.length} kun</Chip>
+          <h2 className="font-bold">{view === '3d' ? '3D olam' : 'Darslar xaritasi'}</h2>
+          {view === '2d' ? (
+            <>
+              <Chip>{stepsTotal} qadam</Chip>
+              <Chip>{chains.length} kun</Chip>
+            </>
+          ) : (
+            world && <Chip>{worldChain?.day.id}</Chip>
+          )}
+          <span className="flex-1" />
+          <div role="group" aria-label="Xarita körinişi" className="inline-flex rounded-full border p-0.5 text-xs font-bold">
+            {(
+              [
+                ['2d', '🗺️ 2D xarita'],
+                ['3d', '🏝️ 3D olam'],
+              ] as const
+            ).map(([v, label]) => (
+              <button
+                key={v}
+                type="button"
+                aria-pressed={view === v}
+                onClick={() => pickView(v)}
+                className={`rounded-full px-3 py-1.5 transition-colors ${view === v ? 'bg-navy-700 text-white dark:bg-navy-300 dark:text-navy-950' : 'hover:bg-[var(--panel-2)]'}`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
         </div>
+        {view === '3d' && world ? (
+          <>
+            <p className="text-xs muted">
+              Qahramonni yurgizib stansiyalarga boring: Luğat → Grammatika → Öqiş → Tinglaş → Yoziş → Gapiriş. Har stansiya
+              oldingisi yakunlangaç oçiladi; hammasidan keyin oltin Finiş qasrida kun yakuniy sinovi kutadi. Topşiriqlar —
+              şu kunning haqiqiy darslari.
+            </p>
+            <Suspense fallback={<LoadingBlock label="3D olam yuklanmoqda…" />}>
+              <WorldView
+                key={world.dayId}
+                world={world}
+                victory={
+                  wonDay
+                    ? {
+                        dayTitle: wonDay.titleUz,
+                        nextTitle: worldChain && worldChain.day.id !== wonDay.id ? worldChain.day.titleUz : null,
+                        score: wonDay.sectionTest ? (data.path.passedTests[wonDay.sectionTest.id] ?? null) : null,
+                      }
+                    : null
+                }
+                onVictoryClose={() => setAckDays(completed.length)}
+                onStartStation={(st) => nav(`/lesson/${world.dayId}/${st.skill}`)}
+                onStartFinish={() => {
+                  startDayTest(world.dayId)
+                  // Sinov shu sahifada, 3D olam ostidagi kun kartasida ochiladi
+                  setTimeout(() => dayCardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60)
+                }}
+              />
+            </Suspense>
+          </>
+        ) : (
+          <>
         <p className="text-xs muted">
           Har tanga — bitta bölim (belgisi va nomi ostida), 🏆 — kun yakuniy testi. Tangani bosing — öşa bölim
           darsi oçiladi; yakunlangaç olingan ball tanga ustida körinadi. Oltin — bajarilgan, yaşil — oçiq, kulrang —
@@ -213,17 +297,17 @@ export default function LearningPath() {
               nav(`/lesson/${node.dayId}/${node.skill}`)
               return
             }
-            const d = days.find((x) => x.id === node.dayId)
-            if (d?.sectionTest) actions.startTimer(d.id, d.sectionTest.section)
-            setOpenOverride(node.dayId)
-            setAutoTest((a) => ({ dayId: node.dayId, nonce: (a?.nonce ?? 0) + 1 }))
+            startDayTest(node.dayId)
           }}
         />
         <p className="text-[11px] muted">
           Zanjir böyiça: {audit.rotationSteps} maşq qadami (+{audit.reinforcement} takrorlaş) · bir xil tur
           qöşni: {audit.sameNeighbours} (majburiy: {audit.unavoidable}) · eng qisqa tur masofasi: {audit.minGap}
         </p>
+          </>
+        )}
       </Card>
+      <div ref={dayCardRef} className="scroll-mt-20" />
 
       {/* ---------- Tanlangan kun kartasi ---------- */}
       {days.map((day, idx) => {
