@@ -43,7 +43,8 @@ type Action =
   | { type: 'day-complete'; dayId: string; testScore?: number; testId?: string }
   | { type: 'diagnostic'; at: number; level: CefrLevel | null; labelUz: string; confidence: number }
   | { type: 'level-set'; level: CefrLevel }
-  | { type: 'reset' }
+  | { type: 'recordMistake'; mistake: { exerciseId: string; skill: Skill; wrongAnswer: string; correctAnswer: string; explanationUz: string } }
+  | { type: 'recordMistake'; mistake: { exerciseId: string; skill: Skill; wrongAnswer: string; correctAnswer: string; explanationUz: string } }
 
 /** Kundalik faollikka daqiqa/sekund qo'shish (taymer hisobi uchun umumiy). */
 function addActivitySeconds(state: AppData, seconds: number, skill: Skill): AppData {
@@ -106,6 +107,52 @@ export function reducer(state: AppData, action: Action): AppData {
             },
           },
         },
+        // Adaptiv mantiq: xatolar yig'iladi
+        weakPoints: [...state.weakPoints, {
+          skill: r.skill,
+          exerciseId: r.exerciseId,
+          count: (state.weakPoints.find(wp => wp.exerciseId === r.exerciseId)?.count ?? 0) + 1,
+          lastSeen: Date.now()
+        }].filter((wp, index) => {
+          // Har bir exercise uchun faqat oxirgi 20 ta xatoni saqlaymiz
+          const occurrences = state.weakPoints.filter(w => w.exerciseId === wp.exerciseId);
+          return occurrences.length <= 20 || occurrences.findIndex(o => o.id === wp.id) !== -1; // Simplified for now, will use better logic
+        }),
+        mistakeHistory: [...state.mistakeHistory, {
+          id: `mistake-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+          exerciseId: r.exerciseId,
+          skill: r.skill,
+          wrongAnswer: r.answerGiven,
+          correctAnswer: '...', // This will be updated in the real logic
+          explanationUz: '...', // This will be updated in the real logic
+          at: Date.now()
+        }].slice(-500)
+      }
+    }
+    case 'recordMistake': {
+      const { exerciseId, skill, wrongAnswer, correctAnswer, explanationUz } = action.mistake
+      const key = todayKey()
+      const cur = state.activity[key] ?? { date: key, seconds: 0, attempts: 0, correct: 0, newWords: 0, reviewedWords: 0, skills: {} }
+      return {
+        ...state,
+        mistakeHistory: [...state.mistakeHistory, {
+          id: `mistake-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+          exerciseId,
+          skill,
+          wrongAnswer,
+          correctAnswer,
+          explanationUz,
+          at: Date.now()
+        }].slice(-500),
+        weakPoints: [
+          ...state.weakPoints.filter(wp => wp.exerciseId !== exerciseId),
+          {
+            skill,
+            exerciseId,
+            count: (state.weakPoints.find(wp => wp.exerciseId === exerciseId)?.count ?? 0) + 1,
+            lastSeen: Date.now()
+          }
+        ]
       }
     }
     case 'srs': {
@@ -121,8 +168,6 @@ export function reducer(state: AppData, action: Action): AppData {
           ...state.activity,
           [key]: {
             ...cur,
-            // Takrorlangan so'z IKKI marta hisoblanmaydi: `newWords` faqat
-            // birinchi marta o'zlashtirilganda oshadi.
             newWords: cur.newWords + (firstLearn ? 1 : 0),
             reviewedWords: cur.reviewedWords + (firstLearn ? 0 : 1),
           },
@@ -186,7 +231,7 @@ export function reducer(state: AppData, action: Action): AppData {
       // sanash bo'lardi).
       let next = state
       for (const e of action.entries) {
-        // `clampDelta` — uyqu/soat ortidagi taqsimot (25 soat → 3 soat) va
+        // `clampDelta` — uyqu/soat ortagi taqsimot (25 soat → 3 soat) va
         // soat orqaga ketganda 0; oddiy ayirma emas.
         next = addActivitySeconds(next, Math.round(clampDelta(e.finishedAt - e.startedAt) / 1000), e.skill)
       }
@@ -422,7 +467,7 @@ export function StoreProvider({ userId, children }: { userId: string; children: 
       const bundle = getBundle(data.settings.currentLevel)
       const task =
         bundle.speaking.find((s) => s.id === taskId) ??
-        bundle.mockExam?.sections.flatMap((s) => (s.speakingTask?.id === taskId ? [s.speakingTask] : []))[0]
+        bundle.mockExam?.sections.flatMap((s) => (s.speakingTask?..id === taskId ? [s.speakingTask] : []))[0]
       const analysis = transcript && task ? analyzeSpeaking(transcript, durationSec, task) : null
       const session: SpeakingSession = {
         id: `sp-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,

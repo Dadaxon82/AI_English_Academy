@@ -1,111 +1,24 @@
-/**
- * Dashboard — umumiy holat ekrani.
- *
- * Ko'rsatiladi: daraja va maqsad, bugungi moslashgan 90 daqiqalik reja
- * (nega o'zgargani izohi bilan), bugungi mashg'ulotlar holati, streak/XP,
- * ko'nikma natijalari (ishonchsizlar "noaniq" deb belgilangan), haftalik
- * faollik, oxirgi xatolar va keyingi tavsiya. Barcha havolalar haqiqiy.
- */
-
-import { useMemo } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { BarChart, Button, Card, Chip, EmptyState, InfoBanner, LoadingBlock, StatTile } from '../components/ui'
-import { findExercise, getBundle } from '../content'
-import type { Skill } from '../content/types'
-import { buildDayTasks, nextDayId, skillLabelUz } from '../lib/planning'
-import { levelLabel } from '../lib/skillScoring'
-import { lastNDays, useStore } from '../lib/store'
-import { todayKey } from '../lib/types'
-
-const SKILL_SEQ: Skill[] = ['vocabulary', 'grammar', 'reading', 'listening', 'writing', 'speaking']
-
-const SKILL_ROUTE: Record<Skill, string> = {
-  vocabulary: '/vocabulary',
-  grammar: '/grammar',
-  reading: '/reading',
-  listening: '/listening',
-  writing: '/writing',
-  speaking: '/speaking',
-}
-
-const linkPrimary =
-  'inline-flex items-center justify-center gap-2 font-semibold rounded-xl text-sm px-4 py-2.5 transition-all ' +
-  'bg-navy-700 text-white hover:bg-navy-600 dark:bg-navy-500 dark:hover:bg-navy-400 dark:text-navy-950'
-const linkSecondary =
-  'inline-flex items-center justify-center gap-2 font-semibold rounded-xl text-sm px-4 py-2.5 transition-all border ' +
-  'bg-white text-navy-900 hover:bg-slate-50 dark:bg-[var(--panel)] dark:text-[var(--text)] dark:hover:bg-[var(--panel-2)]'
-
-/** TimerState.skill maydoni string | null — xavfsiz tartda Skill ga qaytarish. */
-function asSkill(s: string | null): Skill {
-  return s !== null && (SKILL_SEQ as readonly string[]).includes(s) ? (s as Skill) : 'reading'
-}
-
-const WEEK_SHORT = ['Yak', 'Du', 'Se', 'Chor', 'Pay', 'Jum', 'Shan']
-
-function weekdayShortUz(dateKey: string): string {
-  const d = new Date(dateKey + 'T00:00:00')
-  return Number.isNaN(d.getTime()) ? dateKey.slice(5) : WEEK_SHORT[d.getDay()]
-}
-
-export default function Dashboard() {
-  const { data, ready, allocation, evidence, promotion, streak, learnedCount, dueCount, timerLabel, actions } = useStore()
-  const nav = useNavigate()
-
-  // --- Hisoblab olinadigan ma'lumotlar (hook'lar katta return oldidan) ---
-  const bundle = useMemo(() => getBundle(data.settings.currentLevel), [data.settings.currentLevel])
-
-  const today = useMemo(() => {
-    if (bundle.days.length === 0) return null
-    const cur = bundle.days.find((d) => d.id === data.path.currentDayId)
-    // Joriy kun allaqachon yakunlangan bo'lsa — keyingi (yoyilmagan) kun olinadi
-    if (cur && !data.path.completedDays.includes(cur.id)) return cur
-    const nid = nextDayId(
-      data.settings.currentLevel,
-      bundle.days,
-      data.path.completedDays,
-    )
-    return bundle.days.find((d) => d.id === nid) ?? null
-  }, [bundle.days, data.path.currentDayId, data.path.completedDays, data.settings.currentLevel])
-
-  const tasks = useMemo(() => {
-    if (!today) return []
-    // "Bajarilgan" halol ko'rsatiladi: BUGUNGI faoliyatda skill bo'yicha
-    // rejalashtirilgan daqiqadan ko'p vaqt sarflangan bo'lsa.
-    const act = data.activity[todayKey()]
-    const doneBySkill: Partial<Record<Skill, string>> = {}
-    for (const s of SKILL_SEQ) {
-      const spent = act?.skills?.[s] ?? 0
-      if (spent >= allocation.minutes[s] * 60) doneBySkill[s] = today.id
-    }
-    return buildDayTasks(today, allocation, doneBySkill)
-  }, [today, allocation, data.activity])
-
-  const week = useMemo(() => lastNDays(data, 7), [data])
-  const weekTotalSec = useMemo(() => week.reduce((a, d) => a + d.seconds, 0), [week])
-  const mistakes = useMemo(() => data.attempts.filter((a) => !a.correct).slice(-5).reverse(), [data.attempts])
-
-  const doneCount = tasks.filter((t) => t.done).length
-  const remainingTask = tasks.find((t) => !t.done)
-
-  if (!ready) return <LoadingBlock label="Ma'lumotlaringiz yuklanmoqda…" />
-
-  const curLevel = data.settings.currentLevel
-  const tgtLevel = data.settings.targetLevel
-  const timer = data.timer
-  const running = timer.startedAt !== null
-  const paused = timer.startedAt === null && timer.sessionId !== null
-
-  return (
-    <div className="grid gap-4 sm:gap-5">
       {/* ---------- Sarlavha: daraja va maqsad ---------- */}
-      <Card as="section" className="grid gap-2.5">
+      <Card as="section" className="grid gap-3">
         <div className="flex flex-wrap items-center gap-2">
           <h1 className="text-2xl font-bold">Dashboard</h1>
           <Chip tone="brand">Hozirgi: {curLevel} — {levelLabel(curLevel).titleUz}</Chip>
           <Chip>Maqsad: {tgtLevel} — {levelLabel(tgtLevel).titleUz}</Chip>
         </div>
-        <p className="muted text-sm">
-          Kunlik reja: <b>{allocation.total} daqiqa</b> · O‘quv yo‘li bosqichi:{' '}
+        <div className="grid gap-1">
+          <div className="flex justify-between text-xs">
+            <span className="muted">O‘quv yo‘li progressi</span>
+            <span className="font-bold">{Math.round((data.path.completedDays.length / (bundle.days.length || 1)) * 100)}%</span>
+          </div>
+          <div className="h-2 rounded-full bg-[var(--border)] overflow-hidden">
+            <div
+              className="h-full bg-navy-600 dark:bg-navy-400 transition-all duration-500"
+              style={{ width: `${(data.path.completedDays.length / (bundle.days.length || 1)) * 100}%` }}
+            />
+          </div>
+        </div>
+        <p className="muted text-sm mt-1">
+          Kunlik reja: <b>{allocation.total} daqiqalar</b> · O‘quv yo‘li bosqichi:{' '}
           <b>{data.path.completedDays.length}/{bundle.days.length || '—'}</b> kun yakunlangan.
         </p>
       </Card>
@@ -141,9 +54,14 @@ export default function Dashboard() {
 
       {/* ---------- Statistika qatori ---------- */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <StatTile label="Ketma-ket kun" value={streak} hint="Har kuni mashq qilish zanjiri" tone={streak > 0 ? 'ok' : 'default'} />
+        <StatTile
+          label="Ketma-ket kun"
+          value={streak > 0 ? `🔥 ${streak}` : "Hozircha yo‘q"}
+          hint="Har kuni mashq qilish zanjiri"
+          tone={streak > 0 ? 'ok' : 'default'}
+        />
         <StatTile label="XP" value={data.xp} hint="FAQAT motivatsiya — darajani oshirmaydi" />
-        <StatTile label="O‘zlashtirilgan so‘zlar" value={learnedCount} />
+        <StatTile label="O‘rganilgan so‘zlar" value={vocabSummary} />
         <StatTile
           label="Takrorlash navbati"
           value={dueCount}
@@ -154,7 +72,7 @@ export default function Dashboard() {
 
       {/* ---------- Bugungi reja (taqsimot + nega o'zgargani) ---------- */}
       <Card className="grid gap-3.5">
-        <h2 className="font-bold">Bugungi reja — {allocation.total} daqiqa</h2>
+        <h2 className="font-bold">Bugungi reja — {allocation.total} daqiqalar</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
           {tasks.map((t) => (
             <div key={`alloc-${t.skill}`} className="rounded-xl border p-2.5 text-center">
@@ -326,7 +244,7 @@ export default function Dashboard() {
 
       {/* ---------- Keyingi tavsiya ---------- */}
       <Card className="grid gap-3">
-        <h2 className="font-bold">Keyingi tavsiya etilgan mashg‘ulot</h2>
+        <h2 className="font.bold">Keyingi tavsiya etilgan mashg‘ulot</h2>
         <p className="text-sm">{promotion.reasonUz}</p>
         {promotion.recommendedLevel && (
           <InfoBanner tone="warn">
@@ -341,7 +259,7 @@ export default function Dashboard() {
         {remainingTask ? (
           <div className="flex flex-wrap items-center gap-2 rounded-xl border px-3.5 py-2.5">
             <span className="text-sm">
-              Navbatdagi mashg‘ulot: <b>{skillLabelUz(remainingTask.skill)}</b> — {remainingTask.minutes} daqiqa
+              Navbatdagi mashg‘ulot: <b>{skillLabelUz(remainingTask.skill)}</b> — {remainingTask.minutes} daqiqalar
             </span>
             <span className="flex-1" />
             <Link to={SKILL_ROUTE[remainingTask.skill]} className={linkSecondary}>

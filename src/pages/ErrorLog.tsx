@@ -11,6 +11,7 @@ import { Button, Card, Chip, EmptyState, Field, InfoBanner, inputCls } from '../
 import { useStore } from '../lib/store'
 import { findExercise } from '../content'
 import { checkAnswer } from '../lib/check'
+import { withMockErrors } from '../lib/mockErrors'
 import { skillLabelUz } from '../lib/planning'
 import type { AttemptRecord, AttemptSource } from '../lib/types'
 import type { Skill } from '../content/types'
@@ -27,21 +28,30 @@ export default function ErrorLog() {
   const [source, setSource] = useState<AttemptSource | 'all'>('all')
   const [q, setQ] = useState('')
 
+  // ESKI KAMCHILIK: bu yerda faqat `data.attempts` o'qilardi — mock imtihon
+  // javoblari esa `mockAttempts`da saqlanadi, shuning uchun "Manba: Mock
+  // imtihon" filtri AMALDA DOIM bo'sh edi. `withMockErrors` ularni almashtirmas-
+  // dan qo'shadi (dalil hisobi `skillEvidence`da alohida — ikki marta sanalmaydi).
+  const allErrors = useMemo(
+    () => withMockErrors(data.attempts, data.mockAttempts, data.settings.currentLevel),
+    [data.attempts, data.mockAttempts, data.settings.currentLevel],
+  )
+
   const errors = useMemo(() => {
     const cutoff = range === 'all' ? 0 : Date.now() - (range === '7' ? 7 : 30) * 86_400_000
-    return data.attempts
+    return allErrors
       .filter((a) => !a.correct)
       .filter((a) => (skill === 'all' ? true : a.skill === skill))
       .filter((a) => (source === 'all' ? true : a.source === source))
       .filter((a) => a.at >= cutoff)
       .filter((a) => (q.trim() ? a.exerciseId.toLowerCase().includes(q.trim().toLowerCase()) : true))
       .sort((a, b) => b.at - a.at)
-  }, [data.attempts, skill, source, range, q])
+  }, [allErrors, skill, source, range, q])
 
   /** Takrorlanadigan xatolar: bir xil mashqda 2+ marta xato. */
   const repeated = useMemo(() => {
     const map = new Map<string, AttemptRecord[]>()
-    for (const a of data.attempts.filter((x) => !x.correct)) {
+    for (const a of allErrors.filter((x) => !x.correct)) {
       const list = map.get(a.exerciseId) ?? []
       list.push(a)
       map.set(a.exerciseId, list)
@@ -50,9 +60,9 @@ export default function ErrorLog() {
       .filter(([, list]) => list.length >= 2)
       .sort((a, b) => b[1].length - a[1].length)
       .slice(0, 12)
-  }, [data.attempts])
+  }, [allErrors])
 
-  const totalErrors = data.attempts.filter((a) => !a.correct).length
+  const totalErrors = allErrors.filter((a) => !a.correct).length
 
   return (
     <div className="grid gap-4">

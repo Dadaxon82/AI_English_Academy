@@ -18,6 +18,9 @@ import type { OfflineCache } from '../lib/storage'
 
 const SKILLS: Skill[] = ['vocabulary', 'grammar', 'reading', 'listening', 'writing', 'speaking']
 
+/** Darajalar tartibi — "pastga tushish"ni "yuqoriga ko'tarish"dan ajratish uchun. */
+const LEVEL_ORDER = ['A1', 'A2', 'B1', 'B2', 'C1'] as const
+
 /**
  * Imtihon sanasi haqida izoh — `computeAllocation` qoidasi bilan BIR XIL
  * (30 kunlik oyna), shuning uchun foydalanuvchi ko'rgan son bilan taqsimot
@@ -42,6 +45,8 @@ export default function Settings() {
   const [syncing, setSyncing] = useState(false)
   const [confirmReset, setConfirmReset] = useState(false)
   const [resetDone, setResetDone] = useState(false)
+  // KUTILAYOTGAN qo'l bilan daraja o'zgartirish (tasdiq oynasi uchun).
+  const [pendingLevel, setPendingLevel] = useState<typeof s.currentLevel | null>(null)
 
   useEffect(() => {
     let alive = true
@@ -90,7 +95,25 @@ export default function Settings() {
             />
           </Field>
           <Field label="Hozirgi daraja" hint="Daraja faqat isbotlar asosida tavsiya qilinadi; bu yerda qo‘lda ham belgilash mumkin.">
-            <select value={s.currentLevel} onChange={(e) => actions.setLevel(e.target.value as typeof s.currentLevel)} className={inputCls}>
+            {/* ESKI KAMCHILIK: select darajani darhol o'zgartirardi — isbotlarsiz
+                ham. Endi tavsiya qilinmagan o'zgarish tasdiq so'raydi (qo'l bilan
+                tanlash imkoni saqlanadi, lekin foydalanuvchi isbotsiz o'tayotganini
+                biladi). */}
+            <select
+              value={s.currentLevel}
+              onChange={(e) => {
+                const next = e.target.value as typeof s.currentLevel
+                if (next === s.currentLevel) return
+                // Pastga tushish doim ruxsat etilgan (qiyinlikni kamaytirish xavfsiz);
+                // yuqoriga ko‘tarish esa isbotlar talab qiladi.
+                if (LEVEL_ORDER.indexOf(next) < LEVEL_ORDER.indexOf(s.currentLevel) || promotion.recommendedLevel === next) {
+                  actions.setLevel(next)
+                } else {
+                  setPendingLevel(next)
+                }
+              }}
+              className={inputCls}
+            >
               {(['A1', 'A2', 'B1', 'B2', 'C1'] as const).map((l) => (
                 <option key={l} value={l}>
                   {l}
@@ -316,6 +339,32 @@ export default function Settings() {
               }}
             >
               Ha, o‘chirilsin
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal open={pendingLevel !== null} title="Darajani qo‘lda o‘zgartirasizmi?" onClose={() => setPendingLevel(null)}>
+        <div className="grid gap-3">
+          <p className="text-sm">
+            {pendingLevel} darajasiga ko‘tarish hozirgi isbotlar asosida tavsiya qilinmagan.
+          </p>
+          <InfoBanner tone="warn">{promotion.reasonUz}</InfoBanner>
+          <p className="text-xs muted">
+            Qo‘lda tanlash mumkin — lekin material shu darajaga moslashadi va reyting/ball
+            holatingizni to‘liq aks ettirmasligi mumkin.
+          </p>
+          <div className="flex gap-2 justify-end">
+            <Button variant="ghost" onClick={() => setPendingLevel(null)}>
+              Bekor qilish
+            </Button>
+            <Button
+              onClick={() => {
+                if (pendingLevel) actions.setLevel(pendingLevel)
+                setPendingLevel(null)
+              }}
+            >
+              Ha, {pendingLevel} ga o‘taman
             </Button>
           </div>
         </div>

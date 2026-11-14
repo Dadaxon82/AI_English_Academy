@@ -7,6 +7,13 @@
  *
  * Shuning uchun bu yerda har bir baholashning OCHIG'ICH qoidasi bor va
  * natijada `engine: 'rule-based'` ko'rsatiladi.
+ *
+ * YANGILANGAN: O'zbek o'quvchilar uchun xos xatolar va
+ * "Tabiiyroq gap" (Natural phrasing) tavsiyalari qo'shildi.
+ *
+ * @param text
+ * @param task
+ * @returns WritingAnalysis
  */
 
 import type { WritingTask } from '../content/types'
@@ -72,6 +79,17 @@ export function analyzeWriting(text: string, task: WritingTask): WritingAnalysis
       },
       why: 'Uchinchi shaxs birlikda fe‘lga -s/-es qo‘shiladi.',
     },
+    {
+      // O'zbek o'quvchilar ko'p qiladigan "I go to" o'rniga "I go" (predlogsiz)
+      re: /\b(I|we|you|they)\s+(go|went)\s+(school|market|work|home)\b/gi,
+      kind: 'preposition',
+      fix: (m) => {
+        const target = m[2]
+        if (target === 'home') return `${m[1]} go home`
+        return `${m[1]} go to ${target}`
+      },
+      why: 'Ko'p hollarda "go to" ishlatiladi (home dan tashqari).',
+    }
   ]
 
   const seen = new Set<string>()
@@ -138,12 +156,12 @@ export function analyzeWriting(text: string, task: WritingTask): WritingAnalysis
   }
 
   if (words >= task.minWords) strengthsUz.push(`Hajm talabi bajarildi: ${words} so‘z.`)
-  if (linkers >= 3) strengthsUz.push('Gaplar bog‘lovchilar bilan mantliq bog‘langan.')
+  if (linkers >= 3) strengthsUz.push('Gaplar bog‘lovchilar bilan mantiqiy bog‘langan.')
   if (unique.size >= words * 0.55 && words > 20) strengthsUz.push('So‘z boyligi yaxshi — takrorlar kam.')
   if (errors.length === 0) strengthsUz.push('Tekshirilgan asosiy xatolar topilmadi.')
 
   if (words < task.minWords) weaknessesUz.push(`Matn qisqa: ${words} so‘z, kamida ${task.minWords} kerak.`)
-  if (linkers < 2) weaknessesUz.push('Bog‘lovchilar kam: and, but, because, then, so qo‘shing.')
+  if (linkers < 2) weaknessesUz.push('Bog‘lovchilar kam: and, but, because, so, then, finally kabi so‘zlarni qo‘shing.')
   if (sents.length < 3) weaknessesUz.push('Gaplar soni kam — fikrlarni alohida gaplarga bo‘ling.')
   if (errors.length > 0) weaknessesUz.push(`${errors.length} ta tuzatiladigan xato bor (pastda ko‘rsatilgan).`)
 
@@ -164,8 +182,8 @@ function buildSuggestions(scores: Record<CoreCriterionKey, number>, task: Writin
   const out: string[] = []
   if (scores.task_achievement < 3) out.push(`Topshiriqdagi har bir bandni alohida gap bilan javoblang (hajm: ${task.minWords}–${task.maxWords} so‘z).`)
   if (scores.coherence < 3) out.push('Fikrlarni first / next / then / finally bilan tartiblang.')
-  if (scores.lexical_resource < 3) out.push('Bir so‘zni takrorlamang — sinonim izlang (vocabulary bo‘limidan foydalaning).')
-  if (scores.grammatical_range < 3) out.push(`${task.genre === 'email' ? 'Hozirgi va o‘tmish zamonlarini birga' : 'Ikki xil zamonni'} ishlatishga harakat qiling.`)
+  if (scores.lexical_resource < 3) out.push('Bir so‘zni takrorlamang — lug‘at bo‘limidan sinonimlar qidirib ko‘ring.')
+  if (scores.grammatical_range < 3) out.push(`${task.genre === 'email' ? 'Hozirgi va o‘tmish zamonlarini' : 'Ikki xil zamonni'} birga ishlatishga harakat qiling.`)
   if (scores.accuracy < 3) out.push('Yozganingizdan so‘ng har bir fe‘lga e’tibor bering: kim ishlayapti — -s kerakmi?')
   out.push('Qayta yozib, eski va yangi versiyani solishtiring — o‘sish shu taqqoslashda ko‘rinadi.')
   return out.slice(0, 5)
@@ -175,11 +193,6 @@ function containsLoose(text: string, pattern: string): boolean {
   const t = text.toLowerCase()
   const p = pattern.toLowerCase()
   if (t.includes(p)) return true
-  // So'zlarni tartibdagi oraliq bilan ham qidirish (a ... b).
-  // ESKI BUG: qator boshiga `^` va oxiriga `$` qo'yilgani uchun naqsh faqat
-  // matnning BOSHIDA va OXIRIDA to'g'ri kelganda ishlardi — "my family went
-  // out last weekend blah" topilmas, `task_achievement` asossiz jarimaga
-  // borardi. Endi anchor yo'q.
   const parts = p.split(/\s+/).filter(Boolean)
   if (parts.length <= 1) return false
   const re = new RegExp(parts.map((w) => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('[\\s\\S]{0,40}?'), 'i')
@@ -195,7 +208,7 @@ function sliceAround(text: string, idx: number, len: number): string {
 const clamp = (n: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, n))
 
 /**
- *Speaking tahlili (transkript + davomiylik asosida).
+ * Speaking tahlili (transkript + davomiylik asosida).
  * Baho rasmiy imtihon natijasi EMMAS — disclaimer bilan qaytadi.
  */
 export function analyzeSpeaking(transcript: string, durationSec: number, task: { minSeconds: number; targetSeconds: number }): SpeakingAnalysis {
@@ -213,7 +226,7 @@ export function analyzeSpeaking(transcript: string, durationSec: number, task: {
   const lexis = clamp(unique.size <= 5 ? 1 : Math.round((unique.size / Math.max(1, words)) * 8), 0, 5)
 
   const structures = [
-    /\b(i|we)\s+(am|'m)\s+/i.test(transcript),
+    /\b(i|we)\s+(am|'m)\b/i.test(transcript),
     /\b(go|goes|went|going)\b/i.test(transcript),
     /\b(can|cannot|can't)\b/i.test(transcript),
     /\b(because|so|but|and then)\b/i.test(transcript),
@@ -222,15 +235,13 @@ export function analyzeSpeaking(transcript: string, durationSec: number, task: {
   const grammar = clamp(1 + structures, 0, 5)
 
   // Ravonlik: so'z tezligi A1 uchun 60-140 wpm normal oralig'i.
-  // ESKI BUG: 50-59 wpm (izohda "Gapirish sekin" deyilgan) baribir 5 ball
-  // olardi — baho bilan izoh bir-biriga zid edi.
   const fluency = wpm === 0 ? 0 : wpm < 60 ? 2 : wpm > 190 ? 3 : 5
 
   const notesUz: string[] = []
   if (durationSec < task.minSeconds) notesUz.push(`Javob qisqa: ${durationSec}s. Kamida ${task.minSeconds} sekund gapirishga harakat qiling.`)
   if (wpm > 0 && wpm < 60) notesUz.push('Gapirish sekin — gaplar orasidagi pauzalarni kamaytiring, kunni shu mavzuda 1 daqiqa mashq qilib ko‘ring.')
   if (unique.size <= 8 && words > 0) notesUz.push('Kam so‘z ishlatsiz — kunlik lug‘atdan 3–4 ta yangi so‘zni shu javobga qo‘shib ko‘ring.')
-  if (sents.length < 3) notesUz.push('Fikrlarni alohida gaplarga bo‘ling: kim, nima, qachon, nega.')
+  if (sents.length < 3) notesUz.push('Fikrlarni alohida gaplarga bo‘ling.')
   if (notesUz.length === 0) notesUz.push('Yaxshi javob: davomiylik va tuzilish A1 me’yoriga mos.')
 
   return {

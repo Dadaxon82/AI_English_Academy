@@ -1,0 +1,14 @@
+# Competitor Weakness & Risk Registry
+
+| Competitor Weakness | Project Risk | Mitigation Strategy (Our Advantage) |
+| :--- | :--- | :--- |
+| **High Subscription Costs** (e.g., Duolingo Max, Babbel) | Users might drop off due to "subscription fatigue" or high price points for the Uzbek market. | **Freemium + Affordable Tier:** Offer robust core features for free (static hosting) and a low-cost "Pro" tier for advanced AI features/Supabase sync. |
+| **Lack of Local Context** (Generic Western examples) | Learners struggle to relate English to their daily life in Uzbekistan (e.g., "buying a subway ticket" vs "taking a bus"). | **Hyper-Localization:** Every example, reading passage, and vocabulary item is curated for Uzbek culture, geography (Tashkent, Samarkand), and daily life. |
+| **Poor SRS Retention** (Generic "repeat" systems) | Users forget vocabulary quickly because repetition intervals are not scientifically optimized. | **SM-2 Algorithm Implementation:** Use the SM-2 algorithm for spaced repetition, ensuring optimal "forgetting point" reviews for better long-term retention. |
+| **Weak Listening/Speaking Practice** (Focus on reading/writing) | Learners can read but cannot communicate in real-world situations. | **Audio + Speaking Tasks:** Every day includes synthesized high-quality audio and structured speaking prompts with hints, specifically designed for A1-A2 levels. |
+| **No Offline Support** (Cloud-only apps) | Users in areas with unstable internet lose progress or cannot study on the go. | **PWA + idb-keyval:** Full offline functionality. Users can study anywhere, and progress syncs automatically when the connection returns. |
+| **Static Content** (Lack of variety) | Users get bored of the same 10 sentences and stop using the app. | **Contract-based Content:** Our scalable "Contract" architecture allows for rapid injection of new, high-quality "Days" and "Quests" without rewriting core logic. |
+| **Complexity for Beginners** (Overwhelming grammar) | A1 learners get discouraged by complex grammar tables early on. | **Chunk-based Learning:** Focus on "Functional Phrases" (e.g., "How do I get to...?") first, then introduce grammar as a tool to expand those phrases. |
+| **Lack of Progress Visualization** | Learners feel they aren't improving, leading to low motivation. | **Progress Dashboard:** Visualizing "Mastered Vocabulary," "Streak," and "Daily Goals" to provide immediate dopamine and motivation. |
+| **Slow Feedback Loop** (Waiting for AI/Tutor) | Users don't know if their writing is correct until much later. | **Instant Validation:** Use regex and pattern-matching for immediate "correct/incorrect" feedback on core grammar points during exercises. |
+| **Poor UX for Uzbek Speakers** (Translation errors) | Instructions in Uzbek that don't make sense can confuse the learner. | **Native-Quality UX:** Ensure all instructions, explanations, and UI labels are reviewed for natural Uzbek (Latin script) flow. |

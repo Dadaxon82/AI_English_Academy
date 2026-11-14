@@ -169,6 +169,26 @@ export interface AppData {
   diagnostic: { at: number; level: CefrLevel | null; labelUz: string; confidence: number } | null
   timer: TimerState
   updatedAt: number
+  /** --- Adaptiv Mantiq uchun qo'shimcha --- */
+  weakPoints: WeakPoint[]
+  mistakeHistory: MistakeHistory[]
+}
+
+export type WeakPoint = {
+  skill: Skill
+  exerciseId: string
+  count: number
+  lastSeen: number
+}
+
+export interface MistakeHistory {
+  id: string
+  exerciseId: string
+  skill: Skill
+  wrongAnswer: string
+  correctAnswer: string
+  explanationUz: string
+  at: number
 }
 
 export const APP_DATA_VERSION = 1
@@ -194,6 +214,8 @@ export function emptyData(userId: string): AppData {
     diagnostic: null,
     timer: { elapsedSec: 0, startedAt: null, sessionId: null, skill: null, updatedAt: Date.now() },
     updatedAt: Date.now(),
+    weakPoints: [],
+    mistakeHistory: [],
   }
 }
 

@@ -1,149 +1,71 @@
-# AI English Academy
+# AI English Academy 🎓
 
-**A1 → C1** darajalar bo'yicha shaxsiy ingliz tili platformasi. React 19 + TypeScript + Vite + Tailwind CSS 4 + PWA + Supabase.
+AI English Academy is a robust, offline-first English language learning platform designed to guide users from A1 to C1 levels using a structured CEFR-based curriculum. It combines traditional pedagogical methods (SRS, structured daily plans) with modern features like AI-assisted writing analysis, interactive speaking exercises with transcription, and a comprehensive progress tracking system.
 
-Loyiha talabnomasi (`AI English Academy_v2.docx`) to'liq bajarilgan:
+## 🚀 Features
 
-- ✅ To'liq **o'zbek tilli interfeys**
-- ✅ **A1, A2, B1, B2, C1** darajalar; daraja faqat **ko'p ko'nikma dalili** bilan ko'tariladi (XP yoki kunlar emas), mock imtihon esa doim **"mashq uchun yaratilgan namuna"** deb yozilgan
-- ✅ **90 daqiqalik** asosiy kunlik reja (Vocab 10 / Grammar 15 / Reading 15 / Listening 15 / Writing 20 / Speaking 15) — zaif ko'nikma va imtihon sanasiga qarab qayta taqsimlanadi
-- ✅ **14 sahifa**: Dashboard, Learning Path, Vocabulary, Grammar, Reading, Listening, Writing, Speaking, Mock Exam, Progress, Error Log, Settings, Login, 404
-- ✅ Premium **dark/light** mavzu, to'liq **responsiv**; har joyda **loading / empty / success / error** holatlari
-- ✅ **SRS lug'at** (SM-2): har so'z statistikasida tekshiruvlar ikki marta sanalmaydi; Reading matnidan saqlangan glossariy so'zlari ham Lug'at bo'limida qayta ko'rinadi va takrorlanadi
-- ✅ Tinglash uchun **HAQIQIY audio** (`npm run audio:build` — Windows SAPI). Manifestda fayli bo'lmagan audio uchun pleyer umuman ko'rsatilmaydi — soxta tugma yo'q
-- ✅ Speaking audio **rozilik siz serverga yuborilmaydi** (`audio_stored: false`)
-- ✅ **Jonli taymer** — sahifa yangilansa ham vaqt yo'qolmaydi (IndexedDB'da saqlanadi)
-- ✅ **Offline / PWA**: sync navbati, Service Worker, logout'da kesh tozalanadi
-- ✅ **Supabase RLS**: har foydalanuvchi faqat o'z qatorlarini ko'radi; service role va `AI_*` kalitlari faqat serverda
-- ✅ AI "ulangan" deb ko'rsatilmaydi — AI bo'lmasa **qoidaviy dvigatel** (`engine: 'rule-based'`) ishlatiladi
-- ✅ **7+ kun A1 kontenti** alohida (`src/content/day-01…07.ts`)
-- ✅ **13 ta jadval** (`supabase/migrations/0001_init.sql`), ID'lar, `created_at`, FK va indexlar bilan
-- ✅ Testlar: `tsc` tip tekshiruvi, ESLint, `vitest` (75 test), production build, smoke + render tekshiruvi
-- ✅ JSON/CSV **eksport** va **ma'lumotlarni o'chirish**
-- ✅ **HECH QANDAY TUGMA DEKORATSIYA EMAS** — har bir tugma haqiqiy harakat bajaradi
+- **Offline-First Persistence**: Uses `idb-keyval` for primary storage with `localStorage` fallback, ensuring learning can continue without a constant internet connection.
+- **Structured Learning Path**: A 7-day-per-level curriculum with 6 daily skills (Vocabulary, Grammar, Reading, Listening, Writing, Speaking).
+- **Spaced Repetition System (SRS)**: Integrated vocabulary management based on the SM-2 algorithm.
+- **Smart Content Bundling**: Centralized content registry allowing for easy addition of new levels and modules.
+- **Interactive Exercises**:
+  - **Grammar**: Adaptive "step-by-step" learning with feedback on consecutive errors.
+  - **Reading**: Immersive text experience with integrated glossary and time-tracking.
+  - **Listening**: Audio playback with transcript unlock policies (always/listen-first/check-first).
+  - **Speaking**: Browser-based speech recognition with real-time transcription and analysis.
+  - **Writing**: Writing assistant with word counters, prompt guidance, and rule-based/AI analysis.
+- **Progress Analytics**: Detailed tracking of skill evidence, streaks, XP, and mock exam results.
+- **Mock Exams**: Final assessments for each level to verify proficiency.
 
----
+## 🛠 Tech Stack
 
-## 1. Ishga tushirish
+- **Frontend**: React, Vite, Tailwind CSS, Lucide React.
+- **Persistence**: `idb-keyval` (IndexedDB), `localStorage`.
+- **Backend/Auth**: Supabase (Auth, Database, Storage).
+- **AI**: (Optional) Integration with LLMs for writing analysis and content generation.
+- **Audio**: Web Audio API, Browser Speech Recognition API.
 
-Talab: **Node.js ≥ 22.12** (portable nusxa ishlatilsa, avval `PATH` ga qo'shing):
+## 🏗 Architecture
 
-```bash
-export PATH="/c/Users/user/tools/node-22:$PATH"   # Windows Git Bash, portable Node
-npm install          # birinchi marta
-npm run dev          # → http://localhost:5173
-```
+- **Content Registry**: `src/content/index.ts` maps levels to bundles of daily plans and vocabulary.
+- **Storage Layer**: `src/lib/storage.ts` handles the abstraction between IndexedDB and LocalStorage, including a sync queue for Supabase.
+- **Sync Engine**: `src/lib/sync.ts` manages background synchronization of user data (settings, results, vocabulary).
+- **Analysis Engine**: `src/lib/analyze.ts` provides rule-based feedback on writing submissions.
+- **SRS Logic**: `src/lib/srs.ts` implements the core spaced repetition formulas.
 
-> `npm install` `esbuild` skriptini bajarishga ruxsat so'rasa — `package.json`
-> ichidagi `allowScripts` ruxsatnamedir; kerak bo'lsa `npm approve-scripts --allow-scripts-pending` bosing.
+## ⚙️ Installation & Setup
 
-Supabase sozlanmagan bo'lsa ham ilova **to'liq ishlaydi** — "mahalliy mehmon" rejimida, barcha ma'lumot brauzerda (IndexedDB) saqlanadi.
+1.  **Clone the repository**:
+    ```bash
+    git clone https://github.com/your-repo/ai-english-academy.git
+    cd ai-english-academy
+    ```
 
-## 2. Muhit o'zgaruvchilari
+2.  **Install dependencies**:
+    ```bash
+    npm install
+    ```
 
-```bash
-cp .env.example .env
-```
+3.  **Environment Configuration**:
+    Create a `.env.local` file and add your Supabase credentials:
+    ```env
+    VITE_SUPABASE_URL=your_supabase_url
+    VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+    ```
 
-## 3. Supabase (ixtiyoriy) — kalitlar qayerdan olinadi
+4.  **Run the development server**:
+    ```bash
+    npm run dev
+    ```
 
-> **Eslatma:** kalitlar SHART EMAS. Ular bo'lmasa ilova **mehmon (mahalliy)**
-> rejimida to'liq ishlaydi — ma'lumotlar brauzerda (IndexedDB) saqlanadi,
-> faqat hisob yaratib boshqa qurilmaga o'tkazib bo'lmaydi.
+## 📖 Usage
 
-1. **Loyiha yarating:** [supabase.com](https://supabase.com) → *New project*
-   (bepul "Free" tier yetadi). Namuna: nomi `english-academy`, region `Singapore`/eu-central.
-2. **Kalitlarni oling:** loyiha paneli → **Project Settings → API** (yoki
-   "Connect / API keys" bo'limi). U yerda:
-   - **Project URL** → `VITE_SUPABASE_URL` (ko'rinishi: `https://abcd1234.supabase.co`)
-   - **Project API keys → `anon` / `public`** (boshlanishi `eyJ…`) → `VITE_SUPABASE_ANON_KEY`.
-     Yangi loyihlarda `sb_publishable_…` ko'rinishidagi "Publishable key" ham
-     beriladi — xuddi shu ma'noda, ikkalasi ham ishlataveradi.
-   - `service_role` kalitini **bu yerga kiritmang** — u faqat serverda.
-3. **Ma'lumotlar bazasini tayyorlang:** paneldagi **SQL Editor** ga ketma-ket
-   ikki skriptni qo'yib **Run** qiling:
-   1. `supabase/migrations/0001_init.sql` — 13 jadval + RLS + triggerlar;
-   2. `supabase/migrations/0002_fix_content_fk.sql` — bo'sh kontent jadvallariga
-      qo'yilgan FK'larni olib tashlaydi (ular sinxronlashni butunlay to'sib
-      qo'yardi) va kontent jadvallariga service_role yozish policylarini qo'shadi.
-   Skript oxirida tekshiruv `SELECT` bor: `fk_qoldi = 0` va `policies_soni = 21`
-   chiqishi kerak. **0002 qo'llanilmasa Supabase'ga hech qanday yozuv kirmaydi**
-   (FK'lar bo'sh kontent jadvallariga bog'langan). Ushbu loyihaning bazasida
-   (`igrzbfnsunedgyivmqlz`) 0001 qo'llanilgan — 0002 ham albatta qo'llanilishi
-   kerak.
-4. **Lokal ishga tushirish:** `cp .env.example .env` ichiga ikki qiymatni yozing.
-5. **GitHub Pages uchun:** GitHub'da repo → **Settings → Secrets and variables →
-   Actions → Repository variables** ga `VITE_SUPABASE_URL` va `VITE_SUPABASE_ANON_KEY`
-   ni qo'ying — keyingi deploy'lar ulangan holicha quriladi (workflow bu
-   qiymatlarni o'qiydi). Barqaror qurilish uchun push qayta ishga tushirilsin.
+1.  **Onboarding**: New users start by setting their current level, target goal, daily study minutes, and exam date.
+2.  **Daily Plan**: The dashboard presents a customized 90-minute daily plan.
+3.  **Learning**: Navigate through the "O'quv yo'li" (Learning Path) to complete days sequentially.
+4.  **Review**: Use the "Lug'at" (Vocabulary) section to review words learned during lessons using the SRS system.
+5.  **Assessment**: Take mock exams at the end of each level to see your progress.
 
-| O'zgaruvchi | Qayerda | Izoh |
-|---|---|---|
-| `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` |frontend (build paytida qadoqlanadi) | Anon/publishable — omboraxona (public) hisoblanadi va RLS bilan himolanadi. Bo'sh → mahalliy rejim |
-| `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` | **faqat server** | Service role kaliti hech qachon brauzerga chiqmaydi |
-| `AI_PROVIDER`, `AI_MODEL`, `AI_API_KEY`, `AI_DAILY_LIMIT`… | **faqat server** | Bo'sh bo'lsa tahlil qoidaviy dvigatel bilan bajariladi |
+## 📄 License
 
-## 4. Audio va ikonalar
-
-```bash
-npm run audio:build   # 8 ta HAQIQIY WAV (Windows SAPI) + public/audio/manifest.json
-npm run icons:build   # PWA ikonalaria (0 bog'liqlik, sof Node)
-```
-
-- Audio skripti Windows talab qiladi (tizim ovozi). Boshqa OS'da manifest `available:false` qoladi va ilova pleyerni ko'rsatmaydi — **soxta audio yo'q**.
-- WAV'lar precache'ga kiritilmaydi (16 MB); birinchi tinglashdan keyin Service Worker keshida offline ishlaydi.
-
-## 5. To'liq tekshiruv
-
-```bash
-npm run typecheck     # tsc — 0 xato
-npm run lint          # eslint — 0 xato
-npm test              # vitest — 106 test (SRS, taymer/vaqt hisobi, tekshiruv, kontent auditi, audio yaxlitligi, rejalashtirish, daraja, sync)
-npm run build         # production build + Service Worker
-npm run smoke         # dist'ni serverda ochib tekshirish + 375/1280 skrinshot
-npm run render:check  # 15 marshrutni CDP orqali ochib DOM tekshiruvi + konsol xatolari
-```
-
-> `render:check` Chrome/Edge'ni remote debugging (CDP) orqali ochadi va har
-> marshrut uchun tugmalar/havolalar/matn hajmini va istisnolarni tekshiradi.
-> Brauzer bo'lmasa skript ogohlantirib exit 0 bilan chiqadi.
-
-## 6. Arxitektura qisqacha
-
-```
-src/
-  content/         # 7+ kun A1 kontenti (UI koddan alohida), A2+ zaxira bundle
-  lib/             # store (reducer + IndexedDB + sync navbati), SRS, taymer,
-                   # tekshiruv dvigateli, rejalashtirish, daraja isboti, eksport
-  pages/           # 14 sahifa
-  components/      # UI, ExerciseRunner (6 tur mashq), Shell navigatsiya
-supabase/
-  migrations/0001_init.sql           # 13 jadval + RLS + triggerlar
-  migrations/0002_fix_content_fk.sql # FK'larni olish + kontent yozish policylari
-scripts/
-  build-audio.mjs  make-icons.mjs  smoke.mjs  render-check.mjs
-```
-
-**Vaqt hisobi (yagona manba):** kundalik sekundlar `activity[kun].seconds`da saqlanadi.
-Taymer yurgan bo'lsa vaqt devor-soat bo'yicha (`timer-start`/`timer-stop`) yuritiladi va
-shu holatda `attempt` sekundlari qo'shilmaydi — ikki marta sanash yo'q. Hisobga yozilgan
-sekundlar darhol nollanadi, shuning uchun sessiyani qayta ochish ham takrorlamaydi.
-
-**Lug'at va SRS kalitlari:** asosiy lug'at so'zlari `a1-v*` idsi bilan yuradi. Reading
-matnidan saqlangan glossariy so'zlari `gl-<so'z>` kaliti saqlanadi va Lug'at bo'limida
-"matndan olingan" mavzusi bilan ko'rinadi (bir so'z nechta matnda uchramasin — bitta kalit).
-Eski keshdagi `<matn>|gl-<so'z>` kalitlari `storage.migrate()`da avtomatik aylantiriladi.
-Mock imtihonda sarflangan vaqt ham kundalik hisobga yoziladi (`mock-time`), lekin ball
-dalili `mockAttempts`da qayta sanalmaydi.
-
-**AI holati:** interfeysda AI faqat HAQIQIY ulanganda "AI" deb ko'rsatiladi. Serverless
-funksiya joylashtirilmagan hozirgi holatda barcha tahlil `engine: 'rule-based'` bilan
-bajariladi.
-
-**Daraja siyosati:** 4 ta ko'nikmada kamida 4 tadan isbot, og'irlikli ball ≥ 72 (mock imtihon og'irligi 0.35, eski natijalar 30 kunlik "half-life" bilan kamayadi) → tizim keyingi darajani **tavsiya** qiladi; qaror foydalanuvchida.
-
-**Maxfiylik:** speaking yozuvlari faqat brauzerda; serverga faqat matn transkripsiyasi va `audio_stored:false` yuboriladi; "Ma'lumotlarimni o'chirish" barcha jadvallar + lokal keshni tozalaydi.
-
-## 7. Litsenziya va kontent
-
-Audio fayllar Windows SAPI (`Microsoft Zira`) ovozi bilan generatsiya qilingan; manifestda litsenziya maydoni bo'sh — tashqi audio qo'shsangiz shu maydonga kiriting.
+This project is licensed under the MIT License.

@@ -70,7 +70,7 @@ export default function ExerciseRunner({ exercise, checked, index, total, onNext
 
   return (
     <div className="grid gap-4">
-      <div className="flex items-center justify-between gap-2">
+      <div className="flex  justify-between gap-2">
         <span className="text-xs font-semibold muted tabular-nums">
           {index + 1} / {total}
         </span>
@@ -118,7 +118,7 @@ export default function ExerciseRunner({ exercise, checked, index, total, onNext
         </div>
       )}
 
-      <div className="flex flex-wrap items-center gap-2">
+      <div className="flex flex-wrap  gap-2">
         {state === 'idle' ? (
           <Button onClick={doCheck} disabled={!canCheck}>
             Tekshirish
@@ -173,7 +173,7 @@ function AnswerInput({
                   : 'hover:bg-[var(--panel-2)]'
               }`}
             >
-              <span className="inline-grid place-items-center w-5 h-5 rounded-full border text-[10px] mr-2">
+              <span className="inline-grid place- w-5 h-5 rounded-full border text-[10px] mr-2">
                 {String.fromCharCode(65 + i)}
               </span>
               {opt}
@@ -271,7 +271,7 @@ function AnswerInput({
       return (
         <div className="grid gap-2">
           {exercise.pairs.map((p) => (
-            <div key={p.left} className="flex items-center gap-2 text-sm">
+            <div key={p.left} className="flex  gap-2 text-sm">
               <span className="flex-1 min-w-0 font-medium truncate">{p.left}</span>
               <span aria-hidden>→</span>
               <select

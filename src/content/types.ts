@@ -7,331 +7,507 @@
  * kontenti keyin shu kontrakt ustiga qo'shiladi.
  */
 
-export const CEFR_LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1'] as const
-export type CefrLevel = (typeof CEFR_LEVELS)[number]
+import type { CefrLevel, CoreSkill, Skill } from '../content/types'
+import type { SrsState } from './srs'
+import type { TimerState } from './timer'
 
-export const SKILLS = ['reading', 'listening', 'writing', 'speaking', 'vocabulary', 'grammar'] as const
-export type Skill = (typeof SKILLS)[number]
+export interface UserSettings {
+  /** Kundalik reja daqiqalari (boshlang'ich: 90) */
+  dailyMinutes: number
+  currentLevel: CefrLevel
+  targetLevel: CefrLevel
+  examDate: string | null // YYYY-MM-DD
+  /** Kundalik taqsimot — moslashuvchan, zaif ko'nikmalarga qarab o'zgaradi */
+  allocation: Record<Skill, number>
+  theme: 'light' | 'dark' | 'system'
+  /** AI xizmati ulanganmi (sozlamadan ham o'chiriladi) */
+  aiEnabled: boolean
+}
 
-/** Ko'nikma — Mock Exam va kundalik reja uchun asosiy to'rt ko'nikma. */
-export const CORE_SKILLS = ['reading', 'listening', 'writing', 'speaking'] as const
-export type CoreSkill = (typeof CORE_SKILLS)[number]
+export const DEFAULT_ALLOCATION: Record<Skill, number> = {
+  vocabulary: 10,
+  grammar: 15,
+  reading: 15,
+  listening: 15,
+  writing: 20,
+  speaking: 15,
+}
 
-export type PartOfSpeech =
-  | 'noun'
-  | 'verb'
-  | 'adjective'
-  | 'adverb'
-  | 'pronoun'
-  | 'preposition'
-  | 'conjunction'
-  | 'determiner'
-  | 'interjection'
+export const DEFAULT_SETTINGS: UserSettings = {
+  dailyMinutes: 90,
+  currentLevel: 'A1',
+  targetLevel: 'C1',
+  examDate: null,
+  allocation: { ...DEFAULT_ALLOCATION },
+  theme: 'system',
+  aiEnabled: true,
+}
 
-/** ------------------------------- LUG'AT ------------------------------- */
+export type AttemptSource = 'practice' | 'section_test' | 'mock_exam' | 'diagnostic'
 
-export interface VocabularyItem {
+export interface AttemptRecord {
   id: string
-  word: string
-  /** O'zbekcha tarjima */
-  translationUz: string
-  /** Inglizcha sodda izoh (darajaga mos) */
-  explanationEn: string
-  /** IPA talaffuzi — mavjud bo'lsa */
-  ipa?: string
-  /** Talaffuz audio manbasi. yo'q bo'lsa tugma ko'rsatilmaydi */
-  pronunciation?: PronunciationSource
-  exampleEn: string
-  exampleUz: string
-  pos: PartOfSpeech
-  topic: string
-  level: CefrLevel
-  /** Matndan lug'atga saqlash uchun qoida: sinonim/antonym va h.k. */
-  relations?: { synonym?: string[]; antonym?: string[] }
-}
-
-/** Audio manba va litsenziyasi ALBATDA qayd etiladi. */
-export interface AudioAsset {
-  id: string
-  /** /audio/... ichida statik fayl yoki to'liq URL */
-  src: string
-  /** Kesoncha (mp3/wav) — fayl mavjud bo'lsa */
-  fileAvailable: boolean
-  source: AudioSourceKind
-  /** Manba nomi, masalan "Loyihada original yaratilgan" */
-  attribution: string
-  license: string
-  transcript: TranscriptSegment[]
-  /** Offline rejimda keshlashga ruxsat */
-  offlineAllowed: boolean
-  level: CefrLevel
-  title: string
-  /** sekunda, taxminiy — audio borida */
-  durationSec?: number
-}
-
-export type AudioSourceKind =
-  | 'original' /* loyihada biz yaratgan audio */
-  | 'public-domain'
-  | 'cc' /* CC lisenziyali tashqi manba */
-  | 'generated-tts' /* sintez qilingan, rasmiy emas */
-  | 'missing' /* audio yo'q — pleyer ko'rsatilmaydi */
-
-export interface TranscriptSegment {
-  start: number
-  end: number
-  text: string
-}
-
-/** Talaffuz uchun audio (so'z darajasida). */
-export interface PronunciationSource {
-  kind: 'audio-file' | 'browser-tts'
-  /** kind === 'audio-file' bo'lsa fayl yo'li */
-  src?: string
-  /** TTS uchun to'g'ri aytiladigan matn, masalan "record (verb)" */
-  ttsText?: string
-  lang?: string
-}
-
-/** --------------------------- MASHQLAR --------------------------- */
-
-export type ExerciseKind =
-  | 'multiple-choice'
-  | 'true-false-notgiven'
-  | 'matching'
-  | 'gap-fill'
-  | 'word-order'
-  | 'translation'
-
-interface ExerciseBase {
-  id: string
-  /** Foydalanuvchiga ko'rsatiladigan topshiriq (o'zbekcha) */
-  instructionUz: string
-  level: CefrLevel
+  exerciseId: string
   skill: Skill
-  /** Javobdan keyin ko'rsatiladigan izoh (o'zbekcha) */
-  explanationUz: string
-  /** Qiyinlik 1..5 — moslashtirilgan mashq tanlash uchun */
+  level: CefrLevel
+  correct: boolean
+  partial: number
   difficulty: number
-  tags?: string[]
+  secondsSpent: number
+  source: AttemptSource
+  answerGiven: string
+  at: number
 }
 
-export interface MultipleChoiceExercise extends ExerciseBase {
-  kind: 'multiple-choice'
-  passageId?: string
-  /** Matn iqtibosi — savol matnga bog'liq bo'lsa ko'rsatiladi */
-  passageExcerpt?: string
-  question: string
-  options: string[]
-  /** options ichidagi indeks */
-  answerIndex: number
-}
-
-export interface TrueFalseNotGivenExercise extends ExerciseBase {
-  kind: 'true-false-notgiven'
-  passageId?: string
-  /** Matn iqtibosi — matn o'quvchi ko'zinda bo'lmasa shu yerda ko'rsatiladi */
-  passageExcerpt?: string
-  statement: string
-  answer: 'true' | 'false' | 'notgiven'
-  /** Matnda qaysi qism asos bo'ldi (javobdan keyin ko'rsatiladi) */
-  evidence?: string
-}
-
-export interface MatchingExercise extends ExerciseBase {
-  kind: 'matching'
-  pairs: { left: string; right: string }[]
-}
-
-export interface GapFillExercise extends ExerciseBase {
-  kind: 'gap-fill'
-  /** Bo'shliq ___ bilan belgilanadi */
+export interface WritingSubmission {
+  id: string
+  taskId: string
   text: string
-  answers: string[]
-  /** Kiritishni qabul qilish qoidalari */
-  acceptAlternatives?: string[][]
-  /** Foydalanuvchiga ko'rsatiladigan variantlar (bank) */
-  wordBank?: string[]
-  caseSensitive?: boolean
+  wordCount: number
+  /** Yozishga sarflangan sekund (taymerdan) */
+  secondsSpent: number
+  /** rule-based va AI tahlili bitta strukturada */
+  analysis: WritingAnalysis | null
+  /** Qayta yozish versiyalari shu ustuma orqali bog'lanadi */
+  supersedesId: string | null
+  createdAt: number
 }
 
-export interface WordOrderExercise extends ExerciseBase {
-  kind: 'word-order'
-  /** To'g'ri joylashgan so'zlar */
-  answer: string[]
-  /** Aralashtirilgan variantlar */
-  bank: string[]
-  noteUz?: string
+export interface WritingAnalysis {
+  engine: 'rule-based' | 'ai'
+  criteriaScores: Record<CoreCriterionKey, number> // 0..5
+  errors: { excerpt: string; kind: string; correction: string; whyUz: string }[]
+  strengthsUz: string[]
+  weaknessesUz: string[]
+  suggestionsUz: string[]
+  wordCount: number
 }
 
-export interface TranslationExercise extends ExerciseBase {
-  kind: 'translation'
-  source: string
-  sourceLang: 'en' | 'uz'
-  /** Qabul qilinadigan javoblar (maydon to'ldirish) */
-  accepted: string[]
-}
-
-export type Exercise =
-  | MultipleChoiceExercise
-  | TrueFalseNotGivenExercise
-  | MatchingExercise
-  | GapFillExercise
-  | WordOrderExercise
-  | TranslationExercise
-
-/** --------------------------- GRAMMATIKA --------------------------- */
-
-export interface GrammarTopic {
-  id: string
-  titleUz: string
-  titleEn: string
-  level: CefrLevel
-  explanationUz: string[]
-  formula: { form: string; noteUz?: string }[]
-  examples: { en: string; uz: string }[]
-  /** Ijobiy / inkor / so'roq shakllari — tegishli bo'lsa */
-  forms?: { affirmative?: string[]; negative?: string[]; question?: string[] }
-  /** 5–10 ta amaliy mashq */
-  exercises: Exercise[]
-  commonMistakes?: { wrong: string; right: string; whyUz: string }[]
-}
-
-/** --------------------------- O'QISH --------------------------- */
-
-export interface ReadingPassage {
-  id: string
-  title: string
-  level: CefrLevel
-  /** Taxminiy o'qish vaqti (daqiqa) */
-  estMinutes: number
-  /** Original — biz yozgan matn; rasmiy imtihon savoli deb atalmaydi */
-  provenance: 'original' | 'adapted'
-  paragraphs: string[]
-  glossary?: { word: string; uz: string }[]
-  exercises: Exercise[]
-}
-
-/** --------------------------- TINGLASH --------------------------- */
-
-export interface ListeningTask {
-  id: string
-  title: string
-  level: CefrLevel
-  audio: AudioAsset
-  /** Transkript qachon ruxsat etiladi (mashq qoidalari) */
-  transcriptPolicy: 'never-until-checked' | 'after-first-listen' | 'always'
-  exercises: Exercise[]
-}
-
-/** --------------------------- YOZISH --------------------------- */
-
-export type WritingGenre =
-  | 'email'
-  | 'message'
-  | 'essay'
-  | 'story'
-  | 'form'
-  | 'paragraph'
-  | 'report'
-
-export interface WritingTask {
-  id: string
-  level: CefrLevel
-  genre: WritingGenre
-  promptEn: string
-  instructionUz: string
-  minWords: number
-  maxWords: number
-  /** Tavsiya etilgan daqiqa */
-  minutes: number
-  /** Baholash mezonlari (CEFR uslubida) */
-  criteria: CoreCriterion[]
-  checklistUz?: string[]
-  /** Rule-based tekshiruv uchun kalit so'zlar / strukturaviy talablar */
-  mustInclude?: { pattern: string; whyUz: string }[]
-  modelAnswerEn?: string
-}
-
-export type CoreCriterion =
+export type CoreCriterionKey =
   | 'task_achievement'
   | 'coherence'
   | 'lexical_resource'
   | 'grammatical_range'
   | 'accuracy'
 
-/** --------------------------- GAPIRISH --------------------------- */
-
-export interface SpeakingTask {
+export interface SpeakingSession {
   id: string
-  level: CefrLevel
-  topicUz: string
-  questionEn: string
-  hintUz?: string
-  minSeconds: number
-  targetSeconds: number
-  /** Matnli muqobil topshiriq (audio ishlamasa) */
-  textAlternative: string
-  followUpsEn?: string[]
+  taskId: string
+  /** Audio faqat foydalanuvchi roziligi bilan saqlanadi (serverga yuborilmaydi) */
+  audioBlobStored: boolean
+  durationSec: number
+  transcript: string | null
+  transcriptionEngine: 'browser-speech' | 'ai' | 'none'
+  analysis: SpeakingAnalysis | null
+  textAnswer: string | null
+  createdAt: number
 }
 
-/** --------------------- KUNLIK / BO'LIM TESTLARI --------------------- */
-
-export interface SectionTest {
-  id: string
-  level: CefrLevel
-  section: 'vocabulary' | 'grammar' | 'reading' | 'listening' | 'writing' | 'speaking'
-  titleUz: string
-  passScore: number
-  exercises: Exercise[]
-}
-
-/** --------------------------- KUN REJASI --------------------------- */
-
-export interface DailyPlanDay {
-  id: string
-  level: CefrLevel
-  /** 1..7 — daraja ichidagi kun raqami */
-  dayNumber: number
-  titleUz: string
-  goalUz: string
-  sections: DaySection[]
-  /** Kun yakuniy testi (ixtiyoriy bo'lim) */
-  sectionTest?: SectionTest
-}
-
-export interface DaySection {
-  skill: Skill
-  minutes: number
-  /** Vocab uchun so'z id'lari; boshqalar uchun kontent id'lari */
-  itemIds: string[]
-  titleUz: string
-}
-
-/** --------------------------- MOCK EXAM --------------------------- */
-
-export interface MockExamSectionSpec {
-  id: string
-  skill: CoreSkill
-  titleEn: string
-  titleUz: string
-  minutes: number
-  /** Rasmiy format manbasi tekshirilganmi */
-  formatVerified: boolean
-  formatNote: string
-  exercises: Exercise[]
-  /** Writing / Speaking uchun topshiriqlar */
-  writingTask?: WritingTask
-  speakingTask?: SpeakingTask
-  audio?: AudioAsset
-}
-
-export interface MockExamSpec {
-  id: string
-  titleUz: string
-  level: CefrLevel
-  descriptionUz: string
-  /** "mashq uchun yaratilgan namuna" — rasmiy savol emas */
+export interface SpeakingAnalysis {
+  engine: 'rule-based' | 'ai'
+  fluency: number // 0..5, pauza/tezlik asosida
+  lexis: number
+  grammar: number
+  length: number
+  wordCount: number
+  wpm: number
+  notesUz: string[]
   disclaimerUz: string
-  sections: MockExamSectionSpec[]
+}
+
+export interface MockExamAttempt {
+  id: string
+  examId: string
+  /** Bo'lim idsi -> javoblar va natija */
+  sections: {
+    sectionId: string
+    skill: CoreSkill
+    answered: number
+    total: number
+    score: number | null
+    startedAt: number
+    finishedAt: number
+    exerciseResults: Record<string, { correct: boolean; given: string }>
+  }[]
+  totalScore: number | null
+  /** Speaking bahosi rasmiy imtihon natijasi emas */
+  speakingAdvisory: string
+  completedAt: number
+}
+
+export interface DayActivity {
+  date: string // YYYY-MM-DD (lokal)
+  seconds: number
+  attempts: number
+  correct: number
+  newWords: number
+  reviewedWords: number
+  skills: Partial<Record<Skill, number>> // skill -> seconds
+}
+
+import type { CefrLevel, CoreSkill, Skill } from '../content/types'
+import type { SrsState } from './srs'
+import type { TimerState } from './timer'
+
+export interface UserSettings {
+  /** Kundalik reja daqiqalari (boshlang'ich: 90) */
+  dailyMinutes: number
+  currentLevel: CefrLevel
+  targetLevel: CefrLevel
+  examDate: string | null // YYYY-MM-DD
+  /** Kundalik taqsimot — moslashuvchan, zaif ko'nikmalarga qarab o'zgaradi */
+  allocation: Record<Skill, number>
+  theme: 'light' | 'dark' | 'system'
+  /** AI xizmati ulanganmi (sozlamadan ham o'chiriladi) */
+  aiEnabled: boolean
+}
+
+export const DEFAULT_ALLOCATION: Record<Skill, number> = {
+  vocabulary: 10,
+  grammar: 15,
+  reading: 15,
+  listening: 15,
+  writing: 20,
+  speaking: 15
+}
+
+export const DEFAULT_SETTINGS: UserSettings = {
+  dailyMinutes: 90,
+  currentLevel: 'A1',
+  targetLevel: 'C1',
+  examDate: null,
+  allocation: { ...DEFAULT_ALLOCATION },
+  theme: 'system',
+  aiEnabled: true
+}
+
+export type AttemptSource = 'practice' | 'section_test' | 'mock_exam' | 'diagnostic'
+
+export interface AttemptRecord {
+  id: string
+  exerciseId: string
+  skill: Skill
+  level: CefrLevel
+  correct: boolean
+  partial: number
+  difficulty: number
+  secondsSpent: number
+  source: AttemptSource
+  answerGiven: string
+  at: number
+}
+
+export interface WritingSubmission {
+  id: string
+  taskId: string
+  text: string
+  wordCount: number
+  /** Yozishga sarflangan sekund (taymerdan) */
+  secondsSpent: number
+  /** rule-based va AI tahlili bitta strukturada */
+  analysis: WritingAnalysis | null
+  /** Qayta yozish versiyalari shu ustuma orqali bog'lanadi */
+  supersedesId: string | null
+  createdAt: number
+}
+
+export interface WritingAnalysis {
+  engine: 'rule-based' | 'ai'
+  criteriaScores: Record<CoreCriterionKey, number> // 0..5
+  errors: { excerpt: string; kind: string; correction: string; whyUz: string }[]
+  strengthsUz: string[]
+  weaknessesUz: string[]
+  suggestionsUz: string[]
+  wordCount: number
+}
+
+export type CoreCriterionKey =
+  | 'task_achievement'
+  | 'coherence'
+  | 'lexical_resource'
+  | 'grammatical_range'
+  | 'accuracy'
+
+export interface SpeakingSession {
+  id: string
+  taskId: string
+  /** Audio faqat foydalanuvchi roziligi bilan saqlanadi (serverga yuborilmaydi) */
+  audioBlobStored: boolean
+  durationSec: number
+  transcript: string | null
+  transcriptionEngine: 'browser-speech' | 'ai' | 'none'
+  analysis: SpeakingAnalysis | null
+  textAnswer: string | null
+  createdAt: number
+}
+
+export interface SpeakingAnalysis {
+  engine: 'rule-based' | 'ai'
+  fluency: number // 0..5, pauza/tezlik asosida
+  lexis: number
+  grammar: number
+  length: number
+  wordCount: number
+  wpm: number
+  notesUz: string[]
+  disclaimerUz: string
+}
+
+export interface MockExamAttempt {
+  id: string
+  examId: string
+  /** Bo'lim idsi -> javoblar va natija */
+  sections: {
+    sectionId: string
+    skill: CoreSkill
+    answered: number
+    total: number
+    score: number | null
+    startedAt: number
+    finishedAt: number
+    exerciseResults: Record<string, { correct: boolean; given: string }>
+  }[]
+  totalScore: number | null
+  /** Speaking bahosi rasmiy imtihon natijasi emas */
+  speakingAdvisory: string
+  completedAt: number
+}
+
+export interface DayActivity {
+  date: string // YYYY-MM-DD (lokal)
+  seconds: number
+  attempts: number
+  correct: number
+  newWords: number
+  reviewedWords: number
+  skills: Partial<Record<Skill, number>> // skill -> seconds
+}
+
+export interface BadgeAward {
+  id: string
+  titleUz: string
+  descriptionUz: string
+  at: number
+  type: 'milestone' | 'streak' | 'completion'
+}
+
+export interface AppData {
+  version: number
+  userId: string
+  settings: UserSettings
+  /** user_vocabulary: vocabId -> SRS holati */
+  srs: Record<string, SrsState>
+  attempts: AttemptRecord[]
+  activity: Record<string, DayActivity>
+  writing: WritingSubmission[]
+  speaking: SpeakingSession[]
+  mockAttempts: MockExamAttempt[]
+  xp: number
+  streak: { count: number; lastDate: string | null; freezeUsed?: number }
+  badges: BadgeAward[]
+  /** O'quv yo'li: tugatilgan kunlar va bo'lim testlari */
+  path: {
+    completedDays: string[] // dayId
+    passedTests: Record<string, number> // sectionTestId -> score
+    /** Joriy bosqich: tavsiya qilingan keyingi kun */
+    currentDayId: string
+  }
+  /** Diagnostika natijasi (agar topshirilgan bo'lsa) */
+  diagnostic: { at: number; level: CefrLevel | null; labelUz: string; confidence: number } | null
+  timer: TimerState
+  updatedAt: number
+}
+
+export const APP_DATA_VERSION = 1
+
+export function emptyData(userId: string): AppData {
+  return {
+    version: APP_DATA_VERSION,
+    userId,
+    settings: { ...DEFAULT_SETTINGS },
+    srs: {},
+    attempts: [],
+    activity: {},
+    writing: [],
+    speaking: [],
+    mockAttempts: [],
+    xp: 0,
+    streak: { count: 0, lastDate: null },
+    badges: [],
+    path: { completedDays: [], passedTests: {}, currentDayId: 'a1-day-01' },
+    diagnostic: null,
+    timer: { elapsedSec: 0, startedAt: null, sessionId: null, skill: null, updatedAt: Date.now() },
+    updatedAt: Date.now(),
+  }
+}
+
+/**
+ * Adaptiv Mantiq uchun qo'shimcha
+ */
+
+export interface WeakPoint {
+  skill: Skill
+  exerciseId: string
+  count: number
+  lastSeen: number
+}
+
+export interface MistakeHistory {
+  id: string
+  exerciseId: string
+  skill: Skill
+  wrongAnswer: string
+  correctAnswer: string
+  explanationUz: string
+  at: number
+}
+
+export interface AppDataExtended extends AppData {
+  /** Zaif nuqtalar ro'yxati */
+  weakPoints: WeakPoint[]
+  /** Xatolar tarixi */
+  mistakeHistory: MistakeHistory[]
+}
+
+export interface SrsState {
+  nextReview: number // Timestamp
+  interval: number // Sekundalar
+  easeFactor: number // 2.5 - 3.0
+  reviews: number
+  stability: number
+  lastReview: number | null
+  repetition: number // 0: new, 1: learning, 2: reviewing
+}
+
+export interface VocabularyItem {
+  id: string
+  word: string
+  translationUz: string
+  explanationEn: string
+  ipa: string
+  pronunciation: { kind: 'browser-tts' | 'audio' | 'none'; ttsText?: string; audioUrl?: string; lang?: string }
+  exampleEn: string
+  exampleUz: string
+  pos: string
+  topic: string
+  level: CefrLevel
+  relations: { synonym?: string[]; antonym?: string[] }
+  difficulty?: number // 1-5
+  srs_metadata?: {
+    last_seen: number
+    mastered: boolean
+  }
+}
+
+
+export interface AppData {
+  version: number
+  userId: string
+  settings: UserSettings
+  /** user_vocabulary: vocabId -> SRS holati */
+  srs: Record<string, SrsState>
+  attempts: AttemptRecord[]
+  activity: Record<string, DayActivity>
+  writing: WritingSubmission[]
+  speaking: SpeakingSession[]
+  mockAttempts: MockExamAttempt[]
+  xp: number
+  streak: { count: number; lastDate: string | null; freezeUsed?: number }
+  badges: BadgeAward[]
+  /** O'quv yo'li: tugatilgan kunlar va bo'lim testlari */
+  path: {
+    completedDays: string[] // dayId
+    passedTests: Record<string, number> // sectionTestId -> score
+    /** Joriy bosqich: tavsiya qilingan keyingi kun */
+    currentDayId: string
+  }
+  /** Diagnostika natijasi (agar topshirilgan bo'lsa) */
+  diagnostic: { at: number; level: CefrLevel | null; labelUz: string; confidence: number } | null
+  timer: TimerState
+  updatedAt: number
+}
+
+export const APP_DATA_VERSION = 1
+
+export function emptyData(userId: string): AppData {
+  return {
+    version: APP_DATA_VERSION,
+    userId,
+    settings: { ...DEFAULT_SETTINGS },
+    srs: {},
+    attempts: [],
+    activity: {},
+    writing: [],
+    speaking: [],
+    mockAttempts: [],
+    xp: 0,
+    streak: { count: 0, lastDate: null },
+    badges: [],
+    path: { completedDays: [], passedTests: {}, currentDayId: 'a1-day-01' },
+    diagnostic: null,
+    timer: { elapsedSec: 0, startedAt: null, sessionId: null, skill: null, updatedAt: Date.now() },
+    updatedAt: Date.now(),
+  }
+}
+
+/** --------------------------- Adaptiv Mantiq uchun qo'shimcha --------------------------- */
+
+/** Foydalanuvchi ko'p xato qilgan mavzular (skill va exerciseId bo'yichi) */
+export interface WeakPoint {
+  skill: Skill
+  exerciseId: string
+  count: number
+  lastSeen: number
+}
+
+/** O'quvchi xatolarining tarixi */
+export interface MistakeHistory {
+  id: string
+  exerciseId: string
+  skill: Skill
+  wrongAnswer: string
+  correctAnswer: string
+  explanationUz: string
+  at: number
+}
+
+export interface AppDataExtended extends AppData {
+  /** Zaif nuqtalar ro'yxati */
+  weakPoints: WeakPoint[]
+  /** Xatolar tarixi */
+  mistakeHistory: MistakeHistory[]
+}
+
+/**
+ * SRS (Spaced Repetition System) holati
+ * SM-2 algoritmi asosida qurilgan
+ */
+export interface SrsState {
+  nextReview: number // Timestamp
+  interval: number // Sekundalar
+  easeFactor: number // 2.5 - 3.0
+  reviews: number
+  stability: number
+  lastReview: number | null
+  repetition: number // 0: new, 1: learning, 2: reviewing
+}
+
+export interface VocabularyItem {
+  id: string
+  word: string
+  translationUz: string
+  explanationEn: string
+  ipa: string
+  pronunciation: { kind: 'browser-tts' | 'audio' | 'none'; ttsText?: string; audioUrl?: string; lang?: string }
+  exampleEn: string
+  exampleUz: string
+  pos: string
+  topic: string
+  level: CefrLevel
+  relations: { synonym?: string[]; antonym?: string[] }
+  difficulty?: number // 1-5
+  srs_metadata?: {
+    last_seen: number
+    mastered: boolean
+  }
 }
