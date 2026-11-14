@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Gapirish ekrani: ro'yxat (ARG_ID yo'q) yoki bitta mavzu + JAVOB.
+    Ikki javob yo'li bir ekranda: ovoz (MediaRecorder — fayl faqat qurilmada,
+    `audioBlobStored = false`) va matn (mikrofon/nutqni tanib olish
+    ishlamaganda halol muqobil). Tahlil natijalari `speakingResultRows` ga
+    `Rows` orqali qo'shiladi. Qahramon HAR ekranda.
+-->
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/speakingScroll"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/screen_pad">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/speakingTitle"
+                    style="@style/Text.Aea.Title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/speakingSubtitle"
+                    style="@style/Text.Aea.Small"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp" />
+            </LinearLayout>
+
+            <com.dadaxon.aienglishacademy.ui.MascotView
+                android:id="@+id/speakingMascot"
+                android:layout_width="@dimen/mascot_md"
+                android:layout_height="@dimen/mascot_md"
+                android:contentDescription="@string/mascot_alt" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/speakingRows"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+
+        <!-- ===================== Javob (faqat mavzu holatida) =========== -->
+        <LinearLayout
+            android:id="@+id/speakingFormBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_m"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <!-- Yozish taymeri — o'lchangan sekund (taxmin emas) -->
+            <TextView
+                android:id="@+id/speakingTime"
+                style="@style/Text.Aea.Number"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/speakingRecord"
+                style="@style/Widget.Aea.Button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/gap_s"
+                android:text="@string/speaking_record" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/speakingStop"
+                style="@style/Widget.Aea.Button.Outlined"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/gap_s"
+                android:text="@string/speaking_stop"
+                android:visibility="gone" />
+
+            <!-- Nutqni tanib olish (RecognizerIntent) — bo'lmasa halol aytiladi -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/speakingRecognize"
+                style="@style/Widget.Aea.Button.Outlined"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/gap_s"
+                android:text="@string/speaking_mode_audio" />
+
+            <TextView
+                android:id="@+id/speakingSpeechNote"
+                style="@style/Text.Aea.Small"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:visibility="gone" />
+
+            <!-- Yozilgan audio: davomiylik + qayta tinglash -->
+            <LinearLayout
+                android:id="@+id/speakingAudioRow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/gap_s"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/speakingAudioLabel"
+                    style="@style/Text.Aea.Body"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/speakingPlay"
+                    style="@style/Widget.Aea.Button.Text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/speaking_play" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/speakingTextAlt"
+                style="@style/Text.Aea.Section"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/gap_m"
+                android:text="@string/speaking_text_alt" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.Aea.Field"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/gap_s"
+                android:hint="@string/speaking_text_hint">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/speakingField"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="top"
+                    android:inputType="textMultiLine|textCapSentences"
+                    android:minLines="4" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                android:id="@+id/speakingWords"
+                style="@style/Text.Aea.Small"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/speakingAnalyze"
+                style="@style/Widget.Aea.Button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/gap_m"
+                android:text="@string/speaking_analyze" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/speakingResultRows"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+
+        <TextView
+            android:id="@+id/speakingEmpty"
+            style="@style/Text.Aea.Small"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_m"
+            android:visibility="gone" />
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

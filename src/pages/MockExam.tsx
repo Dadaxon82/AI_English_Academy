@@ -12,10 +12,11 @@ import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Button, Card, Chip, EmptyState, InfoBanner, LoadingBlock, Modal, ProgressRing, Spinner } from '../components/ui'
 import ExerciseRunner from '../components/ExerciseRunner'
-import { useStore } from '../lib/store'
+import { useStore } from '../lib/storeContext'
 import { getBundle } from '../content'
 import { checkAnswer } from '../lib/check'
 import { audioItem, loadAudioManifest, hasAudio } from '../lib/audio'
+import { clampDelta, formatDuration } from '../lib/timer'
 import type { MockExamSectionSpec } from '../content/types'
 
 interface SectionProgress {
@@ -24,7 +25,26 @@ interface SectionProgress {
   results: Record<string, { correct: boolean; given: string }>
   startedAt: number
   finishedAt: number | null
+  /** Yopilgan oraliqlarda bo'lim ochiq turgan sekundlar */
   secondsUsed: number
+  /** Bo'lim hozir ochiq bo'lsa — ochilgan payt; aks holda null */
+  activeSince: number | null
+}
+
+/**
+ * Bo'limda sarflangan vaqt = yopilgan oraliqlar + hozir ochiq oraliq.
+ *
+ * ESKI BUG: vaqt "startedAt → finishedAt" ayirmasi edi. Erta yakunlanganda
+ * ochilmagan bo'limlar ham butun imtihon vaqtini olardi (kundalik hisob bir
+ * necha barobar oshardi), bo'limga qaytilganda esa taymer boshidan boshlanardi.
+ */
+function usedSeconds(p: SectionProgress, now = Date.now()): number {
+  return p.secondsUsed + (p.activeSince !== null ? Math.floor(clampDelta(now - p.activeSince) / 1000) : 0)
+}
+
+/** Ochiq oraliqni yopish (bo'limdan chiqish yoki yakunlash). */
+function pauseSection(p: SectionProgress, now: number): SectionProgress {
+  return p.activeSince === null ? p : { ...p, secondsUsed: usedSeconds(p, now), activeSince: null }
 }
 
 /** Jarayon holati — refresh'da yo'l qo'ymaslik uchun shu kalitga saqlanadi. */
@@ -68,9 +88,22 @@ export default function MockExam() {
   }, [])
 
   // Saqlangan jarayon borimi? (sahifani yangilasak imtihon yo'qolmasin)
-  useEffect(() => {
-    if (exam) setSaved(loadSavedSession(exam.id))
-  }, [exam])
+  // Imtihon (daraja) almashsa render paytida qayta o'qiladi — React'ning
+  // "prop o'zgarsa holatni moslash" namuni, effect'siz.
+  const examId = exam?.id ?? null
+  const [savedFor, setSavedFor] = useState<string | null>(null)
+  if (examId !== savedFor) {
+    setSavedFor(examId)
+    setSaved(examId ? loadSavedSession(examId) : null)
+  }
+
+  // Bo'lim taymeri — vaqt tugasa bo'lim avtomatik yakunlanadi
+  const [left, setLeft] = useState(0)
+  const tickRef = useRef<number | null>(null)
+
+  // Har 15 soniyada ham saqlanadi: sahifa yangilansa, oxirgi saqlashgacha
+  // sarflangan vaqt yo'qolmaydi (`resume` uni `savedAt` gacha hisoblaydi).
+  const saveTick = Math.floor(left / 15)
   useEffect(() => {
     if (!running || progress.length === 0 || !exam) return
     try {
@@ -78,46 +111,32 @@ export default function MockExam() {
     } catch {
       /* kvota — jimgina o'tamiz */
     }
-  }, [running, progress, sectionIdx, exam])
+  }, [running, progress, sectionIdx, exam, saveTick])
 
   const sections = exam?.sections ?? []
   const section = sections[sectionIdx]
   const prog = progress.find((p) => p.sectionId === section?.id)
 
-  // Bo'lim taymeri — vaqt tugasa bo'lim avtomatik yakunlanadi
-  const [left, setLeft] = useState(0)
-  const tickRef = useRef<number | null>(null)
-  useEffect(() => {
-    if (!running || !section || !prog || prog.finishedAt) return
-    const end = prog.startedAt + section.minutes * 60_000
-    const update = () => {
-      const l = Math.max(0, Math.ceil((end - Date.now()) / 1000))
-      setLeft(l)
-      if (l === 0) finishSection()
-    }
-    update()
-    tickRef.current = window.setInterval(update, 1000)
-    return () => {
-      if (tickRef.current) window.clearInterval(tickRef.current)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [running, sectionIdx, progress])
 
-  // Ma'lumot yuklanayotganda "topilmadi" ko'rsatmaslik kerak — aks holda
-  // sahifa ochilganda bir lahza soxta bo'sholat ko'rinadi.
-  if (!ready) return <LoadingBlock label="Mock Exam ma'lumotlari yuklanmoqda…" />
-  if (!exam) {
-    return <EmptyState title="Mock Exam topilmadi" body="Uşbu daraja uçun namunaviy imtihon hali mavjud emas." />
-  }
 
   const start = () => {
-    const now = Date.now()
+    const now = nowMs()
     try {
       localStorage.removeItem(SESSION_KEY)
     } catch {
       /* e'tibor bermang */
     }
-    setProgress(sections.map((s) => ({ sectionId: s.id, idx: 0, results: {}, startedAt: now, finishedAt: null, secondsUsed: 0 })))
+    setProgress(
+      sections.map((s, i) => ({
+        sectionId: s.id,
+        idx: 0,
+        results: {},
+        startedAt: now,
+        finishedAt: null,
+        secondsUsed: 0,
+        activeSince: i === 0 ? now : null,
+      })),
+    )
     setSectionIdx(0)
     setRunning(true)
     setFinished(null)
@@ -138,21 +157,36 @@ export default function MockExam() {
       setSaved(null)
       return
     }
-    setProgress(s.progress)
-    setSectionIdx(Math.max(0, Math.min(sections.length - 1, s.sectionIdx)))
+    const idx = Math.max(0, Math.min(sections.length - 1, s.sectionIdx))
+    const currentId = sections[idx]?.id
+    const now = nowMs()
+    setProgress(
+      s.progress.map((p) => {
+        // Sahifa yopiq turgan vaqt hisoblanmaydi: oxirgi saqlashgacha ochiq
+        // turgan qism qo'shiladi, joriy bo'lim esa hozirdan qayta ochiladi.
+        const since = p.activeSince ?? null
+        const credited = since !== null ? Math.floor(clampDelta(s.savedAt - since) / 1000) : 0
+        const base = { ...p, secondsUsed: (p.secondsUsed ?? 0) + credited, activeSince: null }
+        return p.sectionId === currentId && !p.finishedAt ? { ...base, activeSince: now } : base
+      }),
+    )
+    setSectionIdx(idx)
     setRunning(true)
     setFinished(null)
   }
 
-  // Bo'limga o'tish (chip orqali). Har bo'lim vaqti SHU BO'LIM OCHILGAN
-  // paytdan yuradi — `start()` barcha bo'limlarga bitta startedAt beradi,
-  // aks holda keyin ochilgan bo'limlarning taymeri allaqachon tugagan
-  // bo'lib, 1 soniyada avtomatik yopilardi (finishSection ham shu qoidada).
+  // Bo'limga o'tish (chip orqali): chiqilgan bo'lim pauzaga, kirilgan
+  // (tugamagan) bo'lim ochiq holatga o'tadi — vaqt faqat ochiq bo'limga yoziladi.
   const gotoSection = (i: number) => {
-    const s = sections[i]
-    if (!s) return
-    const now = Date.now()
-    setProgress((ps) => ps.map((p) => (p.sectionId === s.id && !p.finishedAt ? { ...p, startedAt: now } : p)))
+    const target = sections[i]
+    if (!target || i === sectionIdx) return
+    const now = nowMs()
+    setProgress((ps) =>
+      ps.map((p) => {
+        if (p.sectionId === target.id) return p.finishedAt ? p : { ...p, activeSince: now }
+        return pauseSection(p, now)
+      }),
+    )
     setSectionIdx(i)
   }
 
@@ -172,25 +206,25 @@ export default function MockExam() {
 
   const finishSection = () => {
     if (!section || !prog || prog.finishedAt) return
-    const now = Date.now()
-    setProgress((ps) => ps.map((p) => (p.sectionId === section.id ? { ...p, finishedAt: now, secondsUsed: Math.round((now - p.startedAt) / 1000) } : p)))
+    const now = nowMs()
     const nextIdx = sections.findIndex((s, i) => i > sectionIdx && !progress.some((p) => p.sectionId === s.id && p.finishedAt))
-    // KEYINGI BO'LIM taymeri shu paytdan yuradi: start() barcha bo'limlarga
-    // bitta `startedAt` beradi, aks holda 2–4-bo'limlar ochilganda taymer
-    // allaqachon tugagan bo'lardi va 1 soniyada avtomatik yopilardi.
-    if (nextIdx > -1) {
-      const nextStart = Date.now()
-      const nextId = sections[nextIdx]!.id
-      setProgress((ps) => ps.map((p) => (p.sectionId === nextId && !p.finishedAt ? { ...p, startedAt: nextStart } : p)))
-      setSectionIdx(nextIdx)
-    }
+    // Keyingi bo'lim shu paytdan ochiq: uning taymeri o'z vaqtidan yuradi.
+    const nextId = nextIdx > -1 ? sections[nextIdx]!.id : null
+    setProgress((ps) =>
+      ps.map((p) => {
+        if (p.sectionId === section.id) return { ...pauseSection(p, now), finishedAt: now }
+        if (p.sectionId === nextId && !p.finishedAt) return { ...p, activeSince: now }
+        return p
+      }),
+    )
+    if (nextIdx > -1) setSectionIdx(nextIdx)
   }
 
   const allDone = () => sections.every((s) => progress.some((p) => p.sectionId === s.id && p.finishedAt))
 
-  const buildAttempt = () => {
+  const buildAttempt = (list: SectionProgress[], now: number) => {
     const secs = sections.map((s) => {
-      const p = progress.find((x) => x.sectionId === s.id)!
+      const p = list.find((x) => x.sectionId === s.id)!
       const total = examExercises(s).length
       // `note:` bilan boshlanadigan yozuvlar — erkin matnli javob (Gapirish
       // bo‘limidagi qoralama). Ular SAVOL EMAS: hisobga, ballga va xatolar
@@ -207,14 +241,15 @@ export default function MockExam() {
         total,
         score,
         startedAt: p.startedAt,
-        finishedAt: p.finishedAt ?? Date.now(),
+        finishedAt: p.finishedAt ?? now,
+        secondsUsed: usedSeconds(p, now),
         exerciseResults: p.results,
       }
     })
     const scored = secs.filter((s) => s.score !== null)
     const totalScore = scored.length ? Math.round(scored.reduce((a, s) => a + (s.score ?? 0), 0) / scored.length) : null
     return {
-      examId: exam.id,
+      examId: exam?.id ?? '',
       sections: secs,
       totalScore,
       speakingAdvisory:
@@ -223,13 +258,17 @@ export default function MockExam() {
   }
 
   const submit = () => {
-    const completed = buildAttempt()
+    const now = nowMs()
+    const completed = buildAttempt(
+      progress.map((p) => pauseSection(p, now)),
+      now,
+    )
     const attempt = actions.addMockAttempt(completed)
     // Bo'limlarda sarflangan vaqt KUNDALIK HISOBGA yoziladi — aks holda Mock
     // imtihon 90 daqiqa o'tirib, Dashboard'da "0/90 daq" bo'lib qolardi.
     // (Dalil/ball skillEvidence()da mockAttempts orqali alloqachon hisoblanadi;
     // shuning uchun bu yerda attempt SANALMAYDI — ikki marta sanash bo'lardi.)
-    actions.recordMockTime(completed.sections.map((s) => ({ skill: s.skill, startedAt: s.startedAt, finishedAt: s.finishedAt })))
+    actions.recordMockTime(completed.sections.map((s) => ({ skill: s.skill, seconds: s.secondsUsed })))
     // Saqlangan jarayon end kerak emas — natija store'da.
     try {
       localStorage.removeItem(SESSION_KEY)
@@ -243,6 +282,28 @@ export default function MockExam() {
   }
 
   // ---------- Yakuniy natijalar ----------
+  useEffect(() => {
+    if (!running || !section || !prog || prog.finishedAt) return
+    const update = () => {
+      const l = Math.max(0, section.minutes * 60 - usedSeconds(prog))
+      setLeft(l)
+      if (l === 0) finishSection()
+    }
+    update()
+    tickRef.current = window.setInterval(update, 1000)
+    return () => {
+      if (tickRef.current) window.clearInterval(tickRef.current)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [running, sectionIdx, progress])
+
+  // Ma'lumot yuklanayotganda "topilmadi" ko'rsatmaslik kerak — aks holda
+  // sahifa ochilganda bir lahza soxta bo'sholat ko'rinadi.
+  if (!ready) return <LoadingBlock label="Mock Exam ma'lumotlari yuklanmoqda…" />
+  if (!exam) {
+    return <EmptyState title="Mock Exam topilmadi" body="Uşbu daraja uçun namunaviy imtihon hali mavjud emas." />
+  }
+
   if (finished) {
     const attempt = data.mockAttempts.find((a) => a.id === finished)
     if (!attempt) return <EmptyState title="Natija topilmadi" body="Imtihon natijasi yuklanmadi. Qaytadan urinib köring." />
@@ -388,6 +449,7 @@ export default function MockExam() {
             total={exList.length}
             checked={(r) => recordResult(section.id, ex.id, r.correct, r.given)}
             onNext={advance}
+            heartFree
           />
         </Card>
       ) : section.writingTask ? (
@@ -512,11 +574,13 @@ function MiniWriting({ taskId, prompt, instruction, onDone }: { taskId: string; 
         <span className="flex-1" />
         <Button
           onClick={() => {
-            actions.addWriting(taskId, text, 0, null)
+            // Bo'sh javob saqlanmaydi: u yozish ko'nikmasiga soxta past ball
+            // (dalil) qo'shardi. Bo'lim baribir yakunlanadi.
+            if (words > 0) actions.addWriting(taskId, text, 0, null)
             onDone()
           }}
         >
-          Saqlaş va bölimni yakunlaş
+          {words > 0 ? "Saqlaş va bölimni yakunlaş" : "Javobsiz yakunlaş"}
         </Button>
       </div>
     </Card>
@@ -538,8 +602,11 @@ function Writing2Note({ textAnswer, onSave, onFinish }: { textAnswer: string; on
 
 // ---------------------- Natijalar ----------------------
 function Results({ exam, attempt, onRetry }: { exam: NonNullable<ReturnType<typeof getBundle>['mockExam']>; attempt: NonNullable<ReturnType<typeof useStore>['data']['mockAttempts'][number]>; onRetry: () => void }) {
-  const strong = attempt.sections.filter((s) => (s.score ?? 0) >= 75).map((s) => s.skill)
-  const weak = attempt.sections.filter((s) => (s.score ?? 0) < 60).map((s) => s.skill)
+  // Baholanmagan bo'limlar (Writing/Speaking — ball yo'q) kuchli ham, zaif ham
+  // deb hisoblanmaydi. ESKI BUG: `null` 0 deb olinib, ular doim "zaif" chiqardi.
+  const scored = attempt.sections.filter((s) => s.score !== null)
+  const strong = scored.filter((s) => (s.score ?? 0) >= 75).map((s) => s.skill)
+  const weak = scored.filter((s) => (s.score ?? 0) < 60).map((s) => s.skill)
 
   const mistakes = attempt.sections.flatMap((s) =>
     Object.entries(s.exerciseResults)
@@ -569,7 +636,7 @@ function Results({ exam, attempt, onRetry }: { exam: NonNullable<ReturnType<type
               <div className="grid gap-0.5">
                 <b>{s.skill}</b>
                 <span className="text-xs muted">
-                  {s.answered}/{s.total} javob · {Math.round(s.finishedAt - s.startedAt) / 1000}s
+                  {s.answered}/{s.total} javob · {formatDuration(s.secondsUsed ?? Math.round((s.finishedAt - s.startedAt) / 1000))}
                 </span>
                 <Chip tone={(s.score ?? 0) >= 75 ? 'ok' : (s.score ?? 0) >= 60 ? 'warn' : 'bad'}>{s.score ?? '—'} ball</Chip>
               </div>
@@ -579,10 +646,10 @@ function Results({ exam, attempt, onRetry }: { exam: NonNullable<ReturnType<type
       </Card>
 
       <Card className="grid gap-2">
-        <h2 className="font-bold">Kuchli va zaif jihatlar</h2>
+        <h2 className="font-bold">Kuçli va zaif jihatlar</h2>
         <div className="grid sm:grid-cols-2 gap-2 text-sm">
           <div className="rounded-xl bg-emerald-50 dark:bg-emerald-900/20 p-3">
-            <b>Kuchli:</b> {strong.length ? strong.join(', ') : 'hozirça yöq'}
+            <b>Kuçli:</b> {strong.length ? strong.join(', ') : 'hozirça yöq'}
           </div>
           <div className="rounded-xl bg-rose-50 dark:bg-rose-900/15 p-3">
             <b>Zaif:</b> {weak.length ? weak.join(', ') : 'jiddiy zaiflik topilmadi'}
@@ -591,7 +658,7 @@ function Results({ exam, attempt, onRetry }: { exam: NonNullable<ReturnType<type
         <InfoBanner>
           <b>Tavsiya:</b>{' '}
           {weak.length
-            ? `Zaif bölimlarni kundalik rejada kuçaytirdik — Progress bölimida yangi taqsimotni körasiz. ${weak.join(', ')} bölimlaridagi maşqlarni takrorlang.`
+            ? `${weak.join(', ')} bölimlaridagi maşqlarni takrorlang. Könikma bahosi 65 dan past va natijalar yetarli bölsa, kundalik reja unga avtomatik köproq vaqt ajratadi — taqsimotni Dashboard va Sozlamalarda körasiz.`
             : 'Umumiy holat yaxşi. Keyingi daraja uçun bölim testlaridan ötişni davom ettiring.'}
         </InfoBanner>
       </Card>
@@ -634,6 +701,7 @@ function Results({ exam, attempt, onRetry }: { exam: NonNullable<ReturnType<type
 }
 
 import { findExercise } from '../content'
+import { nowMs } from '../lib/clock'
 function findEx(id: string) {
   return findExercise(id)
 }

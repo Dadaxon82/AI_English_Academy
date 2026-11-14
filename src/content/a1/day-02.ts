@@ -108,7 +108,7 @@ export const vocabDay2: VocabularyItem[] = [
   {
     id: 'a1-v2-cousin',
     word: 'cousin',
-    translationUz: 'amakivaçça, xolavaçça',
+    translationUz: 'amakivaçça, tagseng',
     explanationEn: 'The son or daughter of your aunt or uncle.',
     ipa: '/ˈkʌzən/',
     pronunciation: { kind: 'browser-tts', ttsText: 'cousin', lang: 'en-US' },
@@ -181,9 +181,9 @@ export const grammarDay2: GrammarTopic = {
   titleEn: 'Possessives: ’s, my / your, and have got',
   level: 'A1',
   explanationUz: [
-    'Narsa kimniki ekanini aytiş uçun ingliz tilida ismga ’s qöşiladi: Bekzod’s book (Bekzodning kitobi), my sister’s bag (singlimning sumkasi). Agar egalardan bir neçta bölsa va ular bir narsaga tegişli bölsa, ’s oxirgi ismga qöyiladi: Aziz and Malika’s home. Egalik “of” bilan ham aytiladi, lekin A1 darajasida ’s eng tabiiy yöldir.',
+    'Narsa kimniki ekanini aytiş uçun ingliz tilida ismga ’s qöşiladi: Bekzod’s book (Bekzodning kitobi), my sister’s bag (singilmning sumkasi). Agar egalardan bir neçta bölsa va ular bir narsaga tegişli bölsa, ’s oxirgi ismga qöyiladi: Aziz and Malika’s home. Egalik “of” bilan ham aytiladi, lekin A1 darajasida ’s eng tabiiy yöldir.',
     'my, your, his, her, our, their sözlari “kimniki” degan savolga javob beradi va har doim ot oldida keladi: my book, your pen, his name, her hair, our class, their friends. Bu sözlar özi egalikni bildiradi, ularga ’s qöşilmaydi: “my book” (heç qaçon “my’s book” emas). Javobda otni takrorlamaslik ham mumkin: “Is this your pen?” — “Yes, it is my pen.”',
-    'Biror narsaga ega ekanlikni have got bilan ifodalaymiz: I have got a bike. She has got two brothers. Uçinçi şaxs yagonada has işlatilişini unutmang. Inkor: I haven’t got a phone. She hasn’t got a bike. Söroq: Have you got a pen? Has he got a red bag? Qisqartmalar sözlaşuvda köp: I’ve got, she’s got, he hasn’t got.',
+    'Biror narsaga ega ekanlikni have got bilan aytkazamiz: I have got a bike. She has got two brothers. Uçinçi şaxs yagonada has işlatilişini unutmang. Inkor: I haven’t got a phone. She hasn’t got a bike. Söroq: Have you got a pen? Has he got a red bag? Qisqartmalar sözlaşuvda köp: I’ve got, she’s got, he hasn’t got.',
     'Odamni tasvirlaşda ham have got işlatiladi: He has got short black hair. She has got blue eyes. Sifatlar ot oldida keladi va köplikda özgarmaydi: two tall boys (tall söziga -lar qöşilmaydi). Kasb, yoş va kayfiyat esa to be fe’li bilan aytiladi: She is a teacher. He is eight. Bu ikki tuzilmani aralaştirmang: egalik — have got, sifat, kasb va yoş — to be.',
   ],
   formula: [
@@ -270,7 +270,7 @@ export const grammarDay2: GrammarTopic = {
     {
       id: 'a1-ex-g2-05',
       kind: 'multiple-choice',
-      instructionUz: '“Sizning singlingiz bormi?” degan savolning töğri şaklini belgilang.',
+      instructionUz: '“Sizning singilingiz bormi?” degan savolning töğri şaklini belgilang.',
       level: 'A1',
       skill: 'grammar',
       explanationUz: 'Have you got a sister? — Yes, I have. / No, I haven’t.',
@@ -322,7 +322,7 @@ export const grammarDay2: GrammarTopic = {
     {
       id: 'a1-ex-g2-08',
       kind: 'word-order',
-      instructionUz: 'Narsa kimniki ekanligini sörovçi savolni tuzing (“Bu kimning kitobi?”).',
+      instructionUz: 'Kimningdur ekanligini sörovçi savolni tuzing (“Bu kimning kitobi?”).',
       level: 'A1',
       skill: 'grammar',
       explanationUz: 'Whose + ot + is + this?: Whose book is this?',
@@ -444,7 +444,7 @@ export const readingDay2: ReadingPassage = {
       passageId: 'a1-r2-text-01',
       statement: 'Dilnoza’s family has got a dog.',
       answer: 'notgiven',
-      evidence: 'Matnda it yoki boshqa uy hayvoni haqida gap yo‘q.',
+      evidence: 'Matnda it yoki boşqa uy hayvoni haqida gap yöq.',
     },
     {
       id: 'a1-ex-r2-06',
@@ -473,7 +473,7 @@ export const readingDay2: ReadingPassage = {
         { left: 'parents', right: 'ota-ona' },
         { left: 'grandfather', right: 'bobo, bobojon' },
         { left: 'aunt', right: 'xola, amma' },
-        { left: 'cousin', right: 'amakivachcha' },
+        { left: 'cousin', right: 'amakivaçça' },
         { left: 'sister', right: 'opa, singil' },
       ],
     },
@@ -598,7 +598,7 @@ export const listeningDay2: ListeningTask = {
       passageId: 'a1-l2-audio-01',
       statement: 'Sardor’s mother has got a red car.',
       answer: 'notgiven',
-      evidence: 'Suhbatda mashina haqida so‘z eshitilmaydi.',
+      evidence: 'Suhbatda maşina haqida söz eşitilmaydi.',
     },
     {
       id: 'a1-ex-l2-06',
@@ -745,7 +745,7 @@ export const testDay2: SectionTest = {
       passageId: 'a1-r2-text-01',
       statement: 'Dilnoza’s father is a doctor.',
       answer: 'notgiven',
-      evidence: 'Ota haqida faqat bo‘yi, xarakteri va velosipedi aytilgan.',
+      evidence: 'Ota haqida faqat böyi, xarakteri va velosipedi aytilgan.',
     },
     {
       id: 'a1-ex-t2-05',

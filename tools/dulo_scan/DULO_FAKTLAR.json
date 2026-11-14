@@ -1,0 +1,318 @@
+{
+  "_manba": {
+    "fayl": "S:/Agent-2026/New_loixa/DULO_mod.apk",
+    "uskuna": "tools/dulo_scan/dulo_facts.py (faqat o'qish; `-I` bilan yurgizing)",
+    "sana": "2026-11-05"
+  },
+  "konteyner": {
+    "kirishlar_soni": 18229,
+    "oz_hajmi_bayt": 254571029
+  },
+  "res_raw": {
+    "fayllar_soni": 1212,
+    "hajmi_mb": 75.5,
+    "kengaytmalar": {
+      "mp3": {
+        "fayl": 297,
+        "mb": 6.1
+      },
+      "riv": {
+        "fayl": 290,
+        "mb": 46.6
+      },
+      "hla": {
+        "fayl": 278,
+        "mb": 0.1
+      },
+      "json": {
+        "fayl": 198,
+        "mb": 18.1
+      },
+      "ogg": {
+        "fayl": 135,
+        "mb": 2.4
+      },
+      "wav": {
+        "fayl": 6,
+        "mb": 1.8
+      },
+      "zip": {
+        "fayl": 3,
+        "mb": 0.3
+      },
+      "js": {
+        "fayl": 2,
+        "mb": 0.1
+      },
+      "txt": {
+        "fayl": 1,
+        "mb": 0.0
+      },
+      "xml": {
+        "fayl": 1,
+        "mb": 0.0
+      },
+      "html": {
+        "fayl": 1,
+        "mb": 0.0
+      }
+    }
+  },
+  "lottie": {
+    "tavsif": "res/raw JSONLari (op-ip)/fr*1000",
+    "soni": 195,
+    "min_ms": 483,
+    "median_ms": 2917,
+    "max_ms": 14815,
+    "bizning_byudjet_ms": 1500
+  },
+  "hla_haptik": {
+    "tavsif": "JSON: Duration(ms), Timings[], Amplitudes[]",
+    "soni": 278,
+    "duration_min_ms": 1.0,
+    "duration_median_ms": 947,
+    "duration_max_ms": 7005.0,
+    "amplitudalar_orqacha_soni": 18.33
+  },
+  "dars_sessionlari": {
+    "soni": 18,
+    "har_biri": [
+      {
+        "file": "chess_castling.json",
+        "turns": 7,
+        "distinct_kinds": 1,
+        "same_neighbours": 6,
+        "same_neighbour_pct": 100.0,
+        "min_repeat_gap": 1,
+        "kind_counts": {
+          "normal": 7
+        }
+      },
+      {
+        "file": "chess_normal_check.json",
+        "turns": 10,
+        "distinct_kinds": 1,
+        "same_neighbours": 9,
+        "same_neighbour_pct": 100.0,
+        "min_repeat_gap": 1,
+        "kind_counts": {
+          "normal": 10
+        }
+      },
+      {
+        "file": "chess_promotion.json",
+        "turns": 10,
+        "distinct_kinds": 1,
+        "same_neighbours": 9,
+        "same_neighbour_pct": 100.0,
+        "min_repeat_gap": 1,
+        "kind_counts": {
+          "normal": 10
+        }
+      },
+      {
+        "file": "chess_star_rook.json",
+        "turns": 11,
+        "distinct_kinds": 1,
+        "same_neighbours": 10,
+        "same_neighbour_pct": 100.0,
+        "min_repeat_gap": 1,
+        "kind_counts": {
+          "star": 11
+        }
+      },
+      {
+        "file": "music.json",
+        "turns": 15,
+        "distinct_kinds": 11,
+        "same_neighbours": 4,
+        "same_neighbour_pct": 28.6,
+        "min_repeat_gap": 1,
+        "kind_counts": {
+          "musicKeyId": 2,
+          "musicPitchArrange": 2,
+          "musicPitchMatch": 2,
+          "musicKeyPlay": 2,
+          "musicMemoryLR": 1,
+          "musicRhythmTokenET": 1,
+          "musicAudioTokenEarTraining": 1,
+          "musicStaffPlay": 1,
+          "musicSequenceMatch": 1,
+          "musicKeyPlayAll": 1,
+          "musicNoteTokenPlay": 1
+        }
+      },
+      {
+        "file": "music_song_play.json",
+        "turns": 3,
+        "distinct_kinds": 1,
+        "same_neighbours": 2,
+        "same_neighbour_pct": 100.0,
+        "min_repeat_gap": 1,
+        "kind_counts": {
+          "musicSongPlay": 3
+        }
+      },
+      {
+        "file": "math_challenge_blob.json",
+        "turns": 14,
+        "distinct_kinds": 1,
+        "same_neighbours": 13,
+        "same_neighbour_pct": 100.0,
+        "min_repeat_gap": 1,
+        "kind_counts": {
+          "mathChallengeBlob": 14
+        }
+      },
+      {
+        "file": "math_json_input_challenge.json",
+        "turns": 0,
+        "distinct_kinds": 0,
+        "same_neighbours": 0,
+        "same_neighbour_pct": null,
+        "min_repeat_gap": null,
+        "kind_counts": {}
+      },
+      {
+        "file": "math_l0_lessons.json",
+        "turns": 38,
+        "distinct_kinds": 1,
+        "same_neighbours": 37,
+        "same_neighbour_pct": 100.0,
+        "min_repeat_gap": 1,
+        "kind_counts": {
+          "mathChallengeBlob": 38
+        }
+      },
+      {
+        "file": "math_lesson.json",
+        "turns": 15,
+        "distinct_kinds": 10,
+        "same_neighbours": 3,
+        "same_neighbour_pct": 21.4,
+        "min_repeat_gap": 1,
+        "kind_counts": {
+          "mathProductSelect": 3,
+          "mathDecimalFill": 2,
+          "mathTypeFill": 2,
+          "mathEstimateNumberLine": 2,
+          "mathMatch": 1,
+          "mathFractionFill": 1,
+          "mathIntegerNumberLineFill": 1,
+          "mathExpressionBuild": 1,
+          "mathMultiSelect": 1,
+          "mathWordProblemTokenDrag": 1
+        }
+      },
+      {
+        "file": "math_lesson_factor_trees.json",
+        "turns": 1,
+        "distinct_kinds": 1,
+        "same_neighbours": 0,
+        "same_neighbour_pct": null,
+        "min_repeat_gap": null,
+        "kind_counts": {
+          "mathFactorTree": 1
+        }
+      },
+      {
+        "file": "math_lesson_grids.json",
+        "turns": 6,
+        "distinct_kinds": 5,
+        "same_neighbours": 1,
+        "same_neighbour_pct": 20.0,
+        "min_repeat_gap": 1,
+        "kind_counts": {
+          "mathProductSelect": 2,
+          "mathPlotLineSegment": 1,
+          "mathDragLineSegmentLength": 1,
+          "mathMultiPlotCoordinates": 1,
+          "mathPlotCoordinate": 1
+        }
+      },
+      {
+        "file": "math_lesson_small_screen.json",
+        "turns": 6,
+        "distinct_kinds": 4,
+        "same_neighbours": 2,
+        "same_neighbour_pct": 40.0,
+        "min_repeat_gap": 1,
+        "kind_counts": {
+          "mathProductSelect": 3,
+          "mathMatch": 1,
+          "mathPatternTable": 1,
+          "mathMultiSelect": 1
+        }
+      },
+      {
+        "file": "math_lesson_word_problems.json",
+        "turns": 8,
+        "distinct_kinds": 4,
+        "same_neighbours": 4,
+        "same_neighbour_pct": 57.1,
+        "min_repeat_gap": 1,
+        "kind_counts": {
+          "mathWordProblemRiveInteractive": 5,
+          "mathWordProblemTokenDrag": 1,
+          "mathWordProblemProductSelect": 1,
+          "mathWordProblemRatioTokenDrag": 1
+        }
+      },
+      {
+        "file": "math_match_practice.json",
+        "turns": 3,
+        "distinct_kinds": 1,
+        "same_neighbours": 2,
+        "same_neighbour_pct": 100.0,
+        "min_repeat_gap": 1,
+        "kind_counts": {
+          "mathMatch": 3
+        }
+      },
+      {
+        "file": "math_multi_step_blob.json",
+        "turns": 1,
+        "distinct_kinds": 1,
+        "same_neighbours": 0,
+        "same_neighbour_pct": null,
+        "min_repeat_gap": null,
+        "kind_counts": {
+          "mathChallengeBlob": 1
+        }
+      },
+      {
+        "file": "math_multi_step_blob_no_dialog.json",
+        "turns": 1,
+        "distinct_kinds": 1,
+        "same_neighbours": 0,
+        "same_neighbour_pct": null,
+        "min_repeat_gap": null,
+        "kind_counts": {
+          "mathChallengeBlob": 1
+        }
+      },
+      {
+        "file": "math_multi_step_support_tree.json",
+        "turns": 1,
+        "distinct_kinds": 1,
+        "same_neighbours": 0,
+        "same_neighbour_pct": null,
+        "min_repeat_gap": null,
+        "kind_counts": {
+          "mathChallengeBlob": 1
+        }
+      }
+    ],
+    "aralash_xulosa": {
+      "mixed_sessions_kinds_ge_3": 5,
+      "mixed_turns": 50,
+      "mixed_neighbour_pairs": 45,
+      "mixed_same_neighbours": 14,
+      "mixed_same_neighbour_pct": 31.1
+    }
+  },
+  "muhim_eslatma": {
+    "challengeTransitionMs": "APK ichida BU NOM YO'Q (qidiruv: scan10.py) — animatsiya davomiyligi fayllar ichida, kalit sifatida emas.",
+    "dulo_ozi": "DULO `math_lesson.json`da ham BIR XIL TUR QO'SHNI keladi (3 qo'shni, eng qisqa masofa 1) — ya'ni 31.1% aralashlik DULO qoidasi. Bizning MIN_KIND_GAP=2 QASDDAN kuchliroq talab (bizning ixtiyoriy yaxshilanishimiz), DULO klonida esa DULO soni emas, SHU mexanizm (tartib ro'yxati + tur almashinuvi + takrorlash) nusxalanadi."
+  }
+}

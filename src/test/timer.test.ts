@@ -53,7 +53,7 @@ describe('Taymer — sahifa yangilansa ham yöqolmaydi', () => {
   })
 })
 
-describe('Taymer — uyqu/oraliq vaqt va soat siljishi chegaralari', () => {
+describe('Taymer — uyqu/oraliq vaqt va soat siljişi çegaralari', () => {
   const T0 = 1_700_000_000_000
 
   it('uzluk 3 soatdan oşsa kundalik hisob şu çegarada töxtaydi', () => {
@@ -84,7 +84,7 @@ describe('Taymer — uyqu/oraliq vaqt va soat siljishi chegaralari', () => {
     expect(currentElapsed(t, T0 + 60_000)).toBe(60)
   })
 
-  it('xuddi shu sessiya + skill: „Davom etish“ holat tiqilinch qayta start beradi', () => {
+  it('xuddi şu sessiya + skill: „Davom etiş“ holat tiqilinç qayta start beradi', () => {
     let t = startTimer(idleTimer, 's', 'reading', T0)
     t = pauseTimer(t, T0 + 30_000)
     const again = startTimer(t, 's', 'reading', T0 + 40_000)

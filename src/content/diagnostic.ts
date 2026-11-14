@@ -60,9 +60,10 @@ export const diagnosticTest = {
       id: 'dg-04',
       kind: 'translation',
       instructionUz: 'Inglizçaga tarjima qiling.',
-      source: 'Men keça kutga bordim.',
+      source: 'Men keça kutubxonaga bordim.',
       sourceLang: 'uz',
-      accepted: ['i went to the library yesterday', 'i went to the library last week'],
+      // "kecha" = yesterday: "last week" ma'nosi boshqa — qabul qilinmaydi.
+      accepted: ['i went to the library yesterday', 'yesterday i went to the library'],
       level: 'A2',
       skill: 'grammar',
       difficulty: 3,
@@ -98,14 +99,14 @@ export const diagnosticTest = {
     {
       id: 'dg-07',
       kind: 'multiple-choice',
-      instructionUz: 'Sözning ma‘nosini tanlang.',
+      instructionUz: 'Sözning ma’nosini tanlang.',
       question: '“reluctant” means…',
       options: ['very happy', 'not wanting to do something', 'very fast', 'dangerous'],
       answerIndex: 1,
       level: 'B1',
       skill: 'vocabulary',
       difficulty: 3,
-      explanationUz: '“Reluctant” — istamay, köngilsiz.',
+      explanationUz: '“Reluctant” — istagsiz, köngilsiz.',
     },
     {
       id: 'dg-08',
@@ -134,7 +135,7 @@ export const diagnosticTest = {
     {
       id: 'dg-10',
       kind: 'multiple-choice',
-      instructionUz: 'Ma‘noviy farqni aniqlang.',
+      instructionUz: 'Ma’noviy farqni aniqlang.',
       question: '“The findings were largely inconclusive” — “largely” here means…',
       options: ['in a large building', 'mostly', 'rarely', 'loudly'],
       answerIndex: 1,

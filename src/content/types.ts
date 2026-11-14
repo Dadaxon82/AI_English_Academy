@@ -99,9 +99,18 @@ export type ExerciseKind =
   | 'multiple-choice'
   | 'true-false-notgiven'
   | 'matching'
+  | 'audio-matching'
+  | 'listening-select'
+  | 'listening-fill'
+  | 'listening-choice'
   | 'gap-fill'
   | 'word-order'
   | 'translation'
+  | 'multi-select'
+  | 'dropdown-cloze'
+  | 'sequence'
+  | 'categorize'
+  | 'short-answer'
 
 interface ExerciseBase {
   id: string
@@ -125,6 +134,8 @@ export interface MultipleChoiceExercise extends ExerciseBase {
   options: string[]
   /** options ichidagi indeks */
   answerIndex: number
+  /** Video short (`shorts.ts`): bo'lsa savol ustida short pleyeri ko'rsatiladi */
+  shortId?: string
 }
 
 export interface TrueFalseNotGivenExercise extends ExerciseBase {
@@ -141,6 +152,65 @@ export interface TrueFalseNotGivenExercise extends ExerciseBase {
 export interface MatchingExercise extends ExerciseBase {
   kind: 'matching'
   pairs: { left: string; right: string }[]
+}
+
+/**
+ * Tinglab juftlashtirish — Duolingo "Выберите пары слов" ko'rinishi: chapda
+ * raqamlangan tovush kartalari (`left.pronunciation`, yo'q bo'lsa `left.word`
+ * browser TTS bilan o'qiladi), o'ngda raqamlangan aralashtirilgan tarjima
+ * kartalari. Select/dropdown emas — to'g'ridan-to'g'ri bosish bilan
+ * juftlashtiriladi.
+ */
+export interface AudioMatchingExercise extends ExerciseBase {
+  kind: 'audio-matching'
+  pairs: { left: { word: string; pronunciation?: PronunciationSource }; right: string }[]
+}
+
+/**
+ * «Что вы услышали?» — tinglab so'zni tanlash. Audio (`pronunciation`, bo'lmasa
+ * TTS orqali `targetText`) o'ynatiladi, o'quvchi plitkalardan ESHITGAN matnni
+ * (bir yoki bir nechta so'z) tartib bilan yig'adi.
+ */
+export interface ListeningSelectExercise extends ExerciseBase {
+  kind: 'listening-select'
+  pronunciation?: PronunciationSource
+  /** TTS uchun aytiladigan/tinglanadigan matn */
+  targetText: string
+  /** TO'G'RI tartibdagi so'zlar (javob) */
+  answer: string[]
+  /** O'quvchiga ko'rsatiladigan plitkalar (javob so'zlari + chalg'ituvchilar, aralash) */
+  bank: string[]
+}
+
+/**
+ * «Введите пропущенное слово» — gapni tinglab (TTS), bo'shliqqa erkin matn
+ * kiritish (klaviatura). `gap-fill`ning audio bilan boyitilgan versiyasi —
+ * bitta bo'shliq, transkript oldindan ko'rsatilmaydi.
+ */
+export interface ListeningFillExercise extends ExerciseBase {
+  kind: 'listening-fill'
+  /** TTS/audio orqali o'qiladigan to'liq gap (bo'shliqsiz) */
+  audioText: string
+  /** Bo'shliqli ko'rinish — ___ belgisi bilan */
+  text: string
+  answer: string
+  acceptAlternatives?: string[]
+}
+
+/**
+ * «Послушайте и заполните пропуск» — gapni tinglab (TTS), bo'shliqni
+ * to'ldiruvchi so'zni 2 ta AUDIO variantdan tanlash (variantlar ham TTS
+ * bilan o'qiladi, matn oldindan ko'rinmaydi).
+ */
+export interface ListeningChoiceExercise extends ExerciseBase {
+  kind: 'listening-choice'
+  /** Bo'shliqli gap matni (___ bilan) — faqat tuzatish/izoh uchun ko'rsatiladi */
+  text: string
+  /** TTS orqali o'qiladigan to'liq gap (audioText — bo'shliqsiz, to'g'ri variant bilan) */
+  audioText: string
+  /** Audio variantlar (bittasi to'g'ri) */
+  options: string[]
+  answerIndex: number
 }
 
 export interface GapFillExercise extends ExerciseBase {
@@ -172,10 +242,70 @@ export interface TranslationExercise extends ExerciseBase {
   accepted: string[]
 }
 
+/** Bir nechta to'g'ri javob (checkbox). */
+export interface MultiSelectExercise extends ExerciseBase {
+  kind: 'multi-select'
+  question: string
+  options: string[]
+  /** To'g'ri variantlar indekslari (kamida 2 ta). */
+  answerIndexes: number[]
+}
+
+/** Gap ichidagi ochiluvchi ro'yxatlar: har `___` uchun variantlar. */
+export interface DropdownClozeExercise extends ExerciseBase {
+  kind: 'dropdown-cloze'
+  /** Bo'shliq ___ bilan belgilanadi */
+  text: string
+  /** Har bo'shliq uchun variantlar (to'g'risi ichida) */
+  choices: string[][]
+  /** Har bo'shliqning to'g'ri javobi */
+  answers: string[]
+}
+
+/** Ketma-ketlik: gap / voqea / dialog qatorlarini tartiblash. */
+export interface SequenceExercise extends ExerciseBase {
+  kind: 'sequence'
+  passageId?: string
+  /** Qo'shimcha izoh (masalan, "Dialogni tartiblang") */
+  question?: string
+  /** TO'G'RI tartibda */
+  items: string[]
+  /** O'quvchiga ko'rsatiladigan aralash tartib (muallif belgilaydi) */
+  itemsShuffled: string[]
+}
+
+/** Saralash: elementlarni guruhlarga ajratish. */
+export interface CategorizeExercise extends ExerciseBase {
+  kind: 'categorize'
+  /** 2–3 ta guruh nomi */
+  categories: string[]
+  /** Element va uning to'g'ri guruhi (categories indeksi) */
+  sortItems: { text: string; category: number }[]
+}
+
+/** Qisqa javob: 1–3 so'z yozish. */
+export interface ShortAnswerExercise extends ExerciseBase {
+  kind: 'short-answer'
+  passageId?: string
+  question: string
+  /** Qabul qilinadigan javoblar (registr/tinish belgisiga bardoshli) */
+  accepted: string[]
+  maxWords?: number
+}
+
 export type Exercise =
   | MultipleChoiceExercise
+  | MultiSelectExercise
+  | DropdownClozeExercise
+  | SequenceExercise
+  | CategorizeExercise
+  | ShortAnswerExercise
   | TrueFalseNotGivenExercise
   | MatchingExercise
+  | AudioMatchingExercise
+  | ListeningSelectExercise
+  | ListeningFillExercise
+  | ListeningChoiceExercise
   | GapFillExercise
   | WordOrderExercise
   | TranslationExercise
@@ -334,4 +464,40 @@ export interface MockExamSpec {
   /** "mashq uchun yaratilgan namuna" — rasmiy savol emas */
   disclaimerUz: string
   sections: MockExamSectionSpec[]
+}
+
+/** --------------------------- DIALOGLAR (real hayot stsenariylari) --------------------------- */
+
+/**
+ * Suhbatdagi bitta replika. `gap` bo'lsa — o'quvchining replikasi: `en`
+ * ichidagi `___` o'rniga `gap.answer` turadi va u variantlardan tanlanadi.
+ */
+export interface DialogueLine {
+  speaker: 'a' | 'b'
+  en: string
+  uz: string
+  gap?: {
+    answer: string
+    /** Variantlar (to'g'ri javob ham ichida, aralash tartibda yoziladi). */
+    options: string[]
+    /** Qaysi ko'nikma dalili sifatida yoziladi. */
+    skill: 'vocabulary' | 'grammar'
+    /** Javobdan keyin ko'rsatiladigan qisqa izoh (o'zbekcha). */
+    whyUz: string
+  }
+}
+
+export interface Dialogue {
+  id: string
+  level: CefrLevel
+  /** Shu darajadagi qaysi kun mavzusiga mos (1..7). */
+  dayNumber: number
+  titleUz: string
+  /** Vaziyat: qayerda, kim bilan, nima maqsadda. */
+  situationUz: string
+  /** Rollar nomi (inglizcha, suhbatda ko'rinadi). `b` — o'quvchi. */
+  roles: { a: string; b: string }
+  lines: DialogueLine[]
+  /** «Nega shunday?» — suhbatdagi asosiy grammatika/ibora izohi. */
+  note: { titleUz: string; pointsUz: string[]; examples: { en: string; uz: string }[] }
 }

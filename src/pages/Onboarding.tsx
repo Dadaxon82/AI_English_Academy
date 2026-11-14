@@ -8,11 +8,13 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Button, Card, Chip, Field, InfoBanner, inputCls } from '../components/ui'
+import { MascotAvatar } from '../components/Mascot'
 import ExerciseRunner from '../components/ExerciseRunner'
 import { diagnosticTest, diagnose } from '../content/diagnostic'
-import { useStore } from '../lib/store'
+import { useStore } from '../lib/storeContext'
 import { CEFR_LEVELS, type CefrLevel } from '../content/types'
 import { LOADED_LEVELS } from '../content'
+import { MIN_DAILY_MINUTES, clampDailyMinutes } from '../lib/types'
 
 export default function Onboarding() {
   const { data, actions } = useStore()
@@ -35,7 +37,7 @@ export default function Onboarding() {
 
   const saveSchedule = () => {
     actions.setSettings({
-      dailyMinutes: Math.max(15, Math.min(240, minutes)),
+      dailyMinutes: clampDailyMinutes(minutes),
       examDate: examDate || null,
     })
     setStep(2)
@@ -45,11 +47,14 @@ export default function Onboarding() {
     <div className="min-h-dvh grid place-items-center p-4">
       <div className="w-full max-w-2xl grid gap-4">
         <header className="text-center grid gap-1.5">
+          <div className="flex justify-center mb-1">
+            <MascotAvatar size="lg" mood="greeting" alt="AI English Academy qahramoni" className="shadow-md" />
+          </div>
           <h1 className="text-2xl font-bold">Xuş kelibsiz!</h1>
           <p className="muted text-sm">3 ta savol — söng boşlaymiz. Bularning barçasini keyin sozlamalardan özgartirasiz.</p>
           <ol className="flex justify-center gap-2 mt-2">
             {steps.map((s, i) => (
-              <li key={s} className={`text-[11px] font-semibold px-2.5 py-1 rounded-full ${i === step ? 'bg-navy-700 text-white dark:bg-navy-500 dark:text-navy-950' : i < step ? 'text-[var(--ok)]' : 'muted'}`}>
+              <li key={s} className={`text-[11px] font-semibold px-2.5 py-1 rounded-full ${i === step ? 'bg-navy-700 text-white dark:bg-navy-300 dark:text-navy-950' : i < step ? 'text-[var(--ok)]' : 'muted'}`}>
                 {i + 1}. {s}
               </li>
             ))}
@@ -58,7 +63,19 @@ export default function Onboarding() {
 
         {step === 0 && <Basics level={level} setLevel={setLevel} target={target} setTarget={setTarget} onNext={saveBasics} />}
         {step === 1 && <Schedule minutes={minutes} setMinutes={setMinutes} examDate={examDate} setExamDate={setExamDate} onNext={saveSchedule} onBack={() => setStep(0)} />}
-        {step === 2 && <DiagnosticStep onSkip={() => setStep(3)} onDone={(res) => { actions.setDiagnostic(res.level, res.labelUz, res.confidence); setStep(3) }} />}
+        {step === 2 && (
+          <DiagnosticStep
+            onSkip={() => {
+              actions.markOnboarded()
+              setStep(3)
+            }}
+            onDone={(res) => {
+              actions.setDiagnostic(res.level, res.labelUz, res.confidence)
+              actions.markOnboarded()
+              setStep(3)
+            }}
+          />
+        )}
         {step === 3 && (
           <Card className="text-center grid gap-3">
             <h2 className="text-xl font-bold">Hammasi tayyor 🎉</h2>
@@ -177,7 +194,8 @@ function Schedule({
     <Card className="grid gap-4">
       <Field label="Kunlik öqiş vaqti (daqiqa)" hint={`Boşlanğiç: 90 daqiqa. ${minutes} daqiqaga taqsimlanadi.`}>
         <div className="flex items-center gap-3">
-          <input type="range" min={15} max={180} step={5} value={minutes} onChange={(e) => setMinutes(Number(e.target.value))} className="flex-1 accent-[var(--accent)]" />
+          {/* Minimal 30 — reja (6 × 5 daq) va DB CHECK bilan bir xil; 15–25 serverga yozilmasdi. */}
+          <input type="range" min={MIN_DAILY_MINUTES} max={180} step={5} value={minutes} onChange={(e) => setMinutes(Number(e.target.value))} className="flex-1 accent-[var(--accent)]" />
           <span className="font-bold tabular-nums w-16 text-right">{minutes}′</span>
         </div>
       </Field>
@@ -230,6 +248,9 @@ export function DiagnosticStep({ onDone, onSkip }: { onDone: (r: ReturnType<type
               if (idx + 1 < total) setIdx(idx + 1)
               else setDone(true)
             }}
+            // Diagnostika darajani o'lchash uchun — yurak jarimasi YO'Q
+            // (foydalanuvchi yuraklari tugagan bo'lsa ham o'lcanadi).
+            heartFree
           />
         </>
       ) : (

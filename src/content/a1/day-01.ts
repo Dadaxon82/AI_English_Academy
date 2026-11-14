@@ -130,7 +130,7 @@ export const vocabDay1: VocabularyItem[] = [
     ipa: '/pen/',
     pronunciation: { kind: 'browser-tts', ttsText: 'pen', lang: 'en-US' },
     exampleEn: 'Is this your pen or my pen?',
-    exampleUz: 'Bu sizning ruçkangizmi yoki menikimi?',
+    exampleUz: 'Bu sizning ruçkangizmi yoki meninimi?',
     pos: 'noun',
     topic: 'classroom',
     level: 'A1',
@@ -182,7 +182,7 @@ export const grammarDay1: GrammarTopic = {
   titleEn: 'The verb to be: am / is / are',
   level: 'A1',
   explanationUz: [
-    'Ingliz tilida “men talabaman”, “u o‘qituvchi”, “biz döstmiz” deganda “to be” fe’li işlatiladi. Özbek tilida bunday gapda fe’l bölmaydi, ingliz tilida esa fe’l albatta kerak: I am a student, She is a teacher. Fe’lsiz gap ingliz tilida xato hisoblanadi.',
+    'Ingliz tilida “men talabaman”, “u öqituvçi”, “biz döstmiz” deganda “to be” fe’li işlatiladi. Özbek tilida bunday gapda fe’l bölmaydi, ingliz tilida esa fe’l albatta kerak: I am a student, She is a teacher. Fe’lsiz gap ingliz tilida xato hisoblanadi.',
     'To be fe’li şaxsga qarab uç şaklga ega: I bilan am işlatiladi; he, she, it va yagona narsa bilan is; we, you, they va köplikdagi narsalar bilan are. Eslab qoliş uçun uçta qatorni takrorlang: I am — you are — he is / she is / it is — we are — they are.',
     'Inkor gapda to be fe’lidan keyin not qöyiladi: I am not late. She is not (isn’t) a teacher. They are not (aren’t) in the classroom. Söroq gapda esa to be fe’li ega oldinga çiqadi: Are you a student? — Yes, I am. / No, I am not. Is her name Aziza? — Yes, it is.',
     'Sözlaşuvda qisqartmalar juda köp işlatiladi: I’m, she’s, he’s, they’re, we’re. Inkorda esa isn’t, aren’t, ‘m not şakllari uçraydi. Yozma testlarda qisqartma va töliq şakl ikkalasi ham töğri javobdir, lekin bitta gapda fe’lni ikki marta qaytariş xato: “I am a student, am a teacher” deb yozilmaydi.',
@@ -428,7 +428,7 @@ export const readingDay1: ReadingPassage = {
       passageId: 'a1-r1-text-01',
       statement: 'Samir walks to school every day.',
       answer: 'notgiven',
-      evidence: 'Matnda bu haqda ma’lumot yo‘q.',
+      evidence: 'Matnda bu haqda ma’lumot yöq.',
     },
     {
       id: 'a1-ex-r1-06',
@@ -497,7 +497,7 @@ export const listeningDay1: ListeningTask = {
     {
       id: 'a1-ex-l1-01',
       kind: 'multiple-choice',
-      instructionUz: 'Audioni bir marta tinglab, savolga javob variantini tanlang.',
+      instructionUz: 'Audioyani bir marta tinglab, savolga javob variantini tanlang.',
       level: 'A1',
       skill: 'listening',
       explanationUz: 'Boşida u özini “I am your English teacher” deb taniştiradi.',
@@ -525,7 +525,7 @@ export const listeningDay1: ListeningTask = {
     {
       id: 'a1-ex-l1-03',
       kind: 'gap-fill',
-      instructionUz: 'Audioning şu joyidagi tuşirilgan sözlarni yozing.',
+      instructionUz: 'Audioyaning şu joyidagi tuşirilgan sözlarni yozing.',
       level: 'A1',
       skill: 'listening',
       explanationUz: 'Samir şunday deydi: my name is Samir. I am eleven.',
@@ -552,16 +552,16 @@ export const listeningDay1: ListeningTask = {
     {
       id: 'a1-ex-l1-05',
       kind: 'true-false-notgiven',
-      instructionUz: 'Audioda aytilgan yoki aytilmagan fikrlarni ajrating (true / false / notgiven).',
+      instructionUz: 'Audioyada aytilgan yoki aytilmagan fikrlarni ajrating (true / false / notgiven).',
       level: 'A1',
       skill: 'listening',
-      explanationUz: 'Mavsum haqida audioda heç narsa deyilmagan — notgiven.',
+      explanationUz: 'Mavsum haqida audioyada heç narsa deyilmagan — notgiven.',
       difficulty: 3,
       tags: ['listening notgiven'],
       passageId: 'a1-l1-audio-01',
       statement: 'It is cold and rainy that day.',
       answer: 'notgiven',
-      evidence: 'Audioyada ob-havo haqida gap yo‘q.',
+      evidence: 'Audioyada ob-havo haqida gap yöq.',
     },
     {
       id: 'a1-ex-l1-06',
@@ -719,7 +719,7 @@ export const testDay1: SectionTest = {
     {
       id: 'a1-ex-t1-06',
       kind: 'multiple-choice',
-      instructionUz: 'Test: audiodagi ma’lumotni eslab, javobni tanlang.',
+      instructionUz: 'Test: audioyadagi ma’lumotni eslab, javobni tanlang.',
       level: 'A1',
       skill: 'listening',
       explanationUz: 'Öqituvçi: See you at eight o’clock.',

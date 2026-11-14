@@ -8,13 +8,18 @@
 import { useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { BarChart, Button, Card, Chip, EmptyState, InfoBanner, LoadingBlock, ProgressRing, StatTile } from '../components/ui'
-import { useStore, lastNDays } from '../lib/store'
+import { useStore } from '../lib/storeContext'
+import { lastNDays } from '../lib/selectors'
 import { levelLabel, PROMOTION_THRESHOLD, MIN_EVIDENCE_PER_SKILL } from '../lib/skillScoring'
 import { skillLabelUz, daysUntil } from '../lib/planning'
+import { speakingScore } from '../lib/analyze'
 import { formatDuration } from '../lib/timer'
 import { LOADED_LEVELS, getBundle } from '../content'
 import { CEFR_LEVELS } from '../content/types'
 import { DiagnosticStep } from './Onboarding'
+import SelfAssessment from '../components/SelfAssessment'
+import CertificateCard from '../components/CertificateCard'
+import UsageCard from '../components/UsageCard'
 import type { SkillEvidence } from '../lib/skillScoring'
 
 export default function Progress() {
@@ -58,7 +63,7 @@ export default function Progress() {
           <Chip tone="brand">
             {data.settings.currentLevel} → {data.settings.targetLevel}
           </Chip>
-          {examLeft !== null && <Chip tone={examLeft < 14 ? 'warn' : 'default'}>Imtihongacha {examLeft} kun</Chip>}
+          {examLeft !== null && <Chip tone={examLeft < 14 ? 'warn' : 'default'}>Imtihongaça {examLeft} kun</Chip>}
         </div>
         <p className="muted text-sm">
           Hozirgi daraja: <b>{ll.titleUz}</b> ({ll.titleEn}). Maqsad: <b>{target.titleUz}</b>.
@@ -70,7 +75,7 @@ export default function Progress() {
             return (
               <span
                 key={lvl}
-                className={`chip ${active ? '!border-[var(--accent)] !text-[var(--accent)] font-bold' : ''} ${loaded ? '' : 'opacity-50'}`}
+                className={`chip ${active ? '!border-[var(--accent)] !text-[var(--accent)] font-bold' : ''} ${loaded ? '' : 'border-dashed'}`}
                 title={loaded ? (active ? 'Siz hozir şu darajadasiz' : 'Kontent yuklangan daraja') : 'Kontent hali tayyor emas'}
               >
                 {lvl}
@@ -110,6 +115,15 @@ export default function Progress() {
       </Card>
 
       {/* --- Faoliyat grafigi --- */}
+      {/* --- O'z-o'zini baholash (Likert) — darajaga ta'sir qilmaydi --- */}
+      <SelfAssessment />
+
+      {/* --- Daraja yakunlash guvohnomasi (rasmiy emas) --- */}
+      <CertificateCard />
+
+      {/* --- Yangi funksiyalardan foydalanish (qurilmada) --- */}
+      <UsageCard />
+
       <Card className="grid gap-3">
         <div className="flex flex-wrap items-center gap-2">
           <h2 className="font-bold">Kunlik faoliyat</h2>
@@ -185,9 +199,7 @@ export default function Progress() {
                 ...data.speaking.map((s) => ({
                   at: s.createdAt,
                   kind: 'Gapiriş',
-                  score: s.analysis
-                    ? Math.round((((s.analysis.fluency + s.analysis.grammar + s.analysis.lexis) / 3 / 5) as number) * 100)
-                    : null,
+                  score: s.analysis ? speakingScore(s.analysis) : null,
                   label: `${s.durationSec}s`,
                 })),
               ]
@@ -218,7 +230,7 @@ export default function Progress() {
             <div className="text-sm muted">
               {pathDone === 0
                 ? 'Hali birorta kun tugatilmagan.'
-                : `${pathDone} kun tugatildi. Bo‘lim testlari: ${Object.keys(data.path.passedTests).length} ta.`}
+                : `${pathDone} kun tugatildi. Kun testlari: ${Object.keys(data.path.passedTests).filter((k) => !k.includes(":")).length} ta.`}
             </div>
           </div>
         </Card>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    FileProvider yo'laklari — Progress ekranining eksport fayllari
+    (`cacheDir`da: aea_attempts.csv, aea_data.json) boshqa ilovaga
+    berilishi uchun. Tashqi yozuv (`getExternalFilesDir`) ishlatilmaydi:
+    foydalanuvchi ma'lumoti qurilmadan tashqariga chiqmaydi.
+-->
+<paths>
+    <cache-path name="exports" path="." />
+</paths>

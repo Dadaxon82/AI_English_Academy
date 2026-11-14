@@ -5,14 +5,17 @@
  * AI "ulangan" deb ko'rsatilmaydi va mavjud bo'lmagan natija yasalmaydi.
  */
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { Button, Card, Chip, EmptyState, InfoBanner, LoadingBlock, SuccessBanner } from '../components/ui'
-import { useStore } from '../lib/store'
+import { useStore } from '../lib/storeContext'
+import { LessonStartCard, WritingLesson } from '../components/SectionLessons'
+import { writingLesson } from '../lib/lessons'
 import { getBundle } from '../content'
+import { aiRuntimeEnabled } from '../lib/ai'
 import { criterionLabelUz } from '../lib/analyze'
 import { formatDuration } from '../lib/timer'
-import type { CoreCriterionKey, WritingSubmission } from '../lib/types'
+import type { CoreCriterionKey } from '../lib/types'
 import type { WritingTask } from '../content/types'
 
 export default function Writing() {
@@ -34,14 +37,13 @@ export default function Writing() {
       return {}
     }
   })
-  const [submitted, setSubmitted] = useState<WritingSubmission[]>([])
-  const [compareWith, setCompareWith] = useState<string | null>(null)
+  const [lesson, setLesson] = useState(false)
+  const [showCompare, setShowCompare] = useState(false)
   const [saveNote, setSaveNote] = useState<string | null>(null)
 
-  // saqlangan javoblarni yuklash
-  useEffect(() => {
-    setSubmitted(data.writing.filter((w) => w.taskId === (params.get('task') ?? tasks[0]?.id)))
-  }, [data.writing, params, tasks])
+  // Saqlangan javoblar — store'dan hosila (yangi tahlil ham o'zi qo'shiladi).
+  const submittedTaskId = params.get('task') ?? tasks[0]?.id
+  const submitted = useMemo(() => data.writing.filter((w) => w.taskId === submittedTaskId), [data.writing, submittedTaskId])
 
   // Taymer: faqat foydalanuvchi haqiqatan YOZISHNI BOSHLAGANDA ishga tushadi.
   // Oldin sahifa ochilishi bilan avtomatik yurardi — sahifada hech narsa
@@ -65,22 +67,18 @@ export default function Writing() {
   // BUG: localStorage'ga yopiq (closure) `drafts` yozilardi — birinchi
   // yozuvdan keyin boshqa topshiriq qoralamalari xotiradan o'chib qolardi.
   // Endi saqlash state o'zgarishi ortidan effect orqali (har doim to'liq).
+  // Saqlash yozish ishlovchisida: joriy render'dagi TO'LIQ `drafts` + yangi
+  // qiymat yoziladi (boshqa topshiriqlar qoralamasi o'chmaydi).
   const setDraft = (v: string) => {
-    setDrafts((d) => ({ ...d, [selectedId]: v }))
-  }
-  const firstDraftRun = useRef(true)
-  useEffect(() => {
-    if (firstDraftRun.current) {
-      firstDraftRun.current = false
-      return
-    }
+    const next = { ...drafts, [selectedId]: v }
+    setDrafts(next)
     try {
-      localStorage.setItem(`aea-drafts:${data.userId}`, JSON.stringify(drafts))
+      localStorage.setItem(`aea-drafts:${data.userId}`, JSON.stringify(next))
       setSaveNote('Qoralama saqlandi')
     } catch {
       setSaveNote(null)
     }
-  }, [drafts, data.userId])
+  }
 
   // BUG: ma'lumotlar yuklanmasa sahifa "topshiriq topilmadi" deb yalgan
   // bo'sh holat ko'rsatardi. Avval yuklanish holati ko'rsatiladi.
@@ -94,9 +92,13 @@ export default function Writing() {
   // `prior` XRONOLOGIK tartibda (eski → yangi). Solishtiruv uchun "eng yangi"
   // = oxirgi element; "oldingi javob" = undan bitta oldingi.
   const newest = prior[prior.length - 1] ?? null
-  const compareTarget = compareWith
-    ? data.writing.find((w) => w.id === compareWith)
-    : (prior[prior.length - 2] ?? prior[0] ?? null)
+  // ESKI BUG: bitta javob bo'lsa ham panel chiqib, javobni O'ZI bilan
+  // solishtirardi, "Solishtirishni yopish" esa uni yopmasdi. Endi panel faqat
+  // kamida ikki javob bo'lganda va foydalanuvchi ochganda ko'rinadi.
+  const previous = prior.length >= 2 ? prior[prior.length - 2]! : null
+  const compareTarget = showCompare ? previous : null
+
+  if (lesson && task) return <WritingLesson task={task} onClose={() => setLesson(false)} />
 
   return (
     <div className="grid gap-4">
@@ -104,7 +106,7 @@ export default function Writing() {
         <h1 className="text-xl font-bold">Yoziş</h1>
         <p className="muted text-sm">
           Javobingiz şu brauzerda saqlanadi (qoralama) va sinxronlaşda Supabase’ga yuboriladi. Tahlil{' '}
-          <b>{aiEnabled(data.settings.aiEnabled, netOnline) ? 'qoidaviy + AI' : 'qoidaviy'} dvigatel</b> bilan bajariladi.
+          <b>{aiRuntimeEnabled(data.settings.aiEnabled, netOnline) ? 'qoidaviy + AI' : 'qoidaviy'} dvigatel</b> bilan bajariladi.
         </p>
         <div className="flex flex-wrap gap-1.5">
           {tasks.map((t) => (
@@ -120,6 +122,16 @@ export default function Writing() {
           ))}
         </div>
       </Card>
+
+      {task && (
+        <LessonStartCard
+          kicker="Yoziş darsi"
+          title={`${genreLabelUz(task.genre)}: tayyorgarlik`}
+          body="Namuna javob gaplarini plitkalardan tuzing, söng özingiz yozing"
+          steps={writingLesson(task)}
+          onStart={() => setLesson(true)}
+        />
+      )}
 
       {task && (
         <Card className="grid gap-3.5">
@@ -153,8 +165,8 @@ export default function Writing() {
               variant="secondary"
               disabled={words === 0}
               onClick={() => {
-                const sub = actions.addWriting(task.id, draft, seconds, prior[0]?.id ?? null)
-                setSubmitted((s) => [...s, sub])
+                // Qayta yozish oxirgi javobga bog'lanadi (eski: doim birinchisiga).
+                actions.addWriting(task.id, draft, seconds, newest?.id ?? null)
               }}
             >
               Tahlil qiliş
@@ -181,7 +193,7 @@ export default function Writing() {
       <Card className="grid gap-3.5">
         <h2 className="font-bold">Natijalar va tahlil</h2>
         {submitted.length === 0 ? (
-          <EmptyState title="Hali javob yuborilmadi" body="Matn yozing va “Tahlil qilish” tugmasini bosing — tahlil darhol körsatiladi." />
+          <EmptyState title="Hali javob yuborilmadi" body="Matn yozing va “Tahlil qiliş” tugmasini bosing — tahlil darhol körsatiladi." />
         ) : (
           [...submitted].reverse().map((sub, i) => (
             <div key={sub.id} className="grid gap-3 rounded-xl border p-3.5">
@@ -191,13 +203,9 @@ export default function Writing() {
                 </Chip>
                 <Chip>{sub.wordCount} söz</Chip>
                 <span className="muted">{new Date(sub.createdAt).toLocaleString('uz')}</span>
-                {i === 0 && submitted.length > 1 && (
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => setCompareWith(compareWith ? null : submitted[submitted.length - 2]!.id)}
-                  >
-                    {compareWith ? 'Soliştirişni yopiş' : "Oldingi javob bilan soliştiriş"}
+                {i === 0 && previous && (
+                  <Button size="sm" variant="ghost" aria-pressed={showCompare} onClick={() => setShowCompare((v) => !v)}>
+                    {showCompare ? 'Soliştirişni yopiş' : 'Oldingi javob bilan soliştiriş'}
                   </Button>
                 )}
               </div>
@@ -228,7 +236,7 @@ export default function Writing() {
 
                   <div className="grid sm:grid-cols-2 gap-3">
                     <div>
-                      <h3 className="text-sm font-semibold text-[var(--ok)]">Kuchli jihatlar</h3>
+                      <h3 className="text-sm font-semibold text-[var(--ok)]">Kuçli jihatlar</h3>
                       <ul className="text-sm list-disc pl-5 mt-1">
                         {sub.analysis.strengthsUz.map((s) => <li key={s}>{s}</li>)}
                       </ul>
@@ -286,10 +294,6 @@ export default function Writing() {
   )
 }
 
-function aiEnabled(flag: boolean, online: boolean) {
-  return flag && online
-}
-
 /** `avg` — 5 mezon o'rtachasi (0..5 o'lchamida ko'rsatiladi). */
 const avg = (a: { criteriaScores: Record<CoreCriterionKey, number> }) =>
   (Object.values(a.criteriaScores).reduce((x, y) => x + y, 0) / 5).toFixed(1)
@@ -298,7 +302,7 @@ function genreLabelUz(g: WritingTask['genre']): string {
   return {
     email: 'Email',
     message: 'Xabar',
-    essay: 'Insho',
+    essay: 'Inşo',
     story: 'Hikoya',
     form: 'Anketa',
     paragraph: 'Paragraf',

@@ -23,12 +23,12 @@ export function Button({
     'focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]'
   const sizes = { sm: 'text-xs px-3 py-1.5', md: 'text-sm px-4 py-2.5', lg: 'text-base px-5 py-3' }
   const variants: Record<Variant, string> = {
-    primary: 'bg-navy-700 text-white hover:bg-navy-600 shadow-sm dark:bg-navy-500 dark:hover:bg-navy-400 dark:text-navy-950',
+    primary: 'bg-navy-700 text-white hover:bg-navy-600 shadow-sm dark:bg-navy-300 dark:hover:bg-navy-200 dark:text-navy-950',
     secondary:
       'bg-white text-navy-900 border hover:bg-slate-50 dark:bg-[var(--panel)] dark:text-[var(--text)] dark:hover:bg-[var(--panel-2)]',
     ghost: 'bg-transparent text-[var(--text)] hover:bg-[var(--panel-2)]',
-    danger: 'bg-rose-600 text-white hover:bg-rose-500',
-    success: 'bg-emerald-600 text-white hover:bg-emerald-500',
+    danger: 'bg-rose-700 text-white hover:bg-rose-800',
+    success: 'bg-emerald-700 text-white hover:bg-emerald-800',
   }
   return (
     <button

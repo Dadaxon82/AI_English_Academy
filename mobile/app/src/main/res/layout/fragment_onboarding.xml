@@ -1,0 +1,412 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Onboarding — 5 qadam bitta ekranda (bosqichlar almashinadi). Barcha so'roqlar
+    `AppStore` orqali saqlanadi: daraja, maqsad, daqiqa, mavzu, diagnostika.
+    Diagnostika `assets/content/diagnostic.json` dagi 12 HAQIQIY savoldan olinadi
+    (veb `src/content/diagnostic.ts` bilan bir xil).
+-->
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/onbScroll"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/screen_pad">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <com.dadaxon.aienglishacademy.ui.MascotView
+                android:id="@+id/onbMascot"
+                android:layout_width="@dimen/mascot_md"
+                android:layout_height="@dimen/mascot_md"
+                android:contentDescription="@string/mascot_alt" />
+
+            <TextView
+                android:id="@+id/stepText"
+                style="@style/Text.Aea.Small"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/gap_m"
+                android:layout_weight="1" />
+        </LinearLayout>
+
+        <!-- ============ 1-qadam: Xush kelibsiz ============ -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/stepWelcome"
+            style="@style/Widget.Aea.Card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_m">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <com.dadaxon.aienglishacademy.ui.MascotView
+                    android:id="@+id/welcomeMascot"
+                    android:layout_width="@dimen/mascot_hero"
+                    android:layout_height="@dimen/mascot_hero"
+                    android:layout_gravity="center_horizontal"
+                    android:contentDescription="@string/mascot_alt" />
+
+                <TextView
+                    style="@style/Text.Aea.Title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/gap_m"
+                    android:text="@string/onb_welcome_title" />
+
+                <TextView
+                    style="@style/Text.Aea.Body"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/gap_s"
+                    android:text="@string/onb_welcome_text" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- ============ 2-qadam: Daraja ============ -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/stepLevel"
+            style="@style/Widget.Aea.Card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_m"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    style="@style/Text.Aea.Section"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/onb_level_title" />
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/levelChips"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/gap_s"
+                    app:selectionRequired="true"
+                    app:singleLine="false"
+                    app:singleSelection="true" />
+
+                <TextView
+                    style="@style/Text.Aea.Small"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/gap_s"
+                    android:text="@string/onb_level_hint" />
+
+                <TextView
+                    style="@style/Text.Aea.Section"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/gap_l"
+                    android:text="@string/onb_target_title" />
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/targetChips"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/gap_s"
+                    app:selectionRequired="true"
+                    app:singleLine="false"
+                    app:singleSelection="true" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- ============ 3-qadam: Maqsad / vaqt / mavzu ============ -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/stepPrefs"
+            style="@style/Widget.Aea.Card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_m"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    style="@style/Text.Aea.Section"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/onb_goal_title" />
+
+                <RadioGroup
+                    android:id="@+id/goalGroup"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/gap_s"
+                    android:orientation="vertical">
+
+                    <com.google.android.material.radiobutton.MaterialRadioButton
+                        android:id="@+id/goalIelts"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:text="@string/onb_goal_ieelts" />
+
+                    <com.google.android.material.radiobutton.MaterialRadioButton
+                        android:id="@+id/goalStudy"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/onb_goal_study" />
+
+                    <com.google.android.material.radiobutton.MaterialRadioButton
+                        android:id="@+id/goalWork"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/onb_goal_work" />
+
+                    <com.google.android.material.radiobutton.MaterialRadioButton
+                        android:id="@+id/goalTravel"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/onb_goal_travel" />
+                </RadioGroup>
+
+                <TextView
+                    style="@style/Text.Aea.Section"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/gap_l"
+                    android:text="@string/onb_minutes_title" />
+
+                <com.google.android.material.slider.Slider
+                    android:id="@+id/minutesSlider"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:stepSize="15"
+                    android:value="90"
+                    android:valueFrom="30"
+                    android:valueTo="240" />
+
+                <TextView
+                    android:id="@+id/minutesText"
+                    style="@style/Text.Aea.Small"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    style="@style/Text.Aea.Section"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/gap_l"
+                    android:text="@string/onb_theme_title" />
+
+                <com.google.android.material.button.MaterialButtonToggleGroup
+                    android:id="@+id/themeGroup"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/gap_s"
+                    app:selectionRequired="true"
+                    app:singleSelection="true">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/themeLight"
+                        style="@style/Widget.Aea.Button.Outlined"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/onb_theme_light"
+                        android:textSize="12sp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/themeDark"
+                        style="@style/Widget.Aea.Button.Outlined"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/onb_theme_dark"
+                        android:textSize="12sp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/themeSystem"
+                        style="@style/Widget.Aea.Button.Outlined"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/onb_theme_system"
+                        android:textSize="12sp" />
+                </com.google.android.material.button.MaterialButtonToggleGroup>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- ============ 4-qadam: Diagnostika ============ -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/stepDiagnostic"
+            style="@style/Widget.Aea.Card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_m"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    style="@style/Text.Aea.Section"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/onb_diag_title" />
+
+                <TextView
+                    android:id="@+id/diagHint"
+                    style="@style/Text.Aea.Small"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/gap_s"
+                    android:text="@string/onb_diag_hint" />
+
+                <TextView
+                    android:id="@+id/diagCounter"
+                    style="@style/Text.Aea.Small"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/gap_s" />
+
+                <TextView
+                    android:id="@+id/diagQuestion"
+                    style="@style/Text.Aea.Body"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/gap_m"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:id="@+id/diagOptions"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/gap_s"
+                    android:orientation="vertical" />
+
+                <LinearLayout
+                    android:id="@+id/diagResultBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/gap_s"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:id="@+id/diagResult"
+                        style="@style/Text.Aea.Title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center" />
+
+                    <TextView
+                        android:id="@+id/diagConfidence"
+                        style="@style/Text.Aea.Small"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/gap_s"
+                        android:gravity="center" />
+
+                    <TextView
+                        android:id="@+id/diagNote"
+                        style="@style/Text.Aea.Small"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/gap_s"
+                        android:gravity="center" />
+                </LinearLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/diagStartButton"
+                    style="@style/Widget.Aea.Button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/gap_m"
+                    android:text="@string/onb_diag_start" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/diagSkipButton"
+                    style="@style/Widget.Aea.Button.Text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/onb_diag_skip" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- ============ 5-qadam: Tayyor ============ -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/stepReady"
+            style="@style/Widget.Aea.Card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_m"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <com.dadaxon.aienglishacademy.ui.MascotView
+                    android:id="@+id/readyMascot"
+                    android:layout_width="@dimen/mascot_lg"
+                    android:layout_height="@dimen/mascot_lg"
+                    android:layout_gravity="center_horizontal"
+                    android:contentDescription="@string/mascot_alt" />
+
+                <TextView
+                    style="@style/Text.Aea.Title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/gap_m"
+                    android:text="@string/onb_ready_title" />
+
+                <TextView
+                    style="@style/Text.Aea.Body"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/gap_s"
+                    android:text="@string/onb_ready_text" />
+
+                <TextView
+                    android:id="@+id/readySummary"
+                    style="@style/Text.Aea.Small"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/gap_s" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/primaryButton"
+            style="@style/Widget.Aea.Button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_l"
+            android:text="@string/next" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/secondaryButton"
+            style="@style/Widget.Aea.Button.Text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/back" />
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

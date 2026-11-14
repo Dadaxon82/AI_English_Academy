@@ -5,30 +5,60 @@
  * Talab: foydalanuvchi o'z xatolarini ko'radi va ular ustida ishlaydi.
  */
 
-import { useMemo, useState } from 'react'
+import { trackUsage } from '../lib/usage'
+import { useMemo, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Button, Card, Chip, EmptyState, Field, InfoBanner, inputCls } from '../components/ui'
-import { useStore } from '../lib/store'
-import { findExercise } from '../content'
+import { useStore } from '../lib/storeContext'
+import { allGlossaryVocab, allVocab, findExercise, vocabQuizExercise } from '../content'
+import LessonPlayer from '../components/LessonPlayer'
+import MistakeGames from '../components/MistakeGames'
+import type { LessonStep } from '../lib/lessons'
+import { TIMED_SECONDS, buildMistakeLesson, unresolvedMistakes } from '../lib/mistakes'
 import { checkAnswer } from '../lib/check'
 import { skillLabelUz } from '../lib/planning'
 import type { AttemptRecord, AttemptSource } from '../lib/types'
 import type { Skill } from '../content/types'
+import { useNow } from '../lib/clock'
+import { REVIEW_MAX, buildReviewPlan } from '../lib/reviewManager'
+import type { VocabularyItem } from '../content/types'
+import { chunkyGreen } from '../components/chunky'
 
 type Range = 'all' | '7' | '30'
 
 const SKILL_ORDER: Skill[] = ['vocabulary', 'grammar', 'reading', 'listening', 'writing', 'speaking']
 
 export default function ErrorLog() {
-  const { data } = useStore()
+  const { data, actions } = useStore()
   const nav = useNavigate()
   const [skill, setSkill] = useState<Skill | 'all'>('all')
   const [range, setRange] = useState<Range>('all')
   const [source, setSource] = useState<AttemptSource | 'all'>('all')
   const [q, setQ] = useState('')
+  const [game, setGame] = useState<{ steps: LessonStep[]; timed: boolean; srs?: boolean } | null>(null)
 
+  /** Tuzatilmagan xatolar (oxirgi urinish noto'g'ri) — o'yinlar uchun. */
+  const mistakes = useMemo(() => unresolvedMistakes(data.attempts, findExercise), [data.attempts])
+
+  const now = useNow()
+
+  /** Takrorlash menejeri: xatolar + muddati kelgan so'zlar BITTA navbatda. */
+  const vocabPool = useMemo(() => [...allVocab(), ...allGlossaryVocab()], [])
+  const reviewPreview = useMemo(
+    () => buildReviewPlan(mistakes, data.srs, vocabPool, now, (v) => vocabQuizExercise(v)),
+    [mistakes, data.srs, vocabPool, now],
+  )
+  /** Shu sessiyada SRS'ga yozilgan qadamlar — dars oxiridagi qayta urinish ikkinchi baho bermaydi. */
+  const srsGraded = useRef(new Set<string>())
+  const startReview = () => {
+    srsGraded.current = new Set()
+    trackUsage('review', 'started')
+    // Variantlar (3 ta noto'g'ri tarjima) boshlash paytida bir marta yasaladi.
+    const plan = buildReviewPlan(mistakes, data.srs, vocabPool, Date.now(), (v) => vocabQuizExercise(v, quizOptions(v, vocabPool)))
+    setGame({ steps: plan.steps, timed: false, srs: true })
+  }
   const errors = useMemo(() => {
-    const cutoff = range === 'all' ? 0 : Date.now() - (range === '7' ? 7 : 30) * 86_400_000
+    const cutoff = range === 'all' ? 0 : now - (range === '7' ? 7 : 30) * 86_400_000
     return data.attempts
       .filter((a) => !a.correct)
       .filter((a) => (skill === 'all' ? true : a.skill === skill))
@@ -36,7 +66,7 @@ export default function ErrorLog() {
       .filter((a) => a.at >= cutoff)
       .filter((a) => (q.trim() ? a.exerciseId.toLowerCase().includes(q.trim().toLowerCase()) : true))
       .sort((a, b) => b.at - a.at)
-  }, [data.attempts, skill, source, range, q])
+  }, [data.attempts, skill, source, range, q, now])
 
   /** Takrorlanadigan xatolar: bir xil mashqda 2+ marta xato. */
   const repeated = useMemo(() => {
@@ -54,6 +84,29 @@ export default function ErrorLog() {
 
   const totalErrors = data.attempts.filter((a) => !a.correct).length
 
+  if (game) {
+    return (
+      <Card className="p-4 sm:p-6">
+        <LessonPlayer
+          steps={game.steps}
+          onClose={() => setGame(null)}
+          timeLimitSec={game.timed ? TIMED_SECONDS : undefined}
+          onFinish={game.srs ? () => trackUsage('review', 'finished') : undefined}
+          onAnswer={
+            game.srs
+              ? (step, correct) => {
+                  // So'z bilan bog'liq qadam — SRS bahosi ham (bitta javob = bitta baho).
+                  if (step.type !== 'exercise' || srsGraded.current.has(step.id)) return
+                  srsGraded.current.add(step.id)
+                  for (const vid of step.vocabIds ?? []) actions.gradeVocab(vid, correct ? 'good' : 'again')
+                }
+              : undefined
+          }
+        />
+      </Card>
+    )
+  }
+
   return (
     <div className="grid gap-4">
       <Card className="grid gap-3">
@@ -64,6 +117,31 @@ export default function ErrorLog() {
         </p>
         <ExportButtons rows={errors} />
       </Card>
+
+      <Card className="grid gap-3 p-4 sm:p-6 border-2 border-sky-300 dark:border-sky-700">
+        <div className="grid gap-1.5">
+          <p className="text-[11px] font-extrabold uppercase tracking-wider text-sky-700 dark:text-sky-300">Takrorlaş menejeri</p>
+          <h2 className="text-xl font-extrabold">
+            {reviewPreview.steps.length > 0
+              ? `Bugungi takror: ${reviewPreview.mistakes} ta xato + ${reviewPreview.words} ta söz`
+              : 'Hozirça takrorlanadigan narsa yöq'}
+          </h2>
+          <p className="text-sm muted">
+            Tuzatilmagan xatolar va takrorlaş vaqti kelgan sözlar bitta navbatda (köpi bilan {REVIEW_MAX} ta). Söz bilan boğliq xato
+            ikki marta sanalmaydi: bitta javob ham xatoni, ham söz takrorini yangilaydi.
+          </p>
+        </div>
+        <div className="flex justify-end">
+          <button type="button" className={`${chunkyGreen} !px-4 !py-2`} disabled={reviewPreview.steps.length === 0} onClick={startReview}>
+            Takrorlaşni boşlaş
+          </button>
+        </div>
+      </Card>
+
+      <MistakeGames
+        mistakes={mistakes}
+        onStart={(mode) => setGame({ steps: buildMistakeLesson(mode, mistakes), timed: mode === 'timed' })}
+      />
 
       {repeated.length > 0 && (
         <Card className="grid gap-3">
@@ -254,4 +332,19 @@ function pathForSkill(s: Skill) {
     writing: '/writing',
     speaking: '/speaking',
   }[s]
+}
+
+/** Lug'at savoli uchun variantlar: to'g'ri tarjima + 3 ta boshqa tarjima, aralash. */
+function quizOptions(v: VocabularyItem, pool: readonly VocabularyItem[]): string[] {
+  const others = [...new Set(pool.map((x) => x.translationUz).filter((t) => t !== v.translationUz))]
+  for (let i = others.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[others[i], others[j]] = [others[j]!, others[i]!]
+  }
+  const opts = [v.translationUz, ...others.slice(0, 3)]
+  for (let i = opts.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[opts[i], opts[j]] = [opts[j]!, opts[i]!]
+  }
+  return opts
 }

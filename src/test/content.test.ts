@@ -64,7 +64,7 @@ describe('Kontent — kunlar va 90 daqiqalik reja', () => {
     expect(by.vocabulary).toBe(Math.min(...Object.values(by)))
   })
 
-  it('IDlar takrorlanmagan (barcha kontent turlari bo\'yicha)', () => {
+  it('IDlar takrorlanmagan (barça kontent turlari bo\'yiça)', () => {
     for (const level of LEVELS) {
       const b = getBundle(level)
       const seen = new Set<string>()

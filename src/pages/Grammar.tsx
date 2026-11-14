@@ -19,7 +19,10 @@ import { Button, Card, Chip, EmptyState, InfoBanner, LoadingBlock, ProgressRing,
 import { getBundle } from '../content'
 import type { Exercise, GrammarTopic } from '../content/types'
 import { nextExerciseIndex, type CheckResult } from '../lib/check'
-import { useStore } from '../lib/store'
+import { lessonSequence } from '../lib/lessonChain'
+import { useStore } from '../lib/storeContext'
+import { GrammarLesson, LessonStartCard } from '../components/SectionLessons'
+import { grammarLesson } from '../lib/lessons'
 
 /* --------------------------- progress hisobi --------------------------- */
 
@@ -60,6 +63,7 @@ function agoLabel(at: number): string {
 export default function Grammar() {
   const { data, ready, actions } = useStore()
   const [openId, setOpenId] = useState<string | null>(null)
+  const [lessonId, setLessonId] = useState<string | null>(null)
 
   const bundle = getBundle(data.settings.currentLevel)
   const topics = bundle.grammar
@@ -67,6 +71,10 @@ export default function Grammar() {
   if (!ready) return <LoadingBlock label="Grammatika materiallari yuklanmoqda…" />
 
   const opened = openId ? topics.find((t) => t.id === openId) ?? null : null
+  const lessonTopic = lessonId ? topics.find((t) => t.id === lessonId) ?? null : null
+  if (lessonTopic) return <GrammarLesson topic={lessonTopic} onClose={() => setLessonId(null)} />
+  // Tavsiya: hali to'liq bajarilmagan birinchi mavzu (yo'q bo'lsa — birinchisi).
+  const nextTopic = topics.find((t) => topicProgress(t, data.attempts).ratio < 1) ?? topics[0]
 
   if (!opened) {
     return (
@@ -78,6 +86,16 @@ export default function Grammar() {
             maşqlar. Izohlar lokal qoidalar bilan tekşiriladi.
           </p>
         </header>
+
+        {nextTopic && (
+          <LessonStartCard
+            kicker="Grammatika darsi"
+            title={nextTopic.titleUz}
+            body="Qoida kartasi, maşqlar va misol gaplarni plitkalardan yiğiş"
+            steps={grammarLesson(nextTopic)}
+            onStart={() => setLessonId(nextTopic.id)}
+          />
+        )}
 
         {topics.length === 0 ? (
           <EmptyState
@@ -127,13 +145,16 @@ export default function Grammar() {
                     </div>
                     <p className="text-[11px] muted tabular-nums">
                       {p.attempted}/{p.total} maşq bajarildi
-                      {p.attempts > 0 ? ` · jami ${p.attempts} urinish` : ''}
+                      {p.attempts > 0 ? ` · jami ${p.attempts} uriniş` : ''}
                       {p.lastAt ? ` · oxirgi marta ${agoLabel(p.lastAt)}` : ''}
                     </p>
                   </div>
 
-                  <div className="flex gap-2">
-                    <Button onClick={() => setOpenId(t.id)}>{p.attempted > 0 ? 'Davom etiş' : 'Mavzuni oçiş'}</Button>
+                  <div className="flex flex-wrap gap-2">
+                    <Button variant="success" onClick={() => setLessonId(t.id)}>
+                      Darsni boşlaş
+                    </Button>
+                    <Button variant="secondary" onClick={() => setOpenId(t.id)}>{p.attempted > 0 ? 'Davom etiş' : 'Mavzuni oçiş'}</Button>
                     <Button variant="ghost" size="sm" onClick={() => setOpenId(t.id)} title="Faqat izohni öqiş">
                       Izohni öqiş
                     </Button>
@@ -167,7 +188,9 @@ function TopicDetail({ topic, onBack }: { topic: GrammarTopic; onBack: () => voi
   const total = topic.exercises.length
 
   // --- moslashuvchan tartib: qADAMMA-qADAM ko'ringan mashqlar ketma-ketligi ---
-  const [order, setOrder] = useState<number[]>([0])
+  // `order` bo'sh boshlanadi: birinchi mashq `baseOrder`dan (DULO tur
+  // almashinuvi) olinadi.
+  const [order, setOrder] = useState<number[]>([])
   const [pos, setPos] = useState(0)
   const [results, setResults] = useState<CheckResult[]>([])
   const [answered, setAnswered] = useState<Record<number, CheckResult>>({})
@@ -182,6 +205,34 @@ function TopicDetail({ topic, onBack }: { topic: GrammarTopic; onBack: () => voi
     return n
   }, [results])
 
+  /**
+   * DULO tarzidagi ASOSIY tartib: bir xil turdagi mashq qo'shni kelmasligi
+   * uchun pool tartibi qayta tartiblanadi (`src/lib/lessonChain.ts`,
+   * MIN_KIND_GAP=2 — `DULO_mod.apk` `math/math_lesson.json`dan o'lchangan).
+   * Bu ro'yxat qADAMMA mashq tanlashda ishlatiladi; natijaga qarab keyingi
+   * mashqni tanlash qoidasi (`check.ts::nextExerciseIndex`) o'zgarmaydi,
+   * shuning uchun adaptivlik ham, tur almashinuvi ham saqlanadi.
+   */
+  const baseOrder = useMemo(() => {
+    const ids = topic.exercises.map((e) => e.id)
+    const kind = new Map(ids.map((id, i) => [id, topic.exercises[i]?.kind]))
+    // reinforce=false: mustahkamlashni bizda `nextExerciseIndex` xato bo'lsa
+    // qiladi (oldingi mashqni qaytaradi) — ro'yxat shishmaydi, son o'zgarmaydi.
+    return lessonSequence(ids, (id) => kind.get(id), false).map((id) => ids.indexOf(id))
+  }, [topic])
+
+  /** Bajarilmagan mashqni DULO tartibida topish (aylana bo'yicha). */
+  const pickUnanswered = (candidate: number): number => {
+    if (answered[candidate] === undefined) return candidate
+    const start = baseOrder.indexOf(candidate)
+    if (start < 0) return candidate
+    for (let k = 1; k <= total; k++) {
+      const c = baseOrder[(start + k) % total]
+      if (c !== undefined && answered[c] === undefined) return c
+    }
+    return candidate
+  }
+
   const scrollToShow = (ref: RefObject<HTMLElement | null>) => {
     ref.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
@@ -194,34 +245,34 @@ function TopicDetail({ topic, onBack }: { topic: GrammarTopic; onBack: () => voi
   const onNext = () => {
     const answeredCount = Object.keys(answered).length
     if (answeredCount >= total) {
+      // Dars yakuni — o'yin qatlami: bonus XP va (0 xato bo'lsa) "xatosiz
+      // dars" hisobi `lessonComplete` ichida qo'shiladi. Xatolar sanoqi
+      // shu yerda hisoblanadi (`wrong` konstanti quyida — olddan havola
+      // qilmaslik uchun `answered` dan bevosita sanaymiz).
+      actions.completeLesson(answeredCount, Object.values(answered).filter((r) => !r.correct).length)
       setFinished(true)
       return
     }
-    const currentBase = order[pos] ?? 0
-    let candidate = nextExerciseIndex(currentBase, results, total)
-    // Agar tanlangan mashq allaqachon bajarilgan bo'lsa — keyingi bajarilmaganini
-    // olamiz (xato bo'lsa bir pog'ona orqaga qaytish qoidasi saqlanadi).
-    if (answered[candidate] !== undefined) {
-      let steps = 0
-      while (answered[candidate] !== undefined && steps < total * 2) {
-        candidate = (candidate + 1) % total
-        steps += 1
-      }
-    }
+    const currentBase = order[pos] ?? baseOrder[pos] ?? 0
+    const candidate = pickUnanswered(nextExerciseIndex(currentBase, results, total))
+    // `pickUnanswered` bajarilgan mashq o'rniga DULO tartibidagi
+    // (`baseOrder`) keyingi bajarilmaganini oladi — xato bo'lsa bir pog'ona
+    // orqaga qaytish qoidasi (`nextExerciseIndex`) shu yerda saqlanadi.
     setOrder((prev) => [...prev, candidate])
     setPos((prev) => prev + 1)
     scrollToShow(runnerRef)
   }
 
   const restart = () => {
-    setOrder([0])
+    setOrder([])
     setPos(0)
     setResults([])
     setAnswered({})
     setFinished(false)
   }
 
-  const currentIdx = order[pos] ?? 0
+  // Birinchi qadam `order`da yo'q — DULO tartibi (`baseOrder`)dan olinadi.
+  const currentIdx = order[pos] ?? baseOrder[pos] ?? 0
   const current: Exercise | undefined = topic.exercises[currentIdx]
   const prevResult = pos > 0 ? results[pos - 1] ?? null : null
 
@@ -400,6 +451,13 @@ function TopicDetail({ topic, onBack }: { topic: GrammarTopic; onBack: () => voi
               index={currentIdx}
               total={total}
               prevResult={prevResult}
+              /* Combo chizig'i HAQQONIY: bu sahifa har javobni
+                 `actions.recordAttempt(...)` bilan yozadi (pastdagi `checked`)
+                 — shuning uchun `data.game.combo` shu yerda o'sadi va uni
+                 ko'rsatish mumkin. Mobilda `ExerciseFragment` ham har javobni
+                 yozadi (`StoreAction.Attempt`) — u yerda qo'shimcha belgi
+                 shart emas. */
+              comboTracked
               checked={(r, secondsSpent) => {
                 onChecked(r, currentIdx)
                 actions.recordAttempt({

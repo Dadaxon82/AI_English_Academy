@@ -17,7 +17,7 @@ const ev = (skill: SkillEvidence['skill'], score: number, n = 6): SkillEvidence 
 })
 
 describe('Kunlik reja (90 daqiqa) va moslaşuv', () => {
-  it('boshlang‘ich taqsimot: Vocab 10 / Grammar 15 / Reading 15 / Listening 15 / Writing 20 / Speaking 15', () => {
+  it('boşlanğiç taqsimot: Vocab 10 / Grammar 15 / Reading 15 / Listening 15 / Writing 20 / Speaking 15', () => {
     const a = computeAllocation({ ...DEFAULT_SETTINGS, examDate: null }, [], WED)
     expect(a.minutes).toEqual({
       vocabulary: 10,
@@ -70,7 +70,7 @@ describe('Kunlik reja (90 daqiqa) va moslaşuv', () => {
     expect(a.reasonUz.some((r) => r.includes('Imtihonga'))).toBe(true)
   })
 
-  it('imtihon sanasi: 30 kunlik oyna chegarasi aniq va kun hisobi pagesanasi bilan bir xil', () => {
+  it('imtihon sanasi: 30 kunlik oyna çegarasi aniq va kun hisobi pagesanasi bilan bir xil', () => {
     // Kun hisobi endi `daysUntil` orqali (yarim tun oralig'i) — sahifalarda
     // ko'rsatiladigan "N kun qoldi" soni taqsimot sababi bilan kelishmay
     // qolishi mumkin emas edi.
@@ -140,7 +140,7 @@ describe('computeAllocation — interfeys xabari haqiqiy özgarişni aks ettirad
     // Minimal 30 daq → har ko‘nikma 5 daqiqa, donor 5→0 ga tusholmaydi.
     const a = computeAllocation({ ...DEFAULT_SETTINGS, dailyMinutes: 30, examDate: null }, [ev('listening', 40), ev('speaking', 40)], WED)
     const changed = Object.entries(a.minutes).some(([s, m]) => m > DEFAULT_ALLOCATION[s as Skill])
-    const claims = a.reasonUz.some((r) => r.includes('kuchaytirildi'))
+    const claims = a.reasonUz.some((r) => r.includes('kuçaytirildi'))
     expect(claims).toBe(changed)
   })
 

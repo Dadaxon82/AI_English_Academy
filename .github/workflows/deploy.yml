@@ -36,6 +36,9 @@ jobs:
           VITE_BASE: /AI_English_Academy/
           VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL || secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ vars.VITE_SUPABASE_ANON_KEY || secrets.VITE_SUPABASE_ANON_KEY }}
+          # AI (ai-roleplay / ai-feedback edge funksiyalari). O'chirish uchun repo
+          # Variables'da VITE_AI_ENABLED=false qo'ying. Xatoda ilova qoidaviy dvigatelga qaytadi.
+          VITE_AI_ENABLED: ${{ vars.VITE_AI_ENABLED || 'true' }}
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist

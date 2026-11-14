@@ -11,7 +11,7 @@
  * xatolar bir marotaba ro'yxat bo'lib chiqadi.
  */
 import { describe, expect, it } from 'vitest'
-import { a1, diagnosticTest, mockExamA1 } from '../content'
+import { LOADED_LEVELS, diagnosticTest, getBundle, mockExamA1 } from '../content'
 import { normalize } from '../lib/check'
 import type { Exercise, ReadingPassage } from '../content/types'
 
@@ -27,13 +27,16 @@ function collect(): Item[] {
   const add = (ex: Exercise, owner: string, passage?: ReadingPassage, transcript?: string) =>
     out.push({ ex, owner, passage, transcript })
 
-  for (const g of a1.grammar) for (const e of g.exercises) add(e, g.id)
-  for (const r of a1.reading) for (const e of r.exercises) add(e, r.id, r)
-  for (const l of a1.listening) {
-    const tr = l.audio.transcript.map((t) => t.text).join(' ')
-    for (const e of l.exercises) add(e, l.id, undefined, tr)
+  // Barcha yuklangan darajalar (A1, A2 …) — yangi daraja audit'dan chetda qolmasin.
+  for (const b of LOADED_LEVELS.map(getBundle)) {
+    for (const g of b.grammar) for (const e of g.exercises) add(e, g.id)
+    for (const r of b.reading) for (const e of r.exercises) add(e, r.id, r)
+    for (const l of b.listening) {
+      const tr = l.audio.transcript.map((t) => t.text).join(' ')
+      for (const e of l.exercises) add(e, l.id, undefined, tr)
+    }
+    for (const t of b.tests) for (const e of t.exercises) add(e, t.id)
   }
-  for (const t of a1.tests) for (const e of t.exercises) add(e, t.id)
   for (const s of mockExamA1.sections) {
     const tr = s.audio?.transcript.map((t) => t.text).join(' ')
     for (const e of s.exercises) add(e, s.id, undefined, tr)
@@ -51,16 +54,16 @@ function expectClean(problems: string[], header: string) {
   expect(problems, `${header} (${problems.length} ta):\n` + problems.join('\n')).toEqual([])
 }
 
-describe('Kontent auditi — mashqlar yaxlitligi', () => {
+describe('Kontent auditi — maşqlar yaxlitligi', () => {
   it('maşqlar töplami böş emas', () => {
     expect(ITEMS.length).toBeGreaterThan(50)
   })
 
-  it('har bir maşqda ID, topshiriq, izoh va qiyinlik bor', () => {
+  it('har bir maşqda ID, topşiriq, izoh va qiyinlik bor', () => {
     const bad: string[] = []
     for (const { ex, owner } of ITEMS) {
       if (!ex.id.trim()) bad.push(`${owner}: böş ID`)
-      if (ex.instructionUz.length <= 5) bad.push(`${ex.id}: topshiriq yo‘q`)
+      if (ex.instructionUz.length <= 5) bad.push(`${ex.id}: topşiriq yöq`)
       if (ex.explanationUz.length <= 5) bad.push(`${ex.id}: izoh yöq`)
       if (ex.difficulty < 1 || ex.difficulty > 5) bad.push(`${ex.id}: qiyinlik ${ex.difficulty}`)
     }
@@ -77,19 +80,19 @@ describe('Kontent auditi — mashqlar yaxlitligi', () => {
     expectClean(dup, 'takroriy ID')
   })
 
-  it('multiple-choice: javob indeksi chegarada, variantlar noyob', () => {
+  it('multiple-choice: javob indeksi çegarada, variantlar noyob', () => {
     const bad: string[] = []
     for (const { ex, owner } of ITEMS) {
       if (ex.kind !== 'multiple-choice') continue
       if (ex.options.length < 2) bad.push(`${ex.id}: variantlar soni ${ex.options.length}`)
       if (new Set(ex.options.map(norm)).size !== ex.options.length) bad.push(`${ex.id}: takroriy variant`)
       if (ex.answerIndex < 0 || ex.answerIndex >= ex.options.length)
-        bad.push(`${owner}/${ex.id}: answerIndex=${ex.answerIndex} chegaradan tashqarida`)
+        bad.push(`${owner}/${ex.id}: answerIndex=${ex.answerIndex} çegaradan taşqarida`)
     }
     expectClean(bad, 'multiple-choice')
   })
 
-  it('multiple-choice (tinglash): to‘g‘ri variant audio mazmuniga mos', () => {
+  it('multiple-choice (tinglaş): töğri variant audio mazmuniga mos', () => {
     // Variantlar paraphrase bo‘lishi mumkin, shuning uchun so‘z darajasida
     // solishtiramiz. Aniq signal: to‘g‘ri variantning barcha muhim so‘zlari
     // transkriptda YO‘Q, lekin biror xato variantning barcha so‘zlari BOR.
@@ -108,7 +111,7 @@ describe('Kontent auditi — mashqlar yaxlitligi', () => {
         .filter(({ i, t }) => i !== ex.answerIndex && t.length >= 2 && t.every((w) => tr.includes(w)))
       if (rightHits === 0 && fullWrong.length > 0)
         bad.push(
-          `${owner}/${ex.id}: javob “${ex.options[ex.answerIndex]}” audioda umuman eshitilmaydi, ` +
+          `${owner}/${ex.id}: javob “${ex.options[ex.answerIndex]}” audioda umuman eşitilmaydi, ` +
             `lekin “${fullWrong.map((w) => w.o).join(' | ')}” eşitiladi — kalit indeksini tekşiring`,
         )
     }
@@ -140,7 +143,7 @@ describe('Kontent auditi — mashqlar yaxlitligi', () => {
     expectClean(bad, 'tfng evidence')
   })
 
-  it('matching: kamida 2 juftlik, chap/o‘ng tomonlar noyob', () => {
+  it('matching: kamida 2 juftlik, çap/öng tomonlar noyob', () => {
     const bad: string[] = []
     for (const { ex } of ITEMS) {
       if (ex.kind !== 'matching') continue
@@ -151,7 +154,7 @@ describe('Kontent auditi — mashqlar yaxlitligi', () => {
     expectClean(bad, 'matching')
   })
 
-  it('gap-fill: bo‘shliq soni == javoblar soni, bankda javoblar bor', () => {
+  it('gap-fill: böşliq soni == javoblar soni, bankda javoblar bor', () => {
     const bad: string[] = []
     for (const { ex, owner } of ITEMS) {
       if (ex.kind !== 'gap-fill') continue
@@ -168,7 +171,7 @@ describe('Kontent auditi — mashqlar yaxlitligi', () => {
     expectClean(bad, 'gap-fill')
   })
 
-  it('gap-fill (o‘qish): javob matnda so‘zma-so‘z uchraydi', () => {
+  it('gap-fill (öqiş): javob matnda sözma-söz uçraydi', () => {
     const bad: string[] = []
     for (const { ex, passage } of ITEMS) {
       if (ex.kind !== 'gap-fill' || !passage) continue
@@ -178,7 +181,7 @@ describe('Kontent auditi — mashqlar yaxlitligi', () => {
     expectClean(bad, 'gap-fill javoblari matnda')
   })
 
-  it('word-order: bank = javob so‘zlarining aniq to‘plami', () => {
+  it('word-order: bank = javob sözlarining aniq töplami', () => {
     const bad: string[] = []
     for (const { ex, owner } of ITEMS) {
       if (ex.kind !== 'word-order') continue
@@ -191,7 +194,7 @@ describe('Kontent auditi — mashqlar yaxlitligi', () => {
     expectClean(bad, 'word-order banki')
   })
 
-  it('gap-fill (a / an): artikel keyin keladigan so‘z ovozi bilan mos', () => {
+  it('gap-fill (a / an): artikel keyin keladigan söz ovozi bilan mos', () => {
     // "a banana" / "an apple" — og'zaki til qoidasi. Eski xato: a1-ex-g5-06 da
     // "I ate ___ banana" uchun kalit `a` edi (to'g'risi `an`).
     const VOWEL = /^[aeiou]/
@@ -223,7 +226,83 @@ describe('Kontent auditi — mashqlar yaxlitligi', () => {
     expectClean(bad, 'translation')
   })
 
-  it('mock imtihon: bo‘lim bo‘sh emas, savol ko‘nikması bo‘limga mos', () => {
+  /* ---------------------- yangi turlar (2026-11-08) ---------------------- */
+
+  it('yangi turlarning har biridan kamida 7 ta maşq bor', () => {
+    for (const k of ['multi-select', 'dropdown-cloze', 'sequence', 'categorize', 'short-answer'] as const) {
+      expect(ITEMS.filter((i) => i.ex.kind === k).length, k).toBeGreaterThanOrEqual(7)
+    }
+  })
+
+  it('multi-select: kamida 2 töğri javob, hammasi emas, indekslar çegarada, variantlar noyob', () => {
+    const bad: string[] = []
+    for (const { ex } of ITEMS) {
+      if (ex.kind !== 'multi-select') continue
+      const set = new Set(ex.answerIndexes)
+      if (set.size < 2) bad.push(`${ex.id}: 2 tadan kam töğri javob (bitta bölsa multiple-choice işlating)`)
+      if (set.size >= ex.options.length) bad.push(`${ex.id}: hamma variant töğri — tanlov ma’nosiz`)
+      if ([...set].some((i) => i < 0 || i >= ex.options.length)) bad.push(`${ex.id}: indeks çegaradan taşqarida`)
+      if (new Set(ex.options.map(norm)).size !== ex.options.length) bad.push(`${ex.id}: takroriy variant`)
+    }
+    expectClean(bad, 'multi-select')
+  })
+
+  it('dropdown-cloze: böşliq = variantlar röyxati = javoblar; javob variantlar içida', () => {
+    const bad: string[] = []
+    for (const { ex } of ITEMS) {
+      if (ex.kind !== 'dropdown-cloze') continue
+      const gaps = (ex.text.match(GAP_RE) ?? []).length
+      if (gaps !== ex.answers.length || gaps !== ex.choices.length) bad.push(`${ex.id}: ${gaps} böşliq / ${ex.choices.length} röyxat / ${ex.answers.length} javob`)
+      ex.answers.forEach((a, i) => {
+        const ch = ex.choices[i] ?? []
+        if (!ch.includes(a)) bad.push(`${ex.id}: ${i + 1}-javob “${a}” variantlarda yöq`)
+        if (ch.length < 2) bad.push(`${ex.id}: ${i + 1}-röyxatda 2 tadan kam variant`)
+        if (new Set(ch).size !== ch.length) bad.push(`${ex.id}: ${i + 1}-röyxatda takror`)
+      })
+    }
+    expectClean(bad, 'dropdown-cloze')
+  })
+
+  it('sequence: aralaş tartib — xuddi öşa elementlar, lekin töğri tartib emas', () => {
+    const bad: string[] = []
+    for (const { ex } of ITEMS) {
+      if (ex.kind !== 'sequence') continue
+      if (ex.items.length < 3) bad.push(`${ex.id}: 3 tadan kam element`)
+      if (new Set(ex.items).size !== ex.items.length) bad.push(`${ex.id}: takroriy element`)
+      if ([...ex.items].sort().join('|') !== [...ex.itemsShuffled].sort().join('|')) bad.push(`${ex.id}: itemsShuffled boşqa töplam`)
+      if (ex.items.join('|') === ex.itemsShuffled.join('|')) bad.push(`${ex.id}: aralaş tartib javobning özi`)
+      if (ex.itemsShuffled[0] === ex.items[0]) bad.push(`${ex.id}: birinçi element joyida qolgan (juda oson)`)
+    }
+    expectClean(bad, 'sequence')
+  })
+
+  it('categorize: 2–3 guruh, har guruhda kamida 2 element, elementlar noyob', () => {
+    const bad: string[] = []
+    for (const { ex } of ITEMS) {
+      if (ex.kind !== 'categorize') continue
+      if (ex.categories.length < 2 || ex.categories.length > 3) bad.push(`${ex.id}: ${ex.categories.length} guruh`)
+      ex.categories.forEach((c, ci) => {
+        if (ex.sortItems.filter((it) => it.category === ci).length < 2) bad.push(`${ex.id}: “${c}” guruhida 2 tadan kam`)
+      })
+      if (ex.sortItems.some((it) => it.category < 0 || it.category >= ex.categories.length)) bad.push(`${ex.id}: guruh indeksi notöğri`)
+      if (new Set(ex.sortItems.map((it) => norm(it.text))).size !== ex.sortItems.length) bad.push(`${ex.id}: takroriy element`)
+    }
+    expectClean(bad, 'categorize')
+  })
+
+  it('short-answer (öqiş): javob matnda uçraydi va söz çegarasiga siğadi', () => {
+    const bad: string[] = []
+    for (const { ex, passage } of ITEMS) {
+      if (ex.kind !== 'short-answer') continue
+      if (ex.accepted.length === 0 || ex.accepted.some((a) => !a.trim())) bad.push(`${ex.id}: accepted böş`)
+      const first = ex.accepted[0] ?? ''
+      if (ex.maxWords && first.trim().split(/\s+/).length > ex.maxWords) bad.push(`${ex.id}: asosiy javob ${ex.maxWords} sözdan uzun`)
+      if (passage && !norm(passage.paragraphs.join(' ')).includes(norm(first))) bad.push(`${ex.id}: “${first}” matnda yöq`)
+    }
+    expectClean(bad, 'short-answer')
+  })
+
+  it('mock imtihon: bölim böş emas, savol könikmasi bölimga mos', () => {
     const bad: string[] = []
     for (const s of mockExamA1.sections) {
       const hasTask = Boolean(s.writingTask || s.speakingTask)
@@ -231,5 +310,38 @@ describe('Kontent auditi — mashqlar yaxlitligi', () => {
       for (const e of s.exercises) if (e.skill !== s.skill) bad.push(`${e.id}: skill=${e.skill} ≠ bölim ${s.skill}`)
     }
     expectClean(bad, 'mock imtihon')
+  })
+})
+
+describe('A2 kontenti — tuzilma (A1 bilan bir xil)', () => {
+  const a2 = getBundle('A2')
+  it('A2 yuklangan', () => {
+    expect(LOADED_LEVELS).toContain('A2')
+    expect(a2.days.length).toBeGreaterThan(0)
+  })
+  it('har kun: 12 söz + 5 glossariy, grammatika, öqiş, tinglaş, yoziş, 3 gapiriş, kun testi', () => {
+    const bad: string[] = []
+    for (const d of a2.days) {
+      const ids = (skill: string) => d.sections.find((s) => s.skill === skill)?.itemIds ?? []
+      if (ids('vocabulary').length !== 12) bad.push(`${d.id}: luğat ${ids('vocabulary').length} ≠ 12`)
+      const rd = a2.reading.find((r) => r.id === ids('reading')[0])
+      if (!rd || (rd.glossary ?? []).length !== 5) bad.push(`${d.id}: öqiş matni yoki 5 ta glossariy yöq`)
+      if (!a2.grammar.some((g) => g.id === ids('grammar')[0])) bad.push(`${d.id}: grammatika mavzusi yöq`)
+      if (!a2.listening.some((l) => l.id === ids('listening')[0])) bad.push(`${d.id}: tinglaş yöq`)
+      if (!a2.writing.some((w) => w.id === ids('writing')[0])) bad.push(`${d.id}: yoziş yöq`)
+      if (ids('speaking').length !== 3) bad.push(`${d.id}: gapiriş ${ids('speaking').length} ≠ 3`)
+      if (!d.sectionTest || d.sectionTest.exercises.length < 8) bad.push(`${d.id}: kun testi 8 savoldan kam`)
+      for (const id of [...ids('vocabulary')]) if (!a2.vocab.some((v) => v.id === id)) bad.push(`${d.id}: söz ${id} topilmadi`)
+    }
+    expectClean(bad, 'A2 kun tuzilmasi')
+  })
+  it('A2 maşqlari darajasi A2, IDlari a2- bilan boşlanadi', () => {
+    const exs = [...a2.grammar, ...a2.reading, ...a2.listening].flatMap((x) => x.exercises).concat(a2.tests.flatMap((t) => t.exercises))
+    const bad = exs.filter((e) => e.level !== 'A2' || !e.id.startsWith('a2-')).map((e) => e.id)
+    expectClean(bad, 'A2 darajasi / ID')
+  })
+  it('audio fayli yöq tinglaşlar pleyersiz (soxta audio yöq)', () => {
+    const bad = a2.listening.filter((l) => !l.audio.fileAvailable && l.audio.src !== '').map((l) => l.id)
+    expectClean(bad, 'fayli yöq audio uçun src böş bölişi kerak')
   })
 })

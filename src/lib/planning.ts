@@ -9,7 +9,7 @@
 
 import { SKILLS, type CefrLevel, type Skill } from '../content/types'
 import type { UserSettings } from './types'
-import { DEFAULT_ALLOCATION } from './types'
+import { DEFAULT_ALLOCATION, clampDailyMinutes } from './types'
 import type { SkillEvidence } from './skillScoring'
 
 export interface Allocation {
@@ -26,7 +26,7 @@ export function computeAllocation(
   evidence: readonly SkillEvidence[],
   today = new Date(),
 ): Allocation {
-  const total = clampTotal(settings.dailyMinutes)
+  const total = clampDailyMinutes(settings.dailyMinutes)
   const reasons: string[] = []
   const base = { ...DEFAULT_ALLOCATION }
 
@@ -118,12 +118,6 @@ export function computeAllocation(
       ...reasons,
     ],
   }
-}
-
-function clampTotal(m: number): number {
-  if (!Number.isFinite(m)) return 90
-  // 6 ko‘nikma × minimal 5 daqiqa = 30 — undan pastga bo‘lishi mumkin emas.
-  return Math.max(30, Math.min(240, Math.round(m)))
 }
 
 export interface DayTask {

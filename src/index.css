@@ -30,11 +30,44 @@
 
   --radius-card: 1rem;
 
-  --animate-fade-in: fade-in 0.28s ease-out both;
-  --animate-slide-up: slide-up 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
-  --animate-pop: pop 0.22s ease-out both;
+  /* Harakat byudjeti — yagona manba `src/lib/motionManifest.ts`
+     (mobil tomon: `res/raw/motion_manifest.json`). Sonlar millisekundda;
+     `Layout.tsx` sozlama o'zgarsa bu o'zgaruvchilarni `<html>`da yangilaydi,
+     `no-motion` klassi esa ularni o'chiradi. */
+  --aea-step: 260ms;
+  --aea-outcome: 320ms;
+  --aea-pop: 380ms;
+  --aea-pop-scale: 1.14;
+  --aea-xp: 620ms;
+  --aea-chain: 240ms;
+  --aea-stagger: 40ms;
+  --aea-press: 120ms;
+
+  --animate-fade-in: fade-in var(--aea-step) ease-out both;
+  --animate-slide-up: slide-up var(--aea-outcome) cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-pop: pop var(--aea-pop) ease-out both;
+  /* Zanjir katakchalarining to'lishi (O'quv yo'li) — DULO'ning "kunlar
+     kataklari birma-bir yonadi" xulqining bizdagi ko'rinishi. */
+  --animate-chain: chain-fill var(--aea-chain) ease-out both;
+  /* XP sonining ko'tarilishi. */
+  --animate-xp: xp-rise var(--aea-xp) cubic-bezier(0.16, 1, 0.3, 1) both;
+  /* NOTO'G'RI javob — silkitish (DULO'da xato javobda blok silkinadi; bizda
+     ham shu mantiq). Uzamlik — MAVJOQ `outcomeMs` (320 ms): yangi son yo'q. */
+  --animate-shake: shake var(--aea-outcome) ease-in-out both;
+  /* TO'G'RI javob — qahramon atrofidagi "zarba" halqasi (`duo_perfect_*.riv`
+     o'rniga oddiy halqa). Uzamlik — MAVJOQ `popMs` (380 ms). */
+  --animate-impact: impact-ring var(--aea-pop) ease-out both;
 }
 
+/* Video short: gapirayotgan personaj (faqat motion-safe) */
+@keyframes short-bob {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-2.5%) rotate(-1.2deg); }
+}
+@keyframes short-talk {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.07); }
+}
 @keyframes fade-in {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -45,8 +78,57 @@
 }
 @keyframes pop {
   0% { transform: scale(0.94); opacity: 0; }
-  60% { transform: scale(1.02); }
+  60% { transform: scale(var(--aea-pop-scale)); }
   100% { transform: scale(1); opacity: 1; }
+}
+@keyframes chain-fill {
+  /* Zanjir katakchasi: bo'sh → to'lgan. Mobilda `Motion.fillChainCell()`
+     shu bosqichlarni masshtab orqali qiladi. */
+  0% { transform: scale(0.6); opacity: 0.35; }
+  70% { transform: scale(1.08); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+@keyframes xp-rise {
+  0% { transform: translateY(6px) scale(0.9); opacity: 0; }
+  25% { transform: translateY(-2px) scale(1); opacity: 1; }
+  100% { transform: translateY(-22px) scale(1); opacity: 0; }
+}
+@keyframes shake {
+  /* Noto'g'ri javob — gorizontal silkitish. Mobilda `Motion.shake()` shu
+     bosqichlarni `translationX` bilan qiladi (bir xil manba: `outcomeMs`). */
+  0% { transform: translateX(0); }
+  20% { transform: translateX(-7px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(2px); }
+  100% { transform: translateX(0); }
+}
+@keyframes impact-ring {
+  /* To'g'ri javob — qahramon atrofidan kengayib yo'qoluvchi halqa.
+     `::after` orqali chiziladi (qo'shimcha DOM tugmasi kerak emas). */
+  0% { transform: scale(0.7); opacity: 0.85; }
+  100% { transform: scale(1.9); opacity: 0; }
+}
+@keyframes bump {
+  /* Tanlov belgilanganda tugmaning kichik "tupichi" — bosilishni ko'rinadigan
+     qiladi. Vaqt bitta manbadan: `--aea-press` (`motionManifest.ts` dagi
+     `pressMs`). Kenglik (0.97 → 1.03 → 1) ixtir emas: u mobil
+     `Motion.press()`dagiy BIR XIL qiymat (`Motion.kt`) — bu yerdagi masshtab
+     raqamlari KOTLINDAGI bilan bir xil bo'lishi shart (tekshiriladi:
+     `src/test/motion.test.ts`). */
+  0% { transform: scale(0.97); }
+  60% { transform: scale(1.03); }
+  100% { transform: scale(1); }
+}
+
+/* Foydalanuvchi Sozlamalarda harakatni O'CHIRSA — `Layout.tsx` klassni
+   qo'yadi. Bu `prefers-reduced-motion`dan mustaqil: ikkalasidan biri bo'lsa
+   ham harakat bo'lmaydi. Mobilda `Motion.enabled()` xuddi shu ikki
+   manbani tekshiradi (sozlama + tizim `animator_duration_scale`). */
+html.no-motion *, html.no-motion *::before, html.no-motion *::after {
+  animation-name: none !important;
+  animation-duration: 0.01ms !important;
+  transition-duration: 0.01ms !important;
 }
 
 /* ---------- Holat tokenlari (light / dark) ---------- */
@@ -64,6 +146,43 @@
     --ok: #15803d;
     --warn: #b45309;
     --bad: #be123c;
+
+    /* O'yin belgilarining ranglari — mobil `colors.xml`dag `heart/gem/star/league`
+       bilan BIR XIL (test: `src/test/game-icons.test.ts`). */
+    --heart: #e0245e;
+    --gem: #2f6fed;
+    --star: #e8a013;
+    --league: #7c3aed;
+
+    /* 3D ("chunky") tugmalar — `components/chunky.ts`. Oq matn bilan ≥4.5:1 (axe e2e). */
+    --btn-go: var(--color-emerald-700);
+    --btn-go-hover: var(--color-emerald-800);
+    --btn-go-edge: var(--color-emerald-900);
+    --btn-no: var(--color-rose-700);
+    --btn-no-hover: var(--color-rose-800);
+    --btn-no-edge: var(--color-rose-900);
+    --btn-alt: var(--color-navy-600);
+    --btn-alt-hover: var(--color-navy-700);
+    --btn-alt-edge: var(--color-navy-800);
+    --btn-off: var(--color-slate-200);
+    --btn-off-text: var(--color-slate-500);
+    --btn-off-edge: var(--color-slate-300);
+
+    /* O'quv yo'li xaritasi — `DuoPathMap.tsx` (qorong'ida ham o'qiladigan). */
+    --map-done: #f5b301;
+    --map-done-edge: #c98f00;
+    /* Sariq ustidagi matn — to'q (oq matn ≈1.9:1 edi). */
+    --map-done-ink: #3b2a00;
+    --map-current: #22c55e;
+    --map-current-edge: #15803d;
+    --map-current-ink: #15803d;
+    --map-locked: #e2e8f0;
+    --map-locked-edge: #b8c2d0;
+    --map-locked-ink: #8a96a8;
+    --map-chest: #b7791f;
+    --map-chest-lid: #d69e2e;
+    --map-chest-edge: #7c4a03;
+    --map-chest-lock: #f5b301;
   }
   .dark {
     color-scheme: dark;
@@ -78,6 +197,23 @@
     --ok: #4ade80;
     --warn: #fbbf24;
     --bad: #fb7185;
+
+    /* O'yin belgilari — qorong'uda biroz yorqinroq (mobil `colors.xml` dag
+       `heart_dark` va h.k. bilan BIR XIL). */
+    --heart: #ff5c8a;
+    --gem: #6d9dff;
+    --star: #ffc53d;
+    --league: #a78bfa;
+
+    --btn-off: var(--color-slate-700);
+    --btn-off-text: var(--color-slate-300);
+    --btn-off-edge: var(--color-slate-600);
+
+    --map-current-ink: #4ade80;
+    /* Qorong'ida qulflangan tugun oq dog' bo'lib qolmasin. */
+    --map-locked: #1e3a63;
+    --map-locked-edge: #16304f;
+    --map-locked-ink: #7d93b5;
   }
 
   * { border-color: var(--border); }
@@ -101,6 +237,11 @@
   }
 
   h1, h2, h3 { letter-spacing: -0.015em; }
+
+  /* Grid elementlari kontentning (truncate / nowrap matn) tabiiy kengligidan
+     torayishi mumkin bo'lsin. ESKI BUG: 375px telefonda Dashboard 395px,
+     O'quv yo'li 411px kenglikka cho'zilib, sahifa yonga surilardi. */
+  #main .grid > * { min-width: 0; }
 
   /* Harakatni kamaytirish so'rovi hurmat qilinadi */
   @media (prefers-reduced-motion: reduce) {
@@ -132,11 +273,105 @@
     color: var(--muted);
   }
   .kbd-hint { font-size: 0.7rem; color: var(--muted); }
+
+  /* Mashq jarayonining progress chizig'i (ExerciseRunner) — DULO'dagi
+     "tepadagi chiziq har javobdan keyin siljiydi" xulqining bizdagi
+     ko'rinishi: FAQAT mantiq olindi, rang/brand bizniki (`--accent`).
+     To'ldish uzamligi `--aea-step` (260 ms — yagona manba
+     `src/lib/motionManifest.ts`, mobilda `res/raw/motion_manifest.json`):
+     YANGI SON IXTIR QILINMAGAN.
+     Nega `transition` va `animation` emas: `html.no-motion` va
+     `prefers-reduced-motion` bloklari `transition-duration`ni 0,01 ms ga
+     tushiradi — shuning uchun harakat o'chirilganda chiziq siljimaydi,
+     birdan joyiga o'tadi (sakraydi), ma'lumot yo'qolmaydi. */
+  .aea-step-bar {
+    position: relative;
+    height: 16px;
+    border-radius: 999px;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+  /* Dars ichida 3+ ketma-ket to'g'ri javob — chiziq oltin rangga o'tadi. */
+  .aea-step-bar-gold > span {
+    background: #f5b301 !important;
+  }
+  .aea-step-bar > span {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    border-radius: 999px;
+    /* Dars rejimi: yashil to'lish (yorug' chiziq bilan) — rang bizniki. */
+    background: #22c55e;
+    box-shadow: inset 0 3px 0 rgb(255 255 255 / 0.35);
+    transition: width var(--aea-step) cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* ---------------------------------------------------------------------
+     Javob varianti tugmasi — bosish tajribasi (DULO mantig'i).
+     Eski holat: faqat rang o'zgarardi (`transition-colors`) — tugma "o'lik"
+     tuyulardi. Endi: bosilganda bosiladi, qo'yib yuborilganda o'sib joyiga
+     qaytadi (`pressMs` = 120 ms — yagona manba `motionManifest.ts`).
+     `:active` — bosilgan holat; `transition` esa qaytish siljishi.
+     Ranglar BIZNIK (`--accent`), DULO brendi emas.
+     --------------------------------------------------------------------- */
+  .aea-choice {
+    transition:
+      background-color var(--aea-step) ease-out,
+      border-color var(--aea-step) ease-out,
+      transform var(--aea-press) cubic-bezier(0.34, 1.56, 0.64, 1),
+      box-shadow var(--aea-press) ease-out;
+  }
+  .aea-choice:not(:disabled):hover {
+    transform: translateY(-1px);
+  }
+  .aea-choice:not(:disabled):active {
+    transform: scale(0.97);
+  }
+  .aea-choice[aria-checked='true'] {
+    animation: bump var(--aea-press) ease-out;
+  }
+  /* Tanlangan juftlik tasdiqlanishi (matching) — o'q "o'sib" qaytadi.
+     `key` bilan qayta chiziladi, shuning uchun animatsiya HAR TANLOVDAGI
+     qaytariladi (select o'zi focus'ni yo'qotmasligi uchun animatsiya
+     yonidagi belgiga qo'yilgan). */
+  .aea-bump {
+    display: inline-block;
+    animation: bump var(--aea-press) ease-out;
+  }
+
+  /* Natija banneri: to'g'ri — halqali zarba, noto'g'ri — silkitish.
+     Ikkalasi ham `role="status"` blokka qo'yiladi (ekranni o'qiydigan
+     dasturga matn ta'sir qilmaydi — animatsiya `aria-hidden` bezak). */
+  .aea-outcome-correct {
+    position: relative;
+  }
+  .aea-outcome-correct::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: inherit;
+    border: 2px solid var(--ok);
+    pointer-events: none;
+    animation: var(--animate-impact);
+  }
+  .aea-outcome-wrong {
+    animation: var(--animate-shake);
+  }
 }
 
-/* Telefonda sahifa ekranga sig'sin: grid elementlari standart `min-width: auto`
-   bilan kontent kengligigacha cho'zilib, gorizontal skroll paydo qilardi.
-   `:where` — spetsifiklik 0, shuning uchun `min-w-*` klasslari ustun turadi. */
-:where(#main > *, #main .grid > *) {
-  min-width: 0;
+/* 3D olam: g'alaba konfettisi */
+@keyframes world-confetti-fall {
+  to {
+    translate: 0 110vh;
+    rotate: 720deg;
+  }
+}
+.world-confetti {
+  animation: world-confetti-fall linear infinite;
+}
+.no-motion .world-confetti {
+  animation: none;
+  display: none;
 }

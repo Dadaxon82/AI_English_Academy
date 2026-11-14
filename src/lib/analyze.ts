@@ -109,7 +109,7 @@ export function analyzeWriting(text: string, task: WritingTask): WritingAnalysis
   for (const need of task.mustInclude ?? []) {
     const found = containsLoose(text, need.pattern)
     if (!found) {
-      errors.push({ excerpt: '—', kind: 'content', correction: need.pattern, whyUz: `Topşiriqda bu ma‘no kutiladi: ${need.whyUz}` })
+      errors.push({ excerpt: '—', kind: 'content', correction: need.pattern, whyUz: `Topşiriqda bu ma’no kutiladi: ${need.whyUz}` })
     } else hit++
   }
   const lenScore = words < task.minWords ? (words >= task.minWords * 0.7 ? 2 : 0) : words > task.maxWords ? 3 : 4
@@ -137,8 +137,8 @@ export function analyzeWriting(text: string, task: WritingTask): WritingAnalysis
     accuracy,
   }
 
-  if (words >= task.minWords) strengthsUz.push(`Hajm talabi bajarildi: ${words} so‘z.`)
-  if (linkers >= 3) strengthsUz.push('Gaplar boğlovçilar bilan mantliq boğlangan.')
+  if (words >= task.minWords) strengthsUz.push(`Hajm talabi bajarildi: ${words} söz.`)
+  if (linkers >= 3) strengthsUz.push('Gaplar boğlovçilar bilan mantiqiy boğlangan.')
   if (unique.size >= words * 0.55 && words > 20) strengthsUz.push('Söz boyligi yaxşi — takrorlar kam.')
   if (errors.length === 0) strengthsUz.push('Tekşirilgan asosiy xatolar topilmadi.')
 
@@ -209,17 +209,9 @@ export function analyzeSpeaking(transcript: string, durationSec: number, task: {
     5,
   )
 
-  const unique = new Set(transcript.toLowerCase().match(/[a-z']+/g) ?? [])
-  const lexis = clamp(unique.size <= 5 ? 1 : Math.round((unique.size / Math.max(1, words)) * 8), 0, 5)
-
-  const structures = [
-    /\b(i|we)\s+(am|'m)\s+/i.test(transcript),
-    /\b(go|goes|went|going)\b/i.test(transcript),
-    /\b(can|cannot|can't)\b/i.test(transcript),
-    /\b(because|so|but|and then)\b/i.test(transcript),
-    /\b(yesterday|last week|tomorrow|usually|every day)\b/i.test(transcript),
-  ].filter(Boolean).length
-  const grammar = clamp(1 + structures, 0, 5)
+  const unique = uniqueWords(transcript)
+  const lexis = speakingLexis(unique, words)
+  const grammar = speakingGrammar(transcript)
 
   // Ravonlik: so'z tezligi A1 uchun 60-140 wpm normal oralig'i.
   // ESKI BUG: 50-59 wpm (izohda "Gapirish sekin" deyilgan) baribir 5 ball
@@ -229,7 +221,7 @@ export function analyzeSpeaking(transcript: string, durationSec: number, task: {
   const notesUz: string[] = []
   if (durationSec < task.minSeconds) notesUz.push(`Javob qisqa: ${durationSec}s. Kamida ${task.minSeconds} sekund gapirişga harakat qiling.`)
   if (wpm > 0 && wpm < 60) notesUz.push('Gapiriş sekin — gaplar orasidagi pauzalarni kamaytiring, kunni şu mavzuda 1 daqiqa maşq qilib köring.')
-  if (unique.size <= 8 && words > 0) notesUz.push('Kam söz işlatsiz — kunlik luğatdan 3–4 ta yangi sözni şu javobga qöşib köring.')
+  if (unique.size <= 8 && words > 0) notesUz.push('Kam söz işlatdingiz — kunlik luğatdan 3–4 ta yangi sözni şu javobga qöşib köring.')
   if (sents.length < 3) notesUz.push('Fikrlarni alohida gaplarga böling: kim, nima, qaçon, nega.')
   if (notesUz.length === 0) notesUz.push('Yaxşi javob: davomiylik va tuziliş A1 me’yoriga mos.')
 
@@ -245,4 +237,69 @@ export function analyzeSpeaking(transcript: string, durationSec: number, task: {
     disclaimerUz:
       'Bu baho maşq maqsadida berildi — rasmiy imtihon natijasi emas. Transkript avtomatik va aniq bölmasligi mumkin.',
   }
+}
+
+/**
+ * Matnli muqobil javob tahlili — mikrofon yoki transkripsiya ishlamaganda.
+ *
+ * ESKI BUG: tahlil faqat transkript bo'lsa ishlardi — Firefox'da yoki
+ * mikrofonsiz foydalanuvchi gapirish bo'yicha dalil to'play olmas, shuning
+ * uchun keyingi daraja unga hech qachon tavsiya qilinmasdi.
+ *
+ * Ravonlik (tezlik, pauzalar) matndan O'LCHAB BO'LMAYDI: `mode: 'text'`,
+ * `fluency`/`wpm` = 0 va u bahoga kirmaydi (`speakingScore`). Hajm og'zaki
+ * me'yorga aylantiriladi: A1 uchun pastki chegara 60 wpm — topshiriqdagi har
+ * sekundga ~1 so'z.
+ */
+export function analyzeSpeakingText(text: string, task: { minSeconds: number; targetSeconds: number }): SpeakingAnalysis {
+  const words = countWords(text)
+  const sents = sentences(text)
+  const unique = uniqueWords(text)
+  const minWords = Math.round(task.minSeconds)
+  const targetWords = Math.round(task.targetSeconds)
+  const length = clamp(words < minWords ? (words >= minWords * 0.6 ? 1 : 0) : words >= targetWords ? 5 : 3, 0, 5)
+
+  const notesUz = ['Matnli javob: ravonlik va talaffuz baholanmadi — imkon bölsa javobni ovoz bilan ham yozib köring.']
+  if (words < minWords) notesUz.push(`Javob qisqa: ${words} söz. Kamida ${minWords} söz yozişga harakat qiling.`)
+  if (unique.size <= 8 && words > 0) notesUz.push('Sözlar kam — kunlik luğatdan 3–4 ta yangi sözni şu javobga qöşib köring.')
+  if (sents.length < 3) notesUz.push('Fikrlarni alohida gaplarga böling: kim, nima, qaçon, nega.')
+
+  return {
+    engine: 'rule-based',
+    mode: 'text',
+    fluency: 0,
+    lexis: speakingLexis(unique, words),
+    grammar: speakingGrammar(text),
+    length,
+    wordCount: words,
+    wpm: 0,
+    notesUz,
+    disclaimerUz: 'Bu baho maşq maqsadida berildi — rasmiy imtihon natijasi emas. Matnli javobda ravonlik ölçanmaydi.',
+  }
+}
+
+/** Gapirish bahosi 0..100. Matnli javobda ravonlik o'lchanmagani uchun hisobga olinmaydi. */
+export function speakingScore(a: SpeakingAnalysis): number {
+  const avg = a.mode === 'text' ? (a.grammar + a.lexis) / 2 : (a.fluency + a.grammar + a.lexis) / 3
+  return Math.round((avg / 5) * 100)
+}
+
+function uniqueWords(text: string): Set<string> {
+  return new Set(text.toLowerCase().match(/[a-z']+/g) ?? [])
+}
+
+function speakingLexis(unique: Set<string>, words: number): number {
+  return clamp(unique.size <= 5 ? 1 : Math.round((unique.size / Math.max(1, words)) * 8), 0, 5)
+}
+
+/** Tuzilmalar xilma-xilligi (0..5) — ovozli va matnli javob uchun bir xil qoida. */
+function speakingGrammar(text: string): number {
+  const structures = [
+    /\b(i|we)\s+(am|'m)\s+/i.test(text),
+    /\b(go|goes|went|going)\b/i.test(text),
+    /\b(can|cannot|can't)\b/i.test(text),
+    /\b(because|so|but|and then)\b/i.test(text),
+    /\b(yesterday|last week|tomorrow|usually|every day)\b/i.test(text),
+  ].filter(Boolean).length
+  return clamp(1 + structures, 0, 5)
 }

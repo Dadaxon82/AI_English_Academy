@@ -1,25 +1,42 @@
 /**
- * Shaxsiy o'quv yo'li — vertikal xronologik kunlar ro'yxati.
+ * Shaxsiy o'quv yo'li — Duolingo uslubidagi yilonsimon YO'L XARITASI
+ * (`DuoPathMap`) + tanlangan bo'lim/kun uchun pastda ochiladigan tafsilot
+ * paneli. Xaritadagi har tugun — bitta bo'lim (yoki bo'lim yakuniy testi);
+ * tugun rangi/qulfi `lessonChain.ts::buildChain` natijasidan to'g'ridan-to'g'ri
+ * olinadi — qulf qoidasi IKKI MARTA YOZILMAYDI.
  *
  * Ketma-ketlik halol ko'rsatiladi: oldingi kunni yakunlamascha keyingi kun
- * yopiq ko'rinadi va "Ochish" tugmasi disabled (+ izoh). Har kun ichida
- * bo'limlar, ularning haqiqiy kontenti va bo'lim yakuniy testi
- * ExerciseRunner orqali. Kun taymeri store.ga bog'langan (sessionId = dayId).
+ * yopiq ko'rinadi va tugun bosilmaydi (qulf belgisi bilan). Tugun bosilganda
+ * pastda shu KUN kartasi ochiladi — bo'limlar, ularning haqiqiy kontenti va
+ * bo'lim yakuniy testi ExerciseRunner orqali (avvalgi vertikal ro'yxatdagi
+ * `DayCard`/`SectionDetail` mantiqi saqlanadi, faqat kirish nuqtasi xarita).
+ * Kun taymeri store.ga bog'langan (sessionId = dayId).
  */
 
-import { useMemo, useRef, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import UzTranslation from '../components/UzTranslation'
+import { Suspense, lazy, useEffect, useMemo, useRef, useState } from 'react'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import DuoPathMap from '../components/DuoPathMap'
+import SectionBanner from '../components/SectionBanner'
 import ExerciseRunner from '../components/ExerciseRunner'
 import { Button, Card, Chip, EmptyState, InfoBanner, LoadingBlock, ProgressRing, SpeakButton, SuccessBanner } from '../components/ui'
-import { getBundle } from '../content'
+import { findExercise, getBundle, vocabQuizExercise } from '../content'
 import type { LevelBundle } from '../content'
 import type { DailyPlanDay, DaySection, Skill, VocabularyItem } from '../content/types'
 import type { CheckResult } from '../lib/check'
+import { buildChain, chainAudit, exerciseIdsForSection } from '../lib/lessonChain'
+import { buildPathLayout, focalNode } from '../lib/pathMap'
+import { pathMilestoneSpecs, pathLevel } from '../lib/sections'
+import { stepDoneChecker, stepScoreReader } from '../lib/stepProgress'
+import { buildWorld, loadPathView, savePathView, type PathView } from '../lib/world3d'
 import { skillLabelUz } from '../lib/planning'
-import { useStore } from '../lib/store'
+import { useStore } from '../lib/storeContext'
 import { currentElapsed, formatDuration } from '../lib/timer'
 import { todayKey } from '../lib/types'
 import type { AppData } from '../lib/types'
+
+// 3D olam — alohida chunk (`three` faqat 3D rejim tanlanganda yuklanadi).
+const WorldView = lazy(() => import('../components/world3d/WorldView'))
 
 const SKILL_ROUTE: Record<Skill, string> = {
   vocabulary: '/vocabulary',
@@ -47,9 +64,15 @@ function firstOpenSection(day: DailyPlanDay, data: AppData): DaySection | null {
 }
 
 export default function LearningPath() {
-  const { data, ready } = useStore()
+  const { data, ready, actions } = useStore()
+  const nav = useNavigate()
 
-  const bundle = useMemo(() => getBundle(data.settings.currentLevel), [data.settings.currentLevel])
+  // O'quv yo'li darajasi (A1 tugasa yoki A2.1 ga sakralsa — A2 kunlari).
+  // Baholangan daraja (`settings.currentLevel`) bundan o'zgarmaydi.
+  const pLevel = pathLevel(data)
+  const bundle = useMemo(() => getBundle(pLevel), [pLevel])
+  const stepDone = useMemo(() => stepDoneChecker(data), [data])
+  const stepScore = useMemo(() => stepScoreReader(data), [data])
   const days = bundle.days
   const completed = data.path.completedDays
 
@@ -61,8 +84,14 @@ export default function LearningPath() {
   }, [days, data.path.currentDayId, completed])
 
   // Ochiq kun: yuklangandan keyin joriy kun avtomatik ochiladi; foydalanuvchi
-  // boshqa kunni ochsa/yopsa shu tanlov hurmat qilinadi.
-  const [openOverride, setOpenOverride] = useState<string | null>(null)
+  // xaritada boshqa tugunni bossa shu tanlov hurmat qilinadi.
+  // `/path?test=<kun>` (Dashboard xaritasidagi 🏆) — o'sha kun ochilib, test darhol boshlanadi.
+  const [params] = useSearchParams()
+  const [openOverride, setOpenOverride] = useState<string | null>(() => params.get('test'))
+  const [autoTest, setAutoTest] = useState<{ dayId: string; nonce: number } | null>(() => {
+    const d = params.get('test')
+    return d ? { dayId: d, nonce: 1 } : null
+  })
   const defaultOpenId = days[currentIdx]?.id ?? null
   const openDayId = openOverride !== null ? openOverride : defaultOpenId
 
@@ -72,6 +101,76 @@ export default function LearningPath() {
     return 'locked'
   }
 
+  // ---------- Xarita joylash (DuoPathMap) ----------
+  // `buildChain` — mavjud HALOL manba (`ChainOverview` ham aynan shu yerdan
+  // oladi), shuning uchun qulf/holat qoidasi IKKI MARTA YOZILMAYDI.
+  const chains = useMemo(
+    () =>
+      days.map((day, i) =>
+        buildChain(
+          day,
+          Object.fromEntries(
+            day.sections.map((s) => [
+              s.skill,
+              exerciseIdsForSection(s, {
+                vocabQuizIds: (ids) =>
+                  ids
+                    .map((id) => bundle.vocab.find((v) => v.id === id))
+                    .filter((v): v is VocabularyItem => v !== undefined)
+                    .map((v) => vocabQuizExercise(v).id),
+                grammarExercises: (id) => bundle.grammar.find((g) => g.id === id)?.exercises ?? [],
+                readingExercises: (id) => bundle.reading.find((r) => r.id === id)?.exercises ?? [],
+                listeningExercises: (id) => bundle.listening.find((l) => l.id === id)?.exercises ?? [],
+                findExercise,
+              }),
+            ]),
+          ),
+          i,
+          day.id === (days[currentIdx]?.id ?? ''),
+          completed.includes(day.id),
+        ),
+      ),
+    [days, completed, currentIdx, bundle],
+  )
+
+  const layout = useMemo(
+    () => buildPathLayout(chains, 360, pathMilestoneSpecs(pLevel), stepDone, stepScore),
+    [chains, pLevel, stepDone, stepScore],
+  )
+  const focus = useMemo(() => focalNode(layout), [layout])
+
+  // ---------- 2D xarita / 3D olam ----------
+  const [view, setView] = useState<PathView>(loadPathView)
+  const pickView = (v: PathView) => {
+    setView(v)
+    savePathView(v)
+  }
+  // 3D olam — JORIY kun zanjirining boshqa ko'rinishi (kontent va qulf manbasi o'sha).
+  const worldChain = chains[currentIdx]
+  const world = useMemo(
+    () => (worldChain ? buildWorld(worldChain, stepDone, stepScore, completed.includes(worldChain.day.id)) : null),
+    [worldChain, stepDone, stepScore, completed],
+  )
+  // G'alaba ekrani: shu sahifa ochiq paytda yangi kun yakunlansa ko'rsatiladi.
+  const [ackDays, setAckDays] = useState(completed.length)
+  const wonDay = completed.length > ackDays ? days.find((d) => d.id === completed[completed.length - 1]) : undefined
+  const dayCardRef = useRef<HTMLDivElement>(null)
+  const startDayTest = (dayId: string) => {
+    const d = days.find((x) => x.id === dayId)
+    if (d?.sectionTest) actions.startTimer(d.id, d.sectionTest.section)
+    setOpenOverride(dayId)
+    setAutoTest((a) => ({ dayId, nonce: (a?.nonce ?? 0) + 1 }))
+  }
+  // Xaritada tanlangan tugun — bosilganda shu KUN kartasi pastda ochiladi
+  // (bitta bo'lim emas, butun kun: ExerciseRunner/test mantiqi kun darajasida).
+  const selectedNodeId = openDayId
+    ? layout.nodes.find((n) => n.dayId === openDayId)?.id ?? focus?.id ?? null
+    : focus?.id ?? null
+
+  const stepsTotal = chains.reduce((a, c) => a + c.steps.length, 0)
+  const kindsOf = (id: string) => findExercise(id)?.kind
+  const audit = chainAudit(chains, kindsOf)
+
   if (!ready) return <LoadingBlock label="Öquv yöli yuklanmoqda…" />
 
   if (days.length === 0) {
@@ -79,7 +178,7 @@ export default function LearningPath() {
       <div className="grid gap-4">
         <h1 className="text-2xl font-bold">Şaxsiy öquv yöli</h1>
         <EmptyState
-          title={`${data.settings.currentLevel} uçun reja hali mavjud emas`}
+          title={`${pLevel} uçun reja hali mavjud emas`}
           body="Hozirça faqat A1 yöli yuklangan. Sozlamalardan A1 ga qaytib davom eting."
           action={
             <Link to="/settings" className={linkSecondary}>
@@ -93,13 +192,16 @@ export default function LearningPath() {
 
   return (
     <div className="grid gap-4 sm:gap-5">
+      {/* ---------- Joriy bo'lim banneri (→ /sections) ---------- */}
+      <SectionBanner />
+
       {/* ---------- Progress sarlavhasi ---------- */}
       <Card as="section" className="flex flex-wrap items-center gap-4">
         <ProgressRing value={completed.length / days.length} label={`${completed.length}/${days.length} kun`} />
         <div className="flex-1 min-w-48 grid gap-1.5">
           <h1 className="text-2xl font-bold">Şaxsiy öquv yöli</h1>
           <p className="muted text-sm">
-            {data.settings.currentLevel} darajasi — {days.length} kunlik bosqiç. Har kuni 6 ta bölim va yakuniy test.
+            {pLevel} darajasi — {days.length} kunlik bosqiç. Har kuni 6 ta bölim va yakuniy test.
             Kunlar ketma-ket oçiladi.
           </p>
           <div className="flex flex-wrap gap-1.5">
@@ -109,40 +211,122 @@ export default function LearningPath() {
             {days[currentIdx] && !completed.includes(days[currentIdx].id) && (
               <Chip>Bosqiç: {days[currentIdx].id}</Chip>
             )}
+            <Link to="/sections" className="text-xs font-semibold text-navy-700 dark:text-navy-300 hover:underline self-center">
+              Barça bölimlar (A1.1 … C1.2) →
+            </Link>
           </div>
         </div>
       </Card>
 
-      {/* ---------- Vertikal xronologik ro'yxat ---------- */}
-      <div className="relative grid gap-4 pl-5 sm:pl-7">
-        <span aria-hidden className="absolute left-[7px] sm:left-[11px] top-2 bottom-2 w-0.5 bg-[var(--border)]" />
-        {days.map((day, idx) => {
-          const status = statusOf(day, idx)
-          const open = openDayId === day.id
-          return (
-            <div key={day.id} className="relative">
-              <span
-                aria-hidden
-                className={`absolute -left-5 sm:-left-7 top-5 w-4 h-4 rounded-full border-2 ${
-                  status === 'completed'
-                    ? 'bg-[var(--ok)] border-[var(--ok)]'
-                    : status === 'current'
-                      ? 'bg-navy-700 dark:bg-navy-400 border-navy-700 dark:border-navy-400'
-                      : 'bg-[var(--panel)] border-[var(--border)]'
-                }`}
+      {/* ---------- Yo'l xaritasi (Duolingo uslubida, yilonsimon) ---------- */}
+      <Card as="section" className="grid gap-3">
+        <div className="flex flex-wrap items-center gap-2">
+          <h2 className="font-bold">{view === '3d' ? '3D olam' : 'Darslar xaritasi'}</h2>
+          {view === '2d' ? (
+            <>
+              <Chip>{stepsTotal} qadam</Chip>
+              <Chip>{chains.length} kun</Chip>
+            </>
+          ) : (
+            world && <Chip>{worldChain?.day.id}</Chip>
+          )}
+          <span className="flex-1" />
+          <div role="group" aria-label="Xarita körinişi" className="inline-flex rounded-full border p-0.5 text-xs font-bold">
+            {(
+              [
+                ['2d', '🗺️ 2D xarita'],
+                ['3d', '🏝️ 3D olam'],
+              ] as const
+            ).map(([v, label]) => (
+              <button
+                key={v}
+                type="button"
+                aria-pressed={view === v}
+                onClick={() => pickView(v)}
+                className={`rounded-full px-3 py-1.5 transition-colors ${view === v ? 'bg-navy-700 text-white dark:bg-navy-300 dark:text-navy-950' : 'hover:bg-[var(--panel-2)]'}`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+        {view === '3d' && world ? (
+          <>
+            <p className="text-xs muted">
+              Qahramonni yurgizib stansiyalarga boring: Luğat → Grammatika → Öqiş → Tinglaş → Yoziş → Gapiriş. Har stansiya
+              oldingisi yakunlangaç oçiladi; hammasidan keyin oltin Finiş qasrida kun yakuniy sinovi kutadi. Topşiriqlar —
+              şu kunning haqiqiy darslari.
+            </p>
+            <Suspense fallback={<LoadingBlock label="3D olam yuklanmoqda…" />}>
+              <WorldView
+                key={world.dayId}
+                world={world}
+                victory={
+                  wonDay
+                    ? {
+                        dayTitle: wonDay.titleUz,
+                        nextTitle: worldChain && worldChain.day.id !== wonDay.id ? worldChain.day.titleUz : null,
+                        score: wonDay.sectionTest ? (data.path.passedTests[wonDay.sectionTest.id] ?? null) : null,
+                      }
+                    : null
+                }
+                onVictoryClose={() => setAckDays(completed.length)}
+                onStartStation={(st) => nav(`/lesson/${world.dayId}/${st.skill}`)}
+                onStartFinish={() => {
+                  startDayTest(world.dayId)
+                  // Sinov shu sahifada, 3D olam ostidagi kun kartasida ochiladi
+                  setTimeout(() => dayCardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60)
+                }}
               />
-              <DayCard
-                day={day}
-                status={status}
-                open={open}
-                onOpen={() => setOpenOverride(day.id)}
-                onClose={() => setOpenOverride('')}
-                bundle={bundle}
-              />
-            </div>
-          )
-        })}
-      </div>
+            </Suspense>
+          </>
+        ) : (
+          <>
+        <p className="text-xs muted">
+          Har tanga — bitta bölim (belgisi va nomi ostida), 🏆 — kun yakuniy testi. Tangani bosing — öşa bölim
+          darsi oçiladi; yakunlangaç olingan ball tanga ustida körinadi. Oltin — bajarilgan, yaşil — oçiq, kulrang —
+          qulflangan. Sandiq — kun yarmi, katta kubok — keyingi bölim oçiladigan joy.
+        </p>
+        <DuoPathMap
+          layout={layout}
+          selectedId={selectedNodeId}
+          focusId={focus?.id ?? null}
+          onSelect={(node) => {
+            // Tugun — biriktirilgan bo'lim topshirig'ini to'g'ridan-to'g'ri ochadi.
+            if (!node.isTest) {
+              nav(`/lesson/${node.dayId}/${node.skill}`)
+              return
+            }
+            startDayTest(node.dayId)
+          }}
+        />
+        <p className="text-[11px] muted">
+          Zanjir böyiça: {audit.rotationSteps} maşq qadami (+{audit.reinforcement} takrorlaş) · bir xil tur
+          qöşni: {audit.sameNeighbours} (majburiy: {audit.unavoidable}) · eng qisqa tur masofasi: {audit.minGap}
+        </p>
+          </>
+        )}
+      </Card>
+      <div ref={dayCardRef} className="scroll-mt-20" />
+
+      {/* ---------- Tanlangan kun kartasi ---------- */}
+      {days.map((day, idx) => {
+        const status = statusOf(day, idx)
+        const open = openDayId === day.id
+        if (!open) return null
+        return (
+          <DayCard
+            key={autoTest?.dayId === day.id ? `${day.id}:${autoTest.nonce}` : day.id}
+            autoStartTest={autoTest?.dayId === day.id}
+            day={day}
+            status={status}
+            open={open}
+            onOpen={() => setOpenOverride(day.id)}
+            onClose={() => setOpenOverride('')}
+            bundle={bundle}
+          />
+        )
+      })}
     </div>
   )
 }
@@ -156,7 +340,9 @@ function DayCard({
   onOpen,
   onClose,
   bundle,
+  autoStartTest = false,
 }: {
+  autoStartTest?: boolean
   day: DailyPlanDay
   status: DayStatus
   open: boolean
@@ -174,7 +360,12 @@ function DayCard({
   const total = test?.exercises.length ?? 0
 
   // Bo'lim testi holati: idle → running → done
-  const [phase, setPhase] = useState<'idle' | 'running' | 'done'>('idle')
+  // Xaritadagi 🏆 bosilsa — test darhol boshlanadi (taymer bosish ishlovchisida yoqilgan).
+  const [phase, setPhase] = useState<'idle' | 'running' | 'done'>(() => (autoStartTest && test ? 'running' : 'idle'))
+  const cardRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    if (autoStartTest) cardRef.current?.scrollIntoView({ block: 'start', behavior: 'smooth' })
+  }, [autoStartTest])
   const [pos, setPos] = useState(0)
   const [lastResult, setLastResult] = useState<CheckResult | null>(null)
   const [score, setScore] = useState<number | null>(null)
@@ -219,6 +410,13 @@ function DayCard({
     setScore(s)
     setPhase('done')
     actions.stopTimer()
+    // Bo'lim testi ham dars hisoblanadi: bonus XP va (0 xato bo'lsa) "xatosiz
+    // dars". Yurak bu manbada JARIMA QILINMAYDI (`HEART_FREE_SOURCES`), lekin
+    // bonus beriladi — shuning uchun aynan shu yerda chaqiriladi.
+    actions.completeLesson(
+      Object.keys(acc.current).length,
+      Object.values(acc.current).filter((r) => !r.correct).length,
+    )
     if (s >= test.passScore) actions.completeDay(day.id, test.id, s)
   }
 
@@ -242,6 +440,7 @@ function DayCard({
   }
 
   return (
+    <div ref={cardRef} className="scroll-mt-20">
     <Card className={`grid gap-3.5 ${status === 'locked' ? 'opacity-70' : ''}`}>
       <div className="flex flex-wrap items-start gap-2">
         <div className="flex-1 min-w-0 grid gap-1">
@@ -332,7 +531,7 @@ function DayCard({
           </div>
 
           <p className="text-[11px] muted">
-            Taymer {day.id} seansiga boğlangan. Sahifaga ötganingizda sahifa öz bölim taymerini yoqsa, hisob şu
+            Taymer {day.id} sessiyasiga boğlangan. Sahifaga ötganingizda sahifa öz bölim taymerini yoqsa, hisob şu
             maşğulotga köçadi — buni oldindan töxtatiş halolroq.
           </p>
 
@@ -381,6 +580,15 @@ function DayCard({
                   total={total}
                   onNext={onNext}
                   prevResult={lastResult && !lastResult.correct ? lastResult : null}
+                  heartFree
+                  /* Combo chizig'i HAQQONIY: `onChecked` har javobni
+                     `actions.recordAttempt(..., source:'section_test')` bilan
+                     yozadi — combo shu yerda o'sadi. `heartFree` bo'lsa-chi?
+                     Bo'lim testi yurak sarflamaydi, lekin combo baribir
+                     hisoblanadi (`afterAttempt`), shuning uchun son ko'rsatiladi;
+                     chipdagi "yana N — yurak qaytadi" qismi `heartFree` bilan
+                     o'zi yashiriladi. */
+                  comboTracked
                 />
               )}
 
@@ -438,8 +646,8 @@ function DayCard({
                     alreadyPassed
                       ? 'Test ötilgan — kunni belgilang'
                       : skipAck
-                        ? 'Test tashlandi — baribir belgilanadi (halol)'
-                        : 'Avval testni topşiring yoki “test topshirmay belgilash”ni belgilang'
+                        ? 'Test taşlandi — baribir belgilanadi (halol)'
+                        : 'Avval testni topşiring yoki “test topşirmay belgilaş”ni belgilang'
                   }
                   onClick={() =>
                     actions.completeDay(
@@ -452,15 +660,17 @@ function DayCard({
                   Kunni yakunlaş
                 </Button>
                 {alreadyPassed && <Chip tone="ok">Test dalili bilan</Chip>}
-                {!alreadyPassed && skipAck && <Chip tone="warn">Test tashlandi</Chip>}
+                {!alreadyPassed && skipAck && <Chip tone="warn">Test taşlandi</Chip>}
               </div>
             </div>
           )}
         </div>
       )}
     </Card>
+    </div>
   )
 }
+
 
 // --------------------------- Bo'lim kontenti ---------------------------
 
@@ -522,7 +732,10 @@ function SectionDetail({ day, section, bundle }: { day: DailyPlanDay; section: D
                     className="flex flex-wrap items-center gap-2 rounded-lg bg-[var(--panel-2)] px-3 py-2 text-sm"
                   >
                     <span className="font-semibold">
-                      {v.word} <span className="muted font-normal">— {v.translationUz}</span>
+                      {v.word}{' '}
+                      <span className="muted font-normal">
+                        — <UzTranslation>{v.translationUz}</UzTranslation>
+                      </span>
                     </span>
                     {v.ipa && <span className="text-xs muted">{v.ipa}</span>}
                     <span className="flex-1" />
