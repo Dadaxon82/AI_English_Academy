@@ -160,7 +160,7 @@ export default function Speaking() {
   return (
     <div className="grid gap-4">
       <Card className="grid gap-3">
-        <h1 className="text-xl font-bold">G‘apirish</h1>
+        <h1 className="text-xl font-bold">Gapirish</h1>
         <p className="muted text-sm">
           Kunlik mavzu va savollar. Ovoz yozuvi faqat shu brauzer seansida turadi (sahifa yopilsa o‘chadi) —
           roziligingizsiz serverga hech qachon yuborilmaydi.

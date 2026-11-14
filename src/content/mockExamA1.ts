@@ -210,7 +210,7 @@ export const mockExamA1: MockExamSpec = {
       id: 'a1-mock-speaking',
       skill: 'speaking',
       titleEn: 'Speaking',
-      titleUz: 'G‘apirish',
+      titleUz: 'Gapirish',
       minutes: 10,
       formatVerified: false,
       formatNote:

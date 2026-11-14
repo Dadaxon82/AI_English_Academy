@@ -133,3 +133,10 @@
   }
   .kbd-hint { font-size: 0.7rem; color: var(--muted); }
 }
+
+/* Telefonda sahifa ekranga sig'sin: grid elementlari standart `min-width: auto`
+   bilan kontent kengligigacha cho'zilib, gorizontal skroll paydo qilardi.
+   `:where` — spetsifiklik 0, shuning uchun `min-w-*` klasslari ustun turadi. */
+:where(#main > *, #main .grid > *) {
+  min-width: 0;
+}

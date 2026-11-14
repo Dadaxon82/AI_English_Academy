@@ -192,7 +192,7 @@ export default function MockExam() {
     const secs = sections.map((s) => {
       const p = progress.find((x) => x.sectionId === s.id)!
       const total = examExercises(s).length
-      // `note:` bilan boshlanadigan yozuvlar — erkin matnli javob (G‘apirish
+      // `note:` bilan boshlanadigan yozuvlar — erkin matnli javob (Gapirish
       // bo‘limidagi qoralama). Ular SAVOL EMAS: hisobga, ballga va xatolar
       // ro'yxatiga kirmaydi. (Eski bug: "1/0 javob" va soxta ijobiy natija.)
       const graded = Object.entries(p.results).filter(([k]) => !k.startsWith('note:'))
@@ -269,7 +269,7 @@ export default function MockExam() {
                 <ul className="text-xs muted">
                   {examExercises(s).length > 0 && <li>{examExercises(s).length} ta savol ({kindSummary(s)})</li>}
                   {s.writingTask && <li>Yozish: {s.writingTask.minWords}–{s.writingTask.maxWords} so‘z</li>}
-                  {s.speakingTask && <li>G‘apirish: {s.speakingTask.targetSeconds}s</li>}
+                  {s.speakingTask && <li>Gapirish: {s.speakingTask.targetSeconds}s</li>}
                   {s.audio && !hasAudio(manifestOk, s.audio) && <li className="!text-[var(--warn)]">Audio fayl topilmadi — tinglash bo‘limi matn asosida o‘tkaziladi</li>}
                 </ul>
                 {!s.formatVerified && (
@@ -398,7 +398,7 @@ export default function MockExam() {
             <h2 className="font-bold">{section.speakingTask.questionEn}</h2>
             <p className="text-sm muted">{section.speakingTask.hintUz}</p>
             <InfoBanner tone="warn">
-              G‘apirish bo‘limida audio yozish va baholash{' '}
+              Gapirish bo‘limida audio yozish va baholash{' '}
               <Link to="/speaking" className="underline font-semibold">Speaking</Link> bo‘limida mavjud. Bu yerda javob
               matnini qoldirishingiz mumkin — baho rasmiy imtihon natijasi emas.
             </InfoBanner>
@@ -527,7 +527,7 @@ function Writing2Note({ textAnswer, onSave, onFinish }: { textAnswer: string; on
   const [v, setV] = useState(textAnswer)
   return (
     <div className="grid gap-2">
-      <textarea value={v} onChange={(e) => setV(e.target.value)} rows={6} className="w-full rounded-xl border bg-[var(--panel)] p-3 text-sm" placeholder="Write your answer here…" aria-label="G'apirish bo'limi matn javobi" />
+      <textarea value={v} onChange={(e) => setV(e.target.value)} rows={6} className="w-full rounded-xl border bg-[var(--panel)] p-3 text-sm" placeholder="Write your answer here…" aria-label="Gapirish bo'limi matn javobi" />
       <div className="flex gap-2">
         <Button variant="secondary" onClick={() => onSave(v)}>Javobni saqlash</Button>
         <Button onClick={onFinish}>Bo'limni yakunlash</Button>
