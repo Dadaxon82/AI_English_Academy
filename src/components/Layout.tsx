@@ -252,7 +252,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     <div className="min-h-dvh flex flex-col">
       {/* ---------- HEADER ---------- */}
       <header className="sticky top-0 z-30 backdrop-blur bg-[var(--bg)]/90 border-b">
-        <div className="mx-auto max-w-6xl px-3 sm:px-5 h-14 flex items-center gap-2 sm:gap-3">
+        <div className="mx-auto max-w-6xl px-2 sm:px-5 h-14 flex items-center gap-1.5 sm:gap-3">
           <NavLink to="/dashboard" className="flex items-center gap-2.5 shrink-0 group">
             <MascotAvatar size="sm" alt="AI English Academy qahramoni" className="transition-transform group-hover:scale-105 shadow-sm" />
             <span className="hidden sm:block font-bold tracking-tight">
