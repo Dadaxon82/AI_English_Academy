@@ -18,32 +18,32 @@ export const day4: DailyPlanDay = {
   sections: [
     { titleUz: 'Lug\'at', titleEn: 'Vocabulary', minutes: 20 },
     { titleUz: 'Grammatika', titleEn: 'Grammar', minutes: 20 },
-    { titleUz: 'O\'qiş', titleEn: 'Readinğ, minutes: 15 },
-    { titleUz: 'Eşitiş', titleEn: 'Listeninğ, minutes: 15 },
-    { titleUz: 'Gapiriş', titleEn: 'Speakinğ, minutes: 10 },
-    { titleUz: 'Yoziş', titleEn: 'Writinğ, minutes: 10 },
+    { titleUz: 'O\'qish', titleEn: 'Reading', minutes: 15 },
+    { titleUz: 'Eshitish', titleEn: 'Listening', minutes: 15 },
+    { titleUz: 'Gapirish', titleEn: 'Speaking', minutes: 10 },
+    { titleUz: 'Yozish', titleEn: 'Writing', minutes: 10 },
   ],
 }
 
 export const vocabDay4: VocabularyItem[] = [
   { id: 'c1-v4-1', word: 'disparity', translationUz: 'farq, tengsizlik', explanationEn: 'A great difference.', exampleEn: 'The wealth disparity is widening.', exampleUz: 'Boylik tengsizligi kengaymoqda.', pos: 'noun', topic: 'economics', level: 'C1' },
-  { id: 'c1-v4-2', word: 'equilibrium', translationUz: 'muvozanat', explanationEn: 'A state of balance.', exampleEn: 'Market equilibrium is difficult to maintain.', exampleUz: 'Bozor muvozanatini saqlaş qiyin.', pos: 'noun', topic: 'economics', level: 'C1' },
-  { id: 'c1-v4-3', word: 'volatility', translationUz: 'o\tskiluvçanlik', explanationEn: 'Liability to çange rapidly.', exampleEn: 'Crypto markets are known for high volatility.', exampleUz: 'Kripto bozori yuqori o\tskiluvçanlik bilan tanilgan.', pos: 'noun', topic: 'finance', level: 'C1' },
-  { id: 'c1-v4-4', word: 'leverage', translationUz: 'foydalaniş', explanationEn: 'To use something to maximum advantage.', exampleEn: 'We can leverage our global network.', exampleUz: 'Biz global tarmoqimizdan foydalanişimiz mumkin.', pos: 'verb', topic: 'business', level: 'C1' },
-  { id: 'c1-v4-5', word: 'fiscal', translationUz: 'moliyaviy', explanationEn: 'Relating to government revenue.', exampleEn: 'Fiscal policy is crucial for growth.', exampleUz: 'Moliyaviy siyosat o\'siş uçun muhim.', pos: 'adj', topic: 'economics', level: 'C1' },
+  { id: 'c1-v4-2', word: 'equilibrium', translationUz: 'muvozanat', explanationEn: 'A state of balance.', exampleEn: 'Market equilibrium is difficult to maintain.', exampleUz: 'Bozor muvozanatini saqlash qiyin.', pos: 'noun', topic: 'economics', level: 'C1' },
+  { id: 'c1-v4-3', word: 'volatility', translationUz: 'o\tskiluvchanlik', explanationEn: 'Liability to change rapidly.', exampleEn: 'Crypto markets are known for high volatility.', exampleUz: 'Kripto bozori yuqori o\tskiluvchanlik bilan tanilgan.', pos: 'noun', topic: 'finance', level: 'C1' },
+  { id: 'c1-v4-4', word: 'leverage', translationUz: 'foydalanish', explanationEn: 'To use something to maximum advantage.', exampleEn: 'We can leverage our global network.', exampleUz: 'Biz global tarmoqimizdan foydalanishimiz mumkin.', pos: 'verb', topic: 'business', level: 'C1' },
+  { id: 'c1-v4-5', word: 'fiscal', translationUz: 'moliyaviy', explanationEn: 'Relating to government revenue.', exampleEn: 'Fiscal policy is crucial for growth.', exampleUz: 'Moliyaviy siyosat o\'sish uchun muhim.', pos: 'adj', topic: 'economics', level: 'C1' },
 ]
 
 export const grammarDay4: GrammarTopic = {
   id: 'c1-g4',
   titleUz: 'Subjunctive Mood (Advanced)',
   titleEn: 'Subjunctive Mood (Advanced)',
-  explanationUz: 'Murakkab gaplarda "be" fe\'lining işlatilişi.',
+  explanationUz: 'Murakkab gaplarda "be" fe\'lining ishlatilishi.',
   explanationEn: 'Advanced usage of the subjunctive mood in formal instructions and recommendations.',
   exercises: [
     {
       id: 'c1-g4-ex1',
       kind: 'gap-fill',
-      instructionUz: 'Bo\'ş joyni to\'g\'ri şakl bilan to\'ldiring.',
+      instructionUz: 'Bo\'sh joyni to\'g\'ri shakl bilan to\'ldiring.',
       level: 'C1',
       skill: 'grammar',
       difficulty: 4,
@@ -55,7 +55,7 @@ export const grammarDay4: GrammarTopic = {
     },
     {
       id: 'c1-g4-ex2',
-      kind: 'multiple-çoice',
+      kind: 'multiple-choice',
       instructionUz: 'To\'g\'ri javobni tanlang.',
       level: 'C1',
       skill: 'grammar',
@@ -73,11 +73,11 @@ export const readingDay4: ReadingPassage = {
   level: 'C1',
   titleUz: 'Global Savdo Oqimlari',
   titleEn: 'Global Trade Flows',
-  content: 'Trade flows are increasingly influenced by geopolitical tensions. The decoupling of major economies is a significant trend that may reşape global supply çains...',
+  content: 'Trade flows are increasingly influenced by geopolitical tensions. The decoupling of major economies is a significant trend that may reshape global supply chains...',
   glossary: [
-    { word: 'decouplinğ, uz: 'ajrlaş', level: 'C1' },
+    { word: 'decoupling', uz: 'ajrlash', level: 'C1' },
     { word: 'geopolitical', uz: 'geopolitik', level: 'C1' },
-    { word: 'supply çain', uz: 'tafaqul zanjiri', level: 'C1' },
+    { word: 'supply chain', uz: 'tafaqul zanjiri', level: 'C1' },
   ],
 }
 
@@ -124,7 +124,7 @@ export const testDay4: SectionTest = {
   exercises: [
     {
       id: 'c1-t4-ex1',
-      kind: 'multiple-çoice',
+      kind: 'multiple-choice',
       instructionUz: 'To\'g\'ri javobni tanlang.',
       level: 'C1',
       skill: 'vocabulary',

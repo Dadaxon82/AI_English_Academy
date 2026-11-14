@@ -5,7 +5,21 @@ import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
 
 export default tseslint.config(
-  { ignores: ['dist', 'dev-dist', 'node_modules', 'public/audio'] },
+  {
+    ignores: [
+      'dist',
+      'dev-dist',
+      'node_modules',
+      'public/audio',
+      // Ilovaga ulanmagan kontent (tsconfig.app.json'dagi exclude bilan bir xil):
+      // sxemaga mos emas va tarjimalari tekshirilmagan.
+      'src/content/a2',
+      'src/content/b1',
+      'src/content/b2',
+      'src/content/c1',
+      'src/lib/adaptive.ts',
+    ],
+  },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ['**/*.{ts,tsx}'],

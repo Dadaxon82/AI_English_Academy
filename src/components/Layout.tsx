@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 import { useStore } from '../lib/store'
 import { Button, Chip } from './ui'
+import LanguageFlags from './LanguageFlags'
 
 const NAV = [
   { to: '/dashboard', label: 'Dashboard', icon: 'M3 12 12 4l9 8M5 11v9h14v-9' },
@@ -49,7 +50,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     <div className="min-h-dvh flex flex-col">
       {/* ---------- HEADER ---------- */}
       <header className="sticky top-0 z-30 backdrop-blur bg-[var(--bg)]/90 border-b">
-        <div className="mx-auto max-w-6xl px-3 sm:px-5 h-14 flex items-center gap-3">
+        <div className="mx-auto max-w-6xl px-3 sm:px-5 h-14 flex items-center gap-2 sm:gap-3">
           <NavLink to="/dashboard" className="flex items-center gap-2.5 shrink-0">
             <span className="grid place-items-center w-8 h-8 rounded-xl bg-navy-700 dark:bg-navy-500 text-white dark:text-navy-950 font-black text-sm">
               AE
@@ -58,6 +59,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               AI English <span className="text-navy-700 dark:text-navy-300">Academy</span>
             </span>
           </NavLink>
+
+          {/* Til bayroqlari — bosilsa o'sha tilni o'rganish sahifasi */}
+          <LanguageFlags />
 
           <div className="flex-1" />
 
@@ -74,7 +78,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </span>
           </div>
 
-          <Chip tone={streak > 0 ? 'warn' : 'default'}>{streak} kun</Chip>
+          <span className="shrink-0 whitespace-nowrap">
+            <Chip tone={streak > 0 ? 'warn' : 'default'}>{streak} kun</Chip>
+          </span>
 
           {!netOnline && <Chip tone="bad">Offline</Chip>}
 

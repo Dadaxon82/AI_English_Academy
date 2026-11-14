@@ -19,6 +19,7 @@ import MockExam from './pages/MockExam'
 import ErrorLog from './pages/ErrorLog'
 import Progress from './pages/Progress'
 import Settings from './pages/Settings'
+import LanguageHome from './pages/LanguageHome'
 
 /**
  * Router tanlovi:
@@ -71,6 +72,7 @@ function Shell({ auth, onAuth }: { auth: AuthState; onAuth: (s: AuthState) => vo
         <Route path="/errors" element={<ErrorLog />} />
         <Route path="/progress" element={<Progress />} />
         <Route path="/settings" element={<Settings />} />
+        <Route path="/lang/:code" element={<LanguageHome />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       {needsOnboarding && loc.pathname === '/dashboard' && <FirstRunHint />}
@@ -84,7 +86,7 @@ function FirstRunHint() {
   if (hidden) return null
   return (
     <InfoBanner>
-      <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-center gap-3">
         <span>Boshlang‘ich sozlamalar to‘ldirilmagan.</span>
         <span className="flex-1" />
         {/* Router orqali: Pages'da `/onboarding` to'g'ridan-to'g'ri havolasi

@@ -18,18 +18,18 @@ export const day2: DailyPlanDay = {
   sections: [
     { titleUz: 'Lug\'at', titleEn: 'Vocabulary', minutes: 20 },
     { titleUz: 'Grammatika', titleEn: 'Grammar', minutes: 20 },
-    { titleUz: 'O\'qiş', titleEn: 'Readinğ, minutes: 15 },
-    { titleUz: 'Eşitiş', titleEn: 'Listeninğ, minutes: 15 },
-    { titleUz: 'Gapiriş', titleEn: 'Speakinğ, minutes: 10 },
-    { titleUz: 'Yoziş', titleEn: 'Writinğ, minutes: 10 },
+    { titleUz: 'O\'qish', titleEn: 'Reading', minutes: 15 },
+    { titleUz: 'Eshitish', titleEn: 'Listening', minutes: 15 },
+    { titleUz: 'Gapirish', titleEn: 'Speaking', minutes: 10 },
+    { titleUz: 'Yozish', titleEn: 'Writing', minutes: 10 },
   ],
 }
 
 export const vocabDay2: VocabularyItem[] = [
   { id: 'c1-v2-1', word: 'nebulous', translationUz: 'noaniq', explanationEn: 'Vague, ill-defined.', exampleEn: 'The company\'s plans for the future are still nebulous.', exampleUz: 'Kompaniyaning kelajakdagi rejalari hali noaniq.', pos: 'adj', topic: 'academic', level: 'C1' },
-  { id: 'c1-v2-2', word: 'ubiquitous', translationUz: 'hamma yoqdala', explanationEn: 'Present, appearing or found everywhere.', exampleEn: 'Smartphones are now ubiquitous.', exampleUz: 'Smartfonlar endi hamma yoqdala.', pos: 'adj', topic: 'teçnology', level: 'C1' },
-  { id: 'c1-v2-3', word: 'superfluous', translationUz: 'keraksiz', explanationEn: 'Unnecessary, especially through being more than enough.', exampleEn: 'Remove any superfluous details from the report.', exampleUz: 'Hisobotdan har qanday keraksiz tafsilotni olib taşlang.', pos: 'adj', topic: 'rhetoric', level: 'C1' },
-  { id: 'c1-v2-4', word: 'cogent', translationUz: 'ikki q bul', explanationEn: 'Clear, logical, and convincing.', exampleEn: 'She made a cogent argument for the new policy.', exampleUz: 'U yangi siyosat uçun ikki q bul argument keltirdi.', pos: 'adj', topic: 'rhetoric', level: 'C1' },
+  { id: 'c1-v2-2', word: 'ubiquitous', translationUz: 'hamma yoqdala', explanationEn: 'Present, appearing or found everywhere.', exampleEn: 'Smartphones are now ubiquitous.', exampleUz: 'Smartfonlar endi hamma yoqdala.', pos: 'adj', topic: 'technology', level: 'C1' },
+  { id: 'c1-v2-3', word: 'superfluous', translationUz: 'keraksiz', explanationEn: 'Unnecessary, especially through being more than enough.', exampleEn: 'Remove any superfluous details from the report.', exampleUz: 'Hisobotdan har qanday keraksiz tafsilotni olib tashlang.', pos: 'adj', topic: 'rhetoric', level: 'C1' },
+  { id: 'c1-v2-4', word: 'cogent', translationUz: 'ikki q bul', explanationEn: 'Clear, logical, and convincing.', exampleEn: 'She made a cogent argument for the new policy.', exampleUz: 'U yangi siyosat uchun ikki q bul argument keltirdi.', pos: 'adj', topic: 'rhetoric', level: 'C1' },
   { id: 'c1-v2-5', word: 'preponderance', translationUz: 'ustunlik', explanationEn: 'The quality or state of being greater in number or influence.', exampleEn: 'The preponderance of evidence suggests guilt.', exampleUz: 'Dalillarning ustunligi aybni ko\'rsatmoqda.', pos: 'noun', topic: 'academic', level: 'C1' },
 ]
 
@@ -37,25 +37,25 @@ export const grammarDay2: GrammarTopic = {
   id: 'c1-g2',
   titleUz: 'Mixed Conditionals (Advanced)',
   titleEn: 'Mixed Conditionals (Advanced)',
-  explanationUz: 'Murakkab konditsionallar: o\'tmişdagi şart va hozirgi natija (va aksinça).',
+  explanationUz: 'Murakkab konditsionallar: o\'tmishdagi shart va hozirgi natija (va aksincha).',
   explanationEn: 'Advanced mixed conditionals allow us to discuss how an action in the past (or not) affects the present (or not), and vice versa.',
   exercises: [
     {
       id: 'c1-g2-ex1',
       kind: 'gap-fill',
-      instructionUz: 'Bo\'ş joyni to\'g\'ri şakl bilan to\'ldiring.',
+      instructionUz: 'Bo\'sh joyni to\'g\'ri shakl bilan to\'ldiring.',
       level: 'C1',
       skill: 'grammar',
       difficulty: 4,
       tags: ['mixed-conditionals'],
-      text: 'If we ___ (invest) in renewable energy a decade ago, the world ___ (be) muç cleaner now.',
+      text: 'If we ___ (invest) in renewable energy a decade ago, the world ___ (be) much cleaner now.',
       answers: ['had invested', 'would be'],
       wordBank: ['had invested', 'would be'],
       caseSensitive: false,
     },
     {
       id: 'c1-g2-ex2',
-      kind: 'multiple-çoice',
+      kind: 'multiple-choice',
       instructionUz: 'To\'g\'ri javobni tanlang.',
       level: 'C1',
       skill: 'grammar',
@@ -73,10 +73,10 @@ export const readingDay2: ReadingPassage = {
   level: 'C1',
   titleUz: 'Iqtisodiyotda Innovatsiyalar',
   titleEn: 'Innovation in Economics',
-  content: 'The rapid pace of teçnological advancement has created a paradigm şift in global economics. From blockçain to AI-driven logistics, the meçanisms of trade are being rewritten...',
+  content: 'The rapid pace of technological advancement has created a paradigm shift in global economics. From blockchain to AI-driven logistics, the mechanisms of trade are being rewritten...',
   glossary: [
     { word: 'paradigm', uz: 'paradigma', level: 'C1' },
-    { word: 'meçanisms', uz: 'mexanizmlar', level: 'C1' },
+    { word: 'mechanisms', uz: 'mexanizmlar', level: 'C1' },
     { word: 'logistics', uz: 'logistika', level: 'C1' },
   ],
 }
@@ -124,13 +124,13 @@ export const testDay2: SectionTest = {
   exercises: [
     {
       id: 'c1-t2-ex1',
-      kind: 'multiple-çoice',
+      kind: 'multiple-choice',
       instructionUz: 'To\'g\'ri javobni tanlang.',
       level: 'C1',
       skill: 'vocabulary',
       difficulty: 4,
       tags: ['rhetoric'],
-      question: 'Whiç word means "clear, logical, and convincing"?',
+      question: 'Which word means "clear, logical, and convincing"?',
       options: ['nebulous', 'superfluous', 'cogent', 'equivocal'],
       answerIndex: 2,
     },

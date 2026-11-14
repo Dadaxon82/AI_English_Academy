@@ -1,33 +1,33 @@
 /**
- * Progress va statistika — könikma isbotlari, grafiklar, tarix.
+ * Progress va statistika — ko'nikma isbotlari, grafiklar, tarix.
  *
- * Daraja kötariş XP/yillar bilan emas, köp KO'NIKMA DALILI bilan
- * ölçanadi — şu sahifada isbotlar oçiq körsatiladi.
+ * Daraja ko'tarish XP/yillar bilan emas, ko'p KO'NIKMA DALILI bilan
+ * o'lchanadi — shu sahifada isbotlar ochiq ko'rsatiladi.
  */
 
 import { useMemo, useState } from 'react'
-import { useSearçParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 import { BarChart, Button, Card, Chip, EmptyState, InfoBanner, LoadingBlock, ProgressRing, StatTile } from '../components/ui'
 import { useStore, lastNDays } from '../lib/store'
-import { levelLabel, PROMOTION_THRESHOLD, MIN_EVIDENCE_PER_SKILL } from '../lib/skillScorinğ
-import { skillLabelUz, daysUntil } from '../lib/planninğ
+import { levelLabel, PROMOTION_THRESHOLD, MIN_EVIDENCE_PER_SKILL } from '../lib/skillScoring'
+import { skillLabelUz, daysUntil } from '../lib/planning'
 import { formatDuration } from '../lib/timer'
 import { LOADED_LEVELS, getBundle } from '../content'
 import { CEFR_LEVELS } from '../content/types'
-import { DiagnosticStep } from './Onboardinğ
-import type { SkillEvidence } from '../lib/skillScorinğ
+import { DiagnosticStep } from './Onboarding'
+import type { SkillEvidence } from '../lib/skillScoring'
 
 export default function Progress() {
   const { data, evidence, promotion, streak, vocabSummary, dueCount, allocation, ready, actions } = useStore()
   const [range, setRange] = useState<7 | 14 | 30>(7)
-  // BUG: Daşboard'dagi "Diagnostikani qayta topşiriş" havolasi /progress'ga
-  // olib, u yerda bunday imkon yöq edi. Endi şu sahifada topşiriş mumkin
-  // (?retake=1 bilan oçilganda darhol boşlanadi).
-  const [params, setParams] = useSearçParams()
+  // BUG: Dashboard'dagi "Diagnostikani qayta topshirish" havolasi /progress'ga
+  // olib, u yerda bunday imkon yo'q edi. Endi shu sahifada topshirish mumkin
+  // (?retake=1 bilan ochilganda darhol boshlanadi).
+  const [params, setParams] = useSearchParams()
   const [retake, setRetake] = useState(params.get('retake') === '1')
   const openRetake = (v: boolean) => {
     setRetake(v)
-    const nextParams = new URLSearçParams(params)
+    const nextParams = new URLSearchParams(params)
     if (v) nextParams.set('retake', '1')
     else nextParams.delete('retake')
     setParams(nextParams, { replace: true })
@@ -47,7 +47,7 @@ export default function Progress() {
   const pathDone = data.path.completedDays.length
   const pathTotal = getBundle(data.settings.currentLevel).days.length
 
-  // BUG: ma'lumotlar yuklanmasa ham sahifa hisoblab, 0/böş holat körsatardi.
+  // BUG: ma'lumotlar yuklanmasa ham sahifa hisoblab, 0/bo'sh holat ko'rsatardi.
   if (!ready) return <LoadingBlock label="Progress ma'lumotlari yuklanmoqda…" />
 
   return (
@@ -58,7 +58,7 @@ export default function Progress() {
           <Chip tone="brand">
             {data.settings.currentLevel} → {data.settings.targetLevel}
           </Chip>
-          {examLeft !== null && <Chip tone={examLeft < 14 ? 'warn' : 'default'}>Imtihongaça {examLeft} kun</Chip>}
+          {examLeft !== null && <Chip tone={examLeft < 14 ? 'warn' : 'default'}>Imtihongacha {examLeft} kun</Chip>}
         </div>
         <p className="muted text-sm">
           Hozirgi daraja: <b>{ll.titleUz}</b> ({ll.titleEn}). Maqsad: <b>{target.titleUz}</b>.
@@ -70,8 +70,8 @@ export default function Progress() {
             return (
               <span
                 key={lvl}
-                className={`çip ${active ? '!border-[var(--accent)] !text-[var(--accent)] font-bold' : ''} ${loaded ? '' : 'opacity-50'}`}
-                title={loaded ? (active ? 'Siz hozir şu darajadasiz' : 'Kontent yuklangan daraja') : 'Kontent hali tayyor emas'}
+                className={`chip ${active ? '!border-[var(--accent)] !text-[var(--accent)] font-bold' : ''} ${loaded ? '' : 'opacity-50'}`}
+                title={loaded ? (active ? 'Siz hozir shu darajadasiz' : 'Kontent yuklangan daraja') : 'Kontent hali tayyor emas'}
               >
                 {lvl}
                 {!loaded && ' ·'}
@@ -83,29 +83,29 @@ export default function Progress() {
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <StatTile label="Kunlik ketma-ketlik" value={`${streak} kun`} tone={streak > 0 ? 'ok' : 'default'} hint="Ketma-ket faol kunlar" />
-        <StatTile label={`${range} kun içida`} value={formatDuration(totals.seconds)} hint="Faoliyat vaqti" />
+        <StatTile label={`${range} kun ichida`} value={formatDuration(totals.seconds)} hint="Faoliyat vaqti" />
         <StatTile label="Aniqlik" value={`${totals.acc}%`} tone={totals.acc >= 70 ? 'ok' : totals.acc >= 50 ? 'warn' : 'bad'} hint={`${totals.correct}/${totals.attempts} to‘g‘ri`} />
         <StatTile label="So‘zlar" value={vocabSummary} hint={`${dueCount} ta takror navbatda`} />
       </div>
 
-      {/* --- Könikma isbotlari (daraja kötariş şartlari) --- */}
+      {/* --- Ko'nikma isbotlari (daraja ko'tarish shartlari) --- */}
       <Card className="grid gap-3.5">
         <div className="flex flex-wrap items-center gap-2">
           <h2 className="font-bold">Ko‘nikma isbotlari</h2>
           <Chip tone={promotion.recommendedLevel ? 'ok' : 'warn'}>
-            {promotion.recommendedLevel ? 'Ko‘tarilişga tayyor' : 'Hali tayyor emas'}
+            {promotion.recommendedLevel ? 'Ko‘tarilishga tayyor' : 'Hali tayyor emas'}
           </Chip>
         </div>
         <p className="text-xs muted">
-          Daraja faqat to‘rtta asosiy ko‘nikma bo‘yiça yetarli isbot yig‘ilsa tavsiya qilinadi: har birida kamida{' '}
-          {MIN_EVIDENCE_PER_SKILL} ta o‘lçov va umumiy ball {PROMOTION_THRESHOLD}+. XP yoki kunlar darajani ko‘tarmaydi.
+          Daraja faqat to‘rtta asosiy ko‘nikma bo‘yicha yetarli isbot yig‘ilsa tavsiya qilinadi: har birida kamida{' '}
+          {MIN_EVIDENCE_PER_SKILL} ta o‘lchov va umumiy ball {PROMOTION_THRESHOLD}+. XP yoki kunlar darajani ko‘tarmaydi.
         </p>
         <div className="grid gap-3">
           {evidence.map((e) => (
             <EvidenceRow key={e.skill} e={e} />
           ))}
         </div>
-        <InfoBanner tone={promotion.recommendedLevel ? 'infö : 'muted'}>{promotion.reasonUz}</InfoBanner>
+        <InfoBanner tone={promotion.recommendedLevel ? 'info' : 'muted'}>{promotion.reasonUz}</InfoBanner>
         {promotion.recommendedLevel !== null && <PromoteBanner />}
       </Card>
 
@@ -120,14 +120,14 @@ export default function Progress() {
               type="button"
               aria-pressed={range === r}
               onClick={() => setRange(r)}
-              className={`çip cursor-pointer ${range === r ? '!border-[var(--accent)] !text-[var(--accent)] font-bold' : ''}`}
+              className={`chip cursor-pointer ${range === r ? '!border-[var(--accent)] !text-[var(--accent)] font-bold' : ''}`}
             >
               {r} kun
             </button>
           ))}
         </div>
         {days.every((d) => d.seconds === 0 && d.attempts === 0) ? (
-          <EmptyState title="Grafik bo‘ş" body="Birinçi maşqni bajaring — kunlik faoliyat şu yerda ko‘rinadi." />
+          <EmptyState title="Grafik bo‘sh" body="Birinchi mashqni bajaring — kunlik faoliyat shu yerda ko‘rinadi." />
         ) : (
           <BarChart
             data={days.map((d) => ({
@@ -145,7 +145,7 @@ export default function Progress() {
         <Card className="grid gap-3">
           <h2 className="font-bold">Mock imtihon natijalari</h2>
           {data.mockAttempts.length === 0 ? (
-            <EmptyState title="Mock imtihon topşirilmagan" body="Mock imtihon bo‘limiga o‘tib, to‘liq maşq imtihonini yeçing." />
+            <EmptyState title="Mock imtihon topshirilmagan" body="Mock imtihon bo‘limiga o‘tib, to‘liq mashq imtihonini yeching." />
           ) : (
             [...data.mockAttempts].reverse().map((m) => (
               <div key={m.id} className="rounded-xl border p-3 grid gap-2">
@@ -168,23 +168,23 @@ export default function Progress() {
           )}
         </Card>
 
-        {/* --- Yoziş / gapiriş tarixi --- */}
+        {/* --- Yozish / gapirish tarixi --- */}
         <Card className="grid gap-3">
-          <h2 className="font-bold">Yoziş va gapiriş tarixi</h2>
+          <h2 className="font-bold">Yozish va gapirish tarixi</h2>
           {data.writing.length + data.speaking.length === 0 ? (
-            <EmptyState title="Hali iş yuborilmagan" body="Yoziş yoki gapiriş topşirigini bajaring — baholar şu yerda paydo böladi." />
+            <EmptyState title="Hali ish yuborilmagan" body="Yozish yoki gapirish topshirigini bajaring — baholar shu yerda paydo bo'ladi." />
           ) : (
             <div className="grid gap-2 max-h-80 overflow-auto pr-1">
               {[
                 ...data.writing.map((w) => ({
                   at: w.createdAt,
-                  kind: 'Yoziş',
+                  kind: 'Yozish',
                   score: w.analysis ? Math.round((Object.values(w.analysis.criteriaScores).reduce((a, b) => a + b, 0) / 5 / 5) * 100) : null,
                   label: `${w.wordCount} so‘z`,
                 })),
                 ...data.speaking.map((s) => ({
                   at: s.createdAt,
-                  kind: 'Gapiriş',
+                  kind: 'Gapirish',
                   score: s.analysis
                     ? Math.round((((s.analysis.fluency + s.analysis.grammar + s.analysis.lexis) / 3 / 5) as number) * 100)
                     : null,
@@ -209,7 +209,7 @@ export default function Progress() {
         </Card>
       </div>
 
-      {/* --- O'quv yöli va diagnostika --- */}
+      {/* --- O'quv yo'li va diagnostika --- */}
       <div className="grid lg:grid-cols-2 gap-4">
         <Card className="grid gap-3">
           <h2 className="font-bold">O‘quv yo‘li</h2>
@@ -227,10 +227,10 @@ export default function Progress() {
             <h2 className="font-bold">Diagnostika</h2>
             <span className="flex-1" />
             {retake ? (
-              <Button size="sm" variant="ghost" onClick={() => openRetake(false)}>Bekor qiliş</Button>
+              <Button size="sm" variant="ghost" onClick={() => openRetake(false)}>Bekor qilish</Button>
             ) : (
               <Button size="sm" variant="secondary" onClick={() => openRetake(true)}>
-                {data.diagnostic === null ? 'Diagnostikani topşiriş' : 'Diagnostikani qayta topşiriş'}
+                {data.diagnostic === null ? 'Diagnostikani topshirish' : 'Diagnostikani qayta topshirish'}
               </Button>
             )}
           </div>
@@ -243,7 +243,7 @@ export default function Progress() {
               }}
             />
           ) : data.diagnostic === null ? (
-            <EmptyState title="Diagnostika topşirilmagan" body="Yuqoridagi tugma bilan istalgan vaqtda topşirişingiz mumkin." />
+            <EmptyState title="Diagnostika topshirilmagan" body="Yuqoridagi tugma bilan istalgan vaqtda topshirishingiz mumkin." />
           ) : (
             <div className="grid gap-2 text-sm">
               <div className="flex flex-wrap items-center gap-2">
@@ -252,7 +252,7 @@ export default function Progress() {
                 <span className="muted">{new Date(data.diagnostic.at).toLocaleString('uz')}</span>
               </div>
               <p className="text-xs muted">
-                Diagnostika faqat boşlang‘iç yo‘naliş beradi; daraja keyin ko‘p ko‘nikma dalillari bilan ko‘tariladi.
+                Diagnostika faqat boshlang‘ich yo‘nalish beradi; daraja keyin ko‘p ko‘nikma dalillari bilan ko‘tariladi.
               </p>
             </div>
           )}
@@ -262,10 +262,10 @@ export default function Progress() {
       <Card className="grid gap-3">
         <h2 className="font-bold">Xulosa statistikasi</h2>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-          <StatTile label="Jami urinişlar" value={data.attempts.length} />
-          <StatTile label="Yoziş işlari" value={data.writing.length} />
-          <StatTile label="Gapiriş seanslari" value={data.speaking.length} />
-          <StatTile label="Mock urinişlar" value={data.mockAttempts.length} />
+          <StatTile label="Jami urinishlar" value={data.attempts.length} />
+          <StatTile label="Yozish ishlari" value={data.writing.length} />
+          <StatTile label="Gapirish seanslari" value={data.speaking.length} />
+          <StatTile label="Mock urinishlar" value={data.mockAttempts.length} />
         </div>
         <ExportProgress />
       </Card>
@@ -290,9 +290,9 @@ function EvidenceRow({ e }: { e: SkillEvidence }) {
         <Chip tone={okCount ? 'ok' : 'warn'}>
           {e.evidenceCount}/{MIN_EVIDENCE_PER_SKILL} isbot
         </Chip>
-        <Chip tone={e.confidence >= 0.7 ? 'ok' : 'default'}>{Math.round(e.confidence * 100)}% işonç</Chip>
+        <Chip tone={e.confidence >= 0.7 ? 'ok' : 'default'}>{Math.round(e.confidence * 100)}% ishonch</Chip>
       </div>
-      {e.lastAt === null && <span className="text-[11px] muted">Bu ko‘nikma bo‘yiça hali o‘lçov yo‘q.</span>}
+      {e.lastAt === null && <span className="text-[11px] muted">Bu ko‘nikma bo‘yicha hali o‘lchov yo‘q.</span>}
     </div>
   )
 }
@@ -300,18 +300,18 @@ function EvidenceRow({ e }: { e: SkillEvidence }) {
 function PromoteBanner() {
   const { promotion, actions } = useStore()
   const [done, setDone] = useState(false)
-  if (done) return <InfoBanner>Daraja yangilandi — yeçib bo‘lingan maşqlar tarixi saqlanadi.</InfoBanner>
+  if (done) return <InfoBanner>Daraja yangilandi — yechib bo‘lingan mashqlar tarixi saqlanadi.</InfoBanner>
   const lvl = promotion.recommendedLevel
   if (!lvl) return null
-  // ESKI BUG: tugma kontenti YUKLANMAGAN darajaga ötkazardi — 6 ta sahifa
-  // böş qolardi (Reading/Listening/Writing/Speaking/Progress/Luğat).
-  // Endi bosiş faqat kontenti bor daraja uçun; aks holda tavsiya qayd
-  // etiladi, lekin ötkazmaymiz (halol xabar).
+  // ESKI BUG: tugma kontenti YUKLANMAGAN darajaga o'tkazardi — 6 ta sahifa
+  // bo'sh qolardi (Reading/Listening/Writing/Speaking/Progress/Lug'at).
+  // Endi bosish faqat kontenti bor daraja uchun; aks holda tavsiya qayd
+  // etiladi, lekin o'tkazmaymiz (halol xabar).
   const contentReady = LOADED_LEVELS.includes(lvl)
   return (
     <div className="rounded-xl border border-emerald-300/60 bg-emerald-50 dark:bg-emerald-900/25 p-3.5 flex flex-wrap items-center gap-3">
       <span className="text-sm">
-        Tizim tavsiyasi: <b>{lvl}</b> darajasiga o‘tiş.
+        Tizim tavsiyasi: <b>{lvl}</b> darajasiga o‘tish.
       </span>
       <span className="flex-1" />
       <Button
@@ -324,12 +324,12 @@ function PromoteBanner() {
           setDone(true)
         }}
       >
-        {lvl}ga o‘tiş
+        {lvl}ga o‘tish
       </Button>
       <span className="text-[11px] muted w-full">
         {contentReady
-          ? `Kontent ${LOADED_LEVELS.join('/')} darajalari uçun tayyor.`
-          : `Tavsiya qayd etildi, lekin ${lvl} kontenti hali tayyor emas — o‘tiş tugmasi kontent yuklangandan keyin işlaydi.`}
+          ? `Kontent ${LOADED_LEVELS.join('/')} darajalari uchun tayyor.`
+          : `Tavsiya qayd etildi, lekin ${lvl} kontenti hali tayyor emas — o‘tish tugmasi kontent yuklangandan keyin ishlaydi.`}
       </span>
     </div>
   )
@@ -359,8 +359,8 @@ function ExportProgress() {
           a.href = url
           a.download = 'progress.json'
           a.click()
-          // REVOKE BIROZ KECHIKTIRILADI: darhol çaqirilsa ba'zi brauzerlerde
-          // yuklab oliş boşlanmasiz bekor böladi.
+          // REVOKE BIROZ KECHIKTIRILADI: darhol chaqirilsa ba'zi brauzerlerde
+          // yuklab olish boshlanmasiz bekor bo'ladi.
           setTimeout(() => URL.revokeObjectURL(url), 4000)
           setNote('progress.json yuklab olindi.')
         }}

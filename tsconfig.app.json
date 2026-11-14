@@ -24,5 +24,9 @@
 
     "types": ["vite/client", "vite-plugin-pwa/client", "@testing-library/jest-dom", "node"]
   },
-  "include": ["src"]
+  "include": ["src"],
+  // 8c0e8f0 da qo'shilgan A2–C1 kontenti va adaptive.ts hali ilovaga ulanmagan:
+  // ular kontent sxemasiga (src/content/types.ts) mos emas. Sxemaga moslab
+  // ulanganda shu ro'yxatdan olib tashlanadi.
+  "exclude": ["src/content/a2", "src/content/b1", "src/content/b2", "src/content/c1", "src/lib/adaptive.ts"]
 }

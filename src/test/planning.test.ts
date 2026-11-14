@@ -131,7 +131,7 @@ describe('Kun vazifalari va o‘quv yo‘li', () => {
 
   it('skillLabelUz o‘zbekcha nom beradi', () => {
     expect(skillLabelUz('vocabulary')).toBe('Lug‘at')
-    expect(skillLabelUz('speaking')).toBe('G‘apirish')
+    expect(skillLabelUz('speaking')).toBe('Gapirish')
   })
 })
 
