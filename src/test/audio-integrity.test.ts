@@ -6,7 +6,7 @@
  * Ikkita narsa solishtiriladi:
  *  1) har bir tinglash topshirigining `audio.id` manifestda bor va
  *     `available: true`;
- *  2) kontentdagi `audio.src` manifestdagi manzil bilan BIR XIL
+ *  2) kontentdagı `audio.src` manifestdagi manzil bilan BIR XIL
  *     (aksi holda manifest o'qib bo'lmasa pleyer mavjud bo'lmagan faylga
  *     murojaat qiladi — eski holatda 8 tasining ham manzili noto'g'ri edi).
  */
@@ -37,7 +37,7 @@ const audioRefs = [
 ]
 
 describe('Audio yaxlitligi', () => {
-  it('tinglaş topşiriqlari audio bilan ta’minlangan', () => {
+  it('tinglash topshiriqlari audio bilan ta’minlangan', () => {
     expect(audioRefs.length).toBeGreaterThanOrEqual(8)
   })
 
@@ -45,18 +45,18 @@ describe('Audio yaxlitligi', () => {
     const bad: string[] = []
     for (const { where, audio } of audioRefs) {
       const item = byId.get(audio.id)
-      if (!item) bad.push(`${where}: manifestda “${audio.id}” yöq`)
-      else if (item.available !== true) bad.push(`${where}: “${audio.id}” available !== true`)
+      if (!item) bad.push(`${where}: manifestda “${audio.id}“ yo‘q`)
+      else if (item.available !== true) bad.push(`${where}: “${audio.id}“ available !== true`)
       else if (audio.fileAvailable !== true) bad.push(`${where}: kontentda fileAvailable false`)
     }
     expect(bad, `Audio manifesti muammolari (${bad.length} ta):\n` + bad.join('\n')).toEqual([])
   })
 
-  it('kontentdagi audio.src manifest manzili bilan bir xil', () => {
+  it('kontentdagı audio.src manifest manzili bilan bir xil', () => {
     const bad: string[] = []
     for (const { where, audio } of audioRefs) {
       const item = byId.get(audio.id)
-      if (item && item.src !== audio.src) bad.push(`${where}: src “${audio.src}” ≠ manifest “${item.src}”`)
+      if (item && item.src !== audio.src) bad.push(`${where}: src “${audio.src}“ ≠ manifest “${item.src}“`)
     }
     expect(bad, `Audio manzil nomuvofiqligi (${bad.length} ta):\n` + bad.join('\n')).toEqual([])
   })
@@ -67,12 +67,12 @@ describe('Audio yaxlitligi', () => {
       if (item.available !== true) continue // available:false — fayl kutilmaydi
       try {
         const buf = readFileSync(path.join(ROOT, 'public', item.src.replace(/^\/+/, '')))
-        if (buf.length < 1000) bad.push(`${item.id}: ${item.src} fayli juda kiçik (${buf.length} bayt) — buzilgan bölişi mumkin`)
+        if (buf.length < 1000) bad.push(`${item.id}: ${item.src} fayli juda kichik (${buf.length} bayt) — buzilgan bo'lishi mumkin`)
         else if (buf.length > 4_000_000) bad.push(`${item.id}: ${item.src} 4 MB dan katta (${buf.length} bayt) — bepul rejada sekin yuklanadi`)
       } catch {
         bad.push(`${item.id}: ${item.src} fayli topilmadi`)
       }
     }
-    expect(bad, `Manifestda körsatilgan fayllar yöq (${bad.length} ta):\n` + bad.join('\n')).toEqual([])
+    expect(bad, `Manifestda ko'rsatilgan fayllar yo'q (${bad.length} ta):\n` + bad.join('\n')).toEqual([])
   })
 })

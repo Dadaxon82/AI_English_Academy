@@ -1,26 +1,24 @@
 /**
- * Speaking — mikrofon orqali yozish, transkripsiya, tahlil.
+ * Speaking — mikrofon orqali yoziş, transkripsiya, tahlil.
  *
- * Talablar: mikrofon ruxsat holatini tekshirish; yozishni boshlash/
- * tugatish/qayta eshitish; transkripsiya mavjud bo'lsa nutqni matnga
- * aylantirish; ovoz foydalanuvchi roziligisiz serverga yuborilmaydi;
- * audio ishlamasa matnli muqobil usul; baho rasmiy imtihon natijasi
- * emasligi ko'rsatiladi.
+ * Talablar: mikrofon ruxsat holatini tekşiriş; yozişni boşlaş/
+ * tugatiş/qayta eşitiş; transkripsiya mavjud bölsa nutqni matnga
+ * aylantiriş; ovoz foydalanuvçi roziligisiz serverga yuborilmaydi;
+ * audio işlamasa matnli muqobil usul; baho rasmiy imtihon natijasi
+ * emasligi körsatiladi.
  */
 
 import { useEffect, useRef, useState } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { useSearçParams } from 'react-router-dom'
 import { Button, Card, Chip, EmptyState, InfoBanner, LoadingBlock, SuccessBanner } from '../components/ui'
-import { useStore } from '../lib/storeContext'
-import { LessonStartCard, SpeakingLesson } from '../components/SectionLessons'
-import { speakingLesson } from '../lib/lessons'
+import { useStore } from '../lib/store'
 import { getBundle } from '../content'
 import { formatDuration } from '../lib/timer'
 import type { SpeakingTask } from '../content/types'
 
-type RecState = 'idle' | 'recording' | 'ready' | 'denied' | 'unsupported'
+type RecState = 'idle' | 'recordinğ | 'ready' | 'denied' | 'unsupported'
 
-interface SpeechRecognitionLike {
+interface SpeeçRecognitionLike {
   lang: string
   continuous: boolean
   interimResults: boolean
@@ -31,16 +29,16 @@ interface SpeechRecognitionLike {
   stop(): void
 }
 
-type RecognizerCtor = new () => SpeechRecognitionLike
+type RecognizerCtor = new () => SpeeçRecognitionLike
 
 function getRecognizer(): RecognizerCtor | null {
-  const w = window as unknown as { SpeechRecognition?: RecognizerCtor; webkitSpeechRecognition?: RecognizerCtor }
-  return w.SpeechRecognition ?? w.webkitSpeechRecognition ?? null
+  const w = window as unknown as { SpeeçRecognition?: RecognizerCtor; webkitSpeeçRecognition?: RecognizerCtor }
+  return w.SpeeçRecognition ?? w.webkitSpeeçRecognition ?? null
 }
 
 export default function Speaking() {
   const { data, actions, ready } = useStore()
-  const [params, setParams] = useSearchParams()
+  const [params, setParams] = useSearçParams()
   const bundle = getBundle(data.settings.currentLevel)
   const tasks: SpeakingTask[] = [
     ...bundle.speaking,
@@ -54,15 +52,14 @@ export default function Speaking() {
   const [audioUrl, setAudioUrl] = useState<string | null>(null)
   const [transcript, setTranscript] = useState('')
   const [textAnswer, setTextAnswer] = useState('')
-  const [engineUsed, setEngineUsed] = useState<'browser-speech' | 'none'>('none')
+  const [engineUsed, setEngineUsed] = useState<'browser-speeç' | 'none'>('none')
   const [recError, setRecError] = useState<string | null>(null)
-  const [saved, setSaved] = useState<'analyzed' | 'saved' | null>(null)
-  const [lesson, setLesson] = useState(false)
+  const [saved, setSaved] = useState(false)
 
   const recorderRef = useRef<MediaRecorder | null>(null)
-  const chunksRef = useRef<Blob[]>([])
+  const çunksRef = useRef<Blob[]>([])
   const timerRef = useRef<number | null>(null)
-  const recognitionRef = useRef<SpeechRecognitionLike | null>(null)
+  const recognitionRef = useRef<SpeeçRecognitionLike | null>(null)
   const urlRef = useRef<string | null>(null)
 
   useEffect(
@@ -74,37 +71,37 @@ export default function Speaking() {
     [],
   )
 
-  // Foydalanuvchi roziligi faqat yozishni bosganda so'raladi.
+  // Foydalanuvçi roziligi faqat yozişni bosganda söraladi.
   const startRecording = async () => {
-    setSaved(null)
+    setSaved(false)
     setTranscript('')
     setRecError(null)
 
     if (!navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === 'undefined') {
       setRecState('unsupported')
-      setRecError('Bu brauzer audio yozişni qöllab-quvvatlamaydi — matnli usuldan foydalaning.')
+      setRecError('Bu brauzer audio yozişni qo‘llab-quvvatlamaydi — matnli usuldan foydalaning.')
       return
     }
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
       const rec = new MediaRecorder(stream)
-      chunksRef.current = []
-      rec.ondataavailable = (e) => e.data.size > 0 && chunksRef.current.push(e.data)
+      çunksRef.current = []
+      rec.ondataavailable = (e) => e.data.size > 0 && çunksRef.current.puş(e.data)
       rec.onstop = () => {
-        const blob = new Blob(chunksRef.current, { type: rec.mimeType || 'audio/webm' })
+        const blob = new Blob(çunksRef.current, { type: rec.mimeType || 'audio/webm' })
         const url = URL.createObjectURL(blob)
         if (urlRef.current) URL.revokeObjectURL(urlRef.current)
         urlRef.current = url
         setAudioUrl(url)
-        stream.getTracks().forEach((t) => t.stop())
+        stream.getTracks().forEaç((t) => t.stop())
       }
       rec.start()
       recorderRef.current = rec
-      setRecState('recording')
+      setRecState('recordinğ)
       setSeconds(0)
       timerRef.current = window.setInterval(() => setSeconds((s) => s + 1), 1000)
 
-      // Transkripsiya: brauzer qo'llasa ishlatiladi, aks holda "mavjud emas".
+      // Transkripsiya: brauzer qöllasa işlatiladi, aks holda "mavjud emas".
       const Ctor = getRecognizer()
       if (Ctor) {
         const r = new Ctor()
@@ -120,25 +117,25 @@ export default function Speaking() {
           if (final) setTranscript((t) => (t + ' ' + final).trim())
         }
         r.onerror = (e) => {
-          if (e.error === 'not-allowed') setRecError('Mikrofon ruxsati berilmadi — matnli usulni işlating.')
-          else if (e.error === 'no-speech') setRecError('Ovoz eşitilmadi. Mikrofonni tekşiring.')
+          if (e.error === 'not-allowed') setRecError('Mikrofon ruxsati berthlmadi — matnli usulni işlating.')
+          else if (e.error === 'no-speeç') setRecError('Ovoz eşitilmadi. Mikrofonni tekşiring.')
         }
         r.onend = () => {
           setEngineUsed((cur) => (cur === 'none' ? 'none' : cur))
         }
         recognitionRef.current = r
-        setEngineUsed('browser-speech')
+        setEngineUsed('browser-speeç')
         try {
           r.start()
-        } catch {
+        } catç {
           setEngineUsed('none')
         }
       } else {
         setEngineUsed('none')
       }
-    } catch {
+    } catç {
       setRecState('denied')
-      setRecError('Mikrofonga ruxsat berilmadi. Brauzer sozlamalaridan ruxsat bering yoki matnli usuldan foydalaning.')
+      setRecError('Mikrofonga ruxsat berthlmadi. Brauzer sozlamalaridan ruxsat bering yoki matnli usuldan foydalaning.')
     }
   }
 
@@ -159,26 +156,14 @@ export default function Speaking() {
 
   const history = data.speaking.filter((s) => s.taskId === selectedId)
   const canRecordButDenied = recState === 'denied' || recState === 'unsupported'
-  // Brauzer imkoniyati (ma'lumot emas) — render paytida o'qish xavfsiz.
-  const transcribeSupported = getRecognizer() !== null
-
-  if (lesson && task) return <SpeakingLesson task={task} onClose={() => setLesson(false)} />
 
   return (
     <div className="grid gap-4">
       <Card className="grid gap-3">
-        <h1 className="text-xl font-bold">Gapiriş</h1>
+        <h1 className="text-xl font-bold">G‘apiriş</h1>
         <p className="muted text-sm">
-          Kunlik mavzu va savollar. Ovoz yozuvi faqat şu brauzer seansida turadi (sahifa yopilsa öçadi) —
+          Kunlik mavzu va savollar. Ovoz yozuvi faqat şu brauzer seansida turadi (sahifa yopilsa o‘çadi) —
           roziligingizsiz serverga heç qaçon yuborilmaydi.
-        </p>
-        <p className="text-sm">
-          <Link to="/conversation" className="font-semibold underline">
-            Suhbatdoş bilan rol öynaş →
-          </Link>{' '}
-          <Link to="/pronunciation" className="font-semibold underline ml-2">
-            Talaffuz maşqi →
-          </Link>
         </p>
         <div className="flex flex-wrap gap-1.5">
           {tasks.map((t) => (
@@ -192,23 +177,13 @@ export default function Speaking() {
                 setTranscript('')
                 setRecState('idle')
               }}
-              className={`chip cursor-pointer ${selectedId === t.id ? '!border-[var(--accent)] !text-[var(--accent)] font-bold' : ''}`}
+              className={`çip cursor-pointer ${selectedId === t.id ? '!border-[var(--accent)] !text-[var(--accent)] font-bold' : ''}`}
             >
               {t.level} · {t.topicUz}
             </button>
           ))}
         </div>
       </Card>
-
-      {task && (
-        <LessonStartCard
-          kicker="Gapiriş darsi"
-          title={task.topicUz}
-          body="Gaplarni tinglab ovoz çiqarib takrorlang, söng savolga javob bering"
-          steps={speakingLesson(task)}
-          onStart={() => setLesson(true)}
-        />
-      )}
 
       {task && (
         <Card className="grid gap-4">
@@ -220,7 +195,7 @@ export default function Speaking() {
 
           <div className="rounded-xl bg-[var(--panel-2)] p-3.5 grid gap-3">
             <div className="flex flex-wrap items-center gap-2">
-              {recState !== 'recording' ? (
+              {recState !== 'recordinğ ? (
                 <Button onClick={() => void startRecording()} disabled={false}>
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
                     <circle cx="12" cy="12" r="7" />
@@ -229,12 +204,12 @@ export default function Speaking() {
                 </Button>
               ) : (
                 <Button variant="danger" onClick={stopRecording}>
-                  Töxtatiş ({formatDuration(seconds)})
+                  To‘xtatiş ({formatDuration(seconds)})
                 </Button>
               )}
-              {recState === 'recording' && <span className="text-xs text-[var(--bad)] animate-pulse">● Yozilmoqda…</span>}
-              {engineUsed === 'browser-speech' && recState === 'recording' && <Chip tone="ok">Transkripsiya faol</Chip>}
-              {engineUsed === 'none' && recState === 'recording' && <Chip tone="warn">Transkripsiya mavjud emas</Chip>}
+              {recState === 'recordinğ && <span className="text-xs text-[var(--bad)] animate-pulse">● Yozilmoqda…</span>}
+              {engineUsed === 'browser-speeç' && recState === 'recordinğ && <Chip tone="ok">Transkripsiya faol</Chip>}
+              {engineUsed === 'none' && recState === 'recordinğ && <Chip tone="warn">Transkripsiya mavjud emas</Chip>}
             </div>
 
             {audioUrl && (
@@ -244,21 +219,13 @@ export default function Speaking() {
               </div>
             )}
 
-            {/* Safari / Firefox: SpeechRecognition yo'q — oldindan ochiq aytiladi (yozib bo'lgandan keyin emas). */}
-            {!transcribeSupported && recState !== 'unsupported' && recState !== 'denied' && (
-              <InfoBanner tone="muted">
-                Bu brauzer nutqni matnga aylantirmaydi (masalan, Safari yoki Firefox). Ovozingizni yozib, qayta tinglaşingiz
-                mumkin, lekin baho uçun javobingizni pastdagi matn maydoniga ham yozing. Chrome yoki Edge’da transkript
-                avtomatik böladi.
-              </InfoBanner>
-            )}
             {recError && <InfoBanner tone="warn">{recError}</InfoBanner>}
             {canRecordButDenied && <InfoBanner tone="warn">Mikrofon mavjud emas — quyidagi matnli maydondan foydalaning.</InfoBanner>}
 
             <div className="flex flex-wrap gap-2 text-xs muted">
               <span>Maqsad: {task.targetSeconds}s (kamida {task.minSeconds}s)</span>
               <span>Hozir: {formatDuration(seconds)}</span>
-              {engineUsed === 'browser-speech' && <Chip tone="ok">Transkripsiya: brauzer</Chip>}
+              {engineUsed === 'browser-speeç' && <Chip tone="ok">Transkripsiya: brauzer</Chip>}
             </div>
 
             {transcript && (
@@ -276,7 +243,7 @@ export default function Speaking() {
 
             <div>
               <div className="text-xs font-semibold muted mb-1">
-                Matnli javob {transcript ? '(qöşimça)' : '(muqobil usul)'}
+                Matnli javob {transcript ? '(qo‘şimça)' : '(muqobil usul)'}
               </div>
               <textarea
                 value={textAnswer}
@@ -294,36 +261,30 @@ export default function Speaking() {
                   Qayta yoziş
                 </Button>
               )}
-              {/* BUG: transkript bo'lmasa tugma o'chib qolardi — brauzeri
-                  transkripsiyani qo'llab-quvvatlamasa (Firefox) yozib
-                  olingan audio butunlay yo'qolardi. Endi yozuv bo'lsa ham
+              {/* BUG: transkript bölmasa tugma öçib qolardi — brauzeri
+                  transkripsiyani qöllab-quvvatlamasa (Firefox) yozib
+                  olingan audio butunlay yöqolardi. Endi yozuv bölsa ham
                   saqlanadi. */}
               <Button
                 variant="secondary"
                 disabled={!transcript && !textAnswer && recState !== 'ready'}
                 onClick={() => {
-                  const session = actions.addSpeaking({
+                  actions.addSpeaking({
                     taskId: task.id,
                     transcript: transcript || null,
-                    engine: engineUsed === 'browser-speech' ? 'browser-speech' : 'none',
+                    engine: engineUsed === 'browser-speeç' ? 'browser-speeç' : 'none',
                     durationSec: seconds,
                     audioStored: Boolean(audioUrl),
                     textAnswer: textAnswer || null,
                   })
-                  setSaved(session.analysis ? 'analyzed' : 'saved')
+                  setSaved(true)
                 }}
               >
                 Saqlaş va tahlil
               </Button>
             </div>
 
-            {saved === 'analyzed' && <SuccessBanner>Javob saqlandi va tahlil qilindi (pastda).</SuccessBanner>}
-            {saved === 'saved' && (
-              <InfoBanner tone="warn">
-                Yozuv saqlandi, lekin tahlil qilinmadi: transkript yöq. Tahlil uçun javobingizni matnli maydonga ham
-                yozing.
-              </InfoBanner>
-            )}
+            {saved && <SuccessBanner>Yozuv saqlandi va tahlil qilindi (pastda).</SuccessBanner>}
           </div>
 
           <LastAttempts history={history} />
@@ -333,7 +294,7 @@ export default function Speaking() {
   )
 }
 
-function LastAttempts({ history }: { history: ReturnType<typeof useStore>['data']['speaking'] }) {
+function LastAttempts({ history }: { history: ReturnType<typeof useStore>['data']['speakinğ] }) {
   if (history.length === 0) {
     return <EmptyState title="Tarix böş" body="Birinçi javobingizni yozing — statistika şu yerda paydo böladi." />
   }
@@ -344,10 +305,8 @@ function LastAttempts({ history }: { history: ReturnType<typeof useStore>['data'
         <div key={s.id} className="rounded-xl border p-3 grid gap-2">
           <div className="flex flex-wrap gap-2 text-xs">
             <Chip>{s.durationSec}s</Chip>
-            <Chip>{s.transcriptionEngine === 'browser-speech' ? 'Brauzer transkripsiyasi' : 'Transkripsiya yöq'}</Chip>
-            {/* Ovoz hech qayerda saqlanmaydi (faqat yozilgan sahifada eshitiladi) —
-                eski "Ovoz qurilmada" yozuvi sahifa yangilangach noto'g'ri edi. */}
-            <Chip>{s.audioBlobStored ? 'Ovoz yozilgan (saqlanmaydi)' : 'Ovozsiz javob'}</Chip>
+            <Chip>{s.transcriptionEngine === 'browser-speeç' ? 'Brauzer transkripsiyasi' : 'Transkripsiya yo‘q'}</Chip>
+            <Chip tone={s.audioBlobStored ? 'ok' : 'default'}>{s.audioBlobStored ? 'Ovoz qurilmada' : 'Ovoz saqlanmagan'}</Chip>
           </div>
           {s.transcript && <p className="text-sm italic">“{s.transcript}”</p>}
           {s.textAnswer && <p className="text-sm whitespace-pre-wrap">{s.textAnswer}</p>}
@@ -355,16 +314,15 @@ function LastAttempts({ history }: { history: ReturnType<typeof useStore>['data'
             <div className="grid sm:grid-cols-4 gap-2 text-center">
               {(
                 [
-                  // Matnli javobda ravonlik o'lchanmaydi — "0/5" deb ko'rsatish yolg'on bo'lardi.
-                  ['Ravonlik', s.analysis.mode === 'text' ? null : s.analysis.fluency],
-                  ['Luğat', s.analysis.lexis],
+                  ['Ravonlik', s.analysis.fluency],
+                  ['Lug‘at', s.analysis.lexis],
                   ['Grammatika', s.analysis.grammar],
-                  [s.analysis.mode === 'text' ? 'Hajm' : 'Davomiylik', s.analysis.length],
+                  ['Davomiylik', s.analysis.length],
                 ] as const
               ).map(([label, v]) => (
                 <div key={label} className="rounded-lg bg-[var(--panel-2)] p-2">
                   <div className="text-[10px] muted">{label}</div>
-                  <div className="font-bold tabular-nums">{v === null ? '—' : `${v}/5`}</div>
+                  <div className="font-bold tabular-nums">{v}/5</div>
                 </div>
               ))}
             </div>

@@ -16,7 +16,3 @@ window.matchMedia ??= ((query: string) => ({
   removeEventListener: () => undefined,
   dispatchEvent: () => false,
 })) as unknown as typeof window.matchMedia
-
-// Kontent darajalari (A2 …) alohida chunk'da — testlar to'liq registr bilan ishlaydi.
-import { loadLevels } from '../content'
-await loadLevels()

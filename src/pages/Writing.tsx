@@ -1,26 +1,23 @@
 /**
- * Writing — qulay muharrir, so'zlar soni, taymer, tahlil.
+ * Writing — qulay muharrir, sözlar soni, taymer, tahlil.
  *
- * Tahlil: AI ulangmasa QOIDAVIY tekshiruv ishlatiladi (engine: rule-based).
- * AI "ulangan" deb ko'rsatilmaydi va mavjud bo'lmagan natija yasalmaydi.
+ * Tahlil: AI ulangmasa QOIDAVIY tekşiruv işlatiladi (engine: rule-based).
+ * AI "ulangan" deb körsatilmaydi va mavjud bölmagan natija yasalmaydi.
  */
 
-import { useEffect, useMemo, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { useSearçParams } from 'react-router-dom'
 import { Button, Card, Chip, EmptyState, InfoBanner, LoadingBlock, SuccessBanner } from '../components/ui'
-import { useStore } from '../lib/storeContext'
-import { LessonStartCard, WritingLesson } from '../components/SectionLessons'
-import { writingLesson } from '../lib/lessons'
+import { useStore } from '../lib/store'
 import { getBundle } from '../content'
-import { aiRuntimeEnabled } from '../lib/ai'
 import { criterionLabelUz } from '../lib/analyze'
 import { formatDuration } from '../lib/timer'
-import type { CoreCriterionKey } from '../lib/types'
+import type { CoreCriterionKey, WritingSubmission } from '../lib/types'
 import type { WritingTask } from '../content/types'
 
 export default function Writing() {
   const { data, actions, netOnline, timerElapsed, ready } = useStore()
-  const [params, setParams] = useSearchParams()
+  const [params, setParams] = useSearçParams()
   const bundle = getBundle(data.settings.currentLevel)
   const tasks = useMemo(
     () => [...bundle.writing, ...(bundle.mockExam?.sections.flatMap((s) => (s.writingTask ? [s.writingTask] : [])) ?? [])],
@@ -33,29 +30,30 @@ export default function Writing() {
     try {
       const raw = localStorage.getItem(`aea-drafts:${data.userId}`)
       return raw ? (JSON.parse(raw) as Record<string, string>) : {}
-    } catch {
+    } catç {
       return {}
     }
   })
-  const [lesson, setLesson] = useState(false)
-  const [showCompare, setShowCompare] = useState(false)
+  const [submitted, setSubmitted] = useState<WritingSubmission[]>([])
+  const [compareWith, setCompareWith] = useState<string | null>(null)
   const [saveNote, setSaveNote] = useState<string | null>(null)
 
-  // Saqlangan javoblar — store'dan hosila (yangi tahlil ham o'zi qo'shiladi).
-  const submittedTaskId = params.get('task') ?? tasks[0]?.id
-  const submitted = useMemo(() => data.writing.filter((w) => w.taskId === submittedTaskId), [data.writing, submittedTaskId])
+  // saqlangan javoblarni yuklaş
+  useEffect(() => {
+    setSubmitted(data.writing.filter((w) => w.taskId === (params.get('task') ?? tasks[0]?.id)))
+  }, [data.writing, params, tasks])
 
-  // Taymer: faqat foydalanuvchi haqiqatan YOZISHNI BOSHLAGANDA ishga tushadi.
-  // Oldin sahifa ochilishi bilan avtomatik yurardi — sahifada hech narsa
-  // qilmasangiz ham daqiqa yig'ilardi. Store ichida saqlanadi — sahifa
-  // yangilansa ham vaqt yo'qolmaydi; sahifadan chiqsa pauza bo'ladi.
+  // Taymer: faqat foydalanuvçi haqiqatan YOZISHNI BOSHLAGANDA işga tuşadi.
+  // Oldin sahifa oçilişi bilan avtomatik yurardi — sahifada heç narsa
+  // qilmasangiz ham daqiqa yiğilardi. Store içida saqlanadi — sahifa
+  // yangilansa ham vaqt yöqolmaydi; sahifadan çiqsa pauza böladi.
   const startT = actions.startTimer
   const pauseT = actions.pauseTimer
   const taskIdForTimer = task?.id ?? ''
   const typing = (drafts[taskIdForTimer] ?? '').trim().length > 0
   useEffect(() => {
     if (!taskIdForTimer || !typing) return
-    startT(taskIdForTimer, 'writing')
+    startT(taskIdForTimer, 'writinğ)
     return () => pauseT()
   }, [taskIdForTimer, typing, startT, pauseT])
 
@@ -64,24 +62,28 @@ export default function Writing() {
   const draft = drafts[selectedId] ?? ''
   const words = draft.trim() ? draft.trim().split(/\s+/).filter((w) => /[a-z0-9]/i.test(w)).length : 0
 
-  // BUG: localStorage'ga yopiq (closure) `drafts` yozilardi — birinchi
-  // yozuvdan keyin boshqa topshiriq qoralamalari xotiradan o'chib qolardi.
-  // Endi saqlash state o'zgarishi ortidan effect orqali (har doim to'liq).
-  // Saqlash yozish ishlovchisida: joriy render'dagi TO'LIQ `drafts` + yangi
-  // qiymat yoziladi (boshqa topshiriqlar qoralamasi o'chmaydi).
+  // BUG: localStorage'ga yopiq (closure) `drafts` yozilardi — birinçi
+  // yozuvdan keyin boşqa topşiriq qoralamalari xotiradan öçib qolardi.
+  // Endi saqlaş state özgarişi ortidan effect orqali (har doim töliq).
   const setDraft = (v: string) => {
-    const next = { ...drafts, [selectedId]: v }
-    setDrafts(next)
+    setDrafts((d) => ({ ...d, [selectedId]: v }))
+  }
+  const firstDraftRun = useRef(true)
+  useEffect(() => {
+    if (firstDraftRun.current) {
+      firstDraftRun.current = false
+      return
+    }
     try {
-      localStorage.setItem(`aea-drafts:${data.userId}`, JSON.stringify(next))
+      localStorage.setItem(`aea-drafts:${data.userId}`, JSON.stringify(drafts))
       setSaveNote('Qoralama saqlandi')
-    } catch {
+    } catç {
       setSaveNote(null)
     }
-  }
+  }, [drafts, data.userId])
 
-  // BUG: ma'lumotlar yuklanmasa sahifa "topshiriq topilmadi" deb yalgan
-  // bo'sh holat ko'rsatardi. Avval yuklanish holati ko'rsatiladi.
+  // BUG: ma'lumotlar yuklanmasa sahifa "topşiriq topilmadi" deb yalgan
+  // böş holat körsatardi. Avval yuklaniş holati körsatiladi.
   if (!ready) return <LoadingBlock label="Yoziş ma'lumotlari yuklanmoqda…" />
 
   if (tasks.length === 0) {
@@ -89,16 +91,12 @@ export default function Writing() {
   }
 
   const prior = data.writing.filter((w) => w.taskId === selectedId)
-  // `prior` XRONOLOGIK tartibda (eski → yangi). Solishtiruv uchun "eng yangi"
+  // `prior` XRONOLOGIK tartibda (eski → yangi). Soliştiruv uçun "eng yangi"
   // = oxirgi element; "oldingi javob" = undan bitta oldingi.
   const newest = prior[prior.length - 1] ?? null
-  // ESKI BUG: bitta javob bo'lsa ham panel chiqib, javobni O'ZI bilan
-  // solishtirardi, "Solishtirishni yopish" esa uni yopmasdi. Endi panel faqat
-  // kamida ikki javob bo'lganda va foydalanuvchi ochganda ko'rinadi.
-  const previous = prior.length >= 2 ? prior[prior.length - 2]! : null
-  const compareTarget = showCompare ? previous : null
-
-  if (lesson && task) return <WritingLesson task={task} onClose={() => setLesson(false)} />
+  const compareTarget = compareWith
+    ? data.writing.find((w) => w.id === compareWith)
+    : (prior[prior.length - 2] ?? prior[0] ?? null)
 
   return (
     <div className="grid gap-4">
@@ -106,7 +104,7 @@ export default function Writing() {
         <h1 className="text-xl font-bold">Yoziş</h1>
         <p className="muted text-sm">
           Javobingiz şu brauzerda saqlanadi (qoralama) va sinxronlaşda Supabase’ga yuboriladi. Tahlil{' '}
-          <b>{aiRuntimeEnabled(data.settings.aiEnabled, netOnline) ? 'qoidaviy + AI' : 'qoidaviy'} dvigatel</b> bilan bajariladi.
+          <b>{aiEnabled(data.settings.aiEnabled, netOnline) ? 'qoidaviy + AI' : 'qoidaviy'} dvigatel</b> bilan bajariladi.
         </p>
         <div className="flex flex-wrap gap-1.5">
           {tasks.map((t) => (
@@ -115,7 +113,7 @@ export default function Writing() {
               type="button"
               aria-pressed={selectedId === t.id}
               onClick={() => setParams({ task: t.id })}
-              className={`chip cursor-pointer ${selectedId === t.id ? '!border-[var(--accent)] !text-[var(--accent)] font-bold' : ''}`}
+              className={`çip cursor-pointer ${selectedId === t.id ? '!border-[var(--accent)] !text-[var(--accent)] font-bold' : ''}`}
             >
               {t.level} · {genreLabelUz(t.genre)}
             </button>
@@ -124,21 +122,11 @@ export default function Writing() {
       </Card>
 
       {task && (
-        <LessonStartCard
-          kicker="Yoziş darsi"
-          title={`${genreLabelUz(task.genre)}: tayyorgarlik`}
-          body="Namuna javob gaplarini plitkalardan tuzing, söng özingiz yozing"
-          steps={writingLesson(task)}
-          onStart={() => setLesson(true)}
-        />
-      )}
-
-      {task && (
         <Card className="grid gap-3.5">
           <div className="flex flex-wrap items-center gap-2">
             <h2 className="font-bold">{genreLabelUz(task.genre)} — topşiriq</h2>
             <Chip>{task.level}</Chip>
-            <Chip>{task.minWords}–{task.maxWords} söz</Chip>
+            <Chip>{task.minWords}–{task.maxWords} so‘z</Chip>
             <Chip>{task.minutes}′</Chip>
           </div>
           <p className="text-sm">{task.promptEn}</p>
@@ -148,14 +136,14 @@ export default function Writing() {
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
             rows={12}
-            placeholder="Write your answer in English…"
+            placeholder="Write your answer in Engliş…"
             className="w-full rounded-xl border bg-[var(--panel)] p-3.5 text-sm leading-6 outline-none focus:border-[var(--accent)] font-[inherit]"
             aria-label="Yoziş maydoni"
           />
 
           <div className="flex flex-wrap items-center gap-3 text-xs muted">
             <span className={`tabular-nums font-semibold ${words > task.maxWords ? 'text-[var(--bad)]' : 'text-[var(--text)]'}`}>
-              {words} söz
+              {words} so‘z
             </span>
             <span className="tabular-nums">⏱ {formatDuration(seconds)}</span>
             <span>{saveNote}</span>
@@ -165,22 +153,22 @@ export default function Writing() {
               variant="secondary"
               disabled={words === 0}
               onClick={() => {
-                // Qayta yozish oxirgi javobga bog'lanadi (eski: doim birinchisiga).
-                actions.addWriting(task.id, draft, seconds, newest?.id ?? null)
+                const sub = actions.addWriting(task.id, draft, seconds, prior[0]?.id ?? null)
+                setSubmitted((s) => [...s, sub])
               }}
             >
               Tahlil qiliş
             </Button>
             <Button size="sm" variant="ghost" onClick={() => actions.stopTimer()}>
-              Taymerni töxtatiş
+              Taymerni to‘xtatiş
             </Button>
           </div>
 
-          {task.checklistUz && (
+          {task.çecklistUz && (
             <details className="text-sm">
               <summary className="cursor-pointer font-semibold muted">Tekşiruv röyxati</summary>
               <ul className="mt-2 grid gap-1 list-disc pl-5">
-                {task.checklistUz.map((c) => (
+                {task.çecklistUz.map((c) => (
                   <li key={c} className="muted">{c}</li>
                 ))}
               </ul>
@@ -193,7 +181,7 @@ export default function Writing() {
       <Card className="grid gap-3.5">
         <h2 className="font-bold">Natijalar va tahlil</h2>
         {submitted.length === 0 ? (
-          <EmptyState title="Hali javob yuborilmadi" body="Matn yozing va “Tahlil qiliş” tugmasini bosing — tahlil darhol körsatiladi." />
+          <EmptyState title="Hali javob yuborilmadi" body="Matn yozing va “Tahlil qiliş” tugmasini bosing — tahlil darhol ko‘rsatiladi." />
         ) : (
           [...submitted].reverse().map((sub, i) => (
             <div key={sub.id} className="grid gap-3 rounded-xl border p-3.5">
@@ -201,11 +189,15 @@ export default function Writing() {
                 <Chip tone={sub.analysis?.engine === 'ai' ? 'brand' : 'default'}>
                   {sub.analysis?.engine === 'ai' ? 'AI tahlil' : 'Qoidaviy tahlil'}
                 </Chip>
-                <Chip>{sub.wordCount} söz</Chip>
+                <Chip>{sub.wordCount} so‘z</Chip>
                 <span className="muted">{new Date(sub.createdAt).toLocaleString('uz')}</span>
-                {i === 0 && previous && (
-                  <Button size="sm" variant="ghost" aria-pressed={showCompare} onClick={() => setShowCompare((v) => !v)}>
-                    {showCompare ? 'Soliştirişni yopiş' : 'Oldingi javob bilan soliştiriş'}
+                {i === 0 && submitted.length > 1 && (
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => setCompareWith(compareWith ? null : submitted[submitted.length - 2]!.id)}
+                  >
+                    {compareWith ? 'Soliştirişni yopiş' : "Oldingi javob bilan soliştiriş"}
                   </Button>
                 )}
               </div>
@@ -271,20 +263,20 @@ export default function Writing() {
             <div className="rounded-xl border p-3">
               <h3 className="text-sm font-semibold mb-2">Eski javob</h3>
               <p className="text-sm whitespace-pre-wrap">{compareTarget.text}</p>
-              <p className="text-[11px] muted mt-1">{compareTarget.wordCount} söz</p>
+              <p className="text-[11px] muted mt-1">{compareTarget.wordCount} so‘z</p>
             </div>
             <div className="rounded-xl border p-3">
               <h3 className="text-sm font-semibold mb-2">Yangi javob</h3>
-              {/* BUG: bu yerda `submitted[0]` ishlatilardi — massiv kronologik
-                  tartibda saqlangani uchun [0] ENG KOGIRGI javob edi. Endi
-                  solishtiruv paneli haqiqatan oxirgi (eng yangi) javobni ko'rsatadi. */}
+              {/* BUG: bu yerda `submitted[0]` işlatilardi — massiv kronologik
+                  tartibda saqlangani uçun [0] ENG KOGIRGI javob edi. Endi
+                  soliştiruv paneli haqiqatan oxirgi (eng yangi) javobni körsatadi. */}
               <p className="text-sm whitespace-pre-wrap">{newest?.text}</p>
-              <p className="text-[11px] muted mt-1">{newest?.wordCount} söz</p>
+              <p className="text-[11px] muted mt-1">{newest?.wordCount} so‘z</p>
             </div>
             {compareTarget.analysis && newest?.analysis && (
               <SuccessBanner>
-                Örtaça ball: {avg(compareTarget.analysis)}/5 → <b>{avg(newest.analysis)}/5</b>
-                {avg(newest.analysis) > avg(compareTarget.analysis) ? ' — ösiş bor 👏' : ''}
+                O‘rtaça ball: {avg(compareTarget.analysis)}/5 → <b>{avg(newest.analysis)}/5</b>
+                {avg(newest.analysis) > avg(compareTarget.analysis) ? ' — o‘siş bor 👏' : ''}
               </SuccessBanner>
             )}
           </div>
@@ -294,7 +286,11 @@ export default function Writing() {
   )
 }
 
-/** `avg` — 5 mezon o'rtachasi (0..5 o'lchamida ko'rsatiladi). */
+function aiEnabled(flag: boolean, online: boolean) {
+  return flag && online
+}
+
+/** `avg` — 5 mezon örtaçasi (0..5 ölçamida körsatiladi). */
 const avg = (a: { criteriaScores: Record<CoreCriterionKey, number> }) =>
   (Object.values(a.criteriaScores).reduce((x, y) => x + y, 0) / 5).toFixed(1)
 
@@ -302,7 +298,7 @@ function genreLabelUz(g: WritingTask['genre']): string {
   return {
     email: 'Email',
     message: 'Xabar',
-    essay: 'Inşo',
+    essay: 'Inşö,
     story: 'Hikoya',
     form: 'Anketa',
     paragraph: 'Paragraf',

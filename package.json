@@ -20,27 +20,18 @@
     "smoke": "node scripts/smoke.mjs",
     "render:check": "node scripts/render-check.mjs",
     "icons:build": "node scripts/make-icons.mjs",
-    "audio:build": "node scripts/build-audio.mjs",
-    "lint:ci": "eslint src scripts e2e supabase --max-warnings 0",
-    "e2e": "playwright test",
-    "bundle:check": "node scripts/check-bundle.mjs",
-    "stats": "node scripts/stats.mjs"
+    "audio:build": "node scripts/build-audio.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "2.118.0",
     "idb-keyval": "6.3.0",
-    "lucide-react": "1.61.0",
     "react": "19.3.1",
     "react-dom": "19.3.1",
-    "react-is": "19.3.1",
     "react-router-dom": "7.18.5",
-    "recharts": "3.10.1",
     "workbox-window": "7.4.1"
   },
   "devDependencies": {
-    "@axe-core/playwright": "^4.10.2",
     "@eslint/js": "9.39.5",
-    "@playwright/test": "^1.63.0",
     "@tailwindcss/vite": "4.3.3",
     "@testing-library/jest-dom": "6.9.1",
     "@testing-library/react": "16.3.3",

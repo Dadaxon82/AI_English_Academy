@@ -1,11 +1,11 @@
 import { beforeEach, describe, expect, it } from 'vitest'
-import { dedupeKey, enqueue, enqueueMany, loadQueue, migrate, updateQueue } from '../lib/storage'
+import { dedupeKey, enqueue, loadQueue, updateQueue } from '../lib/storage'
 import { toQueueItems } from '../lib/sync'
 import { emptyData, todayKey } from '../lib/types'
 
 const UID = 'u-1'
 
-describe('Sinxronlaş payload — PostgREST ustun nomlari (snake_case)', () => {
+describe('Sinxronlash payload — PostgREST ustun nomlari (snake_case)', () => {
   const data = {
     ...emptyData(UID),
     settings: {
@@ -14,7 +14,6 @@ describe('Sinxronlaş payload — PostgREST ustun nomlari (snake_case)', () => {
       examDate: '2026-12-01',
       theme: 'dark' as const,
       aiEnabled: false,
-      motionEnabled: false,
     },
     diagnostic: { at: Date.UTC(2026, 0, 5), level: 'A2' as const, labelUz: 'A2', confidence: 0.8 },
   }
@@ -30,20 +29,10 @@ describe('Sinxronlaş payload — PostgREST ustun nomlari (snake_case)', () => {
     expect(p.theme).toBe('dark')
     expect(p.ai_enabled).toBe(false)
     expect(p.exam_date).toBe('2026-12-01')
-    // Harakat holati ham yuboriladi (`0003_motion.sql` ustuni) — aksi holda
-    // telefondagi "harakat o'chirilgan" tanlovi brauzerga yetmasdi.
-    expect(p.motion_enabled).toBe(false)
     // Eski bug: `...data.settings` camelCase maydonlarni olib kelardi
-    for (const camel of ['dailyMinutes', 'currentLevel', 'targetLevel', 'aiEnabled', 'examDate', 'motionEnabled']) {
+    for (const camel of ['dailyMinutes', 'currentLevel', 'targetLevel', 'aiEnabled', 'examDate']) {
       expect(p).not.toHaveProperty(camel)
     }
-  })
-
-  it('harakat standart holati ham yuboriladi (yoqilgan → true)', () => {
-    const p = toQueueItems(emptyData(UID))
-      .find((i) => i.table === 'user_settings')!
-      .payload as Record<string, unknown>
-    expect(p.motion_enabled).toBe(true)
   })
 
   it('exercise_attempts qiyinlik (difficulty) maydonini yuboradi', () => {
@@ -80,71 +69,20 @@ describe('Sinxronlaş payload — PostgREST ustun nomlari (snake_case)', () => {
     expect(p.id).toBe(UID)
   })
 
-  it('barça personal jadvallarda user_id bor (RLS with check)', () => {
+  it('barcha personal jadvallarda user_id bor (RLS with check)', () => {
     for (const it of items) {
       const p = it.payload as Record<string, unknown>
-      expect(p.user_id, `${it.table} user_id’i yöq`).toBe(UID)
+      expect(p.user_id, `${it.table} user_id’i yo‘q`).toBe(UID)
     }
-  })
-
-  it('öquv yöli va XP diagnostikasiz ham `plan` ustunida yuboriladi', () => {
-    const d = {
-      ...emptyData(UID),
-      xp: 42,
-      path: { completedDays: ['a1-day-01'], passedTests: { 'a1-test-day-01': 80 }, currentDayId: 'a1-day-02' },
-    }
-    const p = toQueueItems(d).find((i) => i.table === 'learning_plans')?.payload as Record<string, unknown>
-    expect(p).toBeTruthy()
-    expect(p.diagnostic_level).toBeNull()
-    // O'yin qatlami (2026-11-07): plan ichida `badges` va `game` ham yuboriladi.
-    // `game.league` ataylab null — liga tablosi (`weekly_xp`) alohida o'qiladi.
-    // O'z-o'zini baholash (2026-11-08): `selfAssessment` ham plan ichida.
-    expect(p.plan).toEqual({
-      path: d.path,
-      xp: 42,
-      diagnostic: null,
-      onboardedAt: null,
-      badges: d.badges,
-      selfAssessment: {},
-      game: { ...d.game, league: null },
-    })
   })
 })
 
-describe('migrate — onboarding belgisi (`onboardedAt`) eski keşda', () => {
-  it('diagnostikasi yoki maşq tarixi bor foydalanuvçi onboardinğdan ötgan hisoblanadi', () => {
-    const base = emptyData(UID)
-    const legacy = (extra: Record<string, unknown>) => {
-      const raw: Record<string, unknown> = { ...base, ...extra }
-      delete raw.onboardedAt
-      return migrate(raw as unknown as typeof base)
-    }
-    expect(legacy({}).onboardedAt).toBeNull()
-    expect(legacy({ diagnostic: { at: 5, level: 'A1', labelUz: 'A1', confidence: 0.5 } }).onboardedAt).toBe(5)
-    const attempt = { id: 'a', exerciseId: 'e', skill: 'grammar', level: 'A1', correct: true, partial: 1, difficulty: 1, secondsSpent: 1, source: 'practice', answerGiven: 'x', at: 7 }
-    expect(legacy({ attempts: [attempt] }).onboardedAt).toBe(7)
-  })
-})
-
-describe('Kunlik daqiqa çegarasi (DB CHECK: 30..240)', () => {
-  it('eski keşdagi 15 daqiqa migratsiyada 30 ga keltiriladi', () => {
-    const raw = { ...emptyData(UID), settings: { ...emptyData(UID).settings, dailyMinutes: 15 } }
-    expect(migrate(raw).settings.dailyMinutes).toBe(30)
-  })
-
-  it('serverga 30 dan kam qiymat yuborilmaydi (aks holda yozuv abadiy rad etilardi)', () => {
-    const d = { ...emptyData(UID), settings: { ...emptyData(UID).settings, dailyMinutes: 20 } }
-    const p = toQueueItems(d).find((i) => i.table === 'user_settings')!.payload as Record<string, unknown>
-    expect(p.daily_minutes).toBe(30)
-  })
-})
-
-describe('Navbat deduplikati (sinxron tugmasi navbatni şişirmasin)', () => {
+describe('Navbat deduplikati (sinxron tugmasi navbatni shishirmasin)', () => {
   beforeEach(async () => {
     await updateQueue(UID, [])
   })
 
-  it('payload.id bölgan jadval takrorlansa — bitta yozuv qoladi', async () => {
+  it('payload.id bo‘lgan jadval takrorlansa — bitta yozuv qoladi', async () => {
     const item = { id: 'q1', table: 'exercise_attempts', op: 'upsert' as const, at: 1, payload: { id: 'att-1' } }
     await enqueue(UID, item)
     await enqueue(UID, { ...item, id: 'q2', at: 2 })
@@ -153,7 +91,7 @@ describe('Navbat deduplikati (sinxron tugmasi navbatni şişirmasin)', () => {
     expect((q[0].payload as { id: string }).id).toBe('att-1')
   })
 
-  it('payload.id BÖLMAGan jadvallar ham deduplikatlanadi (eski bug: çeksiz ösardi)', async () => {
+  it('payload.id BO‘LMAGan jadvallar ham deduplikatlanadi (eski bug: cheksiz o‘sardi)', async () => {
     const rows = [
       { table: 'user_settings', payload: { user_id: UID, daily_minutes: 90 } },
       { table: 'user_vocabulary', payload: { user_id: UID, vocabulary_id: 'a1-v1-hello' } },
@@ -165,27 +103,13 @@ describe('Navbat deduplikati (sinxron tugmasi navbatni şişirmasin)', () => {
     expect(q).toHaveLength(3)
   })
 
-  it('har xil tabiiy kalit — alohida yozuv bölib qoladi', () => {
+  it('har xil tabiiy kalit — alohida yozuv bo‘lib qoladi', () => {
     expect(dedupeKey('user_vocabulary', { vocabulary_id: 'a' })).not.toBe(dedupeKey('user_vocabulary', { vocabulary_id: 'b' }))
     expect(dedupeKey('daily_activity', { day: '2026-01-01' })).not.toBe(dedupeKey('daily_activity', { day: '2026-01-02' }))
     expect(dedupeKey('user_settings', {})).toBe('uk:user')
   })
 
-  it('enqueueMany: bitta yozişda qöşadi, kalit takrorlansa oxirgisi qoladi', async () => {
-    await enqueue(UID, { id: 'old', table: 'exercise_attempts', op: 'upsert', at: 0, payload: { id: 'att-2', v: 0 } })
-    await enqueueMany(UID, [
-      { id: 'a', table: 'exercise_attempts', op: 'upsert', at: 1, payload: { id: 'att-1', v: 1 } },
-      { id: 'b', table: 'exercise_attempts', op: 'upsert', at: 2, payload: { id: 'att-2', v: 2 } },
-      { id: 'c', table: 'exercise_attempts', op: 'upsert', at: 3, payload: { id: 'att-1', v: 3 } },
-    ])
-    const q = await loadQueue(UID)
-    expect(q.map((x) => x.payload)).toEqual([
-      { id: 'att-1', v: 3 },
-      { id: 'att-2', v: 2 },
-    ])
-  })
-
-  it('butun AppData 5 marta navbatga qöyilsa ham navbat ösmaydi', async () => {
+  it('butun AppData 5 marta navbatga qo‘yilsa ham navbat o‘smaydi', async () => {
     const data = {
       ...emptyData(UID),
       diagnostic: { at: Date.UTC(2026, 0, 5), level: 'A1' as const, labelUz: 'A1', confidence: 0.5 },

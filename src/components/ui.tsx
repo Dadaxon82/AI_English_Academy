@@ -23,12 +23,12 @@ export function Button({
     'focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]'
   const sizes = { sm: 'text-xs px-3 py-1.5', md: 'text-sm px-4 py-2.5', lg: 'text-base px-5 py-3' }
   const variants: Record<Variant, string> = {
-    primary: 'bg-navy-700 text-white hover:bg-navy-600 shadow-sm dark:bg-navy-300 dark:hover:bg-navy-200 dark:text-navy-950',
+    primary: 'bg-navy-700 text-white hover:bg-navy-600 shadow-sm dark:bg-navy-500 dark:hover:bg-navy-400 dark:text-navy-950',
     secondary:
       'bg-white text-navy-900 border hover:bg-slate-50 dark:bg-[var(--panel)] dark:text-[var(--text)] dark:hover:bg-[var(--panel-2)]',
     ghost: 'bg-transparent text-[var(--text)] hover:bg-[var(--panel-2)]',
-    danger: 'bg-rose-700 text-white hover:bg-rose-800',
-    success: 'bg-emerald-700 text-white hover:bg-emerald-800',
+    danger: 'bg-rose-600 text-white hover:bg-rose-500',
+    success: 'bg-emerald-600 text-white hover:bg-emerald-500',
   }
   return (
     <button
@@ -174,7 +174,7 @@ export function ErrorState({ message, retry }: { message: string; retry?: () => 
       <p className="text-sm">{message}</p>
       {retry && (
         <Button variant="secondary" size="sm" onClick={retry}>
-          Qayta uriniş
+          Qayta urinish
         </Button>
       )}
     </div>
@@ -215,7 +215,7 @@ export function Modal({ open, title, children, onClose }: { open: boolean; title
       <div ref={ref} tabIndex={-1} className="panel relative p-5 w-full max-w-md max-h-[90vh] overflow-auto animate-[var(--animate-pop)]">
         <div className="flex items-start justify-between gap-3 mb-3">
           <h2 className="font-bold text-lg">{title}</h2>
-          <Button variant="ghost" size="sm" onClick={onClose} aria-label="Yopiş">
+          <Button variant="ghost" size="sm" onClick={onClose} aria-label="Yopish">
             ✕
           </Button>
         </div>
@@ -263,13 +263,13 @@ export function SpeakButton({ text, label, size = 'sm' }: { text: string; label?
         window.speechSynthesis.speak(u)
       }}
       aria-label={label ?? `Talaffuz: ${text}`}
-      title="Talaffuzni eşitiş"
+      title="Talaffuzni eshitish"
     >
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
         <path d="M11 5 6 9H3v6h3l5 4V5Z" />
         {speaking ? <path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 6a8 8 0 0 1 0 12" /> : <path d="M15.5 8.5a5 5 0 0 1 0 7" />}
       </svg>
-      {label ?? 'Aytiş'}
+      {label ?? 'Aytish'}
     </Button>
   )
 }

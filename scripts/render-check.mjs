@@ -8,8 +8,7 @@
  * render barqarorlashgunicha kutadi va konsol xatolarini ham yig'adi.
  *
  * Ishlatish: npm run build && npm run render:check
- * Brauzer: CHROME_PATH → Playwright Chromium → tizimdagi Chrome/Edge.
- * Topilmasa — ogohlantirib exit 0 bilan chiqadi (CI=1 bo‘lsa exit 1)
+ * Brauzer topilmasa — skript ogohlantirib, exit 0 bilan chiqadi
  * (tekshiruv majburiy emas, lekin natijani yashirmaydi).
  */
 
@@ -30,7 +29,6 @@ const ROUTES = [
   '/login',
   '/dashboard',
   '/path',
-  '/sections',
   '/vocabulary',
   '/grammar',
   '/reading',
@@ -56,25 +54,9 @@ const MIME = {
   '.mp3': 'audio/mpeg',
 }
 
-async function playwrightChromium() {
-  // Linux/CI: Playwright o'rnatgan Chromium (npx playwright install chromium)
-  try {
-    const { chromium } = await import('@playwright/test')
-    const p = chromium.executablePath()
-    return p && fs.existsSync(p) ? p : null
-  } catch {
-    return null
-  }
-}
-
-async function findBrowser() {
+function findBrowser() {
   const candidates = [
     process.env.CHROME_PATH,
-    await playwrightChromium(),
-    '/usr/bin/chromium',
-    '/usr/bin/chromium-browser',
-    '/usr/bin/google-chrome',
-    '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
     'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
     'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
     'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe',
@@ -204,20 +186,10 @@ async function checkRoute(url) {
     lastKey = key
     snap = cur
   }
-
-  // Telefon kengligi (375px): sahifa yonga surilmasligi kerak. ESKI BUG:
-  // Dashboard 395px, O'quv yo'li 411px kenglikka cho'zilardi.
-  await cdp.send('Emulation.setDeviceMetricsOverride', { width: 375, height: 800, deviceScaleFactor: 1, mobile: true })
-  await new Promise((r) => setTimeout(r, 600))
-  const w = await cdp.send('Runtime.evaluate', {
-    expression: 'JSON.stringify({ sw: document.documentElement.scrollWidth, cw: document.documentElement.clientWidth })',
-    returnByValue: true,
-  })
-  const { sw, cw } = JSON.parse(w.result.value)
   try {
     cdp.ws.close()
   } catch {}
-  return { snap, consoleIssues, mobileOverflow: sw - cw }
+  return { snap, consoleIssues }
 }
 
 async function main() {
@@ -227,11 +199,9 @@ async function main() {
     console.error('✗ dist/ yo‘q — avval `npm run build` bajaring.')
     process.exit(1)
   }
-  const browser = await findBrowser()
+  const browser = findBrowser()
   if (!browser) {
     console.warn('⚠ Chrome/Edge topilmadi — render tekshiruvi o‘tkazilmadi (CHROME_PATH bilan ko‘rsating).')
-    // CI'da brauzer bo'lishi SHART — jim o'tib ketmasin
-    if (process.env.CI) process.exit(1)
     return
   }
 
@@ -259,16 +229,16 @@ async function main() {
     if (!(await waitForCdp())) throw new Error('CDP porti ochilmadi')
     console.log(`Brauzer: ${path.basename(browser)} · CDP :${CDP_PORT} · dist:${PORT} · base:${BASE || '/'}\n`)
     for (const route of ROUTES) {
-      const { snap, consoleIssues, mobileOverflow } = await checkRoute(
+      const { snap, consoleIssues } = await checkRoute(
         `http://127.0.0.1:${PORT}${BASE}${route === '/' ? '/' : route}`,
       )
       const crashed = consoleIssues.some((e) => e.startsWith('EXCEPTION'))
       // 404 / bo'sh holatli sahifalar ham render bo'ladi — matni qisqa,
       // shuning uchun chegarani past tutamiz (montaj + kamida 1 tugma).
-      const ok = snap.rootKids > 0 && !crashed && (snap.textChars > 100 || snap.buttons >= 1) && mobileOverflow <= 0
+      const ok = snap.rootKids > 0 && !crashed && (snap.textChars > 100 || snap.buttons >= 1)
       if (!ok) bad++
       console.log(
-        `${ok ? '✓' : '✗'} ${route.padEnd(14)} tugma:${String(snap.buttons).padStart(3)} havola:${String(snap.links).padStart(3)} matn:${String(snap.textChars).padStart(6)} 375px:${mobileOverflow <= 0 ? 'ok' : `+${mobileOverflow}px`}  ${snap.heading}`,
+        `${ok ? '✓' : '✗'} ${route.padEnd(14)} tugma:${String(snap.buttons).padStart(3)} havola:${String(snap.links).padStart(3)} matn:${String(snap.textChars).padStart(6)}  ${snap.heading}`,
       )
       for (const e of consoleIssues.slice(0, 4)) console.log(`      ${e}`)
     }

@@ -1,38 +1,33 @@
 /**
- * Progress va statistika — ko'nikma isbotlari, grafiklar, tarix.
+ * Progress va statistika — könikma isbotlari, grafiklar, tarix.
  *
- * Daraja ko'tarish XP/yillar bilan emas, ko'p KO'NIKMA DALILI bilan
- * o'lchanadi — shu sahifada isbotlar ochiq ko'rsatiladi.
+ * Daraja kötariş XP/yillar bilan emas, köp KO'NIKMA DALILI bilan
+ * ölçanadi — şu sahifada isbotlar oçiq körsatiladi.
  */
 
 import { useMemo, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useSearçParams } from 'react-router-dom'
 import { BarChart, Button, Card, Chip, EmptyState, InfoBanner, LoadingBlock, ProgressRing, StatTile } from '../components/ui'
-import { useStore } from '../lib/storeContext'
-import { lastNDays } from '../lib/selectors'
-import { levelLabel, PROMOTION_THRESHOLD, MIN_EVIDENCE_PER_SKILL } from '../lib/skillScoring'
-import { skillLabelUz, daysUntil } from '../lib/planning'
-import { speakingScore } from '../lib/analyze'
+import { useStore, lastNDays } from '../lib/store'
+import { levelLabel, PROMOTION_THRESHOLD, MIN_EVIDENCE_PER_SKILL } from '../lib/skillScorinğ
+import { skillLabelUz, daysUntil } from '../lib/planninğ
 import { formatDuration } from '../lib/timer'
 import { LOADED_LEVELS, getBundle } from '../content'
 import { CEFR_LEVELS } from '../content/types'
-import { DiagnosticStep } from './Onboarding'
-import SelfAssessment from '../components/SelfAssessment'
-import CertificateCard from '../components/CertificateCard'
-import UsageCard from '../components/UsageCard'
-import type { SkillEvidence } from '../lib/skillScoring'
+import { DiagnosticStep } from './Onboardinğ
+import type { SkillEvidence } from '../lib/skillScorinğ
 
 export default function Progress() {
   const { data, evidence, promotion, streak, vocabSummary, dueCount, allocation, ready, actions } = useStore()
   const [range, setRange] = useState<7 | 14 | 30>(7)
-  // BUG: Dashboard'dagi "Diagnostikani qayta topshirish" havolasi /progress'ga
-  // olib, u yerda bunday imkon yo'q edi. Endi shu sahifada topshirish mumkin
-  // (?retake=1 bilan ochilganda darhol boshlanadi).
-  const [params, setParams] = useSearchParams()
+  // BUG: Daşboard'dagi "Diagnostikani qayta topşiriş" havolasi /progress'ga
+  // olib, u yerda bunday imkon yöq edi. Endi şu sahifada topşiriş mumkin
+  // (?retake=1 bilan oçilganda darhol boşlanadi).
+  const [params, setParams] = useSearçParams()
   const [retake, setRetake] = useState(params.get('retake') === '1')
   const openRetake = (v: boolean) => {
     setRetake(v)
-    const nextParams = new URLSearchParams(params)
+    const nextParams = new URLSearçParams(params)
     if (v) nextParams.set('retake', '1')
     else nextParams.delete('retake')
     setParams(nextParams, { replace: true })
@@ -52,7 +47,7 @@ export default function Progress() {
   const pathDone = data.path.completedDays.length
   const pathTotal = getBundle(data.settings.currentLevel).days.length
 
-  // BUG: ma'lumotlar yuklanmasa ham sahifa hisoblab, 0/bo'sh holat ko'rsatardi.
+  // BUG: ma'lumotlar yuklanmasa ham sahifa hisoblab, 0/böş holat körsatardi.
   if (!ready) return <LoadingBlock label="Progress ma'lumotlari yuklanmoqda…" />
 
   return (
@@ -75,7 +70,7 @@ export default function Progress() {
             return (
               <span
                 key={lvl}
-                className={`chip ${active ? '!border-[var(--accent)] !text-[var(--accent)] font-bold' : ''} ${loaded ? '' : 'border-dashed'}`}
+                className={`çip ${active ? '!border-[var(--accent)] !text-[var(--accent)] font-bold' : ''} ${loaded ? '' : 'opacity-50'}`}
                 title={loaded ? (active ? 'Siz hozir şu darajadasiz' : 'Kontent yuklangan daraja') : 'Kontent hali tayyor emas'}
               >
                 {lvl}
@@ -89,41 +84,32 @@ export default function Progress() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <StatTile label="Kunlik ketma-ketlik" value={`${streak} kun`} tone={streak > 0 ? 'ok' : 'default'} hint="Ketma-ket faol kunlar" />
         <StatTile label={`${range} kun içida`} value={formatDuration(totals.seconds)} hint="Faoliyat vaqti" />
-        <StatTile label="Aniqlik" value={`${totals.acc}%`} tone={totals.acc >= 70 ? 'ok' : totals.acc >= 50 ? 'warn' : 'bad'} hint={`${totals.correct}/${totals.attempts} töğri`} />
-        <StatTile label="Sözlar" value={vocabSummary} hint={`${dueCount} ta takror navbatda`} />
+        <StatTile label="Aniqlik" value={`${totals.acc}%`} tone={totals.acc >= 70 ? 'ok' : totals.acc >= 50 ? 'warn' : 'bad'} hint={`${totals.correct}/${totals.attempts} to‘g‘ri`} />
+        <StatTile label="So‘zlar" value={vocabSummary} hint={`${dueCount} ta takror navbatda`} />
       </div>
 
-      {/* --- Ko'nikma isbotlari (daraja ko'tarish shartlari) --- */}
+      {/* --- Könikma isbotlari (daraja kötariş şartlari) --- */}
       <Card className="grid gap-3.5">
         <div className="flex flex-wrap items-center gap-2">
-          <h2 className="font-bold">Könikma isbotlari</h2>
+          <h2 className="font-bold">Ko‘nikma isbotlari</h2>
           <Chip tone={promotion.recommendedLevel ? 'ok' : 'warn'}>
-            {promotion.recommendedLevel ? 'Kötarilişga tayyor' : 'Hali tayyor emas'}
+            {promotion.recommendedLevel ? 'Ko‘tarilişga tayyor' : 'Hali tayyor emas'}
           </Chip>
         </div>
         <p className="text-xs muted">
-          Daraja faqat törtta asosiy könikma böyiça yetarli isbot yiğilsa tavsiya qilinadi: har birida kamida{' '}
-          {MIN_EVIDENCE_PER_SKILL} ta ölçov va umumiy ball {PROMOTION_THRESHOLD}+. XP yoki kunlar darajani kötarmaydi.
+          Daraja faqat to‘rtta asosiy ko‘nikma bo‘yiça yetarli isbot yig‘ilsa tavsiya qilinadi: har birida kamida{' '}
+          {MIN_EVIDENCE_PER_SKILL} ta o‘lçov va umumiy ball {PROMOTION_THRESHOLD}+. XP yoki kunlar darajani ko‘tarmaydi.
         </p>
         <div className="grid gap-3">
           {evidence.map((e) => (
             <EvidenceRow key={e.skill} e={e} />
           ))}
         </div>
-        <InfoBanner tone={promotion.recommendedLevel ? 'info' : 'muted'}>{promotion.reasonUz}</InfoBanner>
+        <InfoBanner tone={promotion.recommendedLevel ? 'infö : 'muted'}>{promotion.reasonUz}</InfoBanner>
         {promotion.recommendedLevel !== null && <PromoteBanner />}
       </Card>
 
       {/* --- Faoliyat grafigi --- */}
-      {/* --- O'z-o'zini baholash (Likert) — darajaga ta'sir qilmaydi --- */}
-      <SelfAssessment />
-
-      {/* --- Daraja yakunlash guvohnomasi (rasmiy emas) --- */}
-      <CertificateCard />
-
-      {/* --- Yangi funksiyalardan foydalanish (qurilmada) --- */}
-      <UsageCard />
-
       <Card className="grid gap-3">
         <div className="flex flex-wrap items-center gap-2">
           <h2 className="font-bold">Kunlik faoliyat</h2>
@@ -134,14 +120,14 @@ export default function Progress() {
               type="button"
               aria-pressed={range === r}
               onClick={() => setRange(r)}
-              className={`chip cursor-pointer ${range === r ? '!border-[var(--accent)] !text-[var(--accent)] font-bold' : ''}`}
+              className={`çip cursor-pointer ${range === r ? '!border-[var(--accent)] !text-[var(--accent)] font-bold' : ''}`}
             >
               {r} kun
             </button>
           ))}
         </div>
         {days.every((d) => d.seconds === 0 && d.attempts === 0) ? (
-          <EmptyState title="Grafik böş" body="Birinçi maşqni bajaring — kunlik faoliyat şu yerda körinadi." />
+          <EmptyState title="Grafik bo‘ş" body="Birinçi maşqni bajaring — kunlik faoliyat şu yerda ko‘rinadi." />
         ) : (
           <BarChart
             data={days.map((d) => ({
@@ -151,7 +137,7 @@ export default function Progress() {
             }))}
           />
         )}
-        <p className="text-[11px] muted">Çiziq — kunlik maqsad ({allocation.total}′).</p>
+        <p className="text-[11px] muted">Chiziq — kunlik maqsad ({allocation.total}′).</p>
       </Card>
 
       <div className="grid lg:grid-cols-2 gap-4">
@@ -159,7 +145,7 @@ export default function Progress() {
         <Card className="grid gap-3">
           <h2 className="font-bold">Mock imtihon natijalari</h2>
           {data.mockAttempts.length === 0 ? (
-            <EmptyState title="Mock imtihon topşirilmagan" body="Mock imtihon bölimiga ötib, töliq maşq imtihonini yeçing." />
+            <EmptyState title="Mock imtihon topşirilmagan" body="Mock imtihon bo‘limiga o‘tib, to‘liq maşq imtihonini yeçing." />
           ) : (
             [...data.mockAttempts].reverse().map((m) => (
               <div key={m.id} className="rounded-xl border p-3 grid gap-2">
@@ -182,7 +168,7 @@ export default function Progress() {
           )}
         </Card>
 
-        {/* --- Yozish / gapirish tarixi --- */}
+        {/* --- Yoziş / gapiriş tarixi --- */}
         <Card className="grid gap-3">
           <h2 className="font-bold">Yoziş va gapiriş tarixi</h2>
           {data.writing.length + data.speaking.length === 0 ? (
@@ -194,12 +180,14 @@ export default function Progress() {
                   at: w.createdAt,
                   kind: 'Yoziş',
                   score: w.analysis ? Math.round((Object.values(w.analysis.criteriaScores).reduce((a, b) => a + b, 0) / 5 / 5) * 100) : null,
-                  label: `${w.wordCount} söz`,
+                  label: `${w.wordCount} so‘z`,
                 })),
                 ...data.speaking.map((s) => ({
                   at: s.createdAt,
                   kind: 'Gapiriş',
-                  score: s.analysis ? speakingScore(s.analysis) : null,
+                  score: s.analysis
+                    ? Math.round((((s.analysis.fluency + s.analysis.grammar + s.analysis.lexis) / 3 / 5) as number) * 100)
+                    : null,
                   label: `${s.durationSec}s`,
                 })),
               ]
@@ -221,16 +209,16 @@ export default function Progress() {
         </Card>
       </div>
 
-      {/* --- O'quv yo'li va diagnostika --- */}
+      {/* --- O'quv yöli va diagnostika --- */}
       <div className="grid lg:grid-cols-2 gap-4">
         <Card className="grid gap-3">
-          <h2 className="font-bold">Öquv yöli</h2>
+          <h2 className="font-bold">O‘quv yo‘li</h2>
           <div className="flex items-center gap-3">
             <ProgressRing value={pathTotal ? pathDone / pathTotal : 0} size={72} label={`${pathDone}/${pathTotal} kun`} />
             <div className="text-sm muted">
               {pathDone === 0
                 ? 'Hali birorta kun tugatilmagan.'
-                : `${pathDone} kun tugatildi. Kun testlari: ${Object.keys(data.path.passedTests).filter((k) => !k.includes(":")).length} ta.`}
+                : `${pathDone} kun tugatildi. Bo‘lim testlari: ${Object.keys(data.path.passedTests).length} ta.`}
             </div>
           </div>
         </Card>
@@ -264,7 +252,7 @@ export default function Progress() {
                 <span className="muted">{new Date(data.diagnostic.at).toLocaleString('uz')}</span>
               </div>
               <p className="text-xs muted">
-                Diagnostika faqat boşlanğiç yönaliş beradi; daraja keyin köp könikma dalillari bilan kötariladi.
+                Diagnostika faqat boşlang‘iç yo‘naliş beradi; daraja keyin ko‘p ko‘nikma dalillari bilan ko‘tariladi.
               </p>
             </div>
           )}
@@ -304,7 +292,7 @@ function EvidenceRow({ e }: { e: SkillEvidence }) {
         </Chip>
         <Chip tone={e.confidence >= 0.7 ? 'ok' : 'default'}>{Math.round(e.confidence * 100)}% işonç</Chip>
       </div>
-      {e.lastAt === null && <span className="text-[11px] muted">Bu könikma böyiça hali ölçov yöq.</span>}
+      {e.lastAt === null && <span className="text-[11px] muted">Bu ko‘nikma bo‘yiça hali o‘lçov yo‘q.</span>}
     </div>
   )
 }
@@ -312,18 +300,18 @@ function EvidenceRow({ e }: { e: SkillEvidence }) {
 function PromoteBanner() {
   const { promotion, actions } = useStore()
   const [done, setDone] = useState(false)
-  if (done) return <InfoBanner>Daraja yangilandi — yeçib bölingan maşqlar tarixi saqlanadi.</InfoBanner>
+  if (done) return <InfoBanner>Daraja yangilandi — yeçib bo‘lingan maşqlar tarixi saqlanadi.</InfoBanner>
   const lvl = promotion.recommendedLevel
   if (!lvl) return null
-  // ESKI BUG: tugma kontenti YUKLANMAGAN darajaga o'tkazardi — 6 ta sahifa
-  // bo'sh qolardi (Reading/Listening/Writing/Speaking/Progress/Lug'at).
-  // Endi bosish faqat kontenti bor daraja uchun; aks holda tavsiya qayd
-  // etiladi, lekin o'tkazmaymiz (halol xabar).
+  // ESKI BUG: tugma kontenti YUKLANMAGAN darajaga ötkazardi — 6 ta sahifa
+  // böş qolardi (Reading/Listening/Writing/Speaking/Progress/Luğat).
+  // Endi bosiş faqat kontenti bor daraja uçun; aks holda tavsiya qayd
+  // etiladi, lekin ötkazmaymiz (halol xabar).
   const contentReady = LOADED_LEVELS.includes(lvl)
   return (
     <div className="rounded-xl border border-emerald-300/60 bg-emerald-50 dark:bg-emerald-900/25 p-3.5 flex flex-wrap items-center gap-3">
       <span className="text-sm">
-        Tizim tavsiyasi: <b>{lvl}</b> darajasiga ötiş.
+        Tizim tavsiyasi: <b>{lvl}</b> darajasiga o‘tiş.
       </span>
       <span className="flex-1" />
       <Button
@@ -336,12 +324,12 @@ function PromoteBanner() {
           setDone(true)
         }}
       >
-        {lvl}ga ötiş
+        {lvl}ga o‘tiş
       </Button>
       <span className="text-[11px] muted w-full">
         {contentReady
           ? `Kontent ${LOADED_LEVELS.join('/')} darajalari uçun tayyor.`
-          : `Tavsiya qayd etildi, lekin ${lvl} kontenti hali tayyor emas — ötiş tugmasi kontent yuklangandan keyin işlaydi.`}
+          : `Tavsiya qayd etildi, lekin ${lvl} kontenti hali tayyor emas — o‘tiş tugmasi kontent yuklangandan keyin işlaydi.`}
       </span>
     </div>
   )
@@ -371,8 +359,8 @@ function ExportProgress() {
           a.href = url
           a.download = 'progress.json'
           a.click()
-          // REVOKE BIROZ KECHIKTIRILADI: darhol chaqirilsa ba'zi brauzerlerde
-          // yuklab olish boshlanmasiz bekor bo'ladi.
+          // REVOKE BIROZ KECHIKTIRILADI: darhol çaqirilsa ba'zi brauzerlerde
+          // yuklab oliş boşlanmasiz bekor böladi.
           setTimeout(() => URL.revokeObjectURL(url), 4000)
           setNote('progress.json yuklab olindi.')
         }}

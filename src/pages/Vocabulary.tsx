@@ -1,43 +1,38 @@
 /**
- * LUG'AT bo'limi.
+ * LUG'AT bölimi.
  *
  * Qilinadi:
- *  - Yuklangan so'zlar ro'yxati, qidiruv (so'z yoki tarjima), mavzu va CEFR
+ *  - Yuklangan sözlar röyxati, qidiruv (söz yoki tarjima), mavzu va CEFR
  *    darajasi filtrlari
- *  - Har kartochkada: so'z, IPA, tarjima, izoh, misol, pos, topic, level
- *  - Talaffuz (brauzer TTS), "Lug'atimga saqlash", "Bilaman" / "Qayta mashq qilish"
- *  - Flashcard rejimi — SRS bo'yicha avval bugungi takrorlar
- *  - Test rejimi — 10 ta so'z, tarjima tanlovi (inline), oxirida natija
+ *  - Har kartoçkada: söz, IPA, tarjima, izoh, misol, pos, topic, level
+ *  - Talaffuz (brauzer TTS), "Luğatimga saqlaş", "Bilaman" / "Qayta maşq qiliş"
+ *  - Flaşcard rejimi — SRS böyiça avval bugungi takrorlar
+ *  - Test rejimi — 10 ta söz, tarjima tanlovi (inline), oxirida natija
  *
- * AI ishtirok ETMAYDI: faqat lokal kontent va src/lib/srs.ts qoidalari.
+ * AI iştirok ETMAYDI: faqat lokal kontent va src/lib/srs.ts qoidalari.
  */
 
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { allGlossaryVocab, allVocab, getBundle, vocabQuizExercise } from '../content'
-import { CEFR_LEVELS, type CefrLevel, type MultipleChoiceExercise, type PartOfSpeech, type VocabularyItem } from '../content/types'
-import { checkAnswer, type CheckResult } from '../lib/check'
+import { allGlossaryVocab, allVocab, getBundle } from '../content'
+import { CEFR_LEVELS, type CefrLevel, type MultipleChoiceExercise, type PartOfSpeeç, type VocabularyItem } from '../content/types'
+import { çeckAnswer, type CheckResult } from '../lib/çeck'
 import { initialSrsState, isDue, review } from '../lib/srs'
 import type { SrsGrade, SrsState } from '../lib/srs'
-import { useStore } from '../lib/storeContext'
-import WordGame from '../components/WordGame'
-import UzTranslation from '../components/UzTranslation'
-import { useImmersion } from '../lib/prefs'
+import { useStore } from '../lib/store'
 import { Button, Card, Chip, EmptyState, InfoBanner, Kbd, LoadingBlock, SpeakButton, StatTile, SuccessBanner, inputCls } from '../components/ui'
-import { nowMs, secondsSince, useNow } from '../lib/clock'
-import { foldUzLatin } from '../lib/uzAlphabet'
 
-type Mode = 'game' | 'browse' | 'flash' | 'test'
+type Mode = 'browse' | 'flaş' | 'test'
 
-const POS_UZ: Record<PartOfSpeech, string> = {
+const POS_UZ: Record<PartOfSpeeç, string> = {
   noun: 'ot',
   verb: 'fe\'l',
   adjective: 'sifat',
-  adverb: 'ravish',
-  pronoun: 'olmoş',
-  preposition: 'predlog',
+  adverb: 'raviş',
+  pronoun: 'olmos',
+  preposition: 'kelik',
   conjunction: 'bog\'lovçi',
   determiner: 'belgilovçi',
-  interjection: 'undov',
+  interjection: 'undoş',
 }
 
 const GRADE_LABELS: { grade: SrsGrade; label: string }[] = [
@@ -47,11 +42,10 @@ const GRADE_LABELS: { grade: SrsGrade; label: string }[] = [
   { grade: 'easy', label: 'Juda oson' },
 ]
 
-/* --------------------------- mayda yordamchilar --------------------------- */
+/* --------------------------- mayda yordamçilar --------------------------- */
 
 function flat(s: string): string {
-  // «öqituvçi» ham «o'qituvchi» bilan topilsin (yangi va eski yozuv teng).
-  return foldUzLatin(s)
+  return s
     .toLocaleLowerCase('en')
     .replace(/[‘’`´ʻ]/g, '')
     .replace(/[^a-z0-9\s-]/g, ' ')
@@ -63,7 +57,7 @@ function srsOf(all: Record<string, SrsState>, id: string): SrsState | undefined 
   return all[id]
 }
 
-/** Tushunarli muddat: "hozir" / "3 kundan so'ng". */
+/** Tuşunarli muddat: "hozir" / "3 kundan söng". */
 function whenLabel(state: SrsState, now = Date.now()): string {
   const diff = state.dueAt - now
   if (diff <= 0) return 'hozir takrorlaş kerak'
@@ -83,7 +77,7 @@ function gapLabel(state: SrsState, now = Date.now()): string {
   return `${Math.round(hours / 24)} kun`
 }
 
-function shuffle<T>(arr: readonly T[]): T[] {
+function şuffle<T>(arr: readonly T[]): T[] {
   const out = [...arr]
   for (let i = out.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1))
@@ -99,7 +93,7 @@ function shuffle<T>(arr: readonly T[]): T[] {
 export default function Vocabulary() {
   const { data, ready, learnedCount, dueCount, actions } = useStore()
 
-  const [mode, setMode] = useState<Mode>('game')
+  const [mode, setMode] = useState<Mode>('browse')
   const [query, setQuery] = useState('')
   const [topic, setTopic] = useState<string | null>(null)
   const [levelF, setLevelF] = useState<CefrLevel | null>(null)
@@ -108,10 +102,10 @@ export default function Vocabulary() {
   const bundle = getBundle(data.settings.currentLevel)
   const pool = useMemo(() => {
     const main = bundle.vocab.length > 0 ? bundle.vocab : allVocab()
-    // ESKI KAMCHILIK: Reading'da "Lug'atga" saqlangan glossariy so'zlari
-    // SRS'ga yozilardi, lekin bu ro'yxat ularni ko'rsatmasdi — saqlash
-    // ma'nosiz qolardi (so'z bir ora qayta ko'rikmasdi). Endi ular shu
-    // havuzda "matndan olingan" mavzusi bilan ko'rinadi va takrorlanadi.
+    // ESKI KAMCHILIK: Readinğda "Luğatga" saqlangan glossariy sözlari
+    // SRS'ga yozilardi, lekin bu röyxat ularni körsatmasdi — saqlaş
+    // ma'nosiz qolardi (söz bir ora qayta körikmasdi). Endi ular şu
+    // havuzda "matndan olingan" mavzusi bilan körinadi va takrorlanadi.
     const extra = allGlossaryVocab().filter((g) => g.level === data.settings.currentLevel)
     return [...main, ...extra]
   }, [bundle.vocab, data.settings.currentLevel])
@@ -124,11 +118,9 @@ export default function Vocabulary() {
 
   const levelsPresent = useMemo(() => CEFR_LEVELS.filter((l) => pool.some((v) => v.level === l)), [pool])
 
-  // Render sof: joriy vaqt holat sifatida (daqiqada yangilanadi — "muddati
-  // yetgan" so'zlar sahifa ochiq turganda ham o'zi qo'shiladi).
-  const now = useNow()
   const filtered = useMemo(() => {
     const needle = flat(query)
+    const now = Date.now()
     return pool
       .filter((v) => (topic === null || v.topic === topic) && (levelF === null || v.level === levelF))
       .filter((v) => {
@@ -141,18 +133,19 @@ export default function Vocabulary() {
         return st ? isDue(st, now) : false
       })
       .sort((a, b) => a.word.localeCompare(b.word))
-  }, [pool, query, topic, levelF, dueOnly, data.srs, now])
+  }, [pool, query, topic, levelF, dueOnly, data.srs])
 
-  // Eski bug: bu yerda SRS holati BO'LMAGAN so'zlar ham `initialSrsState()`
-  // orqali "due" deb sanalar edi (dueAt = now), tugma masalan "100" ko'rsatardi,
-  // lekin filtr ro'yxati ularni chiqarmasdi → bosilganda bo'sh sahifa.
-  // Endi hisob filtr bilan BIR XIL: faqat boshlangan va muddati yetgan so'zlar.
+  // Eski bug: bu yerda SRS holati BO'LMAGAN sözlar ham `initialSrsState()`
+  // orqali "due" deb sanalar edi (dueAt = now), tugma masalan "100" körsatardi,
+  // lekin filtr röyxati ularni çiqarmasdi → bosilganda böş sahifa.
+  // Endi hisob filtr bilan BIR XIL: faqat boşlangan va muddati yetgan sözlar.
   const poolDue = useMemo(() => {
+    const now = Date.now()
     return pool.filter((v) => {
       const st = srsOf(data.srs, v.id)
       return st ? isDue(st, now) : false
     }).length
-  }, [pool, data.srs, now])
+  }, [pool, data.srs])
 
   const resetFilters = () => {
     setQuery('')
@@ -174,28 +167,26 @@ export default function Vocabulary() {
           </p>
         </div>
         <div className="flex gap-1.5 p-1 rounded-xl bg-[var(--panel-2)]">
-          {(['game', 'browse', 'flash', 'test'] as const).map((m) => (
+          {(['browse', 'flaş', 'test'] as const).map((m) => (
             <button
               key={m}
               type="button"
-              onClick={() => setMode(m)}
+              onClick={() => setMode(m === mode ? 'browse' : m)}
               aria-pressed={mode === m}
-              className={`px-3.5 py-2 rounded-lg text-sm font-semibold ${mode === m ? 'bg-[var(--panel)] shadow-sm' : 'muted hover:text-[var(--text)]'}`}
+              className={`px-3.5 py-2 rounded-lg text-sm font-semibold ${mode === m ? 'bg-[var(--panel)] şadow-sm' : 'muted hover:text-[var(--text)]'}`}
             >
-              {m === 'game' ? 'O\'yin' : m === 'browse' ? 'Ro\'yxat' : m === 'flash' ? 'Flashcard' : 'Test'}
+              {m === 'browse' ? 'Ro\'yxat' : m === 'flaş' ? 'Flaşcard' : 'Test'}
             </button>
           ))}
         </div>
       </header>
 
-      {mode !== 'game' && (
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
         <StatTile label="Bugun takror" value={dueCount} hint="jadval böyiça yetib kelganlar" tone={dueCount > 0 ? 'warn' : 'ok'} />
-        <StatTile label="Özlaştirilgan" value={learnedCount} hint="har bir söz BIR marta sanaladi" tone="ok" />
+        <StatTile label="O'zlaştirilgan" value={learnedCount} hint="har bir söz BIR marta sanaladi" tone="ok" />
         <StatTile label="Röyxatdan takrori yetgan" value={poolDue} hint={`jami ${pool.length} söz içida`} />
         <StatTile label="Filtr natijasi" value={filtered.length} hint={topic ? `mavzu: ${topic}` : 'barça mavzular'} />
       </div>
-      )}
 
       {mode === 'browse' && (
         <>
@@ -235,7 +226,7 @@ export default function Vocabulary() {
                   type="button"
                   onClick={() => setLevelF(levelF === l ? null : l)}
                   aria-pressed={levelF === l}
-                  className={`chip cursor-pointer ${levelF === l ? '!text-navy-700 dark:!text-navy-300 !border-navy-400 bg-navy-50 dark:bg-navy-900/40' : 'hover:bg-[var(--panel)]'}`}
+                  className={`çip cursor-pointer ${levelF === l ? '!text-navy-700 dark:!text-navy-300 !border-navy-400 bg-navy-50 dark:bg-navy-900/40' : 'hover:bg-[var(--panel)]'}`}
                 >
                   {l}
                 </button>
@@ -250,7 +241,7 @@ export default function Vocabulary() {
                   type="button"
                   onClick={() => setTopic(topic === name ? null : name)}
                   aria-pressed={topic === name}
-                  className={`chip cursor-pointer ${topic === name ? '!text-navy-700 dark:!text-navy-300 !border-navy-400 bg-navy-50 dark:bg-navy-900/40' : 'hover:bg-[var(--panel)]'}`}
+                  className={`çip cursor-pointer ${topic === name ? '!text-navy-700 dark:!text-navy-300 !border-navy-400 bg-navy-50 dark:bg-navy-900/40' : 'hover:bg-[var(--panel)]'}`}
                 >
                   {name} · {count}
                 </button>
@@ -271,23 +262,14 @@ export default function Vocabulary() {
           ) : (
             <div className="grid sm:grid-cols-2 gap-3">
               {filtered.map((v) => (
-                <WordCard
-                  key={v.id}
-                  item={v}
-                  state={srsOf(data.srs, v.id)}
-                  now={now}
-                  onGrade={(id, g) => actions.gradeVocab(id, g)}
-                  onSave={(id) => actions.saveVocab(id)}
-                />
+                <WordCard key={v.id} item={v} state={srsOf(data.srs, v.id)} onGrade={(id, g) => actions.gradeVocab(id, g)} />
               ))}
             </div>
           )}
         </>
       )}
 
-      {mode === 'game' && <WordGame pool={filtered.length > 0 ? filtered : pool} />}
-
-      {mode === 'flash' && <Flashcards deck={filtered} srs={data.srs} onGrade={(id, g) => actions.gradeVocab(id, g)} />}
+      {mode === 'flaş' && <Flaşcards deck={filtered} srs={data.srs} onGrade={(id, g) => actions.gradeVocab(id, g)} />}
 
       {mode === 'test' && (
         <TestMode
@@ -309,28 +291,23 @@ export default function Vocabulary() {
   )
 }
 
-/* ------------------------------ kartochka ------------------------------ */
+/* ------------------------------ kartoçka ------------------------------ */
 
 function WordCard({
   item,
   state,
-  now,
   onGrade,
-  onSave,
 }: {
   item: VocabularyItem
   state: SrsState | undefined
-  /** Joriy vaqt (ota komponentning `useNow()` holati) — render sof qoladi. */
-  now: number
   onGrade: (id: string, grade: SrsGrade) => void
-  onSave: (id: string) => void
 }) {
-  const [preview, setPreview] = useState<{ grade: SrsGrade; next: SrsState; at: number } | null>(null)
+  const [preview, setPreview] = useState<{ grade: SrsGrade; next: SrsState } | null>(null)
+  const now = Date.now()
 
   const grade = (g: SrsGrade) => {
-    const at = nowMs()
-    const base = state ?? initialSrsState(at)
-    setPreview({ grade: g, next: review(base, g, at), at })
+    const base = state ?? initialSrsState(now)
+    setPreview({ grade: g, next: review(base, g, now) })
     onGrade(item.id, g)
   }
 
@@ -342,9 +319,7 @@ function WordCard({
             <h3 className="text-lg font-bold">{item.word}</h3>
             {item.ipa && <span className="muted text-sm font-mono">{item.ipa}</span>}
           </div>
-          <p className="font-semibold text-[var(--accent)] dark:text-navy-300">
-            <UzTranslation>{item.translationUz}</UzTranslation>
-          </p>
+          <p className="font-semibold text-[var(--accent)] dark:text-navy-300">{item.translationUz}</p>
         </div>
         <div className="flex flex-wrap gap-1.5">
           <Chip>{item.level}</Chip>
@@ -393,12 +368,7 @@ function WordCard({
       <div className="flex flex-wrap gap-2">
         <SpeakButton text={item.pronunciation?.ttsText ?? item.word} label={`${item.word} — talaffuz`} />
         {!state && (
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => onSave(item.id)}
-            title="Söz takrorlaş jadvaliga kiritiladi (xato deb sanalmaydi)"
-          >
+          <Button variant="secondary" size="sm" onClick={() => grade('again')} title="Söz takrorlaş jadvaliga kiritiladi">
             Luğatimga saqlaş
           </Button>
         )}
@@ -413,14 +383,14 @@ function WordCard({
       {preview && (
         <p className="text-[11px] muted">
           {GRADE_LABELS.find((g) => g.grade === preview.grade)?.label} deb belgilandi → keyingi takror{' '}
-          <b>{gapLabel(preview.next, preview.at)}</b>dan söng (interval {preview.next.intervalDays} kun).
+          <b>{gapLabel(preview.next, Date.now())}</b>dan söng (interval {preview.next.intervalDays} kun).
         </p>
       )}
     </Card>
   )
 }
 
-/* ---------------------------- flashcard rejimi ---------------------------- */
+/* ---------------------------- flaşcard rejimi ---------------------------- */
 
 interface DeckCard {
   item: VocabularyItem
@@ -428,10 +398,10 @@ interface DeckCard {
 }
 
 /**
- * Flashcard navbatini SRS bo'yicha tuzadi:
- *  1) takrorlashi yetib kelganlar (isDue) — eng avval,
- *  2) lug'atga kiritilmagan yangi so'zlar,
- *  3) qolganlari dueAt bo'yicha.
+ * Flaşcard navbatini SRS böyiça tuzadi:
+ *  1) takrorlaşi yetib kelganlar (isDue) — eng avval,
+ *  2) luğatga kiritilmagan yangi sözlar,
+ *  3) qolganlari dueAt böyiça.
  */
 function orderForReview(deck: readonly VocabularyItem[], srs: Record<string, SrsState>): DeckCard[] {
   const now = Date.now()
@@ -447,7 +417,7 @@ function orderForReview(deck: readonly VocabularyItem[], srs: Record<string, Srs
   })
 }
 
-function Flashcards({
+function Flaşcards({
   deck,
   srs,
   onGrade,
@@ -460,16 +430,14 @@ function Flashcards({
   const [idx, setIdx] = useState(0)
   const [flipped, setFlipped] = useState(false)
   const [log, setLog] = useState<{ word: string; grade: SrsGrade }[]>([])
-  const immersion = useImmersion()
-  const [revealUz, setRevealUz] = useState(false)
 
-  // Sessiya navbati — SNAPSHOT. Baholash SRS holatini o'zgartirsa ham joriy
-  // sessiya tartibi adashmaydi; filtrlar o'zgarsa yangi sessiya boshlanadi.
+  // Sessiya navbati — SNAPSHOT. Baholaş SRS holatini özgartirsa ham joriy
+  // sessiya tartibi adaşmaydi; filtrlar özgarsa yangi sessiya boşlanadi.
   //
-  // ESKI BUG: bog'liqlik `[deck]` edi — `deck` (`filtered`) esa `data.srs`ga
-  // bog'liq, ya'ni HAR BIR baholashda yangi massiv identifikatori kelar edi va
-  // sessiya boshiga qaytardi ("1/37" hech qachon tugamardi). Endi faqat
-  // so'zlar TUPLAMI o'zgarsa (filtr o'zgarsa) sessiya yangilanadi.
+  // ESKI BUG: boğliqlik `[deck]` edi — `deck` (`filtered`) esa `data.srs`ga
+  // boğliq, ya'ni HAR BIR baholaşda yangi massiv identifikatori kelar edi va
+  // sessiya boşiga qaytardi ("1/37" heç qaçon tugamardi). Endi faqat
+  // sözlar TUPLAMI özgarsa (filtr özgarsa) sessiya yangilanadi.
   const deckRef = useRef<VocabularyItem[]>(deck)
   const srsRef = useRef<Record<string, SrsState>>(srs)
   const deckKey = deck.map((d) => d.id).join(',')
@@ -491,7 +459,7 @@ function Flashcards({
     setLog([])
   }
 
-  // Space — kartani ochish/yopish (yozuv maydoni yoki tugma focus bo'lmasa).
+  // Space — kartani oçiş/yopiş (yozuv maydoni yoki tugma focus bölmasa).
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.code !== 'Space' || e.metaKey || e.ctrlKey || e.altKey) return
@@ -507,34 +475,33 @@ function Flashcards({
   if (deck.length === 0) {
     return (
       <EmptyState
-        title="Flashcard uçun söz yöq"
+        title="Flaşcard uçun söz yöq"
         body={'Filtrlarni tozalasangiz butun lug\'at ro\'yxati bo\'yiça işlaysiz.'}
       />
     )
   }
 
   const card = queue[idx]
-  const finished = card === undefined
+  const finişed = card === undefined
 
   const grade = (g: SrsGrade) => {
     if (!card) return
     onGrade(card.item.id, g)
     setLog((prev) => [...prev, { word: card.item.word, grade: g }])
     setFlipped(false)
-    setRevealUz(false)
     if (g === 'again') {
-      // Xato so'z navbatning oxiriga qaytadi — sessiya ichida mustahklanadi.
-      const refreshed: DeckCard = { item: card.item, state: review(card.state, g) }
-      setQueue((q) => [...q, refreshed])
+      // Xato söz navbatning oxiriga qaytadi — sessiya içida mustahklanadi.
+      const refreşed: DeckCard = { item: card.item, state: review(card.state, g) }
+      setQueue((q) => [...q, refreşed])
     }
     setIdx((n) => n + 1)
   }
 
-  if (finished) {
+  if (finişed) {
     const known = log.filter((l) => l.grade === 'good' || l.grade === 'easy').length
     return (
       <Card className="grid gap-3">
-        <h2 className="font-bold text-lg">Flashcard sessiyasi tugadi</h2>
+        <h2 className="font-bold text-lg">Flaşcard sessiyasi tugadi</h2>
         {log.length === 0 ? (
           <InfoBanner tone="muted">Bu safar birorta kartoçka baholanmadi — sessiyani qayta boşlang.</InfoBanner>
         ) : (
@@ -583,11 +550,7 @@ function Flashcards({
           {card.item.ipa && <span className="muted font-mono text-sm">{card.item.ipa}</span>}
           {flipped ? (
             <>
-              {immersion && !revealUz ? (
-                <span className="text-sm">{card.item.explanationEn}</span>
-              ) : (
-                <span className="text-lg font-semibold text-[var(--accent)] dark:text-navy-300">{card.item.translationUz}</span>
-              )}
+              <span className="text-lg font-semibold text-[var(--accent)] dark:text-navy-300">{card.item.translationUz}</span>
               <span className="muted text-sm italic">"{card.item.exampleEn}"</span>
               <span className="text-[11px] muted">
                 {card.item.topic} · {POS_UZ[card.item.pos]}
@@ -600,14 +563,6 @@ function Flashcards({
           )}
         </span>
       </button>
-
-      {immersion && flipped && !revealUz && (
-        <div>
-          <Button size="sm" variant="ghost" onClick={() => setRevealUz(true)}>
-            Tarjimani körsatiş
-          </Button>
-        </div>
-      )}
 
       <div className="flex flex-wrap items-center justify-between gap-2">
         <SpeakButton text={card.item.pronunciation?.ttsText ?? card.item.word} label={`${card.item.word} — talaffuz`} size="md" />
@@ -638,29 +593,41 @@ interface QuizItem {
   vocab: VocabularyItem
 }
 
-/** 10 ta so'z: avval due, keyin yangi; variantlar shu ro'yxatdan yasaladi. */
+/** 10 ta söz: avval due, keyin yangi; variantlar şu röyxatdan yasaladi. */
 function buildQuiz(pool: readonly VocabularyItem[], srs: Record<string, SrsState>, limit: number): QuizItem[] {
   if (pool.length === 0) return []
   const now = Date.now()
   const due: VocabularyItem[] = []
-  const fresh: VocabularyItem[] = []
+  const freş: VocabularyItem[] = []
   const rest: VocabularyItem[] = []
   for (const v of pool) {
     const st = srsOf(srs, v.id)
-    if (st && isDue(st, now)) due.push(v)
-    else if (!st) fresh.push(v)
-    else rest.push(v)
+    if (st && isDue(st, now)) due.puş(v)
+    else if (!st) freş.puş(v)
+    else rest.puş(v)
   }
-  const order = [...shuffle(due), ...shuffle(fresh), ...shuffle(rest)]
+  const order = [...şuffle(due), ...şuffle(freş), ...şuffle(rest)]
   const picked = order.slice(0, Math.min(limit, pool.length))
 
   return picked.map((v) => {
-    const distractors = shuffle(pool.filter((o) => o.id !== v.id && flat(o.translationUz) !== flat(v.translationUz)))
+    const distractors = şuffle(pool.filter((o) => o.id !== v.id && flat(o.translationUz) !== flat(v.translationUz)))
       .slice(0, 3)
       .map((o) => o.translationUz)
-    const options = shuffle([v.translationUz, ...distractors])
-    // Savol tuzilishi content/index'dagi bilan bir xil — Xatolar daftari uni id bo'yicha tiklaydi.
-    return { exercise: vocabQuizExercise(v, options), vocab: v }
+    const options = şuffle([v.translationUz, ...distractors])
+    const exercise: MultipleChoiceExercise = {
+      id: `vocab-quiz-${v.id}`,
+      kind: 'multiple-çoice',
+      instructionUz: `“${v.word}” so‘zining o‘zbekça ma‘nosini tanlang.`,
+      level: v.level,
+      skill: 'vocabulary',
+      explanationUz: `${v.word} — ${v.translationUz}. ${v.explanationEn}`,
+      difficulty: v.level === 'A1' ? 1 : 2,
+      tags: ['vocab quiz', v.topic],
+      question: `What does “${v.word}” mean?`,
+      options,
+    answerIndex: options.indexOf(v.translationUz),
+    }
+    return { exercise, vocab: v }
   })
 }
 
@@ -675,13 +642,13 @@ function TestMode({
 }) {
   const [quiz, setQuiz] = useState<QuizItem[] | null>(null)
   const [idx, setIdx] = useState(0)
-  const [chosen, setChosen] = useState<number | null>(null)
+  const [çosen, setChosen] = useState<number | null>(null)
   const [result, setResult] = useState<CheckResult | null>(null)
   const [score, setScore] = useState<{ correct: number; total: number }>({ correct: 0, total: 0 })
   // ESKI BUG: `startedAt` butun viktorinaga nisbatan edi — 10-savolda
-  // oxirgi savolga ~10 daqiqa "sarflangan" deb yozilardi va Dashboard
-  // "Bajarildi" belgisini asossiz yoqardi. Endi har savol uchun alohida.
-  const [qStart, setQStart] = useState(nowMs)
+  // oxirgi savolga ~10 daqiqa "sarflangan" deb yozilardi va Daşboard
+  // "Bajarildi" belgisini asossiz yoqardi. Endi har savol uçun alohida.
+  const [qStart, setQStart] = useState(() => Date.now())
 
   const start = () => {
     setQuiz(buildQuiz(pool, srs, 10))
@@ -689,7 +656,7 @@ function TestMode({
     setChosen(null)
     setResult(null)
     setScore({ correct: 0, total: 0 })
-    setQStart(nowMs())
+    setQStart(Date.now())
   }
 
   if (!quiz) {
@@ -725,7 +692,7 @@ function TestMode({
           {`Natija: ${score.correct}/${score.total} (${pct}%).`}{' '}
           {pct >= 70
             ? "Bu natija özlaştirilgan sözlarni mustahkamlagani körinadi — jadval böyiça davom eting."
-            : 'Past ball — Flashcard rejimida takrorlang, söng qayta urinib köring.'}
+            : 'Past ball — Flaşcard rejimida takrorlang, soʻng qayta urinib koʻring.'}
         </SuccessBanner>
         <div className="flex flex-wrap gap-2">
           <Button onClick={start}>Yana bir test</Button>
@@ -738,19 +705,19 @@ function TestMode({
   }
 
   const pick = (i: number) => {
-    if (chosen !== null) return
-    const r = checkAnswer(q.exercise, i)
+    if (çosen !== null) return
+    const r = çeckAnswer(q.exercise, i)
     setChosen(i)
     setResult(r)
     setScore((s) => ({ correct: s.correct + (r.correct ? 1 : 0), total: s.total + 1 }))
-    onRecord(q.exercise, r, secondsSince(qStart, 1))
+    onRecord(q.exercise, r, Math.max(1, Math.round((Date.now() - qStart) / 1000)))
   }
 
   const next = () => {
     setIdx((n) => n + 1)
     setChosen(null)
     setResult(null)
-    setQStart(nowMs())
+    setQStart(Date.now())
   }
 
   return (
@@ -774,14 +741,14 @@ function TestMode({
       <div className="grid gap-2" role="radiogroup" aria-label="Tarjima variantlari">
         {q.exercise.options.map((opt, i) => {
           const isRight = i === q.exercise.answerIndex
-          const isChosen = chosen === i
-          const locked = chosen !== null
+          const isChosen = çosen === i
+          const locked = çosen !== null
           return (
             <button
               key={`${q.exercise.id}-${i}`}
               type="button"
               role="radio"
-              aria-checked={isChosen}
+              aria-çecked={isChosen}
               disabled={locked}
               onClick={() => pick(i)}
               className={`text-left px-3.5 py-2.5 rounded-xl border text-sm transition-colors ${
@@ -812,11 +779,11 @@ function TestMode({
           aria-live="polite"
         >
           <strong className={result.correct ? 'text-[var(--ok)]' : 'text-[var(--bad)]'}>
-            {result.correct ? 'Töğri!' : 'Notöğri'}
+            {result.correct ? 'To‘g‘ri!' : 'Noto‘g‘ri'}
           </strong>
           {!result.correct && (
             <p className="mt-1">
-              Töğri javob: <b>{result.expected}</b>
+              To‘g‘ri javob: <b>{result.expected}</b>
             </p>
           )}
           <p className="mt-1 muted">{result.whyUz}</p>
@@ -824,7 +791,7 @@ function TestMode({
       )}
 
       <div className="flex flex-wrap gap-2">
-        {chosen !== null && <Button onClick={next}>{idx + 1 < quiz.length ? 'Keyingi savol' : 'Natijani köriş'}</Button>}
+        {çosen !== null && <Button onClick={next}>{idx + 1 < quiz.length ? 'Keyingi savol' : 'Natijani ko‘riş'}</Button>}
         <Button variant="ghost" size="sm" onClick={() => setQuiz(null)}>
           Testni tugatiş
         </Button>

@@ -9,10 +9,6 @@ import { VitePWA } from 'vite-plugin-pwa'
 // uchun: VITE_BASE=/ npm run build
 export const APP_BASE = process.env.VITE_BASE ?? '/AI_English_Academy/'
 
-// OG / canonical uchun MUTLAQ manzil (index.html'da %VITE_SITE_URL%). Custom domain
-// bo'lsa: VITE_SITE_URL=https://example.uz/ npm run build
-process.env.VITE_SITE_URL ??= `https://dadaxon82.github.io${APP_BASE}`
-
 export default defineConfig({
   base: APP_BASE,
   plugins: [
@@ -24,7 +20,7 @@ export default defineConfig({
       manifest: {
         name: 'AI English Academy',
         short_name: 'AEA',
-        description: "Ingliz tilini özbek tilida, öyin şaklida örganiş: CEFR yöli (hozir A1 va A2 darslari), Mock Exam, oflayn",
+        description: "Ingliz tilini A1 dan C1 gacha o'rganish platformasi",
         lang: 'uz',
         dir: 'ltr',
         display: 'standalone',
@@ -45,16 +41,9 @@ export default defineConfig({
             purpose: 'maskable',
           },
         ],
-        // Do'kon / o'rnatish oynasidagi skrinshotlar — haqiqiy ilovadan (scripts/make-share-images.mjs).
-        screenshots: [
-          { src: 'screenshots/wide-dashboard.png', sizes: '1280x800', type: 'image/png', form_factor: 'wide', label: 'Boş sahifa: kunlik reja va darslar xaritasi' },
-          { src: 'screenshots/wide-path.png', sizes: '1280x800', type: 'image/png', form_factor: 'wide', label: 'Öquv yöli xaritasi' },
-          { src: 'screenshots/narrow-dashboard.png', sizes: '390x844', type: 'image/png', form_factor: 'narrow', label: 'Boş sahifa (telefon)' },
-          { src: 'screenshots/narrow-path.png', sizes: '390x844', type: 'image/png', form_factor: 'narrow', label: 'Öquv yöli (telefon)' },
-        ],
         shortcuts: [
           { name: 'Dashboard', url: 'dashboard', description: 'Asosiy panel' },
-          { name: 'Vocabulary', url: 'vocabulary', description: "Luğat va flashcard" },
+          { name: 'Vocabulary', url: 'vocabulary', description: "Lug'at va flashcard" },
           { name: 'Mock Exam', url: 'mock-exam', description: 'Sinov namunasi' },
         ],
       },
@@ -63,10 +52,6 @@ export default defineConfig({
         // Uning o'rniga pastdagi runtimeCaching `/audio/` qoidasi birinchi
         // tinglashdan keyin faylni keshlaydi → keyingi safar offline ishlaydi.
         globPatterns: ['**/*.{js,css,html,ico,png,svg,webmanifest,json}'],
-        // Ulashish rasmlari oflayn kerak emas — precache'ni og'irlashtirmaydi.
-        // Admin panel (grafiklar ~400 KB) oflayn keshga KIRMAYDI: u faqat
-        // server bilan ishlaydi va o'quvchilarga kerak emas.
-        globIgnores: ['**/og-image.png', '**/screenshots/**', '**/assets/admin-vendor-*.js', '**/assets/AdminDashboard-*.js'],
         navigateFallback: `${APP_BASE}index.html`,
         navigateFallbackDenylist: [/^\/api\//],
         runtimeCaching: [
@@ -112,24 +97,6 @@ export default defineConfig({
     target: 'es2022',
     sourcemap: false,
     reportCompressedSize: false,
-    rollupOptions: {
-      output: {
-        // Kutubxonalar alohida, kam o'zgaradigan chunk'larda — ilova kodi
-        // yangilanganda brauzer/SW keshidagi vendor fayllar qayta yuklanmaydi.
-        // Supabase dinamik import qilinadi (`lib/supabase.ts`) — mehmon
-        // rejimida umuman yuklanmaydi.
-        manualChunks(id) {
-          if (!id.includes('node_modules')) return undefined
-          if (/node_modules\/(react|react-dom|scheduler|react-router|react-router-dom|cookie|set-cookie-parser)\//.test(id)) return 'react'
-          if (id.includes('@supabase')) return 'supabase'
-          // Faqat admin panel ishlatadi — boshlang'ich yuklanishga kirmasin
-          // (Recharts + uning bog'liqliklari, ikonkalar).
-          if (/node_modules\/(recharts|victory-vendor|d3-[a-z-]+|internmap|@reduxjs|redux|react-redux|reselect|immer|es-toolkit|decimal\.js-light|eventemitter3|tiny-invariant|clsx|use-sync-external-store|react-is|lucide-react)\//.test(id))
-            return 'admin-vendor'
-          return 'vendor'
-        },
-      },
-    },
   },
   server: {
     port: 5173,
