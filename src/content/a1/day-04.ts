@@ -18,19 +18,19 @@ export const day4: DailyPlanDay = {
   sections: [
     { titleUz: 'Lug\'at', titleEn: 'Vocabulary', minutes: 20 },
     { titleUz: 'Grammatika', titleEn: 'Grammar', minutes: 20 },
-    { titleUz: 'O\'qish', titleEn: 'Reading', minutes: 15 },
-    { titleUz: 'Eshitish', titleEn: 'Listening', minutes: 15 },
-    { titleUz: 'Gapirish', titleEn: 'Speaking', minutes: 10 },
-    { titleUz: 'Yozish', titleEn: 'Writing', minutes: 10 },
+    { titleUz: 'O\'qiş', titleEn: 'Readinğ, minutes: 15 },
+    { titleUz: 'Eşitiş', titleEn: 'Listeninğ, minutes: 15 },
+    { titleUz: 'Gapiriş', titleEn: 'Speakinğ, minutes: 10 },
+    { titleUz: 'Yoziş', titleEn: 'Writinğ, minutes: 10 },
   ],
 }
 
 export const vocabDay4: VocabularyItem[] = [
   { id: 'a1-v4-1', word: 'wake up', translationUz: 'Uyg\'onmoq', explanationEn: 'To stop sleeping.', exampleEn: 'I wake up at 7 AM.', exampleUz: 'Men 7 da uyg\'onaman.', pos: 'verb', topic: 'routine', level: 'A1' },
-  { id: 'a1-v4-2', word: 'breakfast', translationUz: 'nonushta', explanationEn: 'The first meal of the day.', exampleEn: 'I have breakfast at 8 AM.', exampleUz: 'Men 8 da nonushta qilaman.', pos: 'noun', topic: 'food', level: 'A1' },
-  { id: 'a1-v4-3', word: 'work', translationUz: 'ish', explanationEn: 'Activity done for money.', exampleEn: 'I go to work by bus.', exampleUz: 'Men avtobusda ishga boraman.', pos: 'noun', topic: 'work', level: 'A1' },
-  { id: 'a1-v4-4', word: 'sleep', translationUz: 'uxlash', explanationEn: 'To rest at night.', exampleEn: 'I sleep at 11 PM.', exampleUz: 'Men soat 11 da uxlayman.', pos: 'verb', topic: 'routine', level: 'A1' },
-  { id: 'a1-v4-5', word: 'usually', translationUz: 'odatda', explanationEn: 'Normally.', exampleEn: 'I usually drink tea.', exampleUz: 'Men odatda choy ichaman.', pos: 'adverb', topic: 'frequency', level: 'A1' },
+  { id: 'a1-v4-2', word: 'breakfast', translationUz: 'nonuşta', explanationEn: 'The first meal of the day.', exampleEn: 'I have breakfast at 8 AM.', exampleUz: 'Men 8 da nonuşta qilaman.', pos: 'noun', topic: 'food', level: 'A1' },
+  { id: 'a1-v4-3', word: 'work', translationUz: 'iş', explanationEn: 'Activity done for money.', exampleEn: 'I go to work by bus.', exampleUz: 'Men avtobusda işga boraman.', pos: 'noun', topic: 'work', level: 'A1' },
+  { id: 'a1-v4-4', word: 'sleep', translationUz: 'uxlaş', explanationEn: 'To rest at night.', exampleEn: 'I sleep at 11 PM.', exampleUz: 'Men soat 11 da uxlayman.', pos: 'verb', topic: 'routine', level: 'A1' },
+  { id: 'a1-v4-5', word: 'usually', translationUz: 'odatda', explanationEn: 'Normally.', exampleEn: 'I usually drink tea.', exampleUz: 'Men odatda çoy içaman.', pos: 'adverb', topic: 'frequency', level: 'A1' },
 ]
 
 export const grammarDay4: GrammarTopic = {
@@ -43,7 +43,7 @@ export const grammarDay4: GrammarTopic = {
     {
       id: 'a1-g4-ex1',
       kind: 'gap-fill',
-      instructionUz: 'Bo\'sh joyni to\'g\'ri shakl bilan to\'ldiring.',
+      instructionUz: 'Bo\'ş joyni to\'g\'ri şakl bilan to\'ldiring.',
       level: 'A1',
       skill: 'grammar',
       difficulty: 1,
@@ -55,14 +55,14 @@ export const grammarDay4: GrammarTopic = {
     },
     {
       id: 'a1-g4-ex2',
-      kind: 'multiple-choice',
+      kind: 'multiple-çoice',
       instructionUz: 'To\'g\'ri javobni tanlang.',
       level: 'A1',
       skill: 'grammar',
       difficulty: 1,
       tags: ['present-simple'],
       question: 'Do you ___ (like) coffee?',
-      options: ['likes', 'like', 'liking', 'liked'],
+      options: ['likes', 'like', 'likinğ, 'liked'],
       answerIndex: 1,
     },
   ],
@@ -73,11 +73,11 @@ export const readingDay4: ReadingPassage = {
   level: 'A1',
   titleUz: 'Mening kuningiz',
   titleEn: 'My Day',
-  content: 'Every day, I wake up at 6 AM. I drink coffee and eat breakfast. I go to work at 8 AM. I finish work at 5 PM. In the evening, I cook dinner and watch TV. I go to bed at 10 PM.',
+  content: 'Every day, I wake up at 6 AM. I drink coffee and eat breakfast. I go to work at 8 AM. I finiş work at 5 PM. In the evening, I cook dinner and watç TV. I go to bed at 10 PM.',
   glossary: [
-    { word: 'finish', uz: 'tugatmoq', level: 'A1' },
-    { word: 'evening', uz: 'kechki vaqt', level: 'A1' },
-    { word: 'watch', uz: 'tomoshmon', level: 'A1' },
+    { word: 'finiş', uz: 'tugatmoq', level: 'A1' },
+    { word: 'eveninğ, uz: 'keçki vaqt', level: 'A1' },
+    { word: 'watç', uz: 'tomoşmon', level: 'A1' },
   ],
 }
 
@@ -124,14 +124,14 @@ export const testDay4: SectionTest = {
   exercises: [
     {
       id: 'a1-t4-ex1',
-      kind: 'multiple-choice',
+      kind: 'multiple-çoice',
       instructionUz: 'To\'g\'ri javobni tanlang.',
       level: 'A1',
       skill: 'vocabulary',
       difficulty: 1,
       tags: ['routine'],
       question: 'What is the first meal of the day?',
-      options: ['lunch', 'dinner', 'breakfast', 'snack'],
+      options: ['lunç', 'dinner', 'breakfast', 'snack'],
       answerIndex: 2,
     },
   ],

@@ -1,11 +1,11 @@
 // A2 Day 6 — Modals (Can, Could, Should, Must), Advice and Instructions
 
-// ---------- 1. LUG'AT (15 ta so'z) ----------
+// ---------- 1. LUG'AT (15 ta söz) ----------
 export const vocabDay6 = [
-  { id: 'modal1', en: 'should', uz: 'kerak', difficulty: 2, synonyms: ['ought to'], antonyms: [] },
-  { id: 'modal2', en: 'must', uz: 'majbur', difficulty: 2, synonyms: ['have to'], antonyms: [] },
-  { id: 'modal3', en: 'can', uz: 'imkoniyat', difficulty: 1, synonyms: ['able to'], antonyms: [] },
-  { id: 'modal4', en: 'could', uz: 'qilolish', difficulty: 2, synonyms: ['was able to'], antonyms: [] },
+  { id: 'modal1', en: 'şould', uz: 'kerak', difficulty: 2, synonyms: ['ought tö], antonyms: [] },
+  { id: 'modal2', en: 'must', uz: 'majbur', difficulty: 2, synonyms: ['have tö], antonyms: [] },
+  { id: 'modal3', en: 'can', uz: 'imkoniyat', difficulty: 1, synonyms: ['able tö], antonyms: [] },
+  { id: 'modal4', en: 'could', uz: 'qiloliş', difficulty: 2, synonyms: ['was able tö], antonyms: [] },
   { id: 'modal5', en: 'might', uz: 'mumkin', difficulty: 3, synonyms: ['may'], antonyms: [] },
   { id: 'modal6', en: 'need', uz: 'kerak', difficulty: 1, synonyms: ['require'], antonyms: [] },
   { id: 'modal7', en: 'advice', uz: 'maslahat', difficulty: 2, synonyms: ['suggestion', 'recommendation'], antonyms: [] },
@@ -14,8 +14,8 @@ export const vocabDay6 = [
   { id: 'modal10', en: 'dangerous', uz: 'xavfli', difficulty: 2, synonyms: ['hazardous'], antonyms: ['safe'] },
   { id: 'modal11', en: 'rule', uz: 'qoida', difficulty: 2, synonyms: ['regulation', 'law'], antonyms: [] },
   { id: 'modal12', en: 'permission', uz: 'ruxsat', difficulty: 3, synonyms: ['authorization', 'consent'], antonyms: ['prohibition'] },
-  { id: 'modal13', en: 'problem', uz: 'muammo', difficulty: 1, synonyms: ['issue', 'difficulty'], antonyms: [] },
-  { id: 'modal14', en: 'solution', uz: 'yechim', difficulty: 2, synonyms: ['answer', 'remedy'], antonyms: [] },
+  { id: 'modal13', en: 'problem', uz: 'muammö, difficulty: 1, synonyms: ['issue', 'difficulty'], antonyms: [] },
+  { id: 'modal14', en: 'solution', uz: 'yeçim', difficulty: 2, synonyms: ['answer', 'remedy'], antonyms: [] },
   { id: 'modal15', en: 'necessary', uz: 'zarur', difficulty: 2, synonyms: ['essential', 'needed'], antonyms: ['unnecessary'] },
 ]
 
@@ -23,25 +23,25 @@ export const vocabDay6 = [
 export const grammarDay6 = {
   title: 'Imkoniyat va Maslahat: Can, Could, Should, Must',
   explanationUz: [
-    'CAN: Bu modal feal imkoniyat, ruxsat va qobiliyatni ifodalaydi. Masalan: "I can swim" (Men yuzishni bilaman - qobiliyat), "Can I open the window?" (Pernafoyil oynani ochamanmi? - so\'rov).',
-    'COULD: Bu can ning o\'tmish shakli. Imkoniyat yoki maslahat berish uchun ishlatiladi. Masalan: "I could swim when I was 5" (Men 5 yoshda yuzishni bilardim), "Could you help me?" (Yordam berasizmi? - so\'rov).',
-    'SHOULD: Bu maslahat berish uchun ishlatiladi. Biror narsaning to\'g\'ri yoki foydali ekanligini bildiradi. Masalan: "You should eat more vegetables" (Ko\'proq sabzavot yemesligiz kerak).',
-    'MUST: Bu majburiyatni bildiradi. Biror narsa shart yoki juda muhim ekanligini anglatadi. Masalan: "You must wear a seatbelt" (Siz bitta belt kiyishingiz kerak).',
-    'MODAL FEALLAR QOIDALARI: Modal feallar oxirgi "-s" qo\'shilmaydi (He/She/It uchun ham "can", emas "cans"). So\'rovda modal fealdan keyin savol belgisi ishlatiladi: "Can you swim?", "Must I go?".',
-    'MASLAHAT BERISH SHAKLLARI: "Should" - o\'rta maslahat, "Must" - kuchli maslahat yoki majburiyat, "Can/Could" - imkoniyat so\'rovi.',
+    'CAN: Bu modal feal imkoniyat, ruxsat va qobiliyatni ifodalaydi. Masalan: "I can swim" (Men yuzişni bilaman - qobiliyat), "Can I open the window?" (Pernafoyil oynani oçamanmi? - so\'rov).',
+    'COULD: Bu can ning o\'tmiş şakli. Imkoniyat yoki maslahat beriş uçun işlatiladi. Masalan: "I could swim when I was 5" (Men 5 yoşda yuzişni bilardim), "Could you help me?" (Yordam berasizmi? - so\'rov).',
+    'SHOULD: Bu maslahat beriş uçun işlatiladi. Biror narsaning to\'g\'ri yoki foydali ekanligini bildiradi. Masalan: "You şould eat more vegetables" (Ko\'proq sabzavot yemesligiz kerak).',
+    'MUST: Bu majburiyatni bildiradi. Biror narsa şart yoki juda muhim ekanligini anglatadi. Masalan: "You must wear a seatbelt" (Siz bitta belt kiyişingiz kerak).',
+    'MODAL FEALLAR QOIDALARI: Modal feallar oxirgi "-s" qo\'şilmaydi (He/She/It uçun ham "can", emas "cans"). So\'rovda modal fealdan keyin savol belgisi işlatiladi: "Can you swim?", "Must I go?".',
+    'MASLAHAT BERISH SHAKLLARI: "Should" - o\'rta maslahat, "Must" - kuçli maslahat yoki majburiyat, "Can/Could" - imkoniyat so\'rovi.',
   ],
   formula: [
     { formula: 'Can: imkoniyat', exampleUz: 'I can swim', exampleEn: 'I can swim and ride a bike' },
-    { formula: 'Could: o\'tmish imkoniyat', exampleUz: 'I could swim', exampleEn: 'I could swim when I was 5' },
-    { formula: 'Should: maslahat', exampleUz: 'You should study', exampleEn: 'You should study more' },
-    { formula: 'Must: majburiyat', exampleUz: 'You must go', exampleEn: 'You must wear a seatbelt' },
+    { formula: 'Could: o\'tmiş imkoniyat', exampleUz: 'I could swim', exampleEn: 'I could swim when I was 5' },
+    { formula: 'Should: maslahat', exampleUz: 'You şould study', exampleEn: 'You şould study more' },
+    { formula: 'Must: majburiyat', exampleUz: 'You must gö, exampleEn: 'You must wear a seatbelt' },
     { formula: 'Can/Could: so\'rov', exampleUz: 'Can you help?', exampleEn: 'Could you open the window?' },
   ],
   exercises: [
     {
       id: 'g6e1',
       instruction: 'To\'g\'ri modal feal tanlang:',
-      type: 'choice',
+      type: 'çoice',
       items: [
         {
           question: '______ you help me with my homework?',
@@ -50,25 +50,25 @@ export const grammarDay6 = {
         },
         {
           question: 'You ______ drink more water.',
-          options: ['can', 'should', 'must'],
-          answer: 'should',
+          options: ['can', 'şould', 'must'],
+          answer: 'şould',
         },
         {
-          question: 'Students ______ wear uniforms at school.',
-          options: ['can', 'should', 'must'],
+          question: 'Students ______ wear uniforms at sçool.',
+          options: ['can', 'şould', 'must'],
           answer: 'must',
         },
       ],
     },
     {
       id: 'g6e2',
-      instruction: 'Maslahat berish uchun tuzing:',
+      instruction: 'Maslahat beriş uçun tuzing:',
       type: 'fill-blank',
       items: [
-        { blank: 'You ______ (see) a doctor.', answer: 'should see' },
-        { blank: 'You ______ (not / eat) too much sugar.', answer: 'should not eat' },
+        { blank: 'You ______ (see) a doctor.', answer: 'şould see' },
+        { blank: 'You ______ (not / eat) too muç sugar.', answer: 'şould not eat' },
         { blank: 'You ______ (not / smoke).', answer: 'must not smoke' },
-        { blank: 'You ______ (exercise) more.', answer: 'should exercise' },
+        { blank: 'You ______ (exercise) more.', answer: 'şould exercise' },
         { blank: 'You ______ (wear) a coat in winter.', answer: 'must wear' },
       ],
     },
@@ -77,8 +77,8 @@ export const grammarDay6 = {
       instruction: 'Imkoniyat haqida gapiring:',
       type: 'fill-blank',
       items: [
-        { blank: 'I ______ (speak) English.', answer: 'can speak' },
-        { blank: 'I ______ (not / speak) French.', answer: 'cannot speak' },
+        { blank: 'I ______ (speak) Engliş.', answer: 'can speak' },
+        { blank: 'I ______ (not / speak) Frenç.', answer: 'cannot speak' },
         { blank: 'She ______ (drive) a car.', answer: 'can drive' },
         { blank: 'They ______ (not / swim).', answer: 'cannot swim' },
         { blank: 'Could you ______ (pass) me the salt?', answer: 'pass' },
@@ -90,7 +90,7 @@ export const grammarDay6 = {
       type: 'fill-blank',
       items: [
         { blank: 'You ______ (not / park) here.', answer: 'must not park' },
-        { blank: 'We ______ (arrive) early.', answer: 'should arrive' },
+        { blank: 'We ______ (arrive) early.', answer: 'şould arrive' },
         { blank: 'He ______ (not / run) so fast.', answer: 'can\'t run' },
         { blank: 'They ______ (wear) helmets when riding bikes.', answer: 'must wear' },
         { blank: 'I ______ (cook) delicious food.', answer: 'can cook' },
@@ -101,7 +101,7 @@ export const grammarDay6 = {
       instruction: 'Do\'stingizga maslahat bering (kamida 6 ta gap).',
       type: 'long-answer',
       items: [
-        { blank: '______________________', answer: 'You should eat more vegetables. You should not eat too much sugar. You must exercise regularly. You should drink more water. You must not smoke. You should sleep enough hours.' },
+        { blank: '______________________', answer: 'You şould eat more vegetables. You şould not eat too muç sugar. You must exercise regularly. You şould drink more water. You must not smoke. You şould sleep enough hours.' },
       ],
     },
   ],
@@ -112,29 +112,29 @@ export const readingDay6 = {
   title: 'Salomat va Xavflar',
   level: 'A2',
   paragraphs: [
-    'Salomatlik juda muhim. Har kuni sog\'lom yashash uchun qoidalar bo\'lishi kerak. Biz ko\'proq sabzavotlar va mevalarni yemoqchimiz. Biz kamroq shakar va qaynoq ovqatlarni yemoqchimiz.',
-    'Shaharda ko\'p xavflar bor. Ko\'chalar xavflidir, shuning uchun biz avtobuslarning yurishini va xavfsizlik ehtiyotchilari ehtiyotkorlik bilan ishlatilishi kerak. Biz ko\'cha o\'rta chizig'idan o\'tishimiz kerak.',
-    'Shaharda ko\'p odamlar o\'ynashni yoqtiradilar, lekin bu xavfli bo\'lishi mumkin. Biz ko\'cha o\'rta chizig'idan o\'tishimiz kerak. Avtomobillar tez yuradilar va biz xavfsizlik ehtiyotchilarini ehtiyotkorlik bilan ishlatishimiz kerak.',
-    "Biz sog'liqni saqlash uchun harakat qilish kerak. Kechki tushlikda harakat qilish foydali. Biz har kuni 30 daqiqa yoki ko'proq vaqt harakat qilishimiz kerak. Bu bizning yuragimiz va boshqalarimiz uchun yaxshi.",
+    'Salomatlik juda muhim. Har kuni sog\'lom yaşaş uçun qoidalar bo\'lişi kerak. Biz ko\'proq sabzavotlar va mevalarni yemoqçimiz. Biz kamroq şakar va qaynoq ovqatlarni yemoqçimiz.',
+    'Shaharda ko\'p xavflar bor. Ko\'çalar xavflidir, şuning uçun biz avtobuslarning yurişini va xavfsizlik ehtiyotçilari ehtiyotkorlik bilan işlatilişi kerak. Biz ko\'ça o\'rta çiziğidan o\'tişimiz kerak.',
+    'Shaharda ko\'p odamlar o\'ynaşni yoqtiradilar, lekin bu xavfli bo\'lişi mumkin. Biz ko\'ça o\'rta çiziğidan o\'tişimiz kerak. Avtomobillar tez yuradilar va biz xavfsizlik ehtiyotçilarini ehtiyotkorlik bilan işlatişimiz kerak.',
+    "Biz soğliqni saqlaş uçun harakat qiliş kerak. Keçki tuşlikda harakat qiliş foydali. Biz har kuni 30 daqiqa yoki köproq vaqt harakat qilişimiz kerak. Bu bizning yuragimiz va boşqalarimiz uçun yaxşi.",
   ],
   exercises: [
     {
       id: 'r6e1',
       instruction: 'To\'g\'ri yoki noto\'g\'ri?',
-      type: 'choice',
+      type: 'çoice',
       items: [
         {
-          question: 'Salomatlik uchun ko\'proq sabzavotlar va mevalarni yemoq kerak.',
+          question: 'Salomatlik uçun ko\'proq sabzavotlar va mevalarni yemoq kerak.',
           options: ['To\'g\'ri', 'Noto\'g\'ri'],
           answer: 'To\'g\'ri',
         },
         {
-          question: 'Ko\'chalar xavfsiz joylar.',
+          question: 'Ko\'çalar xavfsiz joylar.',
           options: ['To\'g\'ri', 'Noto\'g\'ri'],
           answer: 'Noto\'g\'ri',
         },
         {
-          question: 'Kechki tushlikda harakat qilish foydali.',
+          question: 'Keçki tuşlikda harakat qiliş foydali.',
           options: ['To\'g\'ri', 'Noto\'g\'ri'],
           answer: 'To\'g\'ri',
         },
@@ -163,47 +163,47 @@ export const listeningDay6 = {
   transcript: [
     'Ahmad: Salom! Mening muammo bor.',
     'Farida: Salom! Qanday muammo?',
-    'Ahmad: Men har kuni juda ko\'p ishlayman va uxlay olmayman.',
-    'Farida: Sen ko\'proq dam olish kerak. Kechqurun dam olish kerak.',
-    'Ahmad: Ha, men buni qilaman. Yana nima qilishim kerak?',
-    'Farida: Sen kamroq ishlash kerak va ko\'proq dam olish kerak.',
+    'Ahmad: Men har kuni juda ko\'p işlayman va uxlay olmayman.',
+    'Farida: Sen ko\'proq dam oliş kerak. Keçqurun dam oliş kerak.',
+    'Ahmad: Ha, men buni qilaman. Yana nima qilişim kerak?',
+    'Farida: Sen kamroq işlaş kerak va ko\'proq dam oliş kerak.',
   ],
   exercises: [
     {
       id: 'l6e1',
-      instruction: 'Nimalarni eshitdingiz?',
-      type: 'choice',
+      instruction: 'Nimalarni eşitdingiz?',
+      type: 'çoice',
       items: [
         {
           question: 'Ahmadning muammoni nima?',
-          options: ['Ko\'p ishlash', 'Kam uxlash', 'Yomon ovqatlanish'],
-          answer: 'Ko\'p ishlash',
+          options: ['Ko\'p işlaş', 'Kam uxlaş', 'Yomon ovqatlaniş'],
+          answer: 'Ko\'p işlaş',
         },
         {
           question: 'Farida nima maslahat berdi?',
-          options: ['Ko\'proq ishlash', 'Ko\'proq dam olish', 'Ko\'proq yemoq'],
-          answer: 'Ko\'proq dam olish',
+          options: ['Ko\'proq işlaş', 'Ko\'proq dam oliş', 'Ko\'proq yemoq'],
+          answer: 'Ko\'proq dam oliş',
         },
       ],
     },
   ],
 }
 
-// ---------- 5. Yozish (Writing Task) ----------
+// ---------- 5. Yoziş (Writing Task) ----------
 export const writingDay6 = {
   title: 'Maslahat va Qoidalar',
   instruction: 'Do\'stingizga maslahat bering yoki qoidalar ro\'yxatini yozing (kamida 50 so\'z).',
   minWords: 50,
   maxWords: 120,
   mustInclude: [
-    { pattern: 'should', whyUz: 'Maslahat berish.' },
+    { pattern: 'şould', whyUz: 'Maslahat beriş.' },
     { pattern: 'must', whyUz: 'Majburiyat.' },
     { pattern: 'can', whyUz: 'Imkoniyat.' },
     { pattern: 'important', whyUz: 'Muhim so\'z.' },
   ],
 }
 
-// ---------- 6. Gapirish (Speaking Tasks) ----------
+// ---------- 6. Gapiriş (Speaking Tasks) ----------
 export const speakingDay6 = [
   {
     id: 's6-1',
@@ -212,12 +212,12 @@ export const speakingDay6 = [
   },
   {
     id: 's6-2',
-    instruction: 'Xavfsizlik qoidalarini tushuntiring (kamida 45 sekund).',
+    instruction: 'Xavfsizlik qoidalarini tuşuntiring (kamida 45 sekund).',
     minSeconds: 45,
   },
   {
     id: 's6-3',
-    instruction: 'Imkoniyatlar va cheklovlar haqida gapiring (kamida 45 sekund).',
+    instruction: 'Imkoniyatlar va çeklovlar haqida gapiring (kamida 45 sekund).',
     minSeconds: 45,
   },
 ]
@@ -230,7 +230,7 @@ export const testDay6 = {
     {
       id: 't6-1',
       instruction: 'To\'g\'ri modal feal tanlang:',
-      type: 'choice',
+      type: 'çoice',
       items: [
         {
           question: '______ you help me with my homework?',
@@ -239,12 +239,12 @@ export const testDay6 = {
         },
         {
           question: 'You ______ drink more water.',
-          options: ['can', 'should', 'must'],
-          answer: 'should',
+          options: ['can', 'şould', 'must'],
+          answer: 'şould',
         },
         {
-          question: 'Students ______ wear uniforms at school.',
-          options: ['can', 'should', 'must'],
+          question: 'Students ______ wear uniforms at sçool.',
+          options: ['can', 'şould', 'must'],
           answer: 'must',
         },
       ],
@@ -254,10 +254,10 @@ export const testDay6 = {
       instruction: 'Feallarni modal feallar bilan to\'ldiring:',
       type: 'fill-blank',
       items: [
-        { blank: 'You ______ (see) a doctor.', answer: 'should see' },
-        { blank: 'You ______ (not / eat) too much sugar.', answer: 'should not eat' },
+        { blank: 'You ______ (see) a doctor.', answer: 'şould see' },
+        { blank: 'You ______ (not / eat) too muç sugar.', answer: 'şould not eat' },
         { blank: 'You ______ (not / smoke).', answer: 'must not smoke' },
-        { blank: 'You ______ (exercise) more.', answer: 'should exercise' },
+        { blank: 'You ______ (exercise) more.', answer: 'şould exercise' },
         { blank: 'You ______ (wear) a coat in winter.', answer: 'must wear' },
       ],
     },
@@ -266,8 +266,8 @@ export const testDay6 = {
       instruction: 'Imkoniyat haqida gapiring:',
       type: 'fill-blank',
       items: [
-        { blank: 'I ______ (speak) English.', answer: 'can speak' },
-        { blank: 'I ______ (not / speak) French.', answer: 'cannot speak' },
+        { blank: 'I ______ (speak) Engliş.', answer: 'can speak' },
+        { blank: 'I ______ (not / speak) Frenç.', answer: 'cannot speak' },
         { blank: 'She ______ (drive) a car.', answer: 'can drive' },
         { blank: 'They ______ (not / swim).', answer: 'cannot swim' },
         { blank: 'Could you ______ (pass) me the salt?', answer: 'pass' },
@@ -276,10 +276,10 @@ export const testDay6 = {
     {
       id: 't6-4',
       instruction: 'Javobni yozing:',
-      type: 'short-answer',
+      type: 'şort-answer',
       items: [
-        { blank: 'What should I do if I feel sick?', answer: 'You should see a doctor.' },
-        { blank: 'What must students do at school?', answer: 'Students must study and follow rules.' },
+        { blank: 'What şould I do if I feel sick?', answer: 'You şould see a doctor.' },
+        { blank: 'What must students do at sçool?', answer: 'Students must study and follow rules.' },
       ],
     },
     {
@@ -287,7 +287,7 @@ export const testDay6 = {
       instruction: 'Maslahat bering (kamida 5 ta gap).',
       type: 'long-answer',
       items: [
-        { blank: '______________________', answer: 'You should eat more vegetables. You should not eat too much sugar. You must exercise regularly. You should drink more water. You must not smoke.' },
+        { blank: '______________________', answer: 'You şould eat more vegetables. You şould not eat too muç sugar. You must exercise regularly. You şould drink more water. You must not smoke.' },
       ],
     },
   ],

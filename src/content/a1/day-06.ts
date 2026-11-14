@@ -18,17 +18,17 @@ export const day6: DailyPlanDay = {
   sections: [
     { titleUz: 'Lug\'at', titleEn: 'Vocabulary', minutes: 20 },
     { titleUz: 'Grammatika', titleEn: 'Grammar', minutes: 20 },
-    { titleUz: 'O\'qish', titleEn: 'Reading', minutes: 15 },
-    { titleUz: 'Eshitish', titleEn: 'Listening', minutes: 15 },
-    { titleUz: 'Gapirish', titleEn: 'Speaking', minutes: 10 },
-    { titleUz: 'Yozish', titleEn: 'Writing', minutes: 10 },
+    { titleUz: 'O\'qiş', titleEn: 'Readinğ, minutes: 15 },
+    { titleUz: 'Eşitiş', titleEn: 'Listeninğ, minutes: 15 },
+    { titleUz: 'Gapiriş', titleEn: 'Speakinğ, minutes: 10 },
+    { titleUz: 'Yoziş', titleEn: 'Writinğ, minutes: 10 },
   ],
 }
 
 export const vocabDay6: VocabularyItem[] = [
-  { id: 'a1-v6-1', word: 'hobby', translationUz: 'xobbi, qiziqish', explanationEn: 'An activity done for pleasure.', exampleEn: 'My hobby is reading books.', exampleUz: 'Mening xobbim kitob o\'qish.', pos: 'noun', topic: 'hobbies', level: 'A1' },
-  { id: 'a1-v6-2', word: 'travel', translationUz: 'sayohat qilish', explanationEn: 'Go to different places.', exampleEn: 'I love to travel in summer.', exampleUz: 'Men yozda sayohat qilishni yaxshi ko\'raman.', pos: 'verb', topic: 'travel', level: 'A1' },
-  { id: 'a1-v6-3', word: 'bus', translationUz: 'avtobus', explanationEn: 'A large vehicle for passengers.', exampleEn: 'I go to school by bus.', exampleUz: 'Men maktabga avtobusda boraman.', pos: 'noun', topic: 'transport', level: 'A1' },
+  { id: 'a1-v6-1', word: 'hobby', translationUz: 'xobbi, qiziqiş', explanationEn: 'An activity done for pleasure.', exampleEn: 'My hobby is reading books.', exampleUz: 'Mening xobbim kitob o\'qiş.', pos: 'noun', topic: 'hobbies', level: 'A1' },
+  { id: 'a1-v6-2', word: 'travel', translationUz: 'sayohat qiliş', explanationEn: 'Go to different places.', exampleEn: 'I love to travel in summer.', exampleUz: 'Men yozda sayohat qilişni yaxşi ko\'raman.', pos: 'verb', topic: 'travel', level: 'A1' },
+  { id: 'a1-v6-3', word: 'bus', translationUz: 'avtobus', explanationEn: 'A large vehicle for passengers.', exampleEn: 'I go to sçool by bus.', exampleUz: 'Men maktabga avtobusda boraman.', pos: 'noun', topic: 'transport', level: 'A1' },
   { id: 'a1-v6-4', word: 'train', translationUz: 'poyezd', explanationEn: 'A railway vehicle.', exampleEn: 'The train is very fast.', exampleUz: 'Poyezd juda tez.', pos: 'noun', topic: 'transport', level: 'A1' },
   { id: 'a1-v6-5', word: 'bicycle', translationUz: 'velosiped', explanationEn: 'A vehicle with two wheels.', exampleEn: 'I ride my bicycle to the park.', exampleUz: 'Men bog\'ga velosipedda boraman.', pos: 'noun', topic: 'transport', level: 'A1' },
 ]
@@ -37,13 +37,13 @@ export const grammarDay6: GrammarTopic = {
   id: 'a1-g6',
   titleUz: 'Prepositions of Place',
   titleEn: 'Prepositions of Place',
-  explanationUz: 'Joylashuv predloglari (in, on, at, under, next to).',
+  explanationUz: 'Joylaşuv predloglari (in, on, at, under, next to).',
   explanationEn: 'Using prepositions to describe where things or people are.',
   exercises: [
     {
       id: 'a1-g6-ex1',
       kind: 'gap-fill',
-      instructionUz: 'Bo\'sh joyni to\'g\'ri shakl bilan to\'ldiring.',
+      instructionUz: 'Bo\'ş joyni to\'g\'ri şakl bilan to\'ldiring.',
       level: 'A1',
       skill: 'grammar',
       difficulty: 1,
@@ -55,13 +55,13 @@ export const grammarDay6: GrammarTopic = {
     },
     {
       id: 'a1-g6-ex2',
-      kind: 'multiple-choice',
+      kind: 'multiple-çoice',
       instructionUz: 'To\'g\'ri javobni tanlang.',
       level: 'A1',
       skill: 'grammar',
       difficulty: 1,
       tags: ['prepositions'],
-      question: 'Where is the cat? It is ___ the chair.',
+      question: 'Where is the cat? It is ___ the çair.',
       options: ['on', 'in', 'at', 'under'],
       answerIndex: 3,
     },
@@ -71,13 +71,13 @@ export const grammarDay6: GrammarTopic = {
 export const readingDay6: ReadingPassage = {
   id: 'a1-r6',
   level: 'A1',
-  titleUz: 'Mening bo\'sh vaqtim',
+  titleUz: 'Mening bo\'ş vaqtim',
   titleEn: 'My Free Time',
   content: 'In my free time, I like to listen to music and go to the park. I also like to ride my bicycle. On weekends, I often meet my friends. We drink coffee and talk.',
   glossary: [
-    { word: 'free time', uz: 'bo\'sh vaqt', level: 'A1' },
+    { word: 'free time', uz: 'bo\'ş vaqt', level: 'A1' },
     { word: 'often', uz: 'tez-tez', level: 'A1' },
-    { word: 'meet', uz: 'uchrashmoq', level: 'A1' },
+    { word: 'meet', uz: 'uçraşmoq', level: 'A1' },
   ],
 }
 
@@ -124,7 +124,7 @@ export const testDay6: SectionTest = {
   exercises: [
     {
       id: 'a1-t6-ex1',
-      kind: 'multiple-choice',
+      kind: 'multiple-çoice',
       instructionUz: 'To\'g\'ri javobni tanlang.',
       level: 'A1',
       skill: 'vocabulary',

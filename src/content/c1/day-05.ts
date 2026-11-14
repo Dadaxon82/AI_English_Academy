@@ -18,32 +18,32 @@ export const day5: DailyPlanDay = {
   sections: [
     { titleUz: 'Lug\'at', titleEn: 'Vocabulary', minutes: 20 },
     { titleUz: 'Grammatika', titleEn: 'Grammar', minutes: 20 },
-    { titleUz: 'O\'qish', titleEn: 'Reading', minutes: 15 },
-    { titleUz: 'Eshitish', titleEn: 'Listening', minutes: 15 },
-    { titleUz: 'Gapirish', titleEn: 'Speaking', minutes: 10 },
-    { titleUz: 'Yozish', titleEn: 'Writing', minutes: 10 },
+    { titleUz: 'O\'qiş', titleEn: 'Readinğ, minutes: 15 },
+    { titleUz: 'Eşitiş', titleEn: 'Listeninğ, minutes: 15 },
+    { titleUz: 'Gapiriş', titleEn: 'Speakinğ, minutes: 10 },
+    { titleUz: 'Yoziş', titleEn: 'Writinğ, minutes: 10 },
   ],
 }
 
 export const vocabDay5: VocabularyItem[] = [
-  { id: 'c1-v5-1', word: 'implications', translationUz: 'natijalar', explanationEn: 'The conclusion that is reached as a result of something.', exampleEn: 'The moral implications of AI are profound.', exampleUz: 'AI ning axloqiy natijalari chuqur.', pos: 'noun', topic: 'ethics', level: 'C1' },
-  { id: 'c1-v5-2', word: 'scrutinize', translationUz: 'diqqat bilan ko\'rsmithlik qilish', explanationEn: 'Examine or inspect closely and thoroughly.', exampleEn: 'The new law will be scrutinized by the public.', exampleUz: 'Yangi qoniyat ommaviy ko\'rsmithlik qilinadi.', pos: 'verb', topic: 'ethics', level: 'C1' },
-  { id: 'c1-v5-3', word: 'transparency', translationUz: 'shaffoflik', explanationEn: 'The quality of being open and honest.', exampleEn: 'We need more transparency in the banking system.', exampleUz: 'Biz banking tizimida ko\'proq shaffoflik kerak.', pos: 'noun', topic: 'governance', level: 'C1' },
+  { id: 'c1-v5-1', word: 'implications', translationUz: 'natijalar', explanationEn: 'The conclusion that is reaçed as a result of something.', exampleEn: 'The moral implications of AI are profound.', exampleUz: 'AI ning axloqiy natijalari çuqur.', pos: 'noun', topic: 'ethics', level: 'C1' },
+  { id: 'c1-v5-2', word: 'scrutinize', translationUz: 'diqqat bilan ko\'rsmithlik qiliş', explanationEn: 'Examine or inspect closely and thoroughly.', exampleEn: 'The new law will be scrutinized by the public.', exampleUz: 'Yangi qoniyat ommaviy ko\'rsmithlik qilinadi.', pos: 'verb', topic: 'ethics', level: 'C1' },
+  { id: 'c1-v5-3', word: 'transparency', translationUz: 'şaffoflik', explanationEn: 'The quality of being open and honest.', exampleEn: 'We need more transparency in the banking system.', exampleUz: 'Biz banking tizimida ko\'proq şaffoflik kerak.', pos: 'noun', topic: 'governance', level: 'C1' },
   { id: 'c1-v5-4', word: 'integrity', translationUz: 'halollik', explanationEn: 'The quality of being honest and having strong moral principles.', exampleEn: 'The company is known for its integrity.', exampleUz: 'Kompaniya halolligi bilan tanilgan.', pos: 'noun', topic: 'ethics', level: 'C1' },
-  { id: 'c1-v5-5', word: 'accountability', translationUz: 'javobgarlik', explanationEn: 'The fact or condition of being accountable.', exampleEn: 'Who is accountable for the data breach?', exampleUz: 'Ma\'lumotlarning buzilishiga kim javobgarlik keshadi?', pos: 'noun', topic: 'governance', level: 'C1' },
+  { id: 'c1-v5-5', word: 'accountability', translationUz: 'javobgarlik', explanationEn: 'The fact or condition of being accountable.', exampleEn: 'Who is accountable for the data breaç?', exampleUz: 'Ma\'lumotlarning buzilişiga kim javobgarlik keşadi?', pos: 'noun', topic: 'governance', level: 'C1' },
 ]
 
 export const grammarDay5: GrammarTopic = {
   id: 'c1-g5',
   titleUz: 'Advanced Reporting Verbs',
   titleEn: 'Advanced Reporting Verbs',
-  explanationUz: 'Murakkab fe''llar (allege, concede, refute, underscore) orqali ma\'lumotlarni aniqroq ifodalash.',
+  explanationUz: 'Murakkab fe''llar (allege, concede, refute, underscore) orqali ma\'lumotlarni aniqroq ifodalaş.',
   explanationEn: 'Using advanced reporting verbs to express nuanced viewpoints and academic positions.',
   exercises: [
     {
       id: 'c1-g5-ex1',
       kind: 'gap-fill',
-      instructionUz: 'Bo\'sh joyni to\'g\'ri shakl bilan to\'ldiring.',
+      instructionUz: 'Bo\'ş joyni to\'g\'ri şakl bilan to\'ldiring.',
       level: 'C1',
       skill: 'grammar',
       difficulty: 4,
@@ -55,7 +55,7 @@ export const grammarDay5: GrammarTopic = {
     },
     {
       id: 'c1-g5-ex2',
-      kind: 'multiple-choice',
+      kind: 'multiple-çoice',
       instructionUz: 'To\'g\'ri javobni tanlang.',
       level: 'C1',
       skill: 'grammar',
@@ -76,8 +76,8 @@ export const readingDay5: ReadingPassage = {
   content: 'The integration of autonomous weapons systems into modern warfare presents profound ethical dilemmas. From accountability in "lethal autonomous weapons" to the potential for escalation, the international community faces a critical need for governance...',
   glossary: [
     { word: 'accountability', uz: 'javobgarlik', level: 'C1' },
-    { word: 'escalation', uz: 'keskinlashuv', level: 'C1' },
-    { word: 'governance', uz: 'boshqaruv', level: 'C1' },
+    { word: 'escalation', uz: 'keskinlaşuv', level: 'C1' },
+    { word: 'governance', uz: 'boşqaruv', level: 'C1' },
   ],
 }
 
@@ -124,13 +124,13 @@ export const testDay5: SectionTest = {
   exercises: [
     {
       id: 'c1-t5-ex1',
-      kind: 'multiple-choice',
+      kind: 'multiple-çoice',
       instructionUz: 'To\'g\'ri javobni tanlang.',
       level: 'C1',
       skill: 'vocabulary',
       difficulty: 4,
       tags: ['ethics'],
-      question: 'Which word means "clear, logical, and convincing"?',
+      question: 'Whiç word means "clear, logical, and convincing"?',
       options: ['nebulous', 'superfluous', 'cogent', 'equivocal'],
       answerIndex: 2,
     },

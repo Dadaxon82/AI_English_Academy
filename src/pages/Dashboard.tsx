@@ -1,7 +1,7 @@
       {/* ---------- Sarlavha: daraja va maqsad ---------- */}
       <Card as="section" className="grid gap-3">
         <div className="flex flex-wrap items-center gap-2">
-          <h1 className="text-2xl font-bold">Dashboard</h1>
+          <h1 className="text-2xl font-bold">Daşboard</h1>
           <Chip tone="brand">Hozirgi: {curLevel} — {levelLabel(curLevel).titleUz}</Chip>
           <Chip>Maqsad: {tgtLevel} — {levelLabel(tgtLevel).titleUz}</Chip>
         </div>
@@ -18,7 +18,7 @@
           </div>
         </div>
         <p className="muted text-sm mt-1">
-          Kunlik reja: <b>{allocation.total} daqiqalar</b> · O‘quv yo‘li bosqichi:{' '}
+          Kunlik reja: <b>{allocation.total} daqiqalar</b> · O‘quv yo‘li bosqiçi:{' '}
           <b>{data.path.completedDays.length}/{bundle.days.length || '—'}</b> kun yakunlangan.
         </p>
       </Card>
@@ -34,7 +34,7 @@
             Pauza
           </Button>
           <Button variant="danger" size="sm" onClick={actions.stopTimer}>
-            To‘xtatish
+            To‘xtatiş
           </Button>
         </Card>
       )}
@@ -46,7 +46,7 @@
             </span>
             <span className="flex-1" />
             <Button size="sm" onClick={() => actions.startTimer(timer.sessionId ?? '', asSkill(timer.skill))}>
-              Davom etish
+              Davom etiş
             </Button>
           </div>
         </InfoBanner>
@@ -56,21 +56,21 @@
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <StatTile
           label="Ketma-ket kun"
-          value={streak > 0 ? `🔥 ${streak}` : "Hozircha yo‘q"}
-          hint="Har kuni mashq qilish zanjiri"
+          value={streak > 0 ? `🔥 ${streak}` : "Hozirça yo‘q"}
+          hint="Har kuni maşq qiliş zanjiri"
           tone={streak > 0 ? 'ok' : 'default'}
         />
-        <StatTile label="XP" value={data.xp} hint="FAQAT motivatsiya — darajani oshirmaydi" />
+        <StatTile label="XP" value={data.xp} hint="FAQAT motivatsiya — darajani oşirmaydi" />
         <StatTile label="O‘rganilgan so‘zlar" value={vocabSummary} />
         <StatTile
-          label="Takrorlash navbati"
+          label="Takrorlaş navbati"
           value={dueCount}
-          hint={dueCount > 0 ? 'Lug‘at bo‘limida takrorlang' : 'Hozir navbatda yo‘q'}
+          hint={dueCount > 0 ? 'Lug‘at bo‘limida takrorlanğ : 'Hozir navbatda yo‘q'}
           tone={dueCount > 0 ? 'warn' : 'default'}
         />
       </div>
 
-      {/* ---------- Bugungi reja (taqsimot + nega o'zgargani) ---------- */}
+      {/* ---------- Bugungi reja (taqsimot + nega özgargani) ---------- */}
       <Card className="grid gap-3.5">
         <h2 className="font-bold">Bugungi reja — {allocation.total} daqiqalar</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
@@ -81,12 +81,12 @@
             </div>
           ))}
           {tasks.length === 0 && (
-            <p className="col-span-full text-sm muted">Hozirgi daraja uchun reja kontenti yuklanmagan.</p>
+            <p className="col-span-full text-sm muted">Hozirgi daraja uçun reja kontenti yuklanmagan.</p>
           )}
         </div>
         <details className="text-sm">
           <summary className="cursor-pointer font-semibold muted">
-            Taqsimot nima uchun standart 90 daqiqadan farq qiladi?
+            Taqsimot nima uçun standart 90 daqiqadan farq qiladi?
           </summary>
           <InfoBanner tone="muted">
             <ul className="list-disc pl-5 grid gap-1">
@@ -98,16 +98,16 @@
         </details>
       </Card>
 
-      {/* ---------- Bugungi mashg'ulotlar ---------- */}
+      {/* ---------- Bugungi maşğulotlar ---------- */}
       <Card className="grid gap-3">
         <div className="flex flex-wrap items-center gap-2">
-          <h2 className="font-bold">Bugungi mashg‘ulotlar</h2>
+          <h2 className="font-bold">Bugungi maşg‘ulotlar</h2>
           {today && <Chip tone={doneCount === tasks.length ? 'ok' : 'default'}>{doneCount}/{tasks.length} bajarilgan</Chip>}
         </div>
         {today ? (
           <>
             <p className="text-sm muted">
-              Bosqich: <b>{today.dayNumber}-kun — {today.titleUz}</b>
+              Bosqiç: <b>{today.dayNumber}-kun — {today.titleUz}</b>
             </p>
             {today.goalUz && <p className="text-sm">{today.goalUz}</p>}
             <div className="grid gap-2">
@@ -127,7 +127,7 @@
               ))}
             </div>
             <p className="text-[11px] muted">
-              “Bajarildi” belgisi — bugun shu ko‘nikmaga rejalashtirilgan daqiqadan ko‘proq vaqt sarflangan bo‘lsa qo‘yiladi.
+              “Bajarildi” belgisi — bugun şu ko‘nikmaga rejalaştirilgan daqiqadan ko‘proq vaqt sarflangan bo‘lsa qo‘yiladi.
             </p>
           </>
         ) : (
@@ -135,15 +135,15 @@
             title="Bugungi reja topilmadi"
             body={
               bundle.days.length === 0
-                ? 'Ushbu daraja uchun kunlik reja hali tayyor emas — A1 yo‘lidagi mashqlar mavjud.'
-                : 'Yo‘ldagi barcha kunlar yakunlangan. Sozlamalardan darajani ko‘rib chiqing.'
+                ? 'Uşbu daraja uçun kunlik reja hali tayyor emas — A1 yo‘lidagi maşqlar mavjud.'
+                : 'Yo‘ldagi barça kunlar yakunlangan. Sozlamalardan darajani ko‘rib çiqing.'
             }
-            action={<Link to="/path" className={linkSecondary}>"O'quv yo‘li"ni ochish</Link>}
+            action={<Link to="/path" className={linkSecondary}>"O'quv yo‘li"ni oçiş</Link>}
           />
         )}
       </Card>
 
-      {/* ---------- Ko'nikma natijalari ---------- */}
+      {/* ---------- Könikma natijalari ---------- */}
       <Card className="grid gap-3.5">
         <h2 className="font-bold">Asosiy ko‘nikmalar natijalari</h2>
         <div className="grid gap-3">
@@ -161,7 +161,7 @@
                         {e.score}/100
                       </span>
                       <Chip tone={e.confidence < 0.6 ? 'warn' : 'ok'}>
-                        {e.confidence < 0.6 ? 'noaniq' : `${Math.round(e.confidence * 100)}% ishonchli`}
+                        {e.confidence < 0.6 ? 'noaniq' : `${Math.round(e.confidence * 100)}% işonçli`}
                       </Chip>
                     </>
                   )}
@@ -191,9 +191,9 @@
         </div>
         {weekTotalSec === 0 ? (
           <EmptyState
-            title="Hozircha faollik yo‘q"
-            body="Birinchi mashg‘ulotni boshlang — bu yerde Du/Se/… kunlari bo‘yicha sarflangan vaqt ko‘rinadi."
-            action={<Button onClick={() => nav('/path')}>Birinchi mashg‘ulotni ochish</Button>}
+            title="Hozirça faollik yo‘q"
+            body="Birinçi maşg‘ulotni boşlang — bu yerde Du/Se/… kunlari bo‘yiça sarflangan vaqt ko‘rinadi."
+            action={<Button onClick={() => nav('/path')}>Birinçi maşg‘ulotni oçiş</Button>}
           />
         ) : (
           <BarChart data={week.map((d) => ({ label: weekdayShortUz(d.date), value: d.seconds }))} />
@@ -210,11 +210,11 @@
         </div>
         {mistakes.length === 0 ? (
           <EmptyState
-            title={data.attempts.length === 0 ? 'Hali mashq qilinmagan' : 'So‘nggi mashqlarda xato yo‘q 👏'}
-            body={data.attempts.length === 0 ? 'Birinchi mashqni boshlang — xatolar shu yerde ko‘rinadi.' : undefined}
+            title={data.attempts.length === 0 ? 'Hali maşq qilinmagan' : 'So‘nggi maşqlarda xato yo‘q 👏'}
+            body={data.attempts.length === 0 ? 'Birinçi maşqni boşlang — xatolar şu yerde ko‘rinadi.' : undefined}
             action={
               data.attempts.length === 0 ? (
-                <Button onClick={() => nav('/path')}>“O‘quv yo‘li”dan boshlash</Button>
+                <Button onClick={() => nav('/path')}>“O‘quv yo‘li”dan boşlaş</Button>
               ) : undefined
             }
           />
@@ -229,7 +229,7 @@
                     <Chip>{skillLabelUz(a.skill)}</Chip>
                     <span className="muted">{new Date(a.at).toLocaleString('uz')}</span>
                   </div>
-                  <p className="text-xs muted">{ex ? ex.instructionUz : `Mashq: ${a.exerciseId}`}</p>
+                  <p className="text-xs muted">{ex ? ex.instructionUz : `Maşq: ${a.exerciseId}`}</p>
                   {a.answerGiven && (
                     <p className="text-xs">
                       Sizning javobingiz: <span className="line-through">{a.answerGiven.slice(0, 80)}</span>
@@ -244,12 +244,12 @@
 
       {/* ---------- Keyingi tavsiya ---------- */}
       <Card className="grid gap-3">
-        <h2 className="font.bold">Keyingi tavsiya etilgan mashg‘ulot</h2>
+        <h2 className="font.bold">Keyingi tavsiya etilgan maşg‘ulot</h2>
         <p className="text-sm">{promotion.reasonUz}</p>
         {promotion.recommendedLevel && (
           <InfoBanner tone="warn">
             <b>{promotion.recommendedLevel} — {levelLabel(promotion.recommendedLevel).titleUz}</b> darajasi tavsiya etiladi.
-            Bu avtomatik o‘tish emas — o‘zingiz sozlamalardan tasdiqlaysiz.
+            Bu avtomatik o‘tiş emas — o‘zingiz sozlamalardan tasdiqlaysiz.
           </InfoBanner>
         )}
         <div className="flex flex-wrap gap-1.5">
@@ -259,19 +259,19 @@
         {remainingTask ? (
           <div className="flex flex-wrap items-center gap-2 rounded-xl border px-3.5 py-2.5">
             <span className="text-sm">
-              Navbatdagi mashg‘ulot: <b>{skillLabelUz(remainingTask.skill)}</b> — {remainingTask.minutes} daqiqalar
+              Navbatdagi maşg‘ulot: <b>{skillLabelUz(remainingTask.skill)}</b> — {remainingTask.minutes} daqiqalar
             </span>
             <span className="flex-1" />
             <Link to={SKILL_ROUTE[remainingTask.skill]} className={linkSecondary}>
-              Ochiq mashg‘ulot
+              Oçiq maşg‘ulot
             </Link>
           </div>
         ) : (
-          today && <p className="text-sm muted">Bugungi barcha mashg‘ulotlar reja bo‘yicha bajarilgan 👏</p>
+          today && <p className="text-sm muted">Bugungi barça maşg‘ulotlar reja bo‘yiça bajarilgan 👏</p>
         )}
         <div className="flex flex-wrap gap-2">
           <Button size="lg" onClick={() => nav('/path')}>
-            Darsni davom ettirish
+            Darsni davom ettiriş
           </Button>
         </div>
       </Card>
@@ -281,24 +281,24 @@
         <div className="flex-1 min-w-48 grid gap-1">
           <h2 className="font-bold">To‘liq Mock Exam</h2>
           <p className="text-sm muted">
-            Reading · Listening · Writing · Speaking — namunaviy imtihon. Natijalar ko‘nikma bahosiga kuchliroq hisobga
+            Reading · Listening · Writing · Speaking — namunaviy imtihon. Natijalar ko‘nikma bahosiga kuçliroq hisobga
             olinadi.
           </p>
           {data.diagnostic && (
             <p className="text-[11px] muted">
               Diagnostika natijangiz: {data.diagnostic.labelUz} ({new Date(data.diagnostic.at).toLocaleString('uz')},
-              ishonch {Math.round(data.diagnostic.confidence * 100)}%)
+              işonç {Math.round(data.diagnostic.confidence * 100)}%)
             </p>
           )}
         </div>
         <div className="flex flex-wrap gap-2">
           {data.diagnostic && (
             <Link to="/progress?retake=1" className={linkSecondary}>
-              Diagnostikani qayta topshirish
+              Diagnostikani qayta topşiriş
             </Link>
           )}
           <Link to="/mock-exam" className={linkPrimary}>
-            Mock Examni ochish
+            Mock Examni oçiş
           </Link>
         </div>
       </Card>

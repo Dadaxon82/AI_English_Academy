@@ -18,19 +18,19 @@ export const day6: DailyPlanDay = {
   sections: [
     { titleUz: 'Lug\'at', titleEn: 'Vocabulary', minutes: 20 },
     { titleUz: 'Grammatika', titleEn: 'Grammar', minutes: 20 },
-    { titleUz: 'O\'qish', titleEn: 'Reading', minutes: 15 },
-    { titleUz: 'Eshitish', titleEn: 'Listening', minutes: 15 },
-    { titleUz: 'Gapirish', titleEn: 'Speaking', minutes: 10 },
-    { titleUz: 'Yozish', titleEn: 'Writing', minutes: 10 },
+    { titleUz: 'O\'qiş', titleEn: 'Readinğ, minutes: 15 },
+    { titleUz: 'Eşitiş', titleEn: 'Listeninğ, minutes: 15 },
+    { titleUz: 'Gapiriş', titleEn: 'Speakinğ, minutes: 10 },
+    { titleUz: 'Yoziş', titleEn: 'Writinğ, minutes: 10 },
   ],
 }
 
 export const vocabDay6: VocabularyItem[] = [
   { id: 'b2-v6-1', word: 'integrity', translationUz: 'halollik', explanationEn: 'The quality of being honest and having strong moral principles.', exampleEn: 'The company is known for its integrity.', exampleUz: 'Kompaniya halolligi bilan tanilgan.', pos: 'noun', topic: 'ethics', level: 'B2' },
-  { id: 'b2-v6-2', word: 'advocate', translationUz: 'tarqituvchi, tarafdor', explanationEn: 'A person who publicly supports a particular cause.', exampleEn: 'She is a strong advocate for animal rights.', exampleUz: 'U hayvon huquqlari tarafdori.', pos: 'noun', topic: 'ethics', level: 'B2' },
-  { id: 'b2-v6-3', word: 'prejudice', translationUz: 'xavotir, oldi fikr', explanationEn: 'Preconceived opinion that is not based on reason.', exampleEn: 'We must overcome our prejudices.', exampleUz: 'Biz oldi fikrlardan voz kechishimiz kerak.', pos: 'noun', topic: 'social', level: 'B2' },
+  { id: 'b2-v6-2', word: 'advocate', translationUz: 'tarqituvçi, tarafdor', explanationEn: 'A person who publicly supports a particular cause.', exampleEn: 'She is a strong advocate for animal rights.', exampleUz: 'U hayvon huquqlari tarafdori.', pos: 'noun', topic: 'ethics', level: 'B2' },
+  { id: 'b2-v6-3', word: 'prejudice', translationUz: 'xavotir, oldi fikr', explanationEn: 'Preconceived opinion that is not based on reason.', exampleEn: 'We must overcome our prejudices.', exampleUz: 'Biz oldi fikrlardan voz keçişimiz kerak.', pos: 'noun', topic: 'social', level: 'B2' },
   { id: 'b2-v6-4', word: 'mandatory', translationUz: 'majburiy', explanationEn: 'Required by law or rules.', exampleEn: 'Masks are mandatory in some areas.', exampleUz: 'Bazi hududlarda niqob majburiy.', pos: 'adj', topic: 'law', level: 'B2' },
-  { id: 'b2-v6-5', word: 'equality', translationUz: 'tenghlik', explanationEn: 'The state of being equal, especially in status or rights.', exampleEn: 'We fight for gender equality.', exampleUz: 'Biz jins tengligi uchun kurashamiz.', pos: 'noun', topic: 'social', level: 'B2' },
+  { id: 'b2-v6-5', word: 'equality', translationUz: 'tenghlik', explanationEn: 'The state of being equal, especially in status or rights.', exampleEn: 'We fight for gender equality.', exampleUz: 'Biz jins tengligi uçun kuraşamiz.', pos: 'noun', topic: 'social', level: 'B2' },
 ]
 
 export const grammarDay6: GrammarTopic = {
@@ -38,12 +38,12 @@ export const grammarDay6: GrammarTopic = {
   titleUz: 'Subjunctive Mood',
   titleEn: 'Subjunctive Mood',
   explanationUz: 'Taqqoz va taklif ma\'noylarida foydalaniladigan Subjunctive Mood (e.g., "I suggest that he be present").',
-  explanationEn: 'The subjunctive mood is used to express wishes, suggestions, demands, and possibilities. It is often used after verbs like "suggest", "insist", "demand".',
+  explanationEn: 'The subjunctive mood is used to express wişes, suggestions, demands, and possibilities. It is often used after verbs like "suggest", "insist", "demand".',
   exercises: [
     {
       id: 'b2-g6-ex1',
       kind: 'gap-fill',
-      instructionUz: 'Bo\'sh joyni to\'g\'ri shakl bilan to\'ldiring.',
+      instructionUz: 'Bo\'ş joyni to\'g\'ri şakl bilan to\'ldiring.',
       level: 'B2',
       skill: 'grammar',
       difficulty: 3,
@@ -55,14 +55,14 @@ export const grammarDay6: GrammarTopic = {
     },
     {
       id: 'b2-g6-ex2',
-      kind: 'multiple-choice',
+      kind: 'multiple-çoice',
       instructionUz: 'To\'g\'ri javobni tanlang.',
       level: 'B2',
       skill: 'grammar',
       difficulty: 3,
       tags: ['subjunctive'],
-      question: 'I suggest that she ___ (study) harder.',
-      options: ['studies', 'study', 'studied', 'is studying'],
+      question: 'I suggest that şe ___ (study) harder.',
+      options: ['studies', 'study', 'studied', 'is studyinğ],
       answerIndex: 1,
     },
   ],
@@ -73,9 +73,9 @@ export const readingDay6: ReadingPassage = {
   level: 'B2',
   titleUz: 'Ijtimoiy adolat',
   titleEn: 'Social Justice',
-  content: 'Social justice is the view that all individuals should be treated fairly. This includes equality of opportunity, rights, and treatment under the law. Discussions often center on systemic issues like poverty and discrimination...',
+  content: 'Social justice is the view that all individuals şould be treated fairly. This includes equality of opportunity, rights, and treatment under the law. Discussions often center on systemic issues like poverty and discrimination...',
   glossary: [
-    { word: 'discrimination', uz: 'kamsitish', level: 'B2' },
+    { word: 'discrimination', uz: 'kamsitiş', level: 'B2' },
     { word: 'systemic', uz: 'tizimli', level: 'B2' },
     { word: 'equity', uz: 'adolat', level: 'B2' },
   ],
@@ -94,7 +94,7 @@ export const listeningDay6: ListeningTask = {
 export const writingDay6: WritingTask = {
   id: 'b2-w6',
   level: 'B2',
-  titleUz: 'Maqola yozish',
+  titleUz: 'Maqola yoziş',
   titleEn: 'Opinion Essay',
   prompt: 'Is it the government\'s responsibility to provide free healthcare for everyone?',
   wordCountMin: 150,
@@ -124,13 +124,13 @@ export const testDay6: SectionTest = {
   exercises: [
     {
       id: 'b2-t6-ex1',
-      kind: 'multiple-choice',
+      kind: 'multiple-çoice',
       instructionUz: 'To\'g\'ri javobni tanlang.',
       level: 'B2',
       skill: 'vocabulary',
       difficulty: 2,
       tags: ['ethics'],
-      question: 'Which word means "required by law"?',
+      question: 'Whiç word means "required by law"?',
       options: ['optional', 'mandatory', 'voluntary', 'discretionary'],
       answerIndex: 1,
     },

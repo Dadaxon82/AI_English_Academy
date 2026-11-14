@@ -18,32 +18,32 @@ export const day4: DailyPlanDay = {
   sections: [
     { titleUz: 'Lug\'at', titleEn: 'Vocabulary', minutes: 20 },
     { titleUz: 'Grammatika', titleEn: 'Grammar', minutes: 20 },
-    { titleUz: 'O\'qish', titleEn: 'Reading', minutes: 15 },
-    { titleUz: 'Eshitish', titleEn: 'Listening', minutes: 15 },
-    { titleUz: 'Gapirish', titleEn: 'Speaking', minutes: 10 },
-    { titleUz: 'Yozish', titleEn: 'Writing', minutes: 10 },
+    { titleUz: 'O\'qiş', titleEn: 'Readinğ, minutes: 15 },
+    { titleUz: 'Eşitiş', titleEn: 'Listeninğ, minutes: 15 },
+    { titleUz: 'Gapiriş', titleEn: 'Speakinğ, minutes: 10 },
+    { titleUz: 'Yoziş', titleEn: 'Writinğ, minutes: 10 },
   ],
 }
 
 export const vocabDay4: VocabularyItem[] = [
-  { id: 'b2-v4-1', word: 'breathtaking', translationUz: 'hayratlanarli', explanationEn: 'Astonishing orINN. amazing.', exampleEn: 'The view from the mountain was breathtaking.', exampleUz: 'Tog\'dan ko\'rilayotgan manzara hayratlanarli edi.', pos: 'adj', topic: 'travel', level: 'B2' },
+  { id: 'b2-v4-1', word: 'breathtakinğ, translationUz: 'hayratlanarli', explanationEn: 'Astonişing orINN. amazing.', exampleEn: 'The view from the mountain was breathtaking.', exampleUz: 'Tog\'dan ko\'rilayotgan manzara hayratlanarli edi.', pos: 'adj', topic: 'travel', level: 'B2' },
   { id: 'b2-v4-2', word: 'itinerary', translationUz: 'sayohat rejasi', explanationEn: 'A planned route or journey.', exampleEn: 'We have a very busy itinerary for tomorrow.', exampleUz: 'Ertaga bizning sayohat rejamiz juda band.', pos: 'noun', topic: 'travel', level: 'B2' },
-  { id: 'b2-v4-3', word: 'authentic', translationUz: 'haqiqiy, asl', explanationEn: 'Real, not false or copied.', exampleEn: 'We wanted to find an authentic local restaurant.', exampleUz: 'Biz haqiqiy mahalliy restorani qidirmoqchi edik.', pos: 'adj', topic: 'culture', level: 'B2' },
+  { id: 'b2-v4-3', word: 'authentic', translationUz: 'haqiqiy, asl', explanationEn: 'Real, not false or copied.', exampleEn: 'We wanted to find an authentic local restaurant.', exampleUz: 'Biz haqiqiy mahalliy restorani qidirmoqçi edik.', pos: 'adj', topic: 'culture', level: 'B2' },
   { id: 'b2-v4-4', word: 'scenic', translationUz: 'manzarali', explanationEn: 'Providing beautiful views of nature.', exampleEn: 'We took the scenic route through the valley.', exampleUz: 'Biz vodiha bo\'ylab manzarali yo\'l evazidan o\'tdik.', pos: 'adj', topic: 'travel', level: 'B2' },
-  { id: 'b2-v4-5', word: 'off the beaten track', translationUz: 'odatiy bo\'lmagan yo\'l', explanationEn: 'In a place where few people go.', exampleEn: 'We love finding places off the beaten track.', exampleUz: 'Biz odatiy bo\'lmagan joylarni topishni yaxshi ko\'ramiz.', pos: 'idiom', topic: 'travel', level: 'B2' },
+  { id: 'b2-v4-5', word: 'off the beaten track', translationUz: 'odatiy bo\'lmagan yo\'l', explanationEn: 'In a place where few people go.', exampleEn: 'We love finding places off the beaten track.', exampleUz: 'Biz odatiy bo\'lmagan joylarni topişni yaxşi ko\'ramiz.', pos: 'idiom', topic: 'travel', level: 'B2' },
 ]
 
 export const grammarDay4: GrammarTopic = {
   id: 'b2-g4',
   titleUz: 'Relative Clauses',
   titleEn: 'Relative Clauses',
-  explanationUz: 'Defining va Non-defining relative clauses (who, which, where, whose).',
+  explanationUz: 'Defining va Non-defining relative clauses (who, whiç, where, whose).',
   explanationEn: 'Relative clauses provide extra information about a person, place, or thing. Defining clauses are essential, while non-defining clauses provide extra, non-essential info.',
   exercises: [
     {
       id: 'b2-g4-ex1',
       kind: 'gap-fill',
-      instructionUz: 'Bo\'sh joyni to\'g\'ri shakl bilan to\'ldiring.',
+      instructionUz: 'Bo\'ş joyni to\'g\'ri şakl bilan to\'ldiring.',
       level: 'B2',
       skill: 'grammar',
       difficulty: 3,
@@ -55,14 +55,14 @@ export const grammarDay4: GrammarTopic = {
     },
     {
       id: 'b2-g4-ex2',
-      kind: 'multiple-choice',
+      kind: 'multiple-çoice',
       instructionUz: 'To\'g\'ri javobni tanlang.',
       level: 'B2',
       skill: 'grammar',
       difficulty: 3,
       tags: ['relative-clauses'],
       question: 'Paris, ___ is the capital of France, is beautiful.',
-      options: ['that is', 'which is', 'where is', 'who is'],
+      options: ['that is', 'whiç is', 'where is', 'who is'],
       answerIndex: 1,
     },
   ],
@@ -75,9 +75,9 @@ export const readingDay4: ReadingPassage = {
   titleEn: 'Tourism & Local Culture',
   content: 'Mass tourism can have a profound impact on local cultures. While it brings economic benefits, it can also lead to the "commodification" of culture, where traditions are staged for profit...',
   glossary: [
-    { word: 'profound', uz: 'chuqur', level: 'B2' },
+    { word: 'profound', uz: 'çuqur', level: 'B2' },
     { word: 'commodification', uz: 'tovarbardlik', level: 'B2' },
-    { word: 'staged', uz: 'sahnalashtirilgan', level: 'B2' },
+    { word: 'staged', uz: 'sahnalaştirilgan', level: 'B2' },
   ],
 }
 
@@ -96,7 +96,7 @@ export const writingDay4: WritingTask = {
   level: 'B2',
   titleUz: 'Sayohat blogi',
   titleEn: 'Travel Blog Entry',
-  prompt: 'Write a short blog post about a place you visited that was "off the beaten track".',
+  prompt: 'Write a şort blog post about a place you visited that was "off the beaten track".',
   wordCountMin: 150,
   wordCountMax: 300,
   analysisRules: [
@@ -124,14 +124,14 @@ export const testDay4: SectionTest = {
   exercises: [
     {
       id: 'b2-t4-ex1',
-      kind: 'multiple-choice',
+      kind: 'multiple-çoice',
       instructionUz: 'To\'g\'ri javobni tanlang.',
       level: 'B2',
       skill: 'vocabulary',
       difficulty: 2,
       tags: ['travel'],
       question: 'What does "scenic" mean?',
-      options: ['boring', 'providing beautiful views', 'very expensive', 'crowded'],
+      options: ['borinğ, 'providing beautiful views', 'very expensive', 'crowded'],
       answerIndex: 1,
     },
   ],
