@@ -27,7 +27,7 @@ const stubTask: WritingTask = {
   maxWords: 80,
   minutes: 10,
   criteria: ['task_achievement', 'coherence', 'lexical_resource', 'grammatical_range', 'accuracy'],
-  mustInclude: [{ pattern: 'my family', whyUz: 'Oilangizni titlang.' }],
+  mustInclude: [{ pattern: 'my family', whyUz: 'Oilangizni tasvirlang.' }],
 }
 
 describe('analyzeWriting — to‘g‘ri matn jazolanmasin', () => {

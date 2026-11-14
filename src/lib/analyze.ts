@@ -70,7 +70,7 @@ export function analyzeWriting(text: string, task: WritingTask): WritingAnalysis
         const map: Record<string, string> = { go: 'goes', do: 'does', have: 'has', like: 'likes', want: 'wants', need: 'needs' }
         return `${m[1]} ${map[m[2]] ?? m[2]}`
       },
-      why: 'Uchinchi shaxs birlikda fe‘lga -s/-es qo‘shiladi.',
+      why: 'Uchinchi shaxs birlikda fe’lga -s/-es qo‘shiladi.',
     },
   ]
 
@@ -166,7 +166,7 @@ function buildSuggestions(scores: Record<CoreCriterionKey, number>, task: Writin
   if (scores.coherence < 3) out.push('Fikrlarni first / next / then / finally bilan tartiblang.')
   if (scores.lexical_resource < 3) out.push('Bir so‘zni takrorlamang — sinonim izlang (vocabulary bo‘limidan foydalaning).')
   if (scores.grammatical_range < 3) out.push(`${task.genre === 'email' ? 'Hozirgi va o‘tmish zamonlarini birga' : 'Ikki xil zamonni'} ishlatishga harakat qiling.`)
-  if (scores.accuracy < 3) out.push('Yozganingizdan so‘ng har bir fe‘lga e’tibor bering: kim ishlayapti — -s kerakmi?')
+  if (scores.accuracy < 3) out.push('Yozganingizdan so‘ng har bir fe’lga e’tibor bering: kim ishlayapti — -s kerakmi?')
   out.push('Qayta yozib, eski va yangi versiyani solishtiring — o‘sish shu taqqoslashda ko‘rinadi.')
   return out.slice(0, 5)
 }

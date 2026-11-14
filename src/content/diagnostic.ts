@@ -43,7 +43,7 @@ export const diagnosticTest = {
       level: 'A1',
       skill: 'grammar',
       difficulty: 2,
-      explanationUz: 'Present Simple, uchinchi shaxs birlikda fe‘lga -s qo‘shiladi.',
+      explanationUz: 'Present Simple, uchinchi shaxs birlikda fe’lga -s qo‘shiladi.',
     },
     {
       id: 'dg-03',
@@ -105,7 +105,7 @@ export const diagnosticTest = {
       level: 'B1',
       skill: 'vocabulary',
       difficulty: 3,
-      explanationUz: '“Reluctant” — istagsiz, ko‘ngilsiz.',
+      explanationUz: '“Reluctant” — istamay, ko‘ngilsiz.',
     },
     {
       id: 'dg-08',

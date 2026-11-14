@@ -95,7 +95,7 @@ export const vocabDay2: VocabularyItem[] = [
   {
     id: 'a1-v2-aunt',
     word: 'aunt',
-    translationUz: 'xola, hola',
+    translationUz: 'xola, amma',
     explanationEn: 'The sister of your mother or your father.',
     ipa: '/ænt/',
     pronunciation: { kind: 'browser-tts', ttsText: 'aunt', lang: 'en-US' },
@@ -108,7 +108,7 @@ export const vocabDay2: VocabularyItem[] = [
   {
     id: 'a1-v2-cousin',
     word: 'cousin',
-    translationUz: 'amakivachcha, tagseng',
+    translationUz: 'amakivachcha, xolavachcha',
     explanationEn: 'The son or daughter of your aunt or uncle.',
     ipa: '/ˈkʌzən/',
     pronunciation: { kind: 'browser-tts', ttsText: 'cousin', lang: 'en-US' },
@@ -181,9 +181,9 @@ export const grammarDay2: GrammarTopic = {
   titleEn: 'Possessives: ’s, my / your, and have got',
   level: 'A1',
   explanationUz: [
-    'Narsa kimniki ekanini aytish uchun ingliz tilida ismga ’s qo‘shiladi: Bekzod’s book (Bekzodning kitobi), my sister’s bag (singilmning sumkasi). Agar egalardan bir nechta bo‘lsa va ular bir narsaga tegishli bo‘lsa, ’s oxirgi ismga qo‘yiladi: Aziz and Malika’s home. Egalik “of” bilan ham aytiladi, lekin A1 darajasida ’s eng tabiiy yo‘ldir.',
+    'Narsa kimniki ekanini aytish uchun ingliz tilida ismga ’s qo‘shiladi: Bekzod’s book (Bekzodning kitobi), my sister’s bag (singlimning sumkasi). Agar egalardan bir nechta bo‘lsa va ular bir narsaga tegishli bo‘lsa, ’s oxirgi ismga qo‘yiladi: Aziz and Malika’s home. Egalik “of” bilan ham aytiladi, lekin A1 darajasida ’s eng tabiiy yo‘ldir.',
     'my, your, his, her, our, their so‘zlari “kimniki” degan savolga javob beradi va har doim ot oldida keladi: my book, your pen, his name, her hair, our class, their friends. Bu so‘zlar o‘zi egalikni bildiradi, ularga ’s qo‘shilmaydi: “my book” (hech qachon “my’s book” emas). Javobda otni takrorlamaslik ham mumkin: “Is this your pen?” — “Yes, it is my pen.”',
-    'Biror narsaga ega ekanlikni have got bilan aytkazamiz: I have got a bike. She has got two brothers. Uchinchi shaxs yagonada has ishlatilishini unutmang. Inkor: I haven’t got a phone. She hasn’t got a bike. So‘roq: Have you got a pen? Has he got a red bag? Qisqartmalar so‘zlashuvda ko‘p: I’ve got, she’s got, he hasn’t got.',
+    'Biror narsaga ega ekanlikni have got bilan ifodalaymiz: I have got a bike. She has got two brothers. Uchinchi shaxs yagonada has ishlatilishini unutmang. Inkor: I haven’t got a phone. She hasn’t got a bike. So‘roq: Have you got a pen? Has he got a red bag? Qisqartmalar so‘zlashuvda ko‘p: I’ve got, she’s got, he hasn’t got.',
     'Odamni tasvirlashda ham have got ishlatiladi: He has got short black hair. She has got blue eyes. Sifatlar ot oldida keladi va ko‘plikda o‘zgarmaydi: two tall boys (tall so‘ziga -lar qo‘shilmaydi). Kasb, yosh va kayfiyat esa to be fe’li bilan aytiladi: She is a teacher. He is eight. Bu ikki tuzilmani aralashtirmang: egalik — have got, sifat, kasb va yosh — to be.',
   ],
   formula: [
@@ -270,7 +270,7 @@ export const grammarDay2: GrammarTopic = {
     {
       id: 'a1-ex-g2-05',
       kind: 'multiple-choice',
-      instructionUz: '“Sizning singilingiz bormi?” degan savolning to‘g‘ri shaklini belgilang.',
+      instructionUz: '“Sizning singlingiz bormi?” degan savolning to‘g‘ri shaklini belgilang.',
       level: 'A1',
       skill: 'grammar',
       explanationUz: 'Have you got a sister? — Yes, I have. / No, I haven’t.',
@@ -322,7 +322,7 @@ export const grammarDay2: GrammarTopic = {
     {
       id: 'a1-ex-g2-08',
       kind: 'word-order',
-      instructionUz: 'Kimningdur ekanligini so‘rovchi savolni tuzing (“Bu kimning kitobi?”).',
+      instructionUz: 'Narsa kimniki ekanligini so‘rovchi savolni tuzing (“Bu kimning kitobi?”).',
       level: 'A1',
       skill: 'grammar',
       explanationUz: 'Whose + ot + is + this?: Whose book is this?',
@@ -472,7 +472,7 @@ export const readingDay2: ReadingPassage = {
       pairs: [
         { left: 'parents', right: 'ota-ona' },
         { left: 'grandfather', right: 'bobo, bobojon' },
-        { left: 'aunt', right: 'xola, hola' },
+        { left: 'aunt', right: 'xola, amma' },
         { left: 'cousin', right: 'amakivachcha' },
         { left: 'sister', right: 'opa, singil' },
       ],
@@ -701,7 +701,7 @@ export const testDay2: SectionTest = {
       tags: ['family vocabulary'],
       pairs: [
         { left: 'brother', right: 'aka, uka' },
-        { left: 'aunt', right: 'xola, hola' },
+        { left: 'aunt', right: 'xola, amma' },
         { left: 'parents', right: 'ota-ona' },
         { left: 'hair', right: 'soch' },
       ],
@@ -829,7 +829,7 @@ export const day2: DailyPlanDay = {
     },
     { skill: 'grammar', minutes: 15, itemIds: [grammarDay2.id], titleUz: 'Grammatika: egalik va have got' },
     { skill: 'reading', minutes: 15, itemIds: [readingDay2.id], titleUz: 'O‘qish: “Mening oilam va uymiz”' },
-    { skill: 'listening', minutes: 15, itemIds: [listeningDay2.id], titleUz: 'Tinglash: oilaviy surat suhbasi' },
+    { skill: 'listening', minutes: 15, itemIds: [listeningDay2.id], titleUz: 'Tinglash: oilaviy surat suhbati' },
     { skill: 'writing', minutes: 20, itemIds: [writingDay2.id], titleUz: 'Yozish: oila haqida xabar' },
     {
       skill: 'speaking',

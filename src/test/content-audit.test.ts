@@ -206,8 +206,8 @@ describe('Kontent auditi — mashqlar yaxlitligi', () => {
         const next = (parts[i + 1] ?? '').trim().split(/[^A-Za-z]/)[0] ?? ''
         if (!next) return
         const soundsVowel = VOWEL.test(next) || /^(hour|honest|honor|umbrella|egg|apple|orange|eleven|eight)/i.test(next)
-        if (soundsVowel && article === 'a') bad.push(`${owner}/${ex.id}: “a ${next}“ — “an“ kerak`)
-        if (!soundsVowel && article === 'an') bad.push(`${owner}/${ex.id}: “an ${next}“ — “a“ kerak`)
+        if (soundsVowel && article === 'a') bad.push(`${owner}/${ex.id}: “a ${next}” — “an” kerak`)
+        if (!soundsVowel && article === 'an') bad.push(`${owner}/${ex.id}: “an ${next}” — “a” kerak`)
       })
     }
     expectClean(bad, 'a/an artikellari')

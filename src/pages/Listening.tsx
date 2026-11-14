@@ -439,8 +439,8 @@ function TaskDetail({ task, onBack }: { task: ListeningTask; onBack: () => void 
               onNext={onNext}
             />
             <InfoBanner tone="muted">
-              Javoblarni audioyidan topish kerak{audioAvailable ? '' : ' (audio bo‘lmagani uchun transkriptdan)'}. Ba'zi
-              savollarda iqtibos ko'rsatiladi — qolgan qismi audioyada.
+              Javoblarni audiodan topish kerak{audioAvailable ? '' : ' (audio bo‘lmagani uchun transkriptdan)'}. Ba'zi
+              savollarda iqtibos ko'rsatiladi — qolgan qismi audioda.
             </InfoBanner>
           </Card>
         ) : (

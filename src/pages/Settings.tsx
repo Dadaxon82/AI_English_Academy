@@ -173,7 +173,7 @@ export default function Settings() {
         <InfoBanner tone="muted">
           AI serveri ulanmaganda yozish va gapirish tahlili <b>qoidaviy dvigatel</b> bilan bajariladi va natijada «Qoidaviy
           tahlil» deb belgilanadi. Hech qachon mavjud bo‘lmagan AI natijasi ko‘rsatilmaydi. AI kalitlari faqat serverda
-          saqlanadi; server chaosida <code>VITE_AI_ENABLED=true</code> bayrog‘i va serverless funksiya qo‘shilsagina bu
+          saqlanadi; server tomonida <code>VITE_AI_ENABLED=true</code> bayrog‘i va serverless funksiya qo‘shilsagina bu
           belgi «ulangan» ga o‘zgaradi.
         </InfoBanner>
       </Card>

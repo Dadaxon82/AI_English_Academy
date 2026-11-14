@@ -45,8 +45,8 @@ describe('Audio yaxlitligi', () => {
     const bad: string[] = []
     for (const { where, audio } of audioRefs) {
       const item = byId.get(audio.id)
-      if (!item) bad.push(`${where}: manifestda “${audio.id}“ yo‘q`)
-      else if (item.available !== true) bad.push(`${where}: “${audio.id}“ available !== true`)
+      if (!item) bad.push(`${where}: manifestda “${audio.id}” yo‘q`)
+      else if (item.available !== true) bad.push(`${where}: “${audio.id}” available !== true`)
       else if (audio.fileAvailable !== true) bad.push(`${where}: kontentda fileAvailable false`)
     }
     expect(bad, `Audio manifesti muammolari (${bad.length} ta):\n` + bad.join('\n')).toEqual([])
@@ -56,7 +56,7 @@ describe('Audio yaxlitligi', () => {
     const bad: string[] = []
     for (const { where, audio } of audioRefs) {
       const item = byId.get(audio.id)
-      if (item && item.src !== audio.src) bad.push(`${where}: src “${audio.src}“ ≠ manifest “${item.src}“`)
+      if (item && item.src !== audio.src) bad.push(`${where}: src “${audio.src}” ≠ manifest “${item.src}”`)
     }
     expect(bad, `Audio manzil nomuvofiqligi (${bad.length} ta):\n` + bad.join('\n')).toEqual([])
   })

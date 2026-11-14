@@ -17,12 +17,12 @@ export const vocabDay3: VocabularyItem[] = [
   {
     id: 'a1-v3-wake-up',
     word: 'wake up',
-    translationUz: 'uyqudan o‘yanmoq',
+    translationUz: 'uyqudan uyg‘onmoq',
     explanationEn: 'To stop sleeping in the morning.',
     ipa: '/weɪk ʌp/',
     pronunciation: { kind: 'browser-tts', ttsText: 'wake up', lang: 'en-US' },
     exampleEn: 'I wake up at six thirty.',
-    exampleUz: 'Men soat olti yarimda uyanaman.',
+    exampleUz: 'Men soat olti yarimda uyg‘onaman.',
     pos: 'verb',
     topic: 'daily routine',
     level: 'A1',
@@ -56,7 +56,7 @@ export const vocabDay3: VocabularyItem[] = [
   {
     id: 'a1-v3-brush',
     word: 'brush',
-    translationUz: 'yuvmoq, firchalamoq (tish)',
+    translationUz: 'yuvmoq, cho‘tkalamoq (tish)',
     explanationEn: 'You do this to your teeth every morning.',
     ipa: '/brʌʃ/',
     pronunciation: { kind: 'browser-tts', ttsText: 'brush your teeth', lang: 'en-US' },
@@ -180,7 +180,7 @@ export const grammarDay3: GrammarTopic = {
   level: 'A1',
   explanationUz: [
     'Har kuni takrorlanadigan ishlarimizni Present Simple zamoni bilan aytamiz: I get up at six. She goes to school at eight. Bu zamon “men odatda shunday qilaman” degan ma’noni beradi, shuning uchun “every day”, “usually”, “never”, “on Monday” kabi so‘zlar ko‘p ishlatiladi.',
-    'Ega uchinchi shaxs yagona bo‘lsa (he, she, it, my mother, Bekzod), fe’l olga -s yoki -es qo‘shadi: he plays, she goes, he watches, she has. “have” → “has”, “go” → “goes”, “do” → “does” shakllarini alohida eslab qolish kerak. Boshqa shaxslarda fe’l o‘zgarmaydi: I play, you play, we play, they play.',
+    'Ega uchinchi shaxs yagona bo‘lsa (he, she, it, my mother, Bekzod), fe’lga -s yoki -es qo‘shadi: he plays, she goes, he watches, she has. “have” → “has”, “go” → “goes”, “do” → “does” shakllarini alohida eslab qolish kerak. Boshqa shaxslarda fe’l o‘zgarmaydi: I play, you play, we play, they play.',
     'Inkor va so‘roq gaplarda yordamchi fe’l do / does keladi va asosiy fe’l -siz qoladi: I do not (don’t) watch TV. He does not (doesn’t) get up late. Do you go to school by bus? Does she like English? “He doesn’t goes” deb ikki marta -s qo‘yilmaydi.',
     'Vaqt bildirishda prepozitsiyalarni chalkashtirmang: soat bilan — at (at eight o’clock, at half past six); hafta kuni bilan — on (on Monday, on Friday); kunduz qismlari bilan — in (in the morning, in the evening). “half past six” — oltidan yarim o‘tgan, 6:30; “a quarter past seven” — 7:15; “a quarter to nine” — sakkizdan chorak qoldi, 8:45. Kunlar katta harf bilan yoziladi: Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday.',
   ],
@@ -194,7 +194,7 @@ export const grammarDay3: GrammarTopic = {
     { form: 'How often / What time + do / does + ega + ...?', noteUz: 'What time do you get up?' },
   ],
   examples: [
-    { en: 'I wake up at half past six and I get up fast.', uz: 'Soat olti yarimda uyanaman va tez o‘rnimdan turaman.' },
+    { en: 'I wake up at half past six and I get up fast.', uz: 'Soat olti yarimda uyg‘onaman va tez o‘rnimdan turaman.' },
     { en: 'My sister goes to bed at nine o’clock.', uz: 'Singlim soat to‘qqizda uxlashga boradi.' },
     { en: 'He doesn’t do his homework in the morning.', uz: 'U uy vazifasini ertalab qilmaydi.' },
     { en: 'What time does school start? — It starts at eight o’clock.', uz: 'Maktab soat nechida boshlanadi? — Soat sakkizda boshlanadi.' },
@@ -431,7 +431,7 @@ export const readingDay3: ReadingPassage = {
       instructionUz: 'Uchinchi fikrni matnning oxirgi qismiga qarab baholang.',
       level: 'A1',
       skill: 'reading',
-      explanationUz: '“We have dinner together at half past eight.” — demak oilasi bilan eydi.',
+      explanationUz: '“We have dinner together at half past eight.” — demak oilasi bilan yeydi.',
       difficulty: 2,
       tags: ['true false notgiven'],
       passageId: 'a1-r3-text-01',
@@ -615,13 +615,13 @@ export const writingDay3: WritingTask = {
   level: 'A1',
   genre: 'paragraph',
   promptEn: 'Write a paragraph about your day. Say what time you wake up, get up and go to school. Say what you do in the afternoon and what time you go to bed.',
-  instructionUz: 'Bir kuningiz haqida paragraf yozing: nechida uyanishingiz, o‘rnidan turishingiz va maktabga borishingizni ayting. Kunduzdan keyin nima qilishingiz va nechida uxlashga yotishingizni yozing. Present Simple ishlatib, vaqtni at bilan ko‘rsating.',
+  instructionUz: 'Bir kuningiz haqida paragraf yozing: nechida uyg‘onishingiz, o‘rnidan turishingiz va maktabga borishingizni ayting. Kunduzdan keyin nima qilishingiz va nechida uxlashga yotishingizni yozing. Present Simple ishlatib, vaqtni at bilan ko‘rsating.',
   minWords: 40,
   maxWords: 100,
   minutes: 20,
   criteria: ['task_achievement', 'coherence', 'lexical_resource', 'grammatical_range', 'accuracy'],
   checklistUz: [
-    'Kamida uchta vaqt ko‘rsatilgan (uyonish, maktab, uxlash).',
+    'Kamida uchta vaqt ko‘rsatilgan (uyg‘onish, maktab, uxlash).',
     'Present Simple fe’llari to‘g‘ri ishlatilgan (I go, I do, I have).',
     'at + soat qoidasi saqlangan.',
     'Kunduzdan keyingi bir faoliyat aytilgan.',
@@ -737,7 +737,7 @@ export const testDay3: SectionTest = {
     {
       id: 'a1-ex-t3-05',
       kind: 'true-false-notgiven',
-      instructionUz: 'Test: audioyadagi ma’lumotga suyangan holda baho bering.',
+      instructionUz: 'Test: audiodagi ma’lumotga suyangan holda baho bering.',
       level: 'A1',
       skill: 'listening',
       explanationUz: '“In the evening I do my homework and I play tennis with my sister.”',
@@ -802,7 +802,7 @@ export const day3: DailyPlanDay = {
   level: 'A1',
   dayNumber: 3,
   titleUz: 'Kunlik tartib va soat',
-  goalUz: 'Present Simple yordamida o‘z kunduzini so‘zlab berish: uyanishdan uxlaguncha, hafta kunlari va soatni aytish.',
+  goalUz: 'Present Simple yordamida o‘z kunduzini so‘zlab berish: uyg‘onishdan uxlaguncha, hafta kunlari va soatni aytish.',
   // Kunlik reja talabnomaga mos: 10/15/15/15/20/15 = 90′.
   sections: [
     {
