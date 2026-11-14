@@ -52,22 +52,22 @@ function expectClean(problems: string[], header: string) {
 }
 
 describe('Kontent auditi — mashqlar yaxlitligi', () => {
-  it('mashqlar to‘plami bo‘sh emas', () => {
+  it('maşqlar töplami böş emas', () => {
     expect(ITEMS.length).toBeGreaterThan(50)
   })
 
-  it('har bir mashqda ID, topshiriq, izoh va qiyinlik bor', () => {
+  it('har bir maşqda ID, topshiriq, izoh va qiyinlik bor', () => {
     const bad: string[] = []
     for (const { ex, owner } of ITEMS) {
-      if (!ex.id.trim()) bad.push(`${owner}: bo‘sh ID`)
+      if (!ex.id.trim()) bad.push(`${owner}: böş ID`)
       if (ex.instructionUz.length <= 5) bad.push(`${ex.id}: topshiriq yo‘q`)
-      if (ex.explanationUz.length <= 5) bad.push(`${ex.id}: izoh yo‘q`)
+      if (ex.explanationUz.length <= 5) bad.push(`${ex.id}: izoh yöq`)
       if (ex.difficulty < 1 || ex.difficulty > 5) bad.push(`${ex.id}: qiyinlik ${ex.difficulty}`)
     }
-    expectClean(bad, 'maydon yetishmaydi')
+    expectClean(bad, 'maydon yetişmaydi')
   })
 
-  it('mashq IDlari takrorlanmagan (kunlar + mock + diagnostika)', () => {
+  it('maşq IDlari takrorlanmagan (kunlar + mock + diagnostika)', () => {
     const seen = new Map<string, string>()
     const dup: string[] = []
     for (const { ex, owner } of ITEMS) {
@@ -109,10 +109,10 @@ describe('Kontent auditi — mashqlar yaxlitligi', () => {
       if (rightHits === 0 && fullWrong.length > 0)
         bad.push(
           `${owner}/${ex.id}: javob “${ex.options[ex.answerIndex]}” audioda umuman eshitilmaydi, ` +
-            `lekin “${fullWrong.map((w) => w.o).join(' | ')}” eshitiladi — kalit indeksini tekshiring`,
+            `lekin “${fullWrong.map((w) => w.o).join(' | ')}” eşitiladi — kalit indeksini tekşiring`,
         )
     }
-    expectClean(bad, 'tinglash kaliti shubhali')
+    expectClean(bad, 'tinglaş kaliti şubhali')
   })
 
   it('true/false/not given: javob ruxsat etilgan qiymatda', () => {
@@ -135,7 +135,7 @@ describe('Kontent auditi — mashqlar yaxlitligi', () => {
       if (!src.trim()) continue // manba testda ko‘rinmaydi — tekshirmaymiz
       // "Malika: ..." ko‘rinishidagi nutq egasi boshi ixtiyoriy.
       const ev = ex.evidence.replace(/^[A-Z][\w ]*:\s*/, '')
-      if (!norm(src).includes(norm(ev))) bad.push(`${owner}/${ex.id}: evidence matnda yo‘q — "${ex.evidence}"`)
+      if (!norm(src).includes(norm(ev))) bad.push(`${owner}/${ex.id}: evidence matnda yöq — "${ex.evidence}"`)
     }
     expectClean(bad, 'tfng evidence')
   })
@@ -145,8 +145,8 @@ describe('Kontent auditi — mashqlar yaxlitligi', () => {
     for (const { ex } of ITEMS) {
       if (ex.kind !== 'matching') continue
       if (ex.pairs.length < 2) bad.push(`${ex.id}: juftliklar soni ${ex.pairs.length}`)
-      if (new Set(ex.pairs.map((p) => norm(p.left))).size !== ex.pairs.length) bad.push(`${ex.id}: takroriy chap tomon`)
-      if (new Set(ex.pairs.map((p) => norm(p.right))).size !== ex.pairs.length) bad.push(`${ex.id}: takroriy o‘ng tomon`)
+      if (new Set(ex.pairs.map((p) => norm(p.left))).size !== ex.pairs.length) bad.push(`${ex.id}: takroriy çap tomon`)
+      if (new Set(ex.pairs.map((p) => norm(p.right))).size !== ex.pairs.length) bad.push(`${ex.id}: takroriy öng tomon`)
     }
     expectClean(bad, 'matching')
   })
@@ -156,14 +156,14 @@ describe('Kontent auditi — mashqlar yaxlitligi', () => {
     for (const { ex, owner } of ITEMS) {
       if (ex.kind !== 'gap-fill') continue
       const gaps = (ex.text.match(GAP_RE) || []).length
-      if (gaps !== ex.answers.length) bad.push(`${owner}/${ex.id}: ${gaps} bo‘shliq / ${ex.answers.length} javob`)
-      if (ex.answers.some((a) => !a.trim())) bad.push(`${ex.id}: bo‘sh javob`)
+      if (gaps !== ex.answers.length) bad.push(`${owner}/${ex.id}: ${gaps} böşliq / ${ex.answers.length} javob`)
+      if (ex.answers.some((a) => !a.trim())) bad.push(`${ex.id}: böş javob`)
       if (ex.acceptAlternatives && ex.acceptAlternatives.length !== ex.answers.length)
         bad.push(`${ex.id}: alternativalar ${ex.acceptAlternatives.length} ≠ javoblar ${ex.answers.length}`)
       if (ex.wordBank?.length)
         for (const a of ex.answers)
           if (!ex.wordBank.some((b) => norm(b) === norm(a)))
-            bad.push(`${ex.id}: javob “${a}” bankda yo‘q (${ex.wordBank.join(', ')})`)
+            bad.push(`${ex.id}: javob “${a}” bankda yöq (${ex.wordBank.join(', ')})`)
     }
     expectClean(bad, 'gap-fill')
   })
@@ -173,7 +173,7 @@ describe('Kontent auditi — mashqlar yaxlitligi', () => {
     for (const { ex, passage } of ITEMS) {
       if (ex.kind !== 'gap-fill' || !passage) continue
       const body = norm(passage.paragraphs.join(' '))
-      for (const a of ex.answers) if (!body.includes(norm(a)) && !body.includes(norm(a) + 's')) bad.push(`${ex.id}: javob “${a}” matnda yo‘q`)
+      for (const a of ex.answers) if (!body.includes(norm(a)) && !body.includes(norm(a) + 's')) bad.push(`${ex.id}: javob “${a}” matnda yöq`)
     }
     expectClean(bad, 'gap-fill javoblari matnda')
   })
@@ -185,8 +185,8 @@ describe('Kontent auditi — mashqlar yaxlitligi', () => {
       if (ex.answer.length < 3) bad.push(`${ex.id}: javob juda qisqa (${ex.answer.length})`)
       const bank = [...ex.bank].sort()
       const ans = [...ex.answer].sort()
-      for (const w of ans) if (!bank.includes(w)) bad.push(`${owner}/${ex.id}: javob so‘zi “${w}” bankda yo‘q (${ex.bank.join(', ')})`)
-      if (bank.length !== ans.length) bad.push(`${owner}/${ex.id}: bank ${bank.length} ≠ javob ${ans.length} so‘z`)
+      for (const w of ans) if (!bank.includes(w)) bad.push(`${owner}/${ex.id}: javob sözi “${w}” bankda yöq (${ex.bank.join(', ')})`)
+      if (bank.length !== ans.length) bad.push(`${owner}/${ex.id}: bank ${bank.length} ≠ javob ${ans.length} söz`)
     }
     expectClean(bad, 'word-order banki')
   })
@@ -217,8 +217,8 @@ describe('Kontent auditi — mashqlar yaxlitligi', () => {
     const bad: string[] = []
     for (const { ex } of ITEMS) {
       if (ex.kind !== 'translation') continue
-      if (ex.accepted.length === 0) bad.push(`${ex.id}: accepted bo‘sh`)
-      if (ex.accepted.some((a) => !a.trim())) bad.push(`${ex.id}: bo‘sh accepted`)
+      if (ex.accepted.length === 0) bad.push(`${ex.id}: accepted böş`)
+      if (ex.accepted.some((a) => !a.trim())) bad.push(`${ex.id}: böş accepted`)
     }
     expectClean(bad, 'translation')
   })
@@ -227,8 +227,8 @@ describe('Kontent auditi — mashqlar yaxlitligi', () => {
     const bad: string[] = []
     for (const s of mockExamA1.sections) {
       const hasTask = Boolean(s.writingTask || s.speakingTask)
-      if (!(s.exercises.length > 0 || hasTask)) bad.push(`${s.id}: bo‘sh bo‘lim`)
-      for (const e of s.exercises) if (e.skill !== s.skill) bad.push(`${e.id}: skill=${e.skill} ≠ bo‘lim ${s.skill}`)
+      if (!(s.exercises.length > 0 || hasTask)) bad.push(`${s.id}: böş bölim`)
+      for (const e of s.exercises) if (e.skill !== s.skill) bad.push(`${e.id}: skill=${e.skill} ≠ bölim ${s.skill}`)
     }
     expectClean(bad, 'mock imtihon')
   })

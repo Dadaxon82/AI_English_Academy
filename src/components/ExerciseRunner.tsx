@@ -82,7 +82,7 @@ export default function ExerciseRunner({ exercise, checked, index, total, onNext
 
       {prevResult && !prevResult.correct && (
         <InfoBanner tone="warn">
-          Oldingi savolda xato bor edi — shu mavzuni mustahkamlash uchun keyingi mashq tanlandi.
+          Oldingi savolda xato bor edi — şu mavzuni mustahkamlaş uçun keyingi maşq tanlandi.
         </InfoBanner>
       )}
 
@@ -107,11 +107,11 @@ export default function ExerciseRunner({ exercise, checked, index, total, onNext
           aria-live="polite"
         >
           <strong className={result.correct ? 'text-[var(--ok)]' : 'text-[var(--bad)]'}>
-            {result.correct ? 'To‘g‘ri!' : result.partial > 0 ? 'Qisman to‘g‘ri' : 'Noto‘g‘ri'}
+            {result.correct ? 'Töğri!' : result.partial > 0 ? 'Qisman töğri' : 'Notöğri'}
           </strong>
           {!result.correct && (
             <p className="mt-1">
-              To‘g‘ri javob: <b>{result.expected}</b>
+              Töğri javob: <b>{result.expected}</b>
             </p>
           )}
           <p className="mt-1 muted">{result.whyUz}</p>
@@ -121,19 +121,19 @@ export default function ExerciseRunner({ exercise, checked, index, total, onNext
       <div className="flex flex-wrap items-center gap-2">
         {state === 'idle' ? (
           <Button onClick={doCheck} disabled={!canCheck}>
-            Tekshirish
+            Tekşiriş
           </Button>
         ) : (
-          <Button onClick={onNext}>{index + 1 < total ? 'Keyingi mashq' : 'Yakunlash'}</Button>
+          <Button onClick={onNext}>{index + 1 < total ? 'Keyingi maşq' : 'Yakunlaş'}</Button>
         )}
         {state === 'idle' && (
           <Button variant="ghost" size="sm" onClick={() => setAnswer(skipAnswer(exercise))} disabled={!canCheck}>
-            Javobni tozalash
+            Javobni tozalaş
           </Button>
         )}
       </div>
       <p className="text-[11px] muted">
-        Klaviatura: <b>Enter</b> — {state === 'idle' ? 'tekshirish' : 'davom etish'}.
+        Klaviatura: <b>Enter</b> — {state === 'idle' ? 'tekşiriş' : 'davom etiş'}.
       </p>
     </div>
   )
@@ -184,9 +184,9 @@ function AnswerInput({
     }
     case 'true-false-notgiven': {
       const opts: { v: string; label: string }[] = [
-        { v: 'true', label: 'True — to‘g‘ri' },
-        { v: 'false', label: 'False — noto‘g‘ri' },
-        { v: 'notgiven', label: 'Not Given — matnda yo‘q' },
+        { v: 'true', label: 'True — töğri' },
+        { v: 'false', label: 'False — notöğri' },
+        { v: 'notgiven', label: 'Not Given — matnda yöq' },
       ]
       const chosen = String(answer ?? '')
       return (
@@ -226,7 +226,7 @@ function AnswerInput({
                     className={`${inputCls} inline-block w-28 mx-1 px-2 py-1 text-center`}
                     value={arr[i] ?? ''}
                     disabled={locked}
-                    aria-label={`${i + 1}-bo‘shliq`}
+                    aria-label={`${i + 1}-böşliq`}
                     onChange={(e) => {
                       const next = [...arr]
                       next[i] = e.target.value
@@ -299,7 +299,7 @@ function AnswerInput({
       return (
         <div className="grid gap-3">
           <div className="min-h-12 rounded-xl border bg-[var(--panel-2)] p-2.5 flex flex-wrap gap-1.5">
-            {chosen.length === 0 && <span className="text-sm muted">So‘zlarni quyidagi tartibda bosing…</span>}
+            {chosen.length === 0 && <span className="text-sm muted">Sözlarni quyidagi tartibda bosing…</span>}
             {chosen.map((w, i) => (
               <button
                 key={`${w}-${i}`}
@@ -307,7 +307,7 @@ function AnswerInput({
                 disabled={locked}
                 onClick={() => onChange(chosen.filter((_, j) => j !== i))}
                 className="px-2.5 py-1 rounded-lg bg-navy-700 text-white dark:bg-navy-500 dark:text-navy-950 text-sm font-medium"
-                title="Olib tashlash"
+                title="Olib taşlaş"
               >
                 {w}
               </button>
@@ -338,7 +338,7 @@ function AnswerInput({
             className={inputCls}
             value={Array.isArray(answer) ? String(answer[0] ?? '') : String(answer ?? '')}
             disabled={locked}
-            placeholder={exercise.sourceLang === 'uz' ? 'Write in English…' : "O'zbekcha yozing…"}
+            placeholder={exercise.sourceLang === 'uz' ? 'Write in English…' : "Özbekça yozing…"}
             onChange={(e) => onChange([e.target.value])}
           />
         </div>
@@ -391,8 +391,8 @@ function kindLabel(k: Exercise['kind']): string {
     'multiple-choice': 'Tanlovi',
     'true-false-notgiven': 'True / False / Not Given',
     matching: 'Juftlik',
-    'gap-fill': 'Bo‘shliq',
-    'word-order': 'So‘z tartibi',
+    'gap-fill': 'Böşliq',
+    'word-order': 'Söz tartibi',
     translation: 'Tarjima',
   }[k]
 }

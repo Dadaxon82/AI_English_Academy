@@ -30,7 +30,7 @@ const stubTask: WritingTask = {
   mustInclude: [{ pattern: 'my family', whyUz: 'Oilangizni tasvirlang.' }],
 }
 
-describe('analyzeWriting — to‘g‘ri matn jazolanmasin', () => {
+describe('analyzeWriting — töğri matn jazolanmasin', () => {
   it('toza A1 matnida soxta kelishuv (agreement) xatosi chiqmaydi', () => {
     const a = analyzeWriting(cleanA1, stubTask)
     const agreement = a.errors.filter((e) => e.kind === 'agreement')
@@ -38,7 +38,7 @@ describe('analyzeWriting — to‘g‘ri matn jazolanmasin', () => {
     expect(a.criteriaScores.accuracy).toBe(5)
   })
 
-  it('haqiqiy kelishuv xatosi esa topiladi („he go“)', () => {
+  it('haqiqiy kelişuv xatosi esa topiladi („he go“)', () => {
     const a = analyzeWriting(cleanA1 + ' He go to the market.', stubTask)
     const agreement = a.errors.filter((e) => e.kind === 'agreement')
     expect(agreement).toHaveLength(1)
@@ -47,7 +47,7 @@ describe('analyzeWriting — to‘g‘ri matn jazolanmasin', () => {
 })
 
 describe('analyzeWriting — mustInclude qidiruvi', () => {
-  it('naqsh matn o‘rtasida bo‘lsa ham topiladi', () => {
+  it('naqş matn örtasida bölsa ham topiladi', () => {
     const text = 'Yesterday my family and friends went out last weekend because it was sunny. ' + cleanA1
     const a = analyzeWriting(text, {
       ...stubTask,
@@ -58,7 +58,7 @@ describe('analyzeWriting — mustInclude qidiruvi', () => {
     expect(a.criteriaScores.task_achievement).toBeGreaterThanOrEqual(4)
   })
 
-  it('loyihadagi barcha yozish topshiriqlarida ko‘p so‘zli naqshlar topiladi (model javob)', () => {
+  it('loyihadagi barça yoziş topşiriqlarida köp sözli naqşlar topiladi (model javob)', () => {
     const bad: string[] = []
     for (const task of a1.writing) {
       if (!task.modelAnswerEn) continue
@@ -73,7 +73,7 @@ describe('analyzeWriting — mustInclude qidiruvi', () => {
 describe('analyzeSpeaking — baho va izoh bir-biriga zid bo‘lmasin', () => {
   const task = { minSeconds: 30, targetSeconds: 60 }
 
-  it('juda sekin gapirish (wpm < 60) „ravon“ deb 5 ball olmaydi', () => {
+  it('juda sekin gapiriş (wpm < 60) „ravon“ deb 5 ball olmaydi', () => {
     // 20 sekundda 20 so‘z → 60 wpm emas, ~? hisoblab tekshiramiz.
     const transcript = 'I like my cat. My cat is small. I feed my cat. I love my cat.'
     const a = analyzeSpeaking(transcript, 25, task)

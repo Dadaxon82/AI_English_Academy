@@ -9,7 +9,7 @@ window.addEventListener('error', (e) => {
 })
 
 const el = document.getElementById('root')
-if (!el) throw new Error('#root topilmadi — index.html tekshiring')
+if (!el) throw new Error('#root topilmadi — index.html tekşiring')
 
 createRoot(el).render(
   <StrictMode>

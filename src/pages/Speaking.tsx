@@ -79,7 +79,7 @@ export default function Speaking() {
 
     if (!navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === 'undefined') {
       setRecState('unsupported')
-      setRecError('Bu brauzer audio yozishni qo‘llab-quvvatlamaydi — matnli usuldan foydalaning.')
+      setRecError('Bu brauzer audio yozişni qöllab-quvvatlamaydi — matnli usuldan foydalaning.')
       return
     }
     try {
@@ -117,8 +117,8 @@ export default function Speaking() {
           if (final) setTranscript((t) => (t + ' ' + final).trim())
         }
         r.onerror = (e) => {
-          if (e.error === 'not-allowed') setRecError('Mikrofon ruxsati berthlmadi — matnli usulni ishlating.')
-          else if (e.error === 'no-speech') setRecError('Ovoz eshitilmadi. Mikrofonni tekshiring.')
+          if (e.error === 'not-allowed') setRecError('Mikrofon ruxsati berthlmadi — matnli usulni işlating.')
+          else if (e.error === 'no-speech') setRecError('Ovoz eşitilmadi. Mikrofonni tekşiring.')
         }
         r.onend = () => {
           setEngineUsed((cur) => (cur === 'none' ? 'none' : cur))
@@ -148,10 +148,10 @@ export default function Speaking() {
     setRecState('ready')
   }
 
-  if (!ready) return <LoadingBlock label="Gapirish ma'lumotlari yuklanmoqda…" />
+  if (!ready) return <LoadingBlock label="Gapiriş ma'lumotlari yuklanmoqda…" />
 
   if (tasks.length === 0) {
-    return <EmptyState title="Gapirish topshiriqlari topilmadi" body="Ushbu daraja uchun kontent hali yuklanmagan." />
+    return <EmptyState title="Gapiriş topşiriqlari topilmadi" body="Uşbu daraja uçun kontent hali yuklanmagan." />
   }
 
   const history = data.speaking.filter((s) => s.taskId === selectedId)
@@ -160,10 +160,10 @@ export default function Speaking() {
   return (
     <div className="grid gap-4">
       <Card className="grid gap-3">
-        <h1 className="text-xl font-bold">Gapirish</h1>
+        <h1 className="text-xl font-bold">Gapiriş</h1>
         <p className="muted text-sm">
-          Kunlik mavzu va savollar. Ovoz yozuvi faqat shu brauzer seansida turadi (sahifa yopilsa o‘chadi) —
-          roziligingizsiz serverga hech qachon yuborilmaydi.
+          Kunlik mavzu va savollar. Ovoz yozuvi faqat şu brauzer seansida turadi (sahifa yopilsa öçadi) —
+          roziligingizsiz serverga heç qaçon yuborilmaydi.
         </p>
         <div className="flex flex-wrap gap-1.5">
           {tasks.map((t) => (
@@ -200,11 +200,11 @@ export default function Speaking() {
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
                     <circle cx="12" cy="12" r="7" />
                   </svg>
-                  Yozishni boshlash
+                  Yozişni boşlaş
                 </Button>
               ) : (
                 <Button variant="danger" onClick={stopRecording}>
-                  To‘xtatish ({formatDuration(seconds)})
+                  Töxtatiş ({formatDuration(seconds)})
                 </Button>
               )}
               {recState === 'recording' && <span className="text-xs text-[var(--bad)] animate-pulse">● Yozilmoqda…</span>}
@@ -214,7 +214,7 @@ export default function Speaking() {
 
             {audioUrl && (
               <div className="grid gap-1.5">
-                <label className="text-xs font-semibold muted">Yozuvni qayta tinglash</label>
+                <label className="text-xs font-semibold muted">Yozuvni qayta tinglaş</label>
                 <audio src={audioUrl} controls className="w-full" />
               </div>
             )}
@@ -243,7 +243,7 @@ export default function Speaking() {
 
             <div>
               <div className="text-xs font-semibold muted mb-1">
-                Matnli javob {transcript ? '(qo‘shimcha)' : '(muqobil usul)'}
+                Matnli javob {transcript ? '(qöşimça)' : '(muqobil usul)'}
               </div>
               <textarea
                 value={textAnswer}
@@ -258,7 +258,7 @@ export default function Speaking() {
             <div className="flex flex-wrap gap-2">
               {recState === 'ready' && (
                 <Button variant="ghost" onClick={() => void startRecording()}>
-                  Qayta yozish
+                  Qayta yoziş
                 </Button>
               )}
               {/* BUG: transkript bo'lmasa tugma o'chib qolardi — brauzeri
@@ -280,7 +280,7 @@ export default function Speaking() {
                   setSaved(true)
                 }}
               >
-                Saqlash va tahlil
+                Saqlaş va tahlil
               </Button>
             </div>
 
@@ -296,7 +296,7 @@ export default function Speaking() {
 
 function LastAttempts({ history }: { history: ReturnType<typeof useStore>['data']['speaking'] }) {
   if (history.length === 0) {
-    return <EmptyState title="Tarix bo'sh" body="Birinchi javobingizni yozing — statistika shu yerda paydo bo'ladi." />
+    return <EmptyState title="Tarix böş" body="Birinçi javobingizni yozing — statistika şu yerda paydo böladi." />
   }
   return (
     <Card className="grid gap-3">
@@ -305,7 +305,7 @@ function LastAttempts({ history }: { history: ReturnType<typeof useStore>['data'
         <div key={s.id} className="rounded-xl border p-3 grid gap-2">
           <div className="flex flex-wrap gap-2 text-xs">
             <Chip>{s.durationSec}s</Chip>
-            <Chip>{s.transcriptionEngine === 'browser-speech' ? 'Brauzer transkripsiyasi' : 'Transkripsiya yo‘q'}</Chip>
+            <Chip>{s.transcriptionEngine === 'browser-speech' ? 'Brauzer transkripsiyasi' : 'Transkripsiya yöq'}</Chip>
             <Chip tone={s.audioBlobStored ? 'ok' : 'default'}>{s.audioBlobStored ? 'Ovoz qurilmada' : 'Ovoz saqlanmagan'}</Chip>
           </div>
           {s.transcript && <p className="text-sm italic">“{s.transcript}”</p>}
@@ -315,7 +315,7 @@ function LastAttempts({ history }: { history: ReturnType<typeof useStore>['data'
               {(
                 [
                   ['Ravonlik', s.analysis.fluency],
-                  ['Lug‘at', s.analysis.lexis],
+                  ['Luğat', s.analysis.lexis],
                   ['Grammatika', s.analysis.grammar],
                   ['Davomiylik', s.analysis.length],
                 ] as const

@@ -195,14 +195,14 @@ export async function syncNow(userId: string, opts: { maxItems?: number } = {}):
     return { ok: false, attempted: 0, done: 0, failed: 0, reasonUz: 'Supabase sozlanmagan — ma’lumotlar qurilmada saqlanmoqda.' }
   }
   if (networkStatus() === 'offline') {
-    return { ok: false, attempted: 0, done: 0, failed: 0, reasonUz: 'Internet yo‘q. Navbat saqlandi, ulanish qaytganda yuboriladi.' }
+    return { ok: false, attempted: 0, done: 0, failed: 0, reasonUz: 'Internet yöq. Navbat saqlandi, ulaniş qaytganda yuboriladi.' }
   }
   const sb = getSupabase()
-  if (!sb) return { ok: false, attempted: 0, done: 0, failed: 0, reasonUz: 'Supabase mijoziga bo‘lib bo‘lmadi.' }
+  if (!sb) return { ok: false, attempted: 0, done: 0, failed: 0, reasonUz: 'Supabase mijoziga bölib bölmadi.' }
 
   const { data: sess, error: authErr } = await sb.auth.getSession()
   if (authErr || !sess.session) {
-    return { ok: false, attempted: 0, done: 0, failed: 0, reasonUz: 'Tizimga kirilmagan — sinxronlash to‘xtatildi.' }
+    return { ok: false, attempted: 0, done: 0, failed: 0, reasonUz: 'Tizimga kirilmagan — sinxronlaş töxtatildi.' }
   }
 
   const queue = await loadQueue(userId)

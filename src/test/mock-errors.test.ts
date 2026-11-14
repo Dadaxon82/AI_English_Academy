@@ -60,13 +60,13 @@ describe('Mock imtihon xatolari Xatolar kundaligida ko‘rinadi', () => {
     expect(r.secondsSpent).toBe(600)
   })
 
-  it('bo‘sh javob va „note:“ erkin matni xato hisoblanmaydi', () => {
+  it('böş javob va „note:“ erkin matni xato hisoblanmaydi', () => {
     const rows = mockErrorAttempts([mockAttempt()], 'A1')
     expect(rows.some((r) => r.exerciseId === 'a1-ex-r1-03')).toBe(false)
     expect(rows.some((r) => r.exerciseId.startsWith('note:'))).toBe(false)
   })
 
-  it('attempts IFLOSHATILMAYDI — merge faqat qo‘shadi, dublikat qilmaydi', () => {
+  it('attempts IFLOŞATILMAYDI — merge faqat qöşadi, dublikat qilmaydi', () => {
     const acts = [attempt('a1', 'a1-ex-g1-01', t0)]
     const merged = withMockErrors(acts, [mockAttempt()], 'A1')
     expect(merged).toHaveLength(2)
@@ -75,7 +75,7 @@ describe('Mock imtihon xatolari Xatolar kundaligida ko‘rinadi', () => {
     expect(merged[0]!.id).toBe('a1')
   })
 
-  it('bir xil yozuv ikki marta tushmaydi (agar keyinroq attempts‘ga yozilsa)', () => {
+  it('bir xil yozuv ikki marta tuşmaydi (agar keyinroq attempts‘ga yozilsa)', () => {
     const m = mockAttempt()
     const r = mockErrorAttempts([m], 'A1')[0]!
     const merged = withMockErrors([attempt('dup', r.exerciseId, r.at, r.answerGiven)], [m], 'A1')

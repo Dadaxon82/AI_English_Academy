@@ -85,7 +85,7 @@ describe('checkAnswer — 6 mashq turi', () => {
     expect(checkAnswer(wo, ['she', 'IS', 'a', 'doctor.']).correct).toBe(true)
     const bad = checkAnswer(wo, ['is', 'she', 'a', 'doctor'])
     expect(bad.correct).toBe(false)
-    expect(bad.whyUz).toContain('1-o‘rin')
+    expect(bad.whyUz).toContain('1-örin')
   })
 
   const tr: Exercise = {
@@ -153,7 +153,7 @@ describe('A1 o‘quvchi klaviaturasi — apostrof va bo‘shliq bardoshliligi', 
     expect(r.correct).toBe(true)
     const bad = checkAnswer(wo, 'is she a doctor')
     expect(bad.correct).toBe(false)
-    expect(bad.whyUz).toContain('1-o‘rin')
+    expect(bad.whyUz).toContain('1-örin')
   })
 
   const mc: Exercise = {

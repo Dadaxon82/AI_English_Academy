@@ -14,10 +14,10 @@ import { migrate } from '../lib/storage'
 import { initialSrsState } from '../lib/srs'
 import { emptyData, type AppData } from '../lib/types'
 
-describe('Matn glossariyi so‘zlari', () => {
+describe('Matn glossariyi sözlari', () => {
   const gl = allGlossaryVocab()
 
-  it('har bir matn glossariyi asosiy lug‘atga qo‘shib ko‘rib chiqilgan', () => {
+  it('har bir matn glossariyi asosiy luğatga qöşib körib çiqilgan', () => {
     const glossWords = a1.reading.flatMap((p) => (p.glossary ?? []).map((g) => wordKeyOf(g.word)))
     const mainKeys = new Set(allVocab().map((v) => wordKeyOf(v.word)))
     const glKeys = new Set(gl.map((g) => wordKeyOf(g.word)))
@@ -27,7 +27,7 @@ describe('Matn glossariyi so‘zlari', () => {
     }
   })
 
-  it('bir xil so‘z ikki marta qaytarilmaydi va asosiy lug‘at takrorlanmaydi', () => {
+  it('bir xil söz ikki marta qaytarilmaydi va asosiy luğat takrorlanmaydi', () => {
     const keys = gl.map((g) => wordKeyOf(g.word))
     expect(new Set(keys).size).toBe(keys.length)
     const mainKeys = new Set(allVocab().map((v) => wordKeyOf(v.word)))
@@ -42,7 +42,7 @@ describe('Matn glossariyi so‘zlari', () => {
     expect(item?.id).toBe(glossaryVocabId(g.word))
   })
 
-  it('saqlangan glossariy so‘zi “Bugun takror” hisobiga kiritiladi', () => {
+  it('saqlangan glossariy sözi “Bugun takror” hisobiga kiritiladi', () => {
     const word = gl[0]!
     let s = emptyData('u1')
     s = reducer(s, { type: 'srs', vocabId: word.id, grade: 'good' }) // o‘rganish boshlandi
@@ -53,7 +53,7 @@ describe('Matn glossariyi so‘zlari', () => {
     expect(gl.some((g) => g.id === word.id)).toBe(true)
   })
 
-  it('glossariy so‘zlarida tarjima va matn provenancesi mavjud', () => {
+  it('glossariy sözlarida tarjima va matn provenancesi mavjud', () => {
     for (const g of gl) {
       expect(g.translationUz.length, `no translation for ${g.word}`).toBeGreaterThan(0)
       expect(g.topic).toBe('matndan olingan')
@@ -61,7 +61,7 @@ describe('Matn glossariyi so‘zlari', () => {
     }
   })
 
-  it('eski kesh kaliti (`<matn>|gl-…`) yangisiga migratsiya qilinadi', () => {
+  it('eski keş kaliti (`<matn>|gl-…`) yangisiga migratsiya qilinadi', () => {
     const old = emptyData('u1')
     const base = { ...initialSrsState(), learnedAt: 10, dueAt: 100, reps: 1 }
     const raw: AppData = {

@@ -107,7 +107,7 @@ export default function MockExam() {
   // sahifa ochilganda bir lahza soxta bo'sholat ko'rinadi.
   if (!ready) return <LoadingBlock label="Mock Exam ma'lumotlari yuklanmoqda…" />
   if (!exam) {
-    return <EmptyState title="Mock Exam topilmadi" body="Ushbu daraja uchun namunaviy imtihon hali mavjud emas." />
+    return <EmptyState title="Mock Exam topilmadi" body="Uşbu daraja uçun namunaviy imtihon hali mavjud emas." />
   }
 
   const start = () => {
@@ -218,7 +218,7 @@ export default function MockExam() {
       sections: secs,
       totalScore,
       speakingAdvisory:
-        'Speaking bo‘limidagi baho mashq maqsadida berilgan — rasmiy imtihon natijasi emas va umumiy ballga kiritilmagan.',
+        'Speaking bölimidagi baho maşq maqsadida berilgan — rasmiy imtihon natijasi emas va umumiy ballga kiritilmagan.',
     }
   }
 
@@ -245,7 +245,7 @@ export default function MockExam() {
   // ---------- Yakuniy natijalar ----------
   if (finished) {
     const attempt = data.mockAttempts.find((a) => a.id === finished)
-    if (!attempt) return <EmptyState title="Natija topilmadi" body="Imtihon natijasi yuklanmadi. Qaytadan urinib ko'ring." />
+    if (!attempt) return <EmptyState title="Natija topilmadi" body="Imtihon natijasi yuklanmadi. Qaytadan urinib köring." />
     return <Results exam={exam} attempt={attempt} onRetry={start} />
   }
 
@@ -268,9 +268,9 @@ export default function MockExam() {
                 </div>
                 <ul className="text-xs muted">
                   {examExercises(s).length > 0 && <li>{examExercises(s).length} ta savol ({kindSummary(s)})</li>}
-                  {s.writingTask && <li>Yozish: {s.writingTask.minWords}–{s.writingTask.maxWords} so‘z</li>}
-                  {s.speakingTask && <li>Gapirish: {s.speakingTask.targetSeconds}s</li>}
-                  {s.audio && !hasAudio(manifestOk, s.audio) && <li className="!text-[var(--warn)]">Audio fayl topilmadi — tinglash bo‘limi matn asosida o‘tkaziladi</li>}
+                  {s.writingTask && <li>Yoziş: {s.writingTask.minWords}–{s.writingTask.maxWords} söz</li>}
+                  {s.speakingTask && <li>Gapiriş: {s.speakingTask.targetSeconds}s</li>}
+                  {s.audio && !hasAudio(manifestOk, s.audio) && <li className="!text-[var(--warn)]">Audio fayl topilmadi — tinglaş bölimi matn asosida ötkaziladi</li>}
                 </ul>
                 {!s.formatVerified && (
                   <p className="text-[10px] muted italic">{s.formatNote}</p>
@@ -279,15 +279,15 @@ export default function MockExam() {
             ))}
           </div>
 
-          {!netOnline && <InfoBanner tone="warn">Internet yo‘q. Imtihon mahalliy ishlaydi, natija keyin sinxronlanadi.</InfoBanner>}
+          {!netOnline && <InfoBanner tone="warn">Internet yöq. Imtihon mahalliy işlaydi, natija keyin sinxronlanadi.</InfoBanner>}
 
           {saved && (
             <InfoBanner tone="warn">
-              Yarim qolgan urinish topildi ({new Date(saved.savedAt).toLocaleString('uz')}). Sahifa yangilanganda javoblar
-              yo‘qolmasligi uchun saqlangan edi.
+              Yarim qolgan uriniş topildi ({new Date(saved.savedAt).toLocaleString('uz')}). Sahifa yangilanganda javoblar
+              yöqolmasligi uçun saqlangan edi.
               <span className="flex flex-wrap gap-2 mt-2">
                 <Button size="sm" onClick={resume}>
-                  Davom ettirish
+                  Davom ettiriş
                 </Button>
                 <Button
                   size="sm"
@@ -301,7 +301,7 @@ export default function MockExam() {
                     setSaved(null)
                   }}
                 >
-                  Tashlab, yangi boshlash
+                  Taşlab, yangi boşlaş
                 </Button>
               </span>
             </InfoBanner>
@@ -309,13 +309,13 @@ export default function MockExam() {
 
           <div className="flex flex-wrap gap-2">
             <Button size="lg" onClick={start}>
-              {data.mockAttempts.length ? 'Yangi urinish' : 'Imtihonni boshlash'}
+              {data.mockAttempts.length ? 'Yangi uriniş' : 'Imtihonni boşlaş'}
             </Button>
           </div>
 
           {past.length > 0 && (
             <div className="grid gap-2">
-              <h2 className="font-semibold text-sm">Oxirgi urinishlar</h2>
+              <h2 className="font-semibold text-sm">Oxirgi urinişlar</h2>
               {past.slice(-3).reverse().map((a) => (
                 <div key={a.id} className="flex items-center gap-3 text-sm border rounded-xl p-2.5">
                   <ProgressRing value={(a.totalScore ?? 0) / 100} size={52} />
@@ -325,7 +325,7 @@ export default function MockExam() {
                   </div>
                   <span className="flex-1" />
                   <Button size="sm" variant="ghost" onClick={() => setFinished(a.id)}>
-                    Ko'rish
+                    Köriş
                   </Button>
                 </div>
               ))}
@@ -337,7 +337,7 @@ export default function MockExam() {
   }
 
   // ---------- Jarayon ----------
-  if (!section || !prog) return <EmptyState title="Bo'lim topilmadi" />
+  if (!section || !prog) return <EmptyState title="Bölim topilmadi" />
   const exList = examExercises(section)
   const ex = exList[prog.idx]
   const leftMin = Math.floor(left / 60)
@@ -372,7 +372,7 @@ export default function MockExam() {
           })}
         </div>
         <Button variant="secondary" onClick={() => setConfirmOpen(true)}>
-          Imtihonni yakunlash
+          Imtihonni yakunlaş
         </Button>
       </Card>
 
@@ -398,20 +398,20 @@ export default function MockExam() {
             <h2 className="font-bold">{section.speakingTask.questionEn}</h2>
             <p className="text-sm muted">{section.speakingTask.hintUz}</p>
             <InfoBanner tone="warn">
-              Gapirish bo‘limida audio yozish va baholash{' '}
-              <Link to="/speaking" className="underline font-semibold">Speaking</Link> bo‘limida mavjud. Bu yerda javob
-              matnini qoldirishingiz mumkin — baho rasmiy imtihon natijasi emas.
+              Gapiriş bölimida audio yoziş va baholaş{' '}
+              <Link to="/speaking" className="underline font-semibold">Speaking</Link> bölimida mavjud. Bu yerda javob
+              matnini qoldirişingiz mumkin — baho rasmiy imtihon natijasi emas.
             </InfoBanner>
             <Writing2Note textAnswer={prog.results['note:speaking-text']?.given ?? ''} onSave={(v) => recordResult(section.id, 'note:speaking-text', false, v)} onFinish={finishSection} />
           </Card>
         </div>
       ) : (
-        <EmptyState title="Bu bo'limda savol yo'q" body="Bo'limni yakunlang." action={<Button onClick={finishSection}>Yakunlash</Button>} />
+        <EmptyState title="Bu bölimda savol yöq" body="Bölimni yakunlang." action={<Button onClick={finishSection}>Yakunlaş</Button>} />
       )}
 
       <Modal open={confirmOpen} title="Imtihonni yakunlasangizmi?" onClose={() => setConfirmOpen(false)}>
         <div className="grid gap-3 text-sm">
-          <p>Yakunlashdan oldin holat:</p>
+          <p>Yakunlaşdan oldin holat:</p>
           <ul className="grid gap-1.5">
             {sections.map((s) => {
               const p = progress.find((x) => x.sectionId === s.id)!
@@ -421,19 +421,19 @@ export default function MockExam() {
                 <li key={s.id} className="flex justify-between border-b pb-1.5">
                   <span>{s.titleUz}</span>
                   <span className={answered < total ? 'text-[var(--warn)]' : 'text-[var(--ok)]'}>
-                    {answered}/{total} {s.writingTask || s.speakingTask ? '+ topshiriq' : ''} {p.finishedAt ? '(yakunlandi)' : '(tugamagan)'}
+                    {answered}/{total} {s.writingTask || s.speakingTask ? '+ topşiriq' : ''} {p.finishedAt ? '(yakunlandi)' : '(tugamagan)'}
                   </span>
                 </li>
               )
             })}
           </ul>
-          {!allDone() && <InfoBanner tone="warn">Ba'zi bo'limlar tugamagan. Tugamagan savollar noto‘g‘ri deb hisoblanadi.</InfoBanner>}
+          {!allDone() && <InfoBanner tone="warn">Ba'zi bölimlar tugamagan. Tugamagan savollar notöğri deb hisoblanadi.</InfoBanner>}
           <div className="flex gap-2 justify-end">
             <Button variant="ghost" onClick={() => setConfirmOpen(false)}>
-              Davom etish
+              Davom etiş
             </Button>
             <Button variant="success" onClick={submit}>
-              Ha, yakunlash
+              Ha, yakunlaş
             </Button>
           </div>
         </div>
@@ -469,7 +469,7 @@ function AudioPanel({ audio, manifestOk }: { audio: NonNullable<MockExamSectionS
       </div>
       {manifestOk === null ? (
         <div className="flex items-center gap-2 text-sm muted">
-          <Spinner size={16} /> Audio fayl tekshirilmoqda…
+          <Spinner size={16} /> Audio fayl tekşirilmoqda…
         </div>
       ) : src && !loadError ? (
         <audio
@@ -482,8 +482,8 @@ function AudioPanel({ audio, manifestOk }: { audio: NonNullable<MockExamSectionS
       ) : (
         <InfoBanner tone="warn">
           {loadError
-            ? 'Audio fayl yuklanmadi (yo‘q yoki buzilgan). Ilova soxta pleyer ko‘rsatmaydi — savollar matn asosida.'
-            : <>Audio fayl topilmadi (<code>/audio/{audio.id}.wav</code>). Ilova soxta pleyer ko‘rsatmaydi — savollar matn asosida. Audio yaratish uchun: <code>npm run audio:build</code>.</>}
+            ? 'Audio fayl yuklanmadi (yöq yoki buzilgan). Ilova soxta pleyer körsatmaydi — savollar matn asosida.'
+            : <>Audio fayl topilmadi (<code>/audio/{audio.id}.wav</code>). Ilova soxta pleyer körsatmaydi — savollar matn asosida. Audio yaratiş uçun: <code>npm run audio:build</code>.</>}
         </InfoBanner>
       )}
     </Card>
@@ -508,7 +508,7 @@ function MiniWriting({ taskId, prompt, instruction, onDone }: { taskId: string; 
         aria-label="Imtihon javobi"
       />
       <div className="flex items-center gap-3 text-sm">
-        <span className="tabular-nums">{words} so‘z</span>
+        <span className="tabular-nums">{words} söz</span>
         <span className="flex-1" />
         <Button
           onClick={() => {
@@ -516,7 +516,7 @@ function MiniWriting({ taskId, prompt, instruction, onDone }: { taskId: string; 
             onDone()
           }}
         >
-          Saqlash va bo'limni yakunlash
+          Saqlaş va bölimni yakunlaş
         </Button>
       </div>
     </Card>
@@ -527,10 +527,10 @@ function Writing2Note({ textAnswer, onSave, onFinish }: { textAnswer: string; on
   const [v, setV] = useState(textAnswer)
   return (
     <div className="grid gap-2">
-      <textarea value={v} onChange={(e) => setV(e.target.value)} rows={6} className="w-full rounded-xl border bg-[var(--panel)] p-3 text-sm" placeholder="Write your answer here…" aria-label="Gapirish bo'limi matn javobi" />
+      <textarea value={v} onChange={(e) => setV(e.target.value)} rows={6} className="w-full rounded-xl border bg-[var(--panel)] p-3 text-sm" placeholder="Write your answer here…" aria-label="Gapiriş bölimi matn javobi" />
       <div className="flex gap-2">
-        <Button variant="secondary" onClick={() => onSave(v)}>Javobni saqlash</Button>
-        <Button onClick={onFinish}>Bo'limni yakunlash</Button>
+        <Button variant="secondary" onClick={() => onSave(v)}>Javobni saqlaş</Button>
+        <Button onClick={onFinish}>Bölimni yakunlaş</Button>
       </div>
     </div>
   )
@@ -561,7 +561,7 @@ function Results({ exam, attempt, onRetry }: { exam: NonNullable<ReturnType<type
       </Card>
 
       <Card className="grid gap-2">
-        <h2 className="font-bold">Bo'limlar bo'yicha</h2>
+        <h2 className="font-bold">Bölimlar böyiça</h2>
         <div className="grid sm:grid-cols-2 gap-2">
           {attempt.sections.map((s) => (
             <div key={s.sectionId} className="rounded-xl border p-3 flex items-center gap-3">
@@ -582,7 +582,7 @@ function Results({ exam, attempt, onRetry }: { exam: NonNullable<ReturnType<type
         <h2 className="font-bold">Kuchli va zaif jihatlar</h2>
         <div className="grid sm:grid-cols-2 gap-2 text-sm">
           <div className="rounded-xl bg-emerald-50 dark:bg-emerald-900/20 p-3">
-            <b>Kuchli:</b> {strong.length ? strong.join(', ') : 'hozircha yo‘q'}
+            <b>Kuchli:</b> {strong.length ? strong.join(', ') : 'hozirça yöq'}
           </div>
           <div className="rounded-xl bg-rose-50 dark:bg-rose-900/15 p-3">
             <b>Zaif:</b> {weak.length ? weak.join(', ') : 'jiddiy zaiflik topilmadi'}
@@ -591,8 +591,8 @@ function Results({ exam, attempt, onRetry }: { exam: NonNullable<ReturnType<type
         <InfoBanner>
           <b>Tavsiya:</b>{' '}
           {weak.length
-            ? `Zaif bo‘limlarni kundalik rejada kuchaytirdik — Progress bo‘limida yangi taqsimotni ko‘rasiz. ${weak.join(', ')} bo‘limlaridagi mashqlarni takrorlang.`
-            : 'Umumiy holat yaxshi. Keyingi daraja uchun bo‘lim testlaridan o‘tishni davom ettiring.'}
+            ? `Zaif bölimlarni kundalik rejada kuçaytirdik — Progress bölimida yangi taqsimotni körasiz. ${weak.join(', ')} bölimlaridagi maşqlarni takrorlang.`
+            : 'Umumiy holat yaxşi. Keyingi daraja uçun bölim testlaridan ötişni davom ettiring.'}
         </InfoBanner>
       </Card>
 
@@ -613,7 +613,7 @@ function Results({ exam, attempt, onRetry }: { exam: NonNullable<ReturnType<type
                 </div>
                 {res && (
                   <p className="text-xs muted mt-0.5">
-                    Sizning javobingiz: <span className="line-through">{res.given || '—'}</span> · To‘g‘ri: <b>{res.expected}</b>
+                    Sizning javobingiz: <span className="line-through">{res.given || '—'}</span> · Töğri: <b>{res.expected}</b>
                   </p>
                 )}
                 {ex && <p className="text-xs mt-0.5">{ex.explanationUz}</p>}
@@ -624,7 +624,7 @@ function Results({ exam, attempt, onRetry }: { exam: NonNullable<ReturnType<type
       </Card>
 
       <div className="flex gap-2">
-        <Button onClick={onRetry}>Qayta topshirish</Button>
+        <Button onClick={onRetry}>Qayta topşiriş</Button>
         <Link to="/errors" className="inline-flex">
           <Button variant="secondary">Xatolar daftari</Button>
         </Link>

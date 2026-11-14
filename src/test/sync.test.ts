@@ -5,7 +5,7 @@ import { emptyData, todayKey } from '../lib/types'
 
 const UID = 'u-1'
 
-describe('Sinxronlash payload — PostgREST ustun nomlari (snake_case)', () => {
+describe('Sinxronlaş payload — PostgREST ustun nomlari (snake_case)', () => {
   const data = {
     ...emptyData(UID),
     settings: {
@@ -72,17 +72,17 @@ describe('Sinxronlash payload — PostgREST ustun nomlari (snake_case)', () => {
   it('barcha personal jadvallarda user_id bor (RLS with check)', () => {
     for (const it of items) {
       const p = it.payload as Record<string, unknown>
-      expect(p.user_id, `${it.table} user_id’i yo‘q`).toBe(UID)
+      expect(p.user_id, `${it.table} user_id’i yöq`).toBe(UID)
     }
   })
 })
 
-describe('Navbat deduplikati (sinxron tugmasi navbatni shishirmasin)', () => {
+describe('Navbat deduplikati (sinxron tugmasi navbatni şişirmasin)', () => {
   beforeEach(async () => {
     await updateQueue(UID, [])
   })
 
-  it('payload.id bo‘lgan jadval takrorlansa — bitta yozuv qoladi', async () => {
+  it('payload.id bölgan jadval takrorlansa — bitta yozuv qoladi', async () => {
     const item = { id: 'q1', table: 'exercise_attempts', op: 'upsert' as const, at: 1, payload: { id: 'att-1' } }
     await enqueue(UID, item)
     await enqueue(UID, { ...item, id: 'q2', at: 2 })
@@ -103,13 +103,13 @@ describe('Navbat deduplikati (sinxron tugmasi navbatni shishirmasin)', () => {
     expect(q).toHaveLength(3)
   })
 
-  it('har xil tabiiy kalit — alohida yozuv bo‘lib qoladi', () => {
+  it('har xil tabiiy kalit — alohida yozuv bölib qoladi', () => {
     expect(dedupeKey('user_vocabulary', { vocabulary_id: 'a' })).not.toBe(dedupeKey('user_vocabulary', { vocabulary_id: 'b' }))
     expect(dedupeKey('daily_activity', { day: '2026-01-01' })).not.toBe(dedupeKey('daily_activity', { day: '2026-01-02' }))
     expect(dedupeKey('user_settings', {})).toBe('uk:user')
   })
 
-  it('butun AppData 5 marta navbatga qo‘yilsa ham navbat o‘smaydi', async () => {
+  it('butun AppData 5 marta navbatga qöyilsa ham navbat ösmaydi', async () => {
     const data = {
       ...emptyData(UID),
       diagnostic: { at: Date.UTC(2026, 0, 5), level: 'A1' as const, labelUz: 'A1', confidence: 0.5 },

@@ -463,7 +463,7 @@ export function StoreProvider({ userId, children }: { userId: string; children: 
   const resetAll = useCallback(() => dispatch({ type: 'reset' }), [])
 
   const sync = useCallback(async () => {
-    if (!netOnline) return { ok: false, reasonUz: 'Internet yo‘q — navbat saqlandi.', done: 0 }
+    if (!netOnline) return { ok: false, reasonUz: 'Internet yöq — navbat saqlandi.', done: 0 }
     // Supabase sozlanmagan bo'lsa navbatga yozish behuda — yuboradigan joy yo'q.
     if (supabaseConfigured) await queueAllData(data)
     const res = await syncNow(userId)
@@ -507,7 +507,7 @@ export function StoreProvider({ userId, children }: { userId: string; children: 
     return Object.entries(data.srs).filter(([id, s]) => s.dueAt <= now && known.has(id)).length
   }, [data.srs])
   const totalVocab = useMemo(() => totalVocabCount(), [])
-  const vocabSummary = `${learnedCount}/${totalVocab}${learnedExtraCount > 0 ? ` +${learnedExtraCount} matn so‘zi` : ''}`
+  const vocabSummary = `${learnedCount}/${totalVocab}${learnedExtraCount > 0 ? ` +${learnedExtraCount} matn sözi` : ''}`
 
   const timerView = useMemo(() => {
     const e = currentElapsed(data.timer)
@@ -554,7 +554,7 @@ export function StoreProvider({ userId, children }: { userId: string; children: 
 
 export function useStore(): StoreValue {
   const v = useContext(StoreContext)
-  if (!v) throw new Error('useStore StoreProvider ichida chaqirilishi kerak')
+  if (!v) throw new Error('useStore StoreProvider içida çaqirilişi kerak')
   return v
 }
 

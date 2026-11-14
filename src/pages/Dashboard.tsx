@@ -105,7 +105,7 @@ export default function Dashboard() {
           <Chip>Maqsad: {tgtLevel} — {levelLabel(tgtLevel).titleUz}</Chip>
         </div>
         <p className="muted text-sm">
-          Kunlik reja: <b>{allocation.total} daqiqa</b> · O‘quv yo‘li bosqichi:{' '}
+          Kunlik reja: <b>{allocation.total} daqiqa</b> · Öquv yöli bosqiçi:{' '}
           <b>{data.path.completedDays.length}/{bundle.days.length || '—'}</b> kun yakunlangan.
         </p>
       </Card>
@@ -121,7 +121,7 @@ export default function Dashboard() {
             Pauza
           </Button>
           <Button variant="danger" size="sm" onClick={actions.stopTimer}>
-            To‘xtatish
+            Töxtatiş
           </Button>
         </Card>
       )}
@@ -133,7 +133,7 @@ export default function Dashboard() {
             </span>
             <span className="flex-1" />
             <Button size="sm" onClick={() => actions.startTimer(timer.sessionId ?? '', asSkill(timer.skill))}>
-              Davom etish
+              Davom etiş
             </Button>
           </div>
         </InfoBanner>
@@ -141,13 +141,13 @@ export default function Dashboard() {
 
       {/* ---------- Statistika qatori ---------- */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <StatTile label="Ketma-ket kun" value={streak} hint="Har kuni mashq qilish zanjiri" tone={streak > 0 ? 'ok' : 'default'} />
+        <StatTile label="Ketma-ket kun" value={streak} hint="Har kuni maşq qiliş zanjiri" tone={streak > 0 ? 'ok' : 'default'} />
         <StatTile label="XP" value={data.xp} hint="FAQAT motivatsiya — darajani oshirmaydi" />
-        <StatTile label="O‘zlashtirilgan so‘zlar" value={learnedCount} />
+        <StatTile label="Özlaştirilgan sözlar" value={learnedCount} />
         <StatTile
-          label="Takrorlash navbati"
+          label="Takrorlaş navbati"
           value={dueCount}
-          hint={dueCount > 0 ? 'Lug‘at bo‘limida takrorlang' : 'Hozir navbatda yo‘q'}
+          hint={dueCount > 0 ? 'Luğat bölimida takrorlang' : 'Hozir navbatda yöq'}
           tone={dueCount > 0 ? 'warn' : 'default'}
         />
       </div>
@@ -163,12 +163,12 @@ export default function Dashboard() {
             </div>
           ))}
           {tasks.length === 0 && (
-            <p className="col-span-full text-sm muted">Hozirgi daraja uchun reja kontenti yuklanmagan.</p>
+            <p className="col-span-full text-sm muted">Hozirgi daraja uçun reja kontenti yuklanmagan.</p>
           )}
         </div>
         <details className="text-sm">
           <summary className="cursor-pointer font-semibold muted">
-            Taqsimot nima uchun standart 90 daqiqadan farq qiladi?
+            Taqsimot nima uçun standart 90 daqiqadan farq qiladi?
           </summary>
           <InfoBanner tone="muted">
             <ul className="list-disc pl-5 grid gap-1">
@@ -183,13 +183,13 @@ export default function Dashboard() {
       {/* ---------- Bugungi mashg'ulotlar ---------- */}
       <Card className="grid gap-3">
         <div className="flex flex-wrap items-center gap-2">
-          <h2 className="font-bold">Bugungi mashg‘ulotlar</h2>
+          <h2 className="font-bold">Bugungi maşğulotlar</h2>
           {today && <Chip tone={doneCount === tasks.length ? 'ok' : 'default'}>{doneCount}/{tasks.length} bajarilgan</Chip>}
         </div>
         {today ? (
           <>
             <p className="text-sm muted">
-              Bosqich: <b>{today.dayNumber}-kun — {today.titleUz}</b>
+              Bosqiç: <b>{today.dayNumber}-kun — {today.titleUz}</b>
             </p>
             {today.goalUz && <p className="text-sm">{today.goalUz}</p>}
             <div className="grid gap-2">
@@ -209,7 +209,7 @@ export default function Dashboard() {
               ))}
             </div>
             <p className="text-[11px] muted">
-              “Bajarildi” belgisi — bugun shu ko‘nikmaga rejalashtirilgan daqiqadan ko‘proq vaqt sarflangan bo‘lsa qo‘yiladi.
+              “Bajarildi” belgisi — bugun şu könikmaga rejalaştirilgan daqiqadan köproq vaqt sarflangan bölsa qöyiladi.
             </p>
           </>
         ) : (
@@ -217,17 +217,17 @@ export default function Dashboard() {
             title="Bugungi reja topilmadi"
             body={
               bundle.days.length === 0
-                ? 'Ushbu daraja uchun kunlik reja hali tayyor emas — A1 yo‘lidagi mashqlar mavjud.'
-                : 'Yo‘ldagi barcha kunlar yakunlangan. Sozlamalardan darajani ko‘rib chiqing.'
+                ? 'Uşbu daraja uçun kunlik reja hali tayyor emas — A1 yölidagi maşqlar mavjud.'
+                : 'Yöldagi barça kunlar yakunlangan. Sozlamalardan darajani körib çiqing.'
             }
-            action={<Link to="/path" className={linkSecondary}>"O'quv yo‘li"ni ochish</Link>}
+            action={<Link to="/path" className={linkSecondary}>«Öquv yöli»ni oçiş</Link>}
           />
         )}
       </Card>
 
       {/* ---------- Ko'nikma natijalari ---------- */}
       <Card className="grid gap-3.5">
-        <h2 className="font-bold">Asosiy ko‘nikmalar natijalari</h2>
+        <h2 className="font-bold">Asosiy könikmalar natijalari</h2>
         <div className="grid gap-3">
           {evidence.map((e) => (
             <div key={e.skill} className="grid gap-1">
@@ -235,7 +235,7 @@ export default function Dashboard() {
                 <span className="font-semibold">{skillLabelUz(e.skill)}</span>
                 <span className="flex items-center gap-2 tabular-nums">
                   {e.evidenceCount === 0 ? (
-                    <span className="muted text-xs">dalillar yig‘ilmagan</span>
+                    <span className="muted text-xs">dalillar yiğilmagan</span>
                   ) : (
                     <>
                       <span className={e.confidence < 0.6 ? 'muted italic' : 'font-bold'}>
@@ -268,14 +268,14 @@ export default function Dashboard() {
       {/* ---------- Haftalik faollik ---------- */}
       <Card className="grid gap-3">
         <div className="flex flex-wrap items-center gap-2">
-          <h2 className="font-bold">So‘nggi 7 kundagi faollik</h2>
+          <h2 className="font-bold">Sönggi 7 kundagi faollik</h2>
           <Chip>{Math.round(weekTotalSec / 60)} daqiqa jami</Chip>
         </div>
         {weekTotalSec === 0 ? (
           <EmptyState
-            title="Hozircha faollik yo‘q"
-            body="Birinchi mashg‘ulotni boshlang — bu yerde Du/Se/… kunlari bo‘yicha sarflangan vaqt ko‘rinadi."
-            action={<Button onClick={() => nav('/path')}>Birinchi mashg‘ulotni ochish</Button>}
+            title="Hozirça faollik yöq"
+            body="Birinçi maşğulotni boşlang — bu yerde Du/Se/… kunlari böyiça sarflangan vaqt körinadi."
+            action={<Button onClick={() => nav('/path')}>Birinçi maşğulotni oçiş</Button>}
           />
         ) : (
           <BarChart data={week.map((d) => ({ label: weekdayShortUz(d.date), value: d.seconds }))} />
@@ -285,18 +285,18 @@ export default function Dashboard() {
       {/* ---------- Oxirgi xatolar ---------- */}
       <Card className="grid gap-3">
         <div className="flex flex-wrap items-center gap-2">
-          <h2 className="font-bold">So‘nggi xatolar</h2>
+          <h2 className="font-bold">Sönggi xatolar</h2>
           <Link to="/errors" className="text-sm font-semibold text-navy-700 dark:text-navy-300 hover:underline">
             Xatolar daftari →
           </Link>
         </div>
         {mistakes.length === 0 ? (
           <EmptyState
-            title={data.attempts.length === 0 ? 'Hali mashq qilinmagan' : 'So‘nggi mashqlarda xato yo‘q 👏'}
-            body={data.attempts.length === 0 ? 'Birinchi mashqni boshlang — xatolar shu yerde ko‘rinadi.' : undefined}
+            title={data.attempts.length === 0 ? 'Hali maşq qilinmagan' : 'Sönggi maşqlarda xato yöq 👏'}
+            body={data.attempts.length === 0 ? 'Birinçi maşqni boşlang — xatolar şu yerde körinadi.' : undefined}
             action={
               data.attempts.length === 0 ? (
-                <Button onClick={() => nav('/path')}>“O‘quv yo‘li”dan boshlash</Button>
+                <Button onClick={() => nav('/path')}>“O‘quv yo‘li”dan boşlaş</Button>
               ) : undefined
             }
           />
@@ -326,12 +326,12 @@ export default function Dashboard() {
 
       {/* ---------- Keyingi tavsiya ---------- */}
       <Card className="grid gap-3">
-        <h2 className="font-bold">Keyingi tavsiya etilgan mashg‘ulot</h2>
+        <h2 className="font-bold">Keyingi tavsiya etilgan maşğulot</h2>
         <p className="text-sm">{promotion.reasonUz}</p>
         {promotion.recommendedLevel && (
           <InfoBanner tone="warn">
             <b>{promotion.recommendedLevel} — {levelLabel(promotion.recommendedLevel).titleUz}</b> darajasi tavsiya etiladi.
-            Bu avtomatik o‘tish emas — o‘zingiz sozlamalardan tasdiqlaysiz.
+            Bu avtomatik ötiş emas — özingiz sozlamalardan tasdiqlaysiz.
           </InfoBanner>
         )}
         <div className="flex flex-wrap gap-1.5">
@@ -341,19 +341,19 @@ export default function Dashboard() {
         {remainingTask ? (
           <div className="flex flex-wrap items-center gap-2 rounded-xl border px-3.5 py-2.5">
             <span className="text-sm">
-              Navbatdagi mashg‘ulot: <b>{skillLabelUz(remainingTask.skill)}</b> — {remainingTask.minutes} daqiqa
+              Navbatdagi maşğulot: <b>{skillLabelUz(remainingTask.skill)}</b> — {remainingTask.minutes} daqiqa
             </span>
             <span className="flex-1" />
             <Link to={SKILL_ROUTE[remainingTask.skill]} className={linkSecondary}>
-              Ochiq mashg‘ulot
+              Oçiq maşğulot
             </Link>
           </div>
         ) : (
-          today && <p className="text-sm muted">Bugungi barcha mashg‘ulotlar reja bo‘yicha bajarilgan 👏</p>
+          today && <p className="text-sm muted">Bugungi barça maşğulotlar reja böyiça bajarilgan 👏</p>
         )}
         <div className="flex flex-wrap gap-2">
           <Button size="lg" onClick={() => nav('/path')}>
-            Darsni davom ettirish
+            Darsni davom ettiriş
           </Button>
         </div>
       </Card>
@@ -361,26 +361,26 @@ export default function Dashboard() {
       {/* ---------- Mock exam va diagnostika ---------- */}
       <Card className="flex flex-wrap items-center gap-3">
         <div className="flex-1 min-w-48 grid gap-1">
-          <h2 className="font-bold">To‘liq Mock Exam</h2>
+          <h2 className="font-bold">Töliq Mock Exam</h2>
           <p className="text-sm muted">
-            Reading · Listening · Writing · Speaking — namunaviy imtihon. Natijalar ko‘nikma bahosiga kuchliroq hisobga
+            Reading · Listening · Writing · Speaking — namunaviy imtihon. Natijalar könikma bahosiga kuçliroq hisobga
             olinadi.
           </p>
           {data.diagnostic && (
             <p className="text-[11px] muted">
               Diagnostika natijangiz: {data.diagnostic.labelUz} ({new Date(data.diagnostic.at).toLocaleString('uz')},
-              ishonch {Math.round(data.diagnostic.confidence * 100)}%)
+              işonç {Math.round(data.diagnostic.confidence * 100)}%)
             </p>
           )}
         </div>
         <div className="flex flex-wrap gap-2">
           {data.diagnostic && (
             <Link to="/progress?retake=1" className={linkSecondary}>
-              Diagnostikani qayta topshirish
+              Diagnostikani qayta topşiriş
             </Link>
           )}
           <Link to="/mock-exam" className={linkPrimary}>
-            Mock Examni ochish
+            Mock Examni oçiş
           </Link>
         </div>
       </Card>

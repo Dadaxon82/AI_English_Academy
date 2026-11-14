@@ -13,6 +13,7 @@
  */
 
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { foldUzLatin } from '../lib/uzAlphabet'
 import { allGlossaryVocab, allVocab, getBundle } from '../content'
 import { CEFR_LEVELS, type CefrLevel, type MultipleChoiceExercise, type PartOfSpeech, type VocabularyItem } from '../content/types'
 import { checkAnswer, type CheckResult } from '../lib/check'
@@ -27,17 +28,17 @@ const POS_UZ: Record<PartOfSpeech, string> = {
   noun: 'ot',
   verb: 'fe\'l',
   adjective: 'sifat',
-  adverb: 'ravish',
-  pronoun: 'olmos',
-  preposition: 'kelik',
-  conjunction: 'bog\'lovchi',
-  determiner: 'belgilovchi',
-  interjection: 'undosh',
+  adverb: 'raviş',
+  pronoun: 'olmoş',
+  preposition: 'kömakçi',
+  conjunction: 'boğlovçi',
+  determiner: 'belgilovçi',
+  interjection: 'undoş',
 }
 
 const GRADE_LABELS: { grade: SrsGrade; label: string }[] = [
-  { grade: 'again', label: 'Qayta mashq qilish' },
-  { grade: 'hard', label: 'Qiyin bo\'ldi' },
+  { grade: 'again', label: 'Qayta maşq qiliş' },
+  { grade: 'hard', label: 'Qiyin böldi' },
   { grade: 'good', label: 'Bilaman' },
   { grade: 'easy', label: 'Juda oson' },
 ]
@@ -45,7 +46,8 @@ const GRADE_LABELS: { grade: SrsGrade; label: string }[] = [
 /* --------------------------- mayda yordamchilar --------------------------- */
 
 function flat(s: string): string {
-  return s
+  // Yangi alifbo (ö, ğ, ş, ç) eski shaklga: «öqituvçi» va «o'qituvchi» bir xil qidiriladi.
+  return foldUzLatin(s)
     .toLocaleLowerCase('en')
     .replace(/[‘’`´ʻ]/g, '')
     .replace(/[^a-z0-9\s-]/g, ' ')
@@ -60,12 +62,12 @@ function srsOf(all: Record<string, SrsState>, id: string): SrsState | undefined 
 /** Tushunarli muddat: "hozir" / "3 kundan so'ng". */
 function whenLabel(state: SrsState, now = Date.now()): string {
   const diff = state.dueAt - now
-  if (diff <= 0) return 'hozir takrorlash kerak'
+  if (diff <= 0) return 'hozir takrorlaş kerak'
   const min = Math.round(diff / 60_000)
-  if (min < 60) return `${min} daqiqadan so'ng`
+  if (min < 60) return `${min} daqiqadan söng`
   const hours = Math.round(min / 60)
-  if (hours < 24) return `${hours} soatdan so'ng`
-  return `${Math.round(hours / 24)} kundan so'ng`
+  if (hours < 24) return `${hours} soatdan söng`
+  return `${Math.round(hours / 24)} kundan söng`
 }
 
 function gapLabel(state: SrsState, now = Date.now()): string {
@@ -154,16 +156,16 @@ export default function Vocabulary() {
     setDueOnly(false)
   }
 
-  if (!ready) return <LoadingBlock label={'Lug\'at ma\'lumotlari yuklanmoqda…'} />
+  if (!ready) return <LoadingBlock label={'Luğat ma\'lumotlari yuklanmoqda…'} />
 
   return (
     <div className="grid gap-4">
       <header className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold">{'Lug\'at'}</h1>
+          <h1 className="text-xl sm:text-2xl font-bold">{'Luğat'}</h1>
           <p className="muted text-sm">
-            {data.settings.currentLevel} darajasi · {pool.length} ta so'z · takrorlash jadvali SM-2 qoidasi (srs.ts)
-            bo'yicha hisoblanadi.
+            {data.settings.currentLevel} darajasi · {pool.length} ta söz · takrorlaş jadvali SM-2 qoidasi (srs.ts)
+            böyiça hisoblanadi.
           </p>
         </div>
         <div className="flex gap-1.5 p-1 rounded-xl bg-[var(--panel-2)]">
@@ -175,17 +177,17 @@ export default function Vocabulary() {
               aria-pressed={mode === m}
               className={`px-3.5 py-2 rounded-lg text-sm font-semibold ${mode === m ? 'bg-[var(--panel)] shadow-sm' : 'muted hover:text-[var(--text)]'}`}
             >
-              {m === 'browse' ? 'Ro\'yxat' : m === 'flash' ? 'Flashcard' : 'Test'}
+              {m === 'browse' ? 'Röyxat' : m === 'flash' ? 'Flashcard' : 'Test'}
             </button>
           ))}
         </div>
       </header>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-        <StatTile label="Bugun takror" value={dueCount} hint="jadval bo'yicha yetib kelganlar" tone={dueCount > 0 ? 'warn' : 'ok'} />
-        <StatTile label="O'zlashtirilgan" value={learnedCount} hint="har bir so'z BIR marta sanaladi" tone="ok" />
-        <StatTile label="Ro'yxatdan takrori yetgan" value={poolDue} hint={`jami ${pool.length} so'z ichida`} />
-        <StatTile label="Filtr natijasi" value={filtered.length} hint={topic ? `mavzu: ${topic}` : 'barcha mavzular'} />
+        <StatTile label="Bugun takror" value={dueCount} hint="jadval böyiça yetib kelganlar" tone={dueCount > 0 ? 'warn' : 'ok'} />
+        <StatTile label="Özlaştirilgan" value={learnedCount} hint="har bir söz BIR marta sanaladi" tone="ok" />
+        <StatTile label="Röyxatdan takrori yetgan" value={poolDue} hint={`jami ${pool.length} söz içida`} />
+        <StatTile label="Filtr natijasi" value={filtered.length} hint={topic ? `mavzu: ${topic}` : 'barça mavzular'} />
       </div>
 
       {mode === 'browse' && (
@@ -193,13 +195,13 @@ export default function Vocabulary() {
           <Card as="section" className="grid gap-3">
             <div className="grid sm:grid-cols-[1fr_auto] gap-2.5 items-end">
               <label className="grid gap-1.5">
-                <span className="text-xs font-semibold uppercase tracking-wide muted">Qidiruv (so'z yoki tarjima)</span>
+                <span className="text-xs font-semibold uppercase tracking-wide muted">Qidiruv (söz yoki tarjima)</span>
                 <input
                   className={inputCls}
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="masalan: book yoki kitob"
-                  aria-label="Lug'atdan qidirish"
+                  aria-label="Luğatdan qidiriş"
                 />
               </label>
               <div className="flex flex-wrap gap-2">
@@ -208,12 +210,12 @@ export default function Vocabulary() {
                   size="sm"
                   onClick={() => setDueOnly((v) => !v)}
                   aria-pressed={dueOnly}
-                  title="Faqat takrorlashi yetib kelgan so'zlar"
+                  title="Faqat takrorlaşi yetib kelgan sözlar"
                 >
                   Faqat bugun takror ({poolDue})
                 </Button>
-                <Button variant="ghost" size="sm" onClick={resetFilters} title="Barcha filtrlarni tozalash">
-                  Filtrlarni tozalash
+                <Button variant="ghost" size="sm" onClick={resetFilters} title="Barça filtrlarni tozalaş">
+                  Filtrlarni tozalaş
                 </Button>
               </div>
             </div>
@@ -251,11 +253,11 @@ export default function Vocabulary() {
 
           {filtered.length === 0 ? (
             <EmptyState
-              title="Hech narsa topilmadi"
-              body={'Boshqa so\'z bilan qidirib ko\'ring yoki filtrlarni tozalang. Mavzular ro\'yxati yuqorida.'}
+              title="Heç narsa topilmadi"
+              body={'Boşqa söz bilan qidirib köring yoki filtrlarni tozalang. Mavzular röyxati yuqorida.'}
               action={
                 <Button variant="secondary" onClick={resetFilters}>
-                  Filtrlarni tozalash
+                  Filtrlarni tozalaş
                 </Button>
               }
             />
@@ -358,32 +360,32 @@ function WordCard({
             <Chip tone={isDue(state, now) ? 'warn' : 'ok'}>{isDue(state, now) ? 'Bugun takror' : 'Jadvalda'}</Chip>
             <span>{whenLabel(state, now)}</span>
             <span>· takrorlar: {state.reps}</span>
-            {state.learnedAt !== null && <span>· o'zlashtirilgan</span>}
+            {state.learnedAt !== null && <span>· özlaştirilgan</span>}
           </>
         ) : (
-          <Chip>Hali lug'atingizda yo'q</Chip>
+          <Chip>Hali luğatingizda yöq</Chip>
         )}
       </div>
 
       <div className="flex flex-wrap gap-2">
         <SpeakButton text={item.pronunciation?.ttsText ?? item.word} label={`${item.word} — talaffuz`} />
         {!state && (
-          <Button variant="secondary" size="sm" onClick={() => grade('again')} title="So'z takrorlash jadvaliga kiritiladi">
-            Lug'atimga saqlash
+          <Button variant="secondary" size="sm" onClick={() => grade('again')} title="Söz takrorlaş jadvaliga kiritiladi">
+            Luğatimga saqlaş
           </Button>
         )}
         <Button variant="success" size="sm" onClick={() => grade('good')}>
           Bilaman
         </Button>
         <Button variant="danger" size="sm" onClick={() => grade('again')}>
-          Qayta mashq qilish
+          Qayta maşq qiliş
         </Button>
       </div>
 
       {preview && (
         <p className="text-[11px] muted">
           {GRADE_LABELS.find((g) => g.grade === preview.grade)?.label} deb belgilandi → keyingi takror{' '}
-          <b>{gapLabel(preview.next, Date.now())}</b>dan so'ng (interval {preview.next.intervalDays} kun).
+          <b>{gapLabel(preview.next, Date.now())}</b>dan söng (interval {preview.next.intervalDays} kun).
         </p>
       )}
     </Card>
@@ -475,8 +477,8 @@ function Flashcards({
   if (deck.length === 0) {
     return (
       <EmptyState
-        title="Flashcard uchun so'z yo'q"
-        body={'Filtrlarni tozalasangiz butun lug\'at ro\'yxati bo\'yicha ishlaysiz.'}
+        title="Flashcard uçun söz yöq"
+        body={'Filtrlarni tozalasangiz butun luğat röyxati böyiça işlaysiz.'}
       />
     )
   }
@@ -503,7 +505,7 @@ function Flashcards({
       <Card className="grid gap-3">
         <h2 className="font-bold text-lg">Flashcard sessiyasi tugadi</h2>
         {log.length === 0 ? (
-          <InfoBanner tone="muted">Bu safar birorta kartochka baholanmadi — sessiyani qayta boshlang.</InfoBanner>
+          <InfoBanner tone="muted">Bu safar birorta kartoçka baholanmadi — sessiyani qayta boşlang.</InfoBanner>
         ) : (
           <>
             <SuccessBanner>
@@ -533,7 +535,7 @@ function Flashcards({
         </span>
         <div className="flex flex-wrap gap-1.5">
           <Chip tone={isDue(card.state) ? 'warn' : 'default'}>
-            {isDue(card.state) ? 'Bugungi takror' : "Navbatdagi so'z"}
+            {isDue(card.state) ? 'Bugungi takror' : "Navbatdagi söz"}
           </Chip>
           <Chip>{card.item.level}</Chip>
         </div>
@@ -542,7 +544,7 @@ function Flashcards({
       <button
         type="button"
         onClick={() => setFlipped((v) => !v)}
-        aria-label={flipped ? 'Tarjimani yopish' : 'Tarjimani ko\'rish'}
+        aria-label={flipped ? 'Tarjimani yopiş' : 'Tarjimani köriş'}
         className="min-h-44 rounded-2xl border bg-[var(--panel-2)] p-5 grid place-items-center text-center animate-[var(--animate-pop)]"
       >
         <span className="grid gap-2">
@@ -558,7 +560,7 @@ function Flashcards({
             </>
           ) : (
             <span className="muted text-sm">
-              Ma'noni ko'rish uchun bosing yoki <Kbd>Space</Kbd>
+              Ma'noni köriş uçun bosing yoki <Kbd>Space</Kbd>
             </span>
           )}
         </span>
@@ -567,7 +569,7 @@ function Flashcards({
       <div className="flex flex-wrap items-center justify-between gap-2">
         <SpeakButton text={card.item.pronunciation?.ttsText ?? card.item.word} label={`${card.item.word} — talaffuz`} size="md" />
         <span className="text-[11px] muted">
-          <Kbd>Space</Kbd> — kartani ochish · baholash keyingi kartaga o'tkazadi
+          <Kbd>Space</Kbd> — kartani oçiş · baholaş keyingi kartaga ötkazadi
         </span>
       </div>
 
@@ -617,7 +619,7 @@ function buildQuiz(pool: readonly VocabularyItem[], srs: Record<string, SrsState
     const exercise: MultipleChoiceExercise = {
       id: `vocab-quiz-${v.id}`,
       kind: 'multiple-choice',
-      instructionUz: `“${v.word}” so‘zining o‘zbekcha ma‘nosini tanlang.`,
+      instructionUz: `“${v.word}” sözining özbekça ma‘nosini tanlang.`,
       level: v.level,
       skill: 'vocabulary',
       explanationUz: `${v.word} — ${v.translationUz}. ${v.explanationEn}`,
@@ -664,17 +666,17 @@ function TestMode({
       <Card className="grid gap-3">
         <h2 className="font-bold text-lg">Test: tarjima tanlovi</h2>
         <p className="text-sm muted">
-          10 ta so'z tanlanadi — avval takrori yetib kelganlar, so'ng yangi so'zlar. Har bir javob mashq sifatida
-          yoziladi (source: practice), shuning uchun Xatolar daftariga ham tushadi.
+          10 ta söz tanlanadi — avval takrori yetib kelganlar, söng yangi sözlar. Har bir javob maşq sifatida
+          yoziladi (source: practice), şuning uçun Xatolar daftariga ham tuşadi.
         </p>
         {pool.length < 4 && (
           <InfoBanner tone="warn">
-            Filtrlangan ro'yxatda variantlar yasash uchun so'z yetarli emas — kamida 4 ta kerak. Filtrlarni tozalang.
+            Filtrlangan röyxatda variantlar yasaş uçun söz yetarli emas — kamida 4 ta kerak. Filtrlarni tozalang.
           </InfoBanner>
         )}
         <div>
           <Button size="lg" onClick={start} disabled={pool.length < 4}>
-            Testni boshlash ({pool.length} ta so'zdan)
+            Testni boşlaş ({pool.length} ta sözdan)
           </Button>
         </div>
       </Card>
@@ -691,13 +693,13 @@ function TestMode({
         <SuccessBanner>
           {`Natija: ${score.correct}/${score.total} (${pct}%).`}{' '}
           {pct >= 70
-            ? "Bu natija o'zlashtirilgan so'zlarni mustahkamlagani ko'rinadi — jadval bo'yicha davom eting."
-            : 'Past ball — Flashcard rejimida takrorlang, soʻng qayta urinib koʻring.'}
+            ? "Bu natija özlaştirilgan sözlarni mustahkamlagani körinadi — jadval böyiça davom eting."
+            : 'Past ball — Flashcard rejimida takrorlang, söng qayta urinib köring.'}
         </SuccessBanner>
         <div className="flex flex-wrap gap-2">
           <Button onClick={start}>Yana bir test</Button>
           <Button variant="secondary" onClick={() => setQuiz(null)}>
-            Ro'yxatga qaytish
+            Röyxatga qaytiş
           </Button>
         </div>
       </Card>
@@ -779,11 +781,11 @@ function TestMode({
           aria-live="polite"
         >
           <strong className={result.correct ? 'text-[var(--ok)]' : 'text-[var(--bad)]'}>
-            {result.correct ? 'To‘g‘ri!' : 'Noto‘g‘ri'}
+            {result.correct ? 'Töğri!' : 'Notöğri'}
           </strong>
           {!result.correct && (
             <p className="mt-1">
-              To‘g‘ri javob: <b>{result.expected}</b>
+              Töğri javob: <b>{result.expected}</b>
             </p>
           )}
           <p className="mt-1 muted">{result.whyUz}</p>
@@ -791,9 +793,9 @@ function TestMode({
       )}
 
       <div className="flex flex-wrap gap-2">
-        {chosen !== null && <Button onClick={next}>{idx + 1 < quiz.length ? 'Keyingi savol' : 'Natijani ko‘rish'}</Button>}
+        {chosen !== null && <Button onClick={next}>{idx + 1 < quiz.length ? 'Keyingi savol' : 'Natijani köriş'}</Button>}
         <Button variant="ghost" size="sm" onClick={() => setQuiz(null)}>
-          Testni tugatish
+          Testni tugatiş
         </Button>
       </div>
     </Card>

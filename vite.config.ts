@@ -20,7 +20,7 @@ export default defineConfig({
       manifest: {
         name: 'AI English Academy',
         short_name: 'AEA',
-        description: "Ingliz tilini A1 dan C1 gacha o'rganish platformasi",
+        description: 'Ingliz tilini A1 dan C1 gaça örganiş platformasi',
         lang: 'uz',
         dir: 'ltr',
         display: 'standalone',
@@ -43,7 +43,7 @@ export default defineConfig({
         ],
         shortcuts: [
           { name: 'Dashboard', url: 'dashboard', description: 'Asosiy panel' },
-          { name: 'Vocabulary', url: 'vocabulary', description: "Lug'at va flashcard" },
+          { name: 'Vocabulary', url: 'vocabulary', description: 'Luğat va flashcard' },
           { name: 'Mock Exam', url: 'mock-exam', description: 'Sinov namunasi' },
         ],
       },

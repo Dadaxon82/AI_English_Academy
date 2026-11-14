@@ -7,6 +7,7 @@
  */
 
 import type { Exercise } from '../content/types'
+import { foldUzLatin } from './uzAlphabet'
 
 export interface CheckResult {
   correct: boolean
@@ -21,7 +22,9 @@ export interface CheckResult {
 }
 
 export function normalize(value: string): string {
-  return value
+  // Yangi alifbo harflari (ö, ğ, ş, ç) eski shaklga keltiriladi — aks holda
+  // NFD ularni diakritiksiz «o, g, s, c» ga aylantirib, «o'qish» ≠ «öqiş» bo'lardi.
+  return foldUzLatin(value)
     .toLocaleLowerCase('en')
     .normalize('NFD')
     .replace(/[̀-ͯ]/g, '')
@@ -83,7 +86,7 @@ function checkChoice(exercise: Extract<Exercise, { kind: 'multiple-choice' }>, a
     correct,
     given: chosen,
     expected: exercise.options[exercise.answerIndex],
-    whyUz: correct ? exercise.explanationUz : `Tanlovingiz noto‘g‘ri. ${exercise.explanationUz}`,
+    whyUz: correct ? exercise.explanationUz : `Tanlovingiz notöğri. ${exercise.explanationUz}`,
     partial: correct ? 1 : 0,
   }
 }
@@ -99,7 +102,7 @@ function checkTfng(exercise: Extract<Exercise, { kind: 'true-false-notgiven' }>,
   const correct = given === exercise.answer
   let why = exercise.explanationUz
   if (!correct) {
-    why = `To‘g‘ri javob — ${TFNG_LABEL[exercise.answer]}. ${exercise.explanationUz}`
+    why = `Töğri javob — ${TFNG_LABEL[exercise.answer]}. ${exercise.explanationUz}`
     if (exercise.evidence) why += ` Matndagi asos: “${exercise.evidence}”.`
   } else if (exercise.evidence) {
     why += ` Matndagi asos: “${exercise.evidence}”.`
@@ -124,7 +127,7 @@ function checkMatching(exercise: Extract<Exercise, { kind: 'matching' }>, answer
     whyUz:
       ok === total
         ? exercise.explanationUz
-        : `${ok}/${total} juftlik to‘g‘ri. Xatolar: ${wrongPairs.slice(0, 4).join(', ')}. ${exercise.explanationUz}`,
+        : `${ok}/${total} juftlik töğri. Xatolar: ${wrongPairs.slice(0, 4).join(', ')}. ${exercise.explanationUz}`,
     partial,
   }
 }
@@ -140,7 +143,7 @@ function checkGapFill(exercise: Extract<Exercise, { kind: 'gap-fill' }>, answer:
     const acceptable = [expected, ...(alternatives[i] ?? [])]
     const hit = acceptable.some((a) => (exercise.caseSensitive ? a === user : looseEquals(a, user)))
     if (hit) ok += 1
-    else detail.push(`${i + 1}-bo‘shliq: sizda “${user || 'bo‘sh'}”, to‘g‘ri: “${expected}”`)
+    else detail.push(`${i + 1}-böşliq: sizda “${user || 'böş'}”, töğri: “${expected}”`)
   })
 
   const total = exercise.answers.length
@@ -169,9 +172,10 @@ function checkWordOrder(exercise: Extract<Exercise, { kind: 'word-order' }>, ans
     const firstWrong = exercise.answer.findIndex((w, i) => norm(given[i] ?? '') !== norm(w))
     const pos = firstWrong + 1
     why =
-      `Tartibda xato bor: ${pos}-o‘rinda “${exercise.answer[firstWrong] ?? '—'}” turishi kerak edi` +
+      `Tartibda xato bor: ${pos}-örinda “${exercise.answer[firstWrong] ?? '—'}” turişi kerak edi` +
       (given[firstWrong] ? `, sizda “${given[firstWrong]}”.` : '.') +
-      ` ${exercise.noteUz ?? ''} ${exercise.explanationUz}`.trim()
+      // `.trim()` faqat izoh qismiga: oldingi gap bilan oradagi bo'shliq saqlanadi.
+      (' ' + [exercise.noteUz, exercise.explanationUz].filter(Boolean).join(' ')).trimEnd()
   }
 
   return { correct, given: correctSeq, expected: expectedSeq, whyUz: why, partial: correct ? 1 : 0 }
