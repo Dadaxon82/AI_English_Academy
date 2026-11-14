@@ -18,18 +18,18 @@ export const day7: DailyPlanDay = {
   sections: [
     { titleUz: 'Lug\'at', titleEn: 'Vocabulary', minutes: 20 },
     { titleUz: 'Grammatika', titleEn: 'Grammar', minutes: 20 },
-    { titleUz: 'O\'qiş', titleEn: 'Readinğ, minutes: 15 },
-    { titleUz: 'Eşitiş', titleEn: 'Listeninğ, minutes: 15 },
-    { titleUz: 'Gapiriş', titleEn: 'Speakinğ, minutes: 10 },
-    { titleUz: 'Yoziş', titleEn: 'Writinğ, minutes: 10 },
+    { titleUz: 'O\'qish', titleEn: 'Reading', minutes: 15 },
+    { titleUz: 'Eshitish', titleEn: 'Listening', minutes: 15 },
+    { titleUz: 'Gapirish', titleEn: 'Speaking', minutes: 10 },
+    { titleUz: 'Yozish', titleEn: 'Writing', minutes: 10 },
   ],
 }
 
 export const vocabDay7: VocabularyItem[] = [
   { id: 'a1-v7-1', word: 'happy', translationUz: 'baxtli', explanationEn: 'Feeling joy.', exampleEn: 'I am happy today.', exampleUz: 'Men bugun baxtliman.', pos: 'adj', topic: 'feelings', level: 'A1' },
   { id: 'a1-v7-2', word: 'sad', translationUz: 'xafasiz', explanationEn: 'Feeling unhappy.', exampleEn: 'He is sad.', exampleUz: 'U xafasiz.', pos: 'adj', topic: 'feelings', level: 'A1' },
-  { id: 'a1-v7-3', word: 'tired', translationUz: 'çarçagan', explanationEn: 'Needing rest.', exampleEn: 'I am tired.', exampleUz: 'Men çarçadim.', pos: 'adj', topic: 'feelings', level: 'A1' },
-  { id: 'a1-v7-4', word: 'excited', translationUz: 'hayajonlangan', explanationEn: 'Very happy and eager.', exampleEn: 'I am excited for the trip.', exampleUz: 'Men sayohat uçun hayajonman.', pos: 'adj', topic: 'feelings', level: 'A1' },
+  { id: 'a1-v7-3', word: 'tired', translationUz: 'charchagan', explanationEn: 'Needing rest.', exampleEn: 'I am tired.', exampleUz: 'Men charchadim.', pos: 'adj', topic: 'feelings', level: 'A1' },
+  { id: 'a1-v7-4', word: 'excited', translationUz: 'hayajonlangan', explanationEn: 'Very happy and eager.', exampleEn: 'I am excited for the trip.', exampleUz: 'Men sayohat uchun hayajonman.', pos: 'adj', topic: 'feelings', level: 'A1' },
   { id: 'a1-v7-5', word: 'interested', translationUz: 'qiziqan', explanationEn: 'Wanting to know about something.', exampleEn: 'I am interested in music.', exampleUz: 'Men musiqa bilan qiziqaman.', pos: 'adj', topic: 'hobbies', level: 'A1' },
 ]
 
@@ -37,13 +37,13 @@ export const grammarDay7: GrammarTopic = {
   id: 'a1-g7',
   titleUz: 'Adjectives and Feelings',
   titleEn: 'Adjectives and Feelings',
-  explanationUz: 'Hisob-kitob: Sifatlar bilan his-tuyg\'ularni ifodalaş.',
+  explanationUz: 'Hisob-kitob: Sifatlar bilan his-tuyg\'ularni ifodalash.',
   explanationEn: 'Using adjectives to express feelings and states.',
   exercises: [
     {
       id: 'a1-g7-ex1',
       kind: 'gap-fill',
-      instructionUz: 'Bo\'ş joyni to\'g\'ri şakl bilan to\'ldiring.',
+      instructionUz: 'Bo\'sh joyni to\'g\'ri shakl bilan to\'ldiring.',
       level: 'A1',
       skill: 'grammar',
       difficulty: 1,
@@ -55,7 +55,7 @@ export const grammarDay7: GrammarTopic = {
     },
     {
       id: 'a1-g7-ex2',
-      kind: 'multiple-çoice',
+      kind: 'multiple-choice',
       instructionUz: 'To\'g\'ri javobni tanlang.',
       level: 'A1',
       skill: 'grammar',
@@ -77,7 +77,7 @@ export const readingDay7: ReadingPassage = {
   glossary: [
     { word: 'favorite', uz: 'sevimli', level: 'A1' },
     { word: 'hobby', uz: 'xobbi', level: 'A1' },
-    { word: 'play', uz: 'çalmoq', level: 'A1' },
+    { word: 'play', uz: 'chalmoq', level: 'A1' },
   ],
 }
 
@@ -124,7 +124,7 @@ export const testDay7: SectionTest = {
   exercises: [
     {
       id: 'a1-t7-ex1',
-      kind: 'multiple-çoice',
+      kind: 'multiple-choice',
       instructionUz: 'To\'g\'ri javobni tanlang.',
       level: 'A1',
       skill: 'vocabulary',

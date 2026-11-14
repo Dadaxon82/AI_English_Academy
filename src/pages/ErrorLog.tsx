@@ -1,8 +1,8 @@
 /**
- * Xatolar kundaligi — xatolarni köriş, takrorlanadigan xatolarni topiş,
- * filtrlaş va eksport qiliş.
+ * Xatolar kundaligi — xatolarni ko'rish, takrorlanadigan xatolarni topish,
+ * filtrlash va eksport qilish.
  *
- * Talab: foydalanuvçi öz xatolarini köradi va ular ustida işlaydi.
+ * Talab: foydalanuvchi o'z xatolarini ko'radi va ular ustida ishlaydi.
  */
 
 import { useMemo, useState } from 'react'
@@ -10,15 +10,15 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Button, Card, Chip, EmptyState, Field, InfoBanner, inputCls } from '../components/ui'
 import { useStore } from '../lib/store'
 import { findExercise } from '../content'
-import { çeckAnswer } from '../lib/çeck'
+import { checkAnswer } from '../lib/check'
 import { withMockErrors } from '../lib/mockErrors'
-import { skillLabelUz } from '../lib/planninğ
+import { skillLabelUz } from '../lib/planning'
 import type { AttemptRecord, AttemptSource } from '../lib/types'
 import type { Skill } from '../content/types'
 
 type Range = 'all' | '7' | '30'
 
-const SKILL_ORDER: Skill[] = ['vocabulary', 'grammar', 'readinğ, 'listeninğ, 'writinğ, 'speakinğ]
+const SKILL_ORDER: Skill[] = ['vocabulary', 'grammar', 'reading', 'listening', 'writing', 'speaking']
 
 export default function ErrorLog() {
   const { data } = useStore()
@@ -28,10 +28,10 @@ export default function ErrorLog() {
   const [source, setSource] = useState<AttemptSource | 'all'>('all')
   const [q, setQ] = useState('')
 
-  // ESKI KAMCHILIK: bu yerda faqat `data.attempts` öqilardi — mock imtihon
-  // javoblari esa `mockAttempts`da saqlanadi, şuning uçun "Manba: Mock
-  // imtihon" filtri AMALDA DOIM böş edi. `withMockErrors` ularni almaştirmas-
-  // dan qöşadi (dalil hisobi `skillEvidence`da alohida — ikki marta sanalmaydi).
+  // ESKI KAMCHILIK: bu yerda faqat `data.attempts` o'qilardi — mock imtihon
+  // javoblari esa `mockAttempts`da saqlanadi, shuning uchun "Manba: Mock
+  // imtihon" filtri AMALDA DOIM bo'sh edi. `withMockErrors` ularni almashtirmas-
+  // dan qo'shadi (dalil hisobi `skillEvidence`da alohida — ikki marta sanalmaydi).
   const allErrors = useMemo(
     () => withMockErrors(data.attempts, data.mockAttempts, data.settings.currentLevel),
     [data.attempts, data.mockAttempts, data.settings.currentLevel],
@@ -48,12 +48,12 @@ export default function ErrorLog() {
       .sort((a, b) => b.at - a.at)
   }, [allErrors, skill, source, range, q])
 
-  /** Takrorlanadigan xatolar: bir xil maşqda 2+ marta xato. */
+  /** Takrorlanadigan xatolar: bir xil mashqda 2+ marta xato. */
   const repeated = useMemo(() => {
     const map = new Map<string, AttemptRecord[]>()
     for (const a of allErrors.filter((x) => !x.correct)) {
       const list = map.get(a.exerciseId) ?? []
-      list.puş(a)
+      list.push(a)
       map.set(a.exerciseId, list)
     }
     return [...map.entries()]
@@ -69,8 +69,8 @@ export default function ErrorLog() {
       <Card className="grid gap-3">
         <h1 className="text-xl font-bold">Xatolar kundaligi</h1>
         <p className="muted text-sm">
-          Barça noto‘g‘ri javoblaringiz şu yerda. {totalErrors} ta xato qayd etilgan. Takrorlanadigan xatolar —
-          eng avval işlaş kerak bo‘lgan joylar.
+          Barcha noto‘g‘ri javoblaringiz shu yerda. {totalErrors} ta xato qayd etilgan. Takrorlanadigan xatolar —
+          eng avval ishlash kerak bo‘lgan joylar.
         </p>
         <ExportButtons rows={errors} />
       </Card>
@@ -78,7 +78,7 @@ export default function ErrorLog() {
       {repeated.length > 0 && (
         <Card className="grid gap-3">
           <h2 className="font-bold">Takrorlanadigan xatolar</h2>
-          <p className="text-xs muted">Bitta maşqda kamida ikki marta xato qilganingiz.</p>
+          <p className="text-xs muted">Bitta mashqda kamida ikki marta xato qilganingiz.</p>
           <div className="grid gap-2">
             {repeated.map(([exId, list]) => {
               const ex = findExercise(exId)
@@ -92,7 +92,7 @@ export default function ErrorLog() {
                     <span className="flex-1" />
                     {ex && (
                       <Link to={pathForSkill(ex.skill)} className="text-xs font-semibold text-[var(--accent)]">
-                        Maşq qiliş →
+                        Mashq qilish →
                       </Link>
                     )}
                   </div>
@@ -106,11 +106,11 @@ export default function ErrorLog() {
       )}
 
       <Card className="grid gap-3">
-        <h2 className="font-bold">Barça xatolar</h2>
+        <h2 className="font-bold">Barcha xatolar</h2>
         <div className="grid sm:grid-cols-4 gap-2.5">
-          <Field label="Könikma">
+          <Field label="Ko'nikma">
             <select value={skill} onChange={(e) => setSkill(e.target.value as Skill | 'all')} className={inputCls}>
-              <option value="all">Barçasi</option>
+              <option value="all">Barchasi</option>
               {SKILL_ORDER.map((s) => (
                 <option key={s} value={s}>
                   {skillLabelUz(s)}
@@ -120,8 +120,8 @@ export default function ErrorLog() {
           </Field>
           <Field label="Manba">
             <select value={source} onChange={(e) => setSource(e.target.value as AttemptSource | 'all')} className={inputCls}>
-              <option value="all">Barçasi</option>
-              <option value="practice">Maşq</option>
+              <option value="all">Barchasi</option>
+              <option value="practice">Mashq</option>
               <option value="section_test">Bo‘lim testi</option>
               <option value="mock_exam">Mock imtihon</option>
               <option value="diagnostic">Diagnostika</option>
@@ -135,17 +135,17 @@ export default function ErrorLog() {
             </select>
           </Field>
           <Field label="Qidiruv">
-            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Maşq ID…" className={inputCls} />
+            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Mashq ID…" className={inputCls} />
           </Field>
         </div>
 
         {errors.length === 0 ? (
           <EmptyState
-            title="Bu filtr bo‘yiça xato topilmadi"
-            body="Filtrni özgartiring yoki maşq qiling — xatolar avtomatik qayd etiladi."
+            title="Bu filtr bo‘yicha xato topilmadi"
+            body="Filtrni o'zgartiring yoki mashq qiling — xatolar avtomatik qayd etiladi."
             action={
-              <Button variant="secondary" size="sm" onClick={() => nav('/daşboard')}>
-                Maşqqa o‘tiş
+              <Button variant="secondary" size="sm" onClick={() => nav('/dashboard')}>
+                Mashqqa o‘tish
               </Button>
             }
           />
@@ -176,7 +176,7 @@ export default function ErrorLog() {
 
 function WrongPair({ exerciseId, attempt }: { exerciseId: string; attempt: AttemptRecord }) {
   const ex = findExercise(exerciseId)
-  const result = ex ? çeckAnswer(ex, attempt.answerGiven) : null
+  const result = ex ? checkAnswer(ex, attempt.answerGiven) : null
   return (
     <div className="grid sm:grid-cols-2 gap-2 text-sm">
       <div className="rounded-lg bg-[var(--panel-2)] p-2.5">
@@ -207,13 +207,13 @@ function ExportButtons({ rows }: { rows: AttemptRecord[] }) {
     a.href = url
     a.download = filename
     a.click()
-    // Revoke biroz keçiktiriladi — darhol çaqirilsa ba'zi brauzerlarda
-    // yuklab oliş boşlanmasiz bekor böladi.
+    // Revoke biroz kechiktiriladi — darhol chaqirilsa ba'zi brauzerlarda
+    // yuklab olish boshlanmasiz bekor bo'ladi.
     setTimeout(() => URL.revokeObjectURL(url), 4000)
   }
 
   if (rows.length === 0) {
-    return <InfoBanner>Eksport uçun xato yo‘q.</InfoBanner>
+    return <InfoBanner>Eksport uchun xato yo‘q.</InfoBanner>
   }
 
   return (
@@ -252,16 +252,16 @@ function q(v: string) {
 }
 
 function sourceLabelUz(s: AttemptSource) {
-  return { practice: 'Maşq', section_test: 'Bo‘lim testi', mock_exam: 'Mock imtihon', diagnostic: 'Diagnostika' }[s]
+  return { practice: 'Mashq', section_test: 'Bo‘lim testi', mock_exam: 'Mock imtihon', diagnostic: 'Diagnostika' }[s]
 }
 
 function pathForSkill(s: Skill) {
   return {
     vocabulary: '/vocabulary',
     grammar: '/grammar',
-    reading: '/readinğ,
-    listening: '/listeninğ,
-    writing: '/writinğ,
-    speaking: '/speakinğ,
+    reading: '/reading',
+    listening: '/listening',
+    writing: '/writing',
+    speaking: '/speaking',
   }[s]
 }

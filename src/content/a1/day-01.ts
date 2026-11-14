@@ -13,23 +13,23 @@ import type {
 
 export const day1: DailyPlanDay = {
   id: 'a1-day-01',
-  titleUz: 'Salomlaşiş va O\'zini taniştiriş',
-  titleEn: 'Greetings & Personal Infö,
+  titleUz: 'Salomlashish va O\'zini tanishtirish',
+  titleEn: 'Greetings & Personal Info',
   sections: [
     { titleUz: 'Lug\'at', titleEn: 'Vocabulary', minutes: 20 },
     { titleUz: 'Grammatika', titleEn: 'Grammar', minutes: 20 },
-    { titleUz: 'O\'qiş', titleEn: 'Readinğ, minutes: 15 },
-    { titleUz: 'Eşitiş', titleEn: 'Listeninğ, minutes: 15 },
-    { titleUz: 'Gapiriş', titleEn: 'Speakinğ, minutes: 10 },
-    { titleUz: 'Yoziş', titleEn: 'Writinğ, minutes: 10 },
+    { titleUz: 'O\'qish', titleEn: 'Reading', minutes: 15 },
+    { titleUz: 'Eshitish', titleEn: 'Listening', minutes: 15 },
+    { titleUz: 'Gapirish', titleEn: 'Speaking', minutes: 10 },
+    { titleUz: 'Yozish', titleEn: 'Writing', minutes: 10 },
   ],
 }
 
 export const vocabDay1: VocabularyItem[] = [
-  { id: 'a1-v1-1', word: 'hellö, translationUz: 'salom', explanationEn: 'A common greeting.', exampleEn: 'Hello! How are you?', exampleUz: 'Salom! Qalaysiz?', pos: 'interjection', topic: 'greetings', level: 'A1' },
+  { id: 'a1-v1-1', word: 'hello', translationUz: 'salom', explanationEn: 'A common greeting.', exampleEn: 'Hello! How are you?', exampleUz: 'Salom! Qalaysiz?', pos: 'interjection', topic: 'greetings', level: 'A1' },
   { id: 'a1-v1-2', word: 'name', translationUz: 'ism', explanationEn: 'What a person is called.', exampleEn: 'My name is John.', exampleUz: 'Mening ismim Jon.', pos: 'noun', topic: 'personal', level: 'A1' },
   { id: 'a1-v1-3', word: 'student', translationUz: 'talaba', explanationEn: 'A person who is studying.', exampleEn: 'I am a student.', exampleUz: 'Men talabaman.', pos: 'noun', topic: 'jobs', level: 'A1' },
-  { id: 'a1-v1-4', word: 'teaçer', translationUz: 'o\'qituvçi', explanationEn: 'A person who teaçes.', exampleEn: 'She is a teaçer.', exampleUz: 'U o\'qituvçi.', pos: 'noun', topic: 'jobs', level: 'A1' },
+  { id: 'a1-v1-4', word: 'teacher', translationUz: 'o\'qituvchi', explanationEn: 'A person who teaches.', exampleEn: 'She is a teacher.', exampleUz: 'U o\'qituvchi.', pos: 'noun', topic: 'jobs', level: 'A1' },
   { id: 'a1-v1-5', word: 'friend', translationUz: 'do\'st', explanationEn: 'A person you know well.', exampleEn: 'He is my friend.', exampleUz: 'U mening do\'stim.', pos: 'noun', topic: 'people', level: 'A1' },
 ]
 
@@ -43,7 +43,7 @@ export const grammarDay1: GrammarTopic = {
     {
       id: 'a1-g1-ex1',
       kind: 'gap-fill',
-      instructionUz: 'Bo\'ş joyni to\'g\'ri şakl bilan to\'ldiring.',
+      instructionUz: 'Bo\'sh joyni to\'g\'ri shakl bilan to\'ldiring.',
       level: 'A1',
       skill: 'grammar',
       difficulty: 1,
@@ -55,7 +55,7 @@ export const grammarDay1: GrammarTopic = {
     },
     {
       id: 'a1-g1-ex2',
-      kind: 'multiple-çoice',
+      kind: 'multiple-choice',
       instructionUz: 'To\'g\'ri javobni tanlang.',
       level: 'A1',
       skill: 'grammar',
@@ -76,7 +76,7 @@ export const readingDay1: ReadingPassage = {
   content: 'Hello! My name is Sarah. I am from London. I am a doctor. I am very happy to meet you. This is my friend, Tom. He is a student.',
   glossary: [
     { word: 'happy', uz: 'baxtli', level: 'A1' },
-    { word: 'meet', uz: 'uçraşmoq', level: 'A1' },
+    { word: 'meet', uz: 'uchrashmoq', level: 'A1' },
     { word: 'from', uz: 'dan', level: 'A1' },
   ],
 }
@@ -84,7 +84,7 @@ export const readingDay1: ReadingPassage = {
 export const listeningDay1: ListeningTask = {
   id: 'a1-l1',
   level: 'A1',
-  titleUz: 'Tanişuv',
+  titleUz: 'Tanishuv',
   titleEn: 'Introduction',
   audioUrl: '',
   transcript: 'Hello! I am Maria. I am from Spain. Nice to meet you.',
@@ -94,7 +94,7 @@ export const listeningDay1: ListeningTask = {
 export const writingDay1: WritingTask = {
   id: 'a1-w1',
   level: 'A1',
-  titleUz: 'O\'zini taniştiriş',
+  titleUz: 'O\'zini tanishtirish',
   titleEn: 'Introducing Yourself',
   prompt: 'Write 3 simple sentences about yourself (Name, Country, Job).',
   wordCountMin: 10,
@@ -108,7 +108,7 @@ export const writingDay1: WritingTask = {
 export const speakingDay1: SpeakingTask = {
   id: 'a1-s1',
   level: 'A1',
-  titleUz: 'Salomlaşiş',
+  titleUz: 'Salomlashish',
   titleEn: 'Greetings',
   prompt: 'Say hello and tell your name.',
   expectedDuration: 30,
@@ -124,14 +124,14 @@ export const testDay1: SectionTest = {
   exercises: [
     {
       id: 'a1-t1-ex1',
-      kind: 'multiple-çoice',
+      kind: 'multiple-choice',
       instructionUz: 'To\'g\'ri javobni tanlang.',
       level: 'A1',
       skill: 'vocabulary',
       difficulty: 1,
       tags: ['greetings'],
-      question: 'How do you say "Salom" in Engliş?',
-      options: ['Goodbye', 'Hellö, 'Please', 'Thank you'],
+      question: 'How do you say "Salom" in English?',
+      options: ['Goodbye', 'Hello', 'Please', 'Thank you'],
       answerIndex: 1,
     },
   ],

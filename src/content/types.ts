@@ -1,10 +1,10 @@
 /**
- * Kontent şartnomasi (contract).
+ * Kontent shartnomasi (contract).
  *
  * BU FAYL UI KODIDAN ALOHIDA SAQLANADI.
- * Butun öquv materiallari (sözlar, grammatika, matnlar, audio, yoziş va
- * gapiriş topşiriqlari) şu tiplarga mos kelişi şart. A2, B1, B2, C1
- * kontenti keyin şu kontrakt ustiga qöşiladi.
+ * Butun o'quv materiallari (so'zlar, grammatika, matnlar, audio, yozish va
+ * gapirish topshiriqlari) shu tiplarga mos kelishi shart. A2, B1, B2, C1
+ * kontenti keyin shu kontrakt ustiga qo'shiladi.
  */
 
 import type { CefrLevel, CoreSkill, Skill } from '../content/types'
@@ -12,15 +12,15 @@ import type { SrsState } from './srs'
 import type { TimerState } from './timer'
 
 export interface UserSettings {
-  /** Kundalik reja daqiqalari (boşlanğiç: 90) */
+  /** Kundalik reja daqiqalari (boshlang'ich: 90) */
   dailyMinutes: number
   currentLevel: CefrLevel
   targetLevel: CefrLevel
   examDate: string | null // YYYY-MM-DD
-  /** Kundalik taqsimot — moslaşuvçan, zaif könikmalarga qarab özgaradi */
+  /** Kundalik taqsimot — moslashuvchan, zaif ko'nikmalarga qarab o'zgaradi */
   allocation: Record<Skill, number>
   theme: 'light' | 'dark' | 'system'
-  /** AI xizmati ulanganmi (sozlamadan ham öçiriladi) */
+  /** AI xizmati ulanganmi (sozlamadan ham o'chiriladi) */
   aiEnabled: boolean
 }
 
@@ -64,11 +64,11 @@ export interface WritingSubmission {
   taskId: string
   text: string
   wordCount: number
-  /** Yozişga sarflangan sekund (taymerdan) */
+  /** Yozishga sarflangan sekund (taymerdan) */
   secondsSpent: number
   /** rule-based va AI tahlili bitta strukturada */
   analysis: WritingAnalysis | null
-  /** Qayta yoziş versiyalari şu ustuma orqali boğlanadi */
+  /** Qayta yozish versiyalari shu ustuma orqali bog'lanadi */
   supersedesId: string | null
   createdAt: number
 }
@@ -84,7 +84,7 @@ export interface WritingAnalysis {
 }
 
 export type CoreCriterionKey =
-  | 'task_açievement'
+  | 'task_achievement'
   | 'coherence'
   | 'lexical_resource'
   | 'grammatical_range'
@@ -93,11 +93,11 @@ export type CoreCriterionKey =
 export interface SpeakingSession {
   id: string
   taskId: string
-  /** Audio faqat foydalanuvçi roziligi bilan saqlanadi (serverga yuborilmaydi) */
+  /** Audio faqat foydalanuvchi roziligi bilan saqlanadi (serverga yuborilmaydi) */
   audioBlobStored: boolean
   durationSec: number
   transcript: string | null
-  transcriptionEngine: 'browser-speeç' | 'ai' | 'none'
+  transcriptionEngine: 'browser-speech' | 'ai' | 'none'
   analysis: SpeakingAnalysis | null
   textAnswer: string | null
   createdAt: number
@@ -118,7 +118,7 @@ export interface SpeakingAnalysis {
 export interface MockExamAttempt {
   id: string
   examId: string
-  /** Bölim idsi -> javoblar va natija */
+  /** Bo'lim idsi -> javoblar va natija */
   sections: {
     sectionId: string
     skill: CoreSkill
@@ -126,7 +126,7 @@ export interface MockExamAttempt {
     total: number
     score: number | null
     startedAt: number
-    finişedAt: number
+    finishedAt: number
     exerciseResults: Record<string, { correct: boolean; given: string }>
   }[]
   totalScore: number | null
@@ -150,15 +150,15 @@ import type { SrsState } from './srs'
 import type { TimerState } from './timer'
 
 export interface UserSettings {
-  /** Kundalik reja daqiqalari (boşlanğiç: 90) */
+  /** Kundalik reja daqiqalari (boshlang'ich: 90) */
   dailyMinutes: number
   currentLevel: CefrLevel
   targetLevel: CefrLevel
   examDate: string | null // YYYY-MM-DD
-  /** Kundalik taqsimot — moslaşuvçan, zaif könikmalarga qarab özgaradi */
+  /** Kundalik taqsimot — moslashuvchan, zaif ko'nikmalarga qarab o'zgaradi */
   allocation: Record<Skill, number>
   theme: 'light' | 'dark' | 'system'
-  /** AI xizmati ulanganmi (sozlamadan ham öçiriladi) */
+  /** AI xizmati ulanganmi (sozlamadan ham o'chiriladi) */
   aiEnabled: boolean
 }
 
@@ -202,11 +202,11 @@ export interface WritingSubmission {
   taskId: string
   text: string
   wordCount: number
-  /** Yozişga sarflangan sekund (taymerdan) */
+  /** Yozishga sarflangan sekund (taymerdan) */
   secondsSpent: number
   /** rule-based va AI tahlili bitta strukturada */
   analysis: WritingAnalysis | null
-  /** Qayta yoziş versiyalari şu ustuma orqali boğlanadi */
+  /** Qayta yozish versiyalari shu ustuma orqali bog'lanadi */
   supersedesId: string | null
   createdAt: number
 }
@@ -222,7 +222,7 @@ export interface WritingAnalysis {
 }
 
 export type CoreCriterionKey =
-  | 'task_açievement'
+  | 'task_achievement'
   | 'coherence'
   | 'lexical_resource'
   | 'grammatical_range'
@@ -231,11 +231,11 @@ export type CoreCriterionKey =
 export interface SpeakingSession {
   id: string
   taskId: string
-  /** Audio faqat foydalanuvçi roziligi bilan saqlanadi (serverga yuborilmaydi) */
+  /** Audio faqat foydalanuvchi roziligi bilan saqlanadi (serverga yuborilmaydi) */
   audioBlobStored: boolean
   durationSec: number
   transcript: string | null
-  transcriptionEngine: 'browser-speeç' | 'ai' | 'none'
+  transcriptionEngine: 'browser-speech' | 'ai' | 'none'
   analysis: SpeakingAnalysis | null
   textAnswer: string | null
   createdAt: number
@@ -256,7 +256,7 @@ export interface SpeakingAnalysis {
 export interface MockExamAttempt {
   id: string
   examId: string
-  /** Bölim idsi -> javoblar va natija */
+  /** Bo'lim idsi -> javoblar va natija */
   sections: {
     sectionId: string
     skill: CoreSkill
@@ -264,7 +264,7 @@ export interface MockExamAttempt {
     total: number
     score: number | null
     startedAt: number
-    finişedAt: number
+    finishedAt: number
     exerciseResults: Record<string, { correct: boolean; given: string }>
   }[]
   totalScore: number | null
@@ -305,14 +305,14 @@ export interface AppData {
   xp: number
   streak: { count: number; lastDate: string | null; freezeUsed?: number }
   badges: BadgeAward[]
-  /** O'quv yöli: tugatilgan kunlar va bölim testlari */
+  /** O'quv yo'li: tugatilgan kunlar va bo'lim testlari */
   path: {
     completedDays: string[] // dayId
     passedTests: Record<string, number> // sectionTestId -> score
-    /** Joriy bosqiç: tavsiya qilingan keyingi kun */
+    /** Joriy bosqich: tavsiya qilingan keyingi kun */
     currentDayId: string
   }
-  /** Diagnostika natijasi (agar topşirilgan bölsa) */
+  /** Diagnostika natijasi (agar topshirilgan bo'lsa) */
   diagnostic: { at: number; level: CefrLevel | null; labelUz: string; confidence: number } | null
   timer: TimerState
   updatedAt: number
@@ -342,7 +342,7 @@ export function emptyData(userId: string): AppData {
 }
 
 /**
- * Adaptiv Mantiq uçun qöşimça
+ * Adaptiv Mantiq uchun qo'shimcha
  */
 
 export interface WeakPoint {
@@ -363,7 +363,7 @@ export interface MistakeHistory {
 }
 
 export interface AppDataExtended extends AppData {
-  /** Zaif nuqtalar röyxati */
+  /** Zaif nuqtalar ro'yxati */
   weakPoints: WeakPoint[]
   /** Xatolar tarixi */
   mistakeHistory: MistakeHistory[]
@@ -385,7 +385,7 @@ export interface VocabularyItem {
   translationUz: string
   explanationEn: string
   ipa: string
-  pronunciation: { kind: 'browser-tts' | 'audiö | 'none'; ttsText?: string; audioUrl?: string; lang?: string }
+  pronunciation: { kind: 'browser-tts' | 'audio' | 'none'; ttsText?: string; audioUrl?: string; lang?: string }
   exampleEn: string
   exampleUz: string
   pos: string
@@ -414,14 +414,14 @@ export interface AppData {
   xp: number
   streak: { count: number; lastDate: string | null; freezeUsed?: number }
   badges: BadgeAward[]
-  /** O'quv yöli: tugatilgan kunlar va bölim testlari */
+  /** O'quv yo'li: tugatilgan kunlar va bo'lim testlari */
   path: {
     completedDays: string[] // dayId
     passedTests: Record<string, number> // sectionTestId -> score
-    /** Joriy bosqiç: tavsiya qilingan keyingi kun */
+    /** Joriy bosqich: tavsiya qilingan keyingi kun */
     currentDayId: string
   }
-  /** Diagnostika natijasi (agar topşirilgan bölsa) */
+  /** Diagnostika natijasi (agar topshirilgan bo'lsa) */
   diagnostic: { at: number; level: CefrLevel | null; labelUz: string; confidence: number } | null
   timer: TimerState
   updatedAt: number
@@ -450,9 +450,9 @@ export function emptyData(userId: string): AppData {
   }
 }
 
-/** --------------------------- Adaptiv Mantiq uçun qöşimça --------------------------- */
+/** --------------------------- Adaptiv Mantiq uchun qo'shimcha --------------------------- */
 
-/** Foydalanuvçi köp xato qilgan mavzular (skill va exerciseId böyiçi) */
+/** Foydalanuvchi ko'p xato qilgan mavzular (skill va exerciseId bo'yichi) */
 export interface WeakPoint {
   skill: Skill
   exerciseId: string
@@ -460,7 +460,7 @@ export interface WeakPoint {
   lastSeen: number
 }
 
-/** O'quvçi xatolarining tarixi */
+/** O'quvchi xatolarining tarixi */
 export interface MistakeHistory {
   id: string
   exerciseId: string
@@ -472,7 +472,7 @@ export interface MistakeHistory {
 }
 
 export interface AppDataExtended extends AppData {
-  /** Zaif nuqtalar röyxati */
+  /** Zaif nuqtalar ro'yxati */
   weakPoints: WeakPoint[]
   /** Xatolar tarixi */
   mistakeHistory: MistakeHistory[]
@@ -498,7 +498,7 @@ export interface VocabularyItem {
   translationUz: string
   explanationEn: string
   ipa: string
-  pronunciation: { kind: 'browser-tts' | 'audiö | 'none'; ttsText?: string; audioUrl?: string; lang?: string }
+  pronunciation: { kind: 'browser-tts' | 'audio' | 'none'; ttsText?: string; audioUrl?: string; lang?: string }
   exampleEn: string
   exampleUz: string
   pos: string

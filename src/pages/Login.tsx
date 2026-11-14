@@ -14,9 +14,9 @@ export default function Login({ onAuth, authState }: { onAuth: (s: AuthState) =>
   const [err, setErr] = useState<string | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
 
-  // allaqaçon kirilgan bölsa — daşboardga
+  // allaqachon kirilgan bo'lsa — dashboardga
   useEffect(() => {
-    if (authState.kind === 'signed-in') nav('/daşboard', { replace: true })
+    if (authState.kind === 'signed-in') nav('/dashboard', { replace: true })
   }, [authState, nav])
 
   const submit = async (e: React.FormEvent) => {
@@ -25,7 +25,7 @@ export default function Login({ onAuth, authState }: { onAuth: (s: AuthState) =>
     setNotice(null)
     const sb = getSupabase()
     if (!sb) {
-      setErr('Supabase sozlanmagan. “Mehmon sifatida davom etiş” tugmasidan foydalaning.')
+      setErr('Supabase sozlanmagan. “Mehmon sifatida davom etish” tugmasidan foydalaning.')
       return
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
@@ -33,7 +33,7 @@ export default function Login({ onAuth, authState }: { onAuth: (s: AuthState) =>
       return
     }
     if (password.length < 6) {
-      setErr('Parol kamida 6 belgi bo‘lişi kerak.')
+      setErr('Parol kamida 6 belgi bo‘lishi kerak.')
       return
     }
     setBusy(true)
@@ -42,7 +42,7 @@ export default function Login({ onAuth, authState }: { onAuth: (s: AuthState) =>
         const { data, error } = await sb.auth.signUp({ email, password, options: { data: { display_name: name } } })
         if (error) throw error
         if (!data.session) {
-          setNotice('Hisob yaratildi. Emailingizdagi tasdiq havolasini oçing, so‘ng qaytadan kiring.')
+          setNotice('Hisob yaratildi. Emailingizdagi tasdiq havolasini oching, so‘ng qaytadan kiring.')
           setMode('sign-in')
         } else {
           onAuth({ kind: 'signed-in', userId: data.user!.id, email: data.user!.email ?? null })
@@ -52,7 +52,7 @@ export default function Login({ onAuth, authState }: { onAuth: (s: AuthState) =>
         if (error) throw error
         onAuth({ kind: 'signed-in', userId: data.user.id, email: data.user.email ?? null })
       }
-    } catç (e2) {
+    } catch (e2) {
       setErr(safeErrorMessage(e2))
     } finally {
       setBusy(false)
@@ -61,7 +61,7 @@ export default function Login({ onAuth, authState }: { onAuth: (s: AuthState) =>
 
   const guest = () => {
     onAuth({ kind: 'local-only', userId: localGuestId() })
-    nav('/onboardinğ)
+    nav('/onboarding')
   }
 
   return (
@@ -72,14 +72,14 @@ export default function Login({ onAuth, authState }: { onAuth: (s: AuthState) =>
             AE
           </div>
           <h1 className="text-2xl font-bold">
-            AI Engliş <span className="text-navy-700 dark:text-navy-300">Academy</span>
+            AI English <span className="text-navy-700 dark:text-navy-300">Academy</span>
           </h1>
-          <p className="muted text-sm">A1 dan C1 gaça — CEFR asosida şaxsiy ingliz tili platformasi</p>
+          <p className="muted text-sm">A1 dan C1 gacha — CEFR asosida shaxsiy ingliz tili platformasi</p>
         </header>
 
         {!supabaseConfigured && (
           <InfoBanner tone="warn">
-            <b>Supabase ulanmagan.</b> Ilova to‘liq işlaydi, ma’lumotlar şu qurilmada saqlanadi. Hisob yaratiş
+            <b>Supabase ulanmagan.</b> Ilova to‘liq ishlaydi, ma’lumotlar shu qurilmada saqlanadi. Hisob yaratish
             istalsangiz <code>.env</code> faylga <code>VITE_SUPABASE_URL</code> va <code>VITE_SUPABASE_ANON_KEY</code>{' '}
             kiriting.
           </InfoBanner>
@@ -93,9 +93,9 @@ export default function Login({ onAuth, authState }: { onAuth: (s: AuthState) =>
                   key={m}
                   type="button"
                   onClick={() => setMode(m)}
-                  className={`flex-1 py-2 rounded-lg text-sm font-semibold ${mode === m ? 'bg-[var(--panel)] şadow-sm' : 'muted'}`}
+                  className={`flex-1 py-2 rounded-lg text-sm font-semibold ${mode === m ? 'bg-[var(--panel)] shadow-sm' : 'muted'}`}
                 >
-                  {m === 'sign-in' ? 'Kiriş' : "Röyxatdan ötiş"}
+                  {m === 'sign-in' ? 'Kirish' : "Ro'yxatdan o'tish"}
                 </button>
               ))}
             </div>
@@ -116,25 +116,25 @@ export default function Login({ onAuth, authState }: { onAuth: (s: AuthState) =>
             {notice && <InfoBanner>{notice}</InfoBanner>}
 
             <Button type="submit" busy={busy} size="lg" disabled={!supabaseConfigured}>
-              {mode === 'sign-in' ? 'Kiriş' : 'Hisob yaratiş'}
+              {mode === 'sign-in' ? 'Kirish' : 'Hisob yaratish'}
             </Button>
             {!supabaseConfigured && (
               <Button type="button" onClick={guest} variant="secondary" size="lg">
-                Mehmon sifatida davom etiş
+                Mehmon sifatida davom etish
               </Button>
             )}
           </form>
         </Card>
 
         <div className="grid gap-2 text-center">
-          <span className="çip mx-auto">Bepul / arzon xizmatlar ustuvor</span>
+          <span className="chip mx-auto">Bepul / arzon xizmatlar ustuvor</span>
           {authState.kind === 'local-only' && (
-            <Button variant="secondary" onClick={() => nav('/onboardinğ)}>
-              Davom etiş (mavjud mahalliy hisob)
+            <Button variant="secondary" onClick={() => nav('/onboarding')}>
+              Davom etish (mavjud mahalliy hisob)
             </Button>
           )}
           <p className="text-[11px] muted">
-            Ma’lumotlaringiz RLS bilan himoyalanadi va faqat sizga oçiladi. Hisobingizni sozlamalardan o‘çirişingiz
+            Ma’lumotlaringiz RLS bilan himoyalanadi va faqat sizga ochiladi. Hisobingizni sozlamalardan o‘chirishingiz
             mumkin.
           </p>
         </div>
@@ -147,14 +147,14 @@ export async function signOutCurrent(userId: string) {
   const sb = getSupabase()
   if (sb) await sb.auth.signOut()
   await purgeUserData(userId)
-  // Service Worker keşlari (Supabase GET javoblari, audio, rasm) — logout'da
-  // tözalanadi, keyingi foydalanuvçi oldingisining ma'lumotINI kömasin.
+  // Service Worker keshlari (Supabase GET javoblari, audio, rasm) — logout'da
+  // to'zalanadi, keyingi foydalanuvchi oldingisining ma'lumotINI ko'masin.
   try {
-    if (typeof caçes !== 'undefined') {
-      const names = await caçes.keys()
-      await Promise.all(names.filter((n) => n.startsWith('aea-')).map((n) => caçes.delete(n)))
+    if (typeof caches !== 'undefined') {
+      const names = await caches.keys()
+      await Promise.all(names.filter((n) => n.startsWith('aea-')).map((n) => caches.delete(n)))
     }
-  } catç {
-    /* keş öçirilmasa ham xavfsizlik RLS'da — davom etamiz */
+  } catch {
+    /* kesh o'chirilmasa ham xavfsizlik RLS'da — davom etamiz */
   }
 }

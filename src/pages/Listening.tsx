@@ -1,15 +1,15 @@
 /**
- * TINGLASH bölimi.
+ * TINGLASH bo'limi.
  *
- * Siyosat: audio bölmasa SOXTA pleyer yoki işlamaydigan tugma YO'Q.
- *  - /audio/manifest.json BIR marta yuklanadi (modul darajasida keş)
- *  - Pleyer FAQAT manifestda item bor bölsa, available === true va
- *    audio.fileAvailable === true bölsa körsatiladi
- *  - Audio bölmasa: InfoBanner ("npm run audio:build") + pleyer yöq,
- *    maşqlar "Matn asosida maşq" deb belgilanadi
- *  - Transkript policy holat maşinasi: always / after-first-listen /
- *    never-until-çecked
- *  - Audio manba, litsenziya va atributsiya Chip bilan körsatiladi
+ * Siyosat: audio bo'lmasa SOXTA pleyer yoki ishlamaydigan tugma YO'Q.
+ *  - /audio/manifest.json BIR marta yuklanadi (modul darajasida kesh)
+ *  - Pleyer FAQAT manifestda item bor bo'lsa, available === true va
+ *    audio.fileAvailable === true bo'lsa ko'rsatiladi
+ *  - Audio bo'lmasa: InfoBanner ("npm run audio:build") + pleyer yo'q,
+ *    mashqlar "Matn asosida mashq" deb belgilanadi
+ *  - Transkript policy holat mashinasi: always / after-first-listen /
+ *    never-until-checked
+ *  - Audio manba, litsenziya va atributsiya Chip bilan ko'rsatiladi
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react'
@@ -17,11 +17,11 @@ import ExerciseRunner from '../components/ExerciseRunner'
 import { Button, Card, Chip, EmptyState, ErrorState, InfoBanner, Kbd, LoadingBlock, SpeakButton, StatTile } from '../components/ui'
 import { getBundle } from '../content'
 import type { AudioAsset, ListeningTask } from '../content/types'
-import { assetUrl } from '../lib/audiö
-import type { CheckResult } from '../lib/çeck'
+import { assetUrl } from '../lib/audio'
+import type { CheckResult } from '../lib/check'
 import { useStore } from '../lib/store'
 
-/* ----------------------- manifest (bir marta, keş) ----------------------- */
+/* ----------------------- manifest (bir marta, kesh) ----------------------- */
 
 interface ManifestItem {
   id: string
@@ -44,15 +44,15 @@ interface ManifestState {
   error: string | null
 }
 
-let manifestCaçe: ManifestState | null = null
+let manifestCache: ManifestState | null = null
 let manifestPromise: Promise<ManifestState> | null = null
 
 async function loadManifest(): Promise<ManifestState> {
-  if (manifestCaçe) return manifestCaçe
+  if (manifestCache) return manifestCache
   if (!manifestPromise) {
     manifestPromise = (async () => {
       try {
-        const res = await fetç(assetUrl('/audio/manifest.json'))
+        const res = await fetch(assetUrl('/audio/manifest.json'))
         if (!res.ok) {
           const st: ManifestState = { ok: false, data: null, error: `manifest.json javob bermedi (${res.status}).` }
           return st
@@ -60,25 +60,25 @@ async function loadManifest(): Promise<ManifestState> {
         const json = (await res.json()) as Partial<Manifest>
         const items = Array.isArray(json.items) ? json.items.map((it) => ({ ...it, src: assetUrl(it.src) })) : []
         const st: ManifestState = { ok: true, data: { generatedAt: json.generatedAt ?? '', items }, error: null }
-        manifestCaçe = st
+        manifestCache = st
         return st
-      } catç (e) {
-        const msg = e instanceof Error ? e.message : 'noma\'lum xatö
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : 'noma\'lum xato'
         const st: ManifestState = { ok: false, data: null, error: `manifest.json o‘qilmadi: ${msg}` }
         return st
       }
     })()
   }
   const p = manifestPromise
-  // MUVOFAQIYATSIZLIK doimiy keş bölib qolmasin: bir marta (masalan tarmoq
-  // uzilgan payt) xato bölsa, keyingi oçilişda qayta uriniladi.
+  // MUVOFAQIYATSIZLIK doimiy kesh bo'lib qolmasin: bir marta (masalan tarmoq
+  // uzilgan payt) xato bo'lsa, keyingi ochilishda qayta uriniladi.
   void p.then((st) => {
     if (!st.ok && manifestPromise === p) manifestPromise = null
   })
   return p
 }
 
-/* ------------------------- audio mavjudligi tekşiruvi ------------------------- */
+/* ------------------------- audio mavjudligi tekshiruvi ------------------------- */
 
 function audioStatus(audio: AudioAsset, manifest: Manifest | null): { available: boolean; src: string | null; item: ManifestItem | null } {
   const item = manifest?.items.find((m) => m.id === audio.id) ?? null
@@ -87,18 +87,18 @@ function audioStatus(audio: AudioAsset, manifest: Manifest | null): { available:
   return { available: true, src: item?.src ?? audio.src, item }
 }
 
-/** Offline uçun audio keşlanganmi (workbox aea-audio caçe). */
-async function audioIsCaçed(src: string): Promise<boolean> {
+/** Offline uchun audio keshlanganmi (workbox aea-audio cache). */
+async function audioIsCached(src: string): Promise<boolean> {
   try {
-    if (typeof caçes === 'undefined') return false
-    const names = await caçes.keys()
+    if (typeof caches === 'undefined') return false
+    const names = await caches.keys()
     for (const name of names) {
-      const caçe = await caçes.open(name)
-      const hit = await caçe.matç(src)
+      const cache = await caches.open(name)
+      const hit = await cache.match(src)
       if (hit) return true
     }
     return false
-  } catç {
+  } catch {
     return false
   }
 }
@@ -111,7 +111,7 @@ export default function Listening() {
 
   const tasks = getBundle(data.settings.currentLevel).listening
 
-  if (!ready) return <LoadingBlock label="Tinglaş materiallari yuklanmoqda…" />
+  if (!ready) return <LoadingBlock label="Tinglash materiallari yuklanmoqda…" />
 
   const opened = openId ? tasks.find((t) => t.id === openId) ?? null : null
 
@@ -119,17 +119,17 @@ export default function Listening() {
     return (
       <div className="grid gap-4">
         <header>
-          <h1 className="text-xl sm:text-2xl font-bold">Tinglaş</h1>
+          <h1 className="text-xl sm:text-2xl font-bold">Tinglash</h1>
           <p className="muted text-sm">
-            {data.settings.currentLevel} darajasi · {tasks.length} ta topşiriq · audio fayllar
-            <code className="mx-1">/audio/manifest.json</code> orqali tekşiriladi.
+            {data.settings.currentLevel} darajasi · {tasks.length} ta topshiriq · audio fayllar
+            <code className="mx-1">/audio/manifest.json</code> orqali tekshiriladi.
           </p>
         </header>
 
         {tasks.length === 0 ? (
           <EmptyState
-            title={`${data.settings.currentLevel} darajasi tinglaş materiallari hali yuklanmagan`}
-            body="Hozirça faqat A1 kontenti yuklangan. A1 darajasida maşq qiling."
+            title={`${data.settings.currentLevel} darajasi tinglash materiallari hali yuklanmagan`}
+            body="Hozircha faqat A1 kontenti yuklangan. A1 darajasida mashq qiling."
           />
         ) : (
           <div className="grid sm:grid-cols-2 gap-3">
@@ -144,17 +144,17 @@ export default function Listening() {
                     <Chip>{t.level}</Chip>
                   </div>
                   <p className="text-sm muted">
-                    {t.exercises.length} maşq · {t.audio.transcript.length} transkript qismi · transkript siyosati:{' '}
+                    {t.exercises.length} mashq · {t.audio.transcript.length} transkript qismi · transkript siyosati:{' '}
                     <code>{t.transcriptPolicy}</code>
                   </p>
                   <div className="flex flex-wrap gap-1.5">
                     <Chip tone={st.available || t.audio.fileAvailable ? 'ok' : 'warn'}>
                       {t.audio.fileAvailable ? 'fayl mavjud (kontentda)' : 'fayl hali yaratilmagan'}
                     </Chip>
-                    <Chip>{t.audio.source === 'original' ? 'original audiö : t.audio.source}</Chip>
-                    {done > 0 && <Chip tone="ok">maşqlar: {done}/{t.exercises.length}</Chip>}
+                    <Chip>{t.audio.source === 'original' ? 'original audio' : t.audio.source}</Chip>
+                    {done > 0 && <Chip tone="ok">mashqlar: {done}/{t.exercises.length}</Chip>}
                   </div>
-                  <Button onClick={() => setOpenId(t.id)}>{done > 0 ? 'Davom etiş' : 'Topşiriqni oçiş'}</Button>
+                  <Button onClick={() => setOpenId(t.id)}>{done > 0 ? 'Davom etish' : 'Topshiriqni ochish'}</Button>
                 </Card>
               )
             })}
@@ -167,20 +167,20 @@ export default function Listening() {
   return <TaskDetail task={opened} onBack={() => setOpenId(null)} />
 }
 
-/* --------------------------- topşiriq sahifasi --------------------------- */
+/* --------------------------- topshiriq sahifasi --------------------------- */
 
-type TranscriptUnlock = 'always' | 'needs-listen' | 'needs-çeck'
+type TranscriptUnlock = 'always' | 'needs-listen' | 'needs-check'
 
 function TaskDetail({ task, onBack }: { task: ListeningTask; onBack: () => void }) {
   const { netOnline, actions } = useStore()
 
-  const [manifest, setManifest] = useState<ManifestState | null>(manifestCaçe)
-  const [manifestLoading, setManifestLoading] = useState(manifestCaçe === null)
-  const [refreşKey, setRefreşKey] = useState(0)
+  const [manifest, setManifest] = useState<ManifestState | null>(manifestCache)
+  const [manifestLoading, setManifestLoading] = useState(manifestCache === null)
+  const [refreshKey, setRefreshKey] = useState(0)
 
   useEffect(() => {
-    if (manifestCaçe) {
-      setManifest(manifestCaçe)
+    if (manifestCache) {
+      setManifest(manifestCache)
       setManifestLoading(false)
       return
     }
@@ -194,47 +194,47 @@ function TaskDetail({ task, onBack }: { task: ListeningTask; onBack: () => void 
     return () => {
       alive = false
     }
-  }, [refreşKey])
+  }, [refreshKey])
 
   const status = audioStatus(task.audio, manifest?.data ?? null)
   const audioAvailable = status.available && status.src !== null
   const src = status.src ?? ''
 
-  const [caçed, setCaçed] = useState(false)
+  const [cached, setCached] = useState(false)
   useEffect(() => {
     if (!audioAvailable) {
-      setCaçed(false)
+      setCached(false)
       return
     }
     let alive = true
-    void audioIsCaçed(src).then((v) => {
-      if (alive) setCaçed(v)
+    void audioIsCached(src).then((v) => {
+      if (alive) setCached(v)
     })
     return () => {
       alive = false
     }
-  }, [audioAvailable, src, refreşKey])
+  }, [audioAvailable, src, refreshKey])
 
-  // --- maşqlar ---
+  // --- mashqlar ---
   const total = task.exercises.length
   const [pos, setPos] = useState(0)
   const [results, setResults] = useState<Record<number, CheckResult>>({})
-  const [şowResults, setShowResults] = useState(false)
+  const [showResults, setShowResults] = useState(false)
   const allChecked = Object.keys(results).length >= total && total > 0
 
-  // --- transkript holat maşinasi ---
+  // --- transkript holat mashinasi ---
   const [listenedOnce, setListenedOnce] = useState(false)
   const [manualUnlock, setManualUnlock] = useState(false)
 
   const unlockMode: TranscriptUnlock =
-    task.transcriptPolicy === 'always' ? 'always' : task.transcriptPolicy === 'after-first-listen' ? 'needs-listen' : 'needs-çeck'
+    task.transcriptPolicy === 'always' ? 'always' : task.transcriptPolicy === 'after-first-listen' ? 'needs-listen' : 'needs-check'
 
   const transcriptOpen =
     unlockMode === 'always' ||
     manualUnlock ||
-    !audioAvailable || // audio bölmasa — matn asosida işlaymiz
+    !audioAvailable || // audio bo'lmasa — matn asosida ishlaymiz
     (unlockMode === 'needs-listen' && listenedOnce) ||
-    (unlockMode === 'needs-çeck' && allChecked)
+    (unlockMode === 'needs-check' && allChecked)
 
   const record = useCallback(
     (index: number, r: CheckResult, secondsSpent: number) => {
@@ -277,14 +277,14 @@ function TaskDetail({ task, onBack }: { task: ListeningTask; onBack: () => void 
       <header className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
           <Button variant="ghost" size="sm" onClick={onBack} className="mb-1.5">
-            ← Topşiriqlar röyxati
+            ← Topshiriqlar ro'yxati
           </Button>
           <h1 className="text-xl sm:text-2xl font-bold">{task.title}</h1>
           <p className="text-sm muted mt-1">{task.audio.title}</p>
         </div>
         <div className="flex flex-wrap gap-1.5">
           <Chip>{task.level}</Chip>
-          <Chip>{total} maşq</Chip>
+          <Chip>{total} mashq</Chip>
           {task.audio.durationSec !== undefined && <Chip>~{Math.round(task.audio.durationSec)} s</Chip>}
         </div>
       </header>
@@ -295,28 +295,28 @@ function TaskDetail({ task, onBack }: { task: ListeningTask; onBack: () => void 
         <Chip>Litsenziya: {task.audio.license}</Chip>
         <Chip>Atributsiya: {task.audio.attribution}</Chip>
         <Chip tone={task.audio.offlineAllowed ? 'ok' : 'warn'}>
-          {task.audio.offlineAllowed ? 'Offline uçun ruxsat berilgan' : 'Offline uçun saqlanmaydi'}
+          {task.audio.offlineAllowed ? 'Offline uchun ruxsat berilgan' : 'Offline uchun saqlanmaydi'}
         </Chip>
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-        <StatTile label="Bajarilgan" value={`${answeredList.length}/${total}`} hint="şu sessiyada" />
-        <StatTile label="Töğri" value={right.length} tone="ok" />
+        <StatTile label="Bajarilgan" value={`${answeredList.length}/${total}`} hint="shu sessiyada" />
+        <StatTile label="To'g'ri" value={right.length} tone="ok" />
         <StatTile label="Xato" value={wrong.length} tone={wrong.length > 0 ? 'bad' : 'ok'} />
         <StatTile label="Ball" value={`${score}%`} tone={score >= 70 ? 'ok' : 'warn'} />
       </div>
 
       {/* --------------------- AUDIO Holati --------------------- */}
       {manifestLoading ? (
-        <LoadingBlock label="Audio manifesti tekşirilmoqda…" />
+        <LoadingBlock label="Audio manifesti tekshirilmoqda…" />
       ) : manifest && !manifest.ok ? (
         <ErrorState
-          message={`${manifest.error ?? 'Manifest o‘qilmadi.'} Audio bo‘lmasa pleyer ko‘rsatilmaydi — maşqlar matn asosida bajariladi.`}
+          message={`${manifest.error ?? 'Manifest o‘qilmadi.'} Audio bo‘lmasa pleyer ko‘rsatilmaydi — mashqlar matn asosida bajariladi.`}
           retry={() => {
-            manifestCaçe = null
+            manifestCache = null
             manifestPromise = null
             setManifest(null)
-            setRefreşKey((k) => k + 1)
+            setRefreshKey((k) => k + 1)
           }}
         />
       ) : null}
@@ -326,40 +326,40 @@ function TaskDetail({ task, onBack }: { task: ListeningTask; onBack: () => void 
           src={src}
           durationHintSec={status.item?.durationSec ?? task.audio.durationSec ?? 0}
           onFirstListen={() => setListenedOnce(true)}
-          offline={!netOnline && !caçed}
+          offline={!netOnline && !cached}
         />
       ) : manifestLoading ? null : (
         <InfoBanner tone="warn">
           <div className="grid gap-2">
             <b>Audio fayl hali yaratilmagan — <code>npm run audio:build</code> bajaring.</b>
             <span>
-              Manifestda bu topşiriq uçun tayyor fayl yöq, şuning uçun pleyer va eşitiş tugmalari
-              körsatilmaydi (soxta audio yasalmaydi).
+              Manifestda bu topshiriq uchun tayyor fayl yo'q, shuning uchun pleyer va eshitish tugmalari
+              ko'rsatilmaydi (soxta audio yasalmaydi).
             </span>
             <div className="flex flex-wrap items-center gap-2">
               <SpeakButton
                 text={task.audio.transcript.map((s) => s.text).join('. ')}
-                label="Transkriptni TTS orqali eşitiş"
+                label="Transkriptni TTS orqali eshitish"
               />
               <span className="text-[11px] muted">
-                Bu brauzer TTS'i — audio fayl örnini bosmaydi, faqat transkriptni eşitiş uçun.
+                Bu brauzer TTS'i — audio fayl o'rnini bosmaydi, faqat transkriptni eshitish uchun.
               </span>
             </div>
           </div>
         </InfoBanner>
       )}
 
-      {!netOnline && audioAvailable && !caçed && (
+      {!netOnline && audioAvailable && !cached && (
         <InfoBanner tone="warn">
-          Internet yöq va bu audio qurilmada keşlanmagan — pleyer işlamasligi mumkin. Onlayn bölganda bir marta
-          tinglasangiz audio keşlanadi va keyin offline ham işlaydi.
+          Internet yo'q va bu audio qurilmada keshlanmagan — pleyer ishlamasligi mumkin. Onlayn bo'lganda bir marta
+          tinglasangiz audio keshlanadi va keyin offline ham ishlaydi.
         </InfoBanner>
       )}
 
       {!netOnline && !audioAvailable && (
         <InfoBanner tone="muted">
-          Internet yöq. Audio va sinxronlaş vaqtinça mavjud emas, lekin matn, transkript va maşqlar töliq
-          işlaydi — barça natijalar mahalliy saqlanadi.
+          Internet yo'q. Audio va sinxronlash vaqtincha mavjud emas, lekin matn, transkript va mashqlar to'liq
+          ishlaydi — barcha natijalar mahalliy saqlanadi.
         </InfoBanner>
       )}
 
@@ -373,7 +373,7 @@ function TaskDetail({ task, onBack }: { task: ListeningTask; onBack: () => void 
             </span>
           </h2>
           {transcriptOpen ? (
-            <Chip tone="ok">Oçiq</Chip>
+            <Chip tone="ok">Ochiq</Chip>
           ) : (
             <Chip tone="warn">Hali yopiq</Chip>
           )}
@@ -383,14 +383,14 @@ function TaskDetail({ task, onBack }: { task: ListeningTask; onBack: () => void 
           <>
             {!audioAvailable && (
               <InfoBanner tone="warn">
-                <b>Matn asosida maşq.</b> Audio bölmagani uçun tinglaş örniga transkriptni öqib maşq qilasiz —
-                bu eşitiş könikmasi emas, öqiş + luğat maşqi hisoblanadi.
+                <b>Matn asosida mashq.</b> Audio bo'lmagani uchun tinglash o'rniga transkriptni o'qib mashq qilasiz —
+                bu eshitish ko'nikmasi emas, o'qish + lug'at mashqi hisoblanadi.
               </InfoBanner>
             )}
             <ol className="grid gap-1.5">
               {task.audio.transcript.map((seg, i) => (
                 <li key={i} className="flex gap-3 text-sm rounded-lg border bg-[var(--panel-2)] px-3 py-2">
-                  <span className="tabular-nums muted şrink-0 text-xs pt-0.5">
+                  <span className="tabular-nums muted shrink-0 text-xs pt-0.5">
                     {fmtClock(seg.start)}–{fmtClock(seg.end)}
                   </span>
                   <span>{seg.text}</span>
@@ -402,15 +402,15 @@ function TaskDetail({ task, onBack }: { task: ListeningTask; onBack: () => void 
           <div className="grid gap-2">
             <p className="text-sm muted">
               {unlockMode === 'needs-listen' &&
-                'Transkript audio bir marta tinglangaç oçiladi — avval quloq bilan tuşunişga harakat qiling.'}
-              {unlockMode === 'needs-çeck' &&
-                'Transkript barça maşqlar tekşirilgandan keyin oçiladi.'}
+                'Transkript audio bir marta tinglangach ochiladi — avval quloq bilan tushunishga harakat qiling.'}
+              {unlockMode === 'needs-check' &&
+                'Transkript barcha mashqlar tekshirilgandan keyin ochiladi.'}
             </p>
             <div className="flex flex-wrap gap-2">
               <Button variant="secondary" size="sm" onClick={() => setManualUnlock(true)}>
-                Baribir oçiş (maşq qiyinlaşadi)
+                Baribir ochish (mashq qiyinlashadi)
               </Button>
-              {!audioAvailable && <span className="text-[11px] muted">Audio bölmagani uçun transkript avtomatik oçiladi.</span>}
+              {!audioAvailable && <span className="text-[11px] muted">Audio bo'lmagani uchun transkript avtomatik ochiladi.</span>}
             </div>
           </div>
         )}
@@ -419,35 +419,35 @@ function TaskDetail({ task, onBack }: { task: ListeningTask; onBack: () => void 
       {/* --------------------------- MASHQLAR --------------------------- */}
       <section className="grid gap-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <h2 className="font-bold">Maşqlar</h2>
+          <h2 className="font-bold">Mashqlar</h2>
           <div className="flex flex-wrap gap-1.5">
-            {!audioAvailable && <Chip tone="warn">Matn asosida maşq</Chip>}
-            {allChecked && <Chip tone="ok">barça maşqlar tekşirildi</Chip>}
+            {!audioAvailable && <Chip tone="warn">Matn asosida mashq</Chip>}
+            {allChecked && <Chip tone="ok">barcha mashqlar tekshirildi</Chip>}
           </div>
         </div>
 
         {total === 0 ? (
-          <EmptyState title="Bu topşiriqda maşq yöq" body="Transkriptni öqing va yangi topşiriqni tanlang." />
-        ) : !şowResults && current ? (
+          <EmptyState title="Bu topshiriqda mashq yo'q" body="Transkriptni o'qing va yangi topshiriqni tanlang." />
+        ) : !showResults && current ? (
           <Card className="grid gap-4">
             <ExerciseRunner
               key={`${task.id}-${current.id}`}
               exercise={current}
               index={pos}
               total={total}
-              çecked={(r, secondsSpent) => record(pos, r, secondsSpent)}
+              checked={(r, secondsSpent) => record(pos, r, secondsSpent)}
               onNext={onNext}
             />
             <InfoBanner tone="muted">
-              Javoblarni audioyidan topiş kerak{audioAvailable ? '' : ' (audio bo‘lmagani uçun transkriptdan)'}. Ba'zi
-              savollarda iqtibos körsatiladi — qolgan qismi audioyada.
+              Javoblarni audioyidan topish kerak{audioAvailable ? '' : ' (audio bo‘lmagani uchun transkriptdan)'}. Ba'zi
+              savollarda iqtibos ko'rsatiladi — qolgan qismi audioyada.
             </InfoBanner>
           </Card>
         ) : (
           <Card className="grid gap-3">
             <h3 className="font-bold text-lg">Natija</h3>
             <p className="text-sm">
-              {total} ta maşqdan {right.length} tasi to‘g‘ri — ball <b>{score}%</b>.
+              {total} ta mashqdan {right.length} tasi to‘g‘ri — ball <b>{score}%</b>.
             </p>
             {wrong.length > 0 && (
               <div className="grid gap-2">
@@ -456,7 +456,7 @@ function TaskDetail({ task, onBack }: { task: ListeningTask; onBack: () => void 
                   <div key={`bad-${index}`} className="rounded-xl border border-rose-400/40 bg-rose-50 dark:bg-rose-900/15 p-3 text-sm">
                     <b>{task.exercises[index]?.instructionUz}</b>
                     <p className="mt-1">
-                      Töğri javob: <b>{result.expected}</b> · sizda: {result.given || '—'}
+                      To'g'ri javob: <b>{result.expected}</b> · sizda: {result.given || '—'}
                     </p>
                     <p className="mt-1 muted">{result.whyUz}</p>
                   </div>
@@ -471,10 +471,10 @@ function TaskDetail({ task, onBack }: { task: ListeningTask; onBack: () => void 
                   setShowResults(false)
                 }}
               >
-                Maşqlarni qayta bajariş
+                Mashqlarni qayta bajarish
               </Button>
               <Button variant="secondary" onClick={() => setShowResults(false)} disabled={answeredList.length >= total}>
-                Maşqqa qaytiş
+                Mashqqa qaytish
               </Button>
             </div>
           </Card>
@@ -511,7 +511,7 @@ function AudioPlayer({
     const el = audioRef.current
     if (!el) return
     if (el.paused) {
-      void el.play().then(() => setPlaying(true)).catç(() => setLoadError("Audio boşlanmadi — fayl buzilgan yoki offline bölişi mumkin."))
+      void el.play().then(() => setPlaying(true)).catch(() => setLoadError("Audio boshlanmadi — fayl buzilgan yoki offline bo'lishi mumkin."))
     } else {
       el.pause()
       setPlaying(false)
@@ -524,7 +524,7 @@ function AudioPlayer({
     el.currentTime = Math.max(0, Math.min(el.duration || duration, el.currentTime + delta))
   }, [duration])
 
-  // Space — pleyer tugmasi (input/tugma focus bölmasa).
+  // Space — pleyer tugmasi (input/tugma focus bo'lmasa).
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.code !== 'Space' || e.metaKey || e.ctrlKey || e.altKey) return
@@ -542,7 +542,7 @@ function AudioPlayer({
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 className="font-bold">Audio</h2>
         <div className="flex flex-wrap gap-1.5">
-          {offline && <Chip tone="bad">Offline — audio keşlanmagan</Chip>}
+          {offline && <Chip tone="bad">Offline — audio keshlanmagan</Chip>}
           <Chip>tezkorlik: {rate}×</Chip>
         </div>
       </div>
@@ -582,7 +582,7 @@ function AudioPlayer({
           max={Math.max(1, Math.round(duration))}
           step={1}
           value={Math.min(Math.round(time), Math.max(1, Math.round(duration)))}
-          aria-label="Audio joylaşuvi"
+          aria-label="Audio joylashuvi"
           onChange={(e) => {
             const el = audioRef.current
             if (!el) return
@@ -598,8 +598,8 @@ function AudioPlayer({
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
-        <Button onClick={toggle} aria-label={playing ? "Pauza" : "Boşlaş"}>
-          {playing ? 'Pauza' : 'Eşitiş'}
+        <Button onClick={toggle} aria-label={playing ? "Pauza" : "Boshlash"}>
+          {playing ? 'Pauza' : 'Eshitish'}
         </Button>
         <Button variant="secondary" size="sm" onClick={() => seekBy(-5)} title="5 sekund orqaga">
           −5s
@@ -615,11 +615,11 @@ function AudioPlayer({
             if (!el) return
             el.currentTime = 0
             setTime(0)
-            void el.play().catç(() => setLoadError('Audio boşlanmadi.'))
+            void el.play().catch(() => setLoadError('Audio boshlanmadi.'))
           }}
-          title="Boşidan eşitiş"
+          title="Boshidan eshitish"
         >
-          Boşidan
+          Boshidan
         </Button>
         <label className="flex items-center gap-1.5 text-xs">
           <span className="muted font-semibold">Tezkorlik</span>
@@ -642,7 +642,7 @@ function AudioPlayer({
           </select>
         </label>
         <span className="text-[11px] muted">
-          <Kbd>Space</Kbd> — boşlaş / pauza
+          <Kbd>Space</Kbd> — boshlash / pauza
         </span>
       </div>
 
@@ -651,20 +651,20 @@ function AudioPlayer({
   )
 }
 
-/* ------------------------------ yordamçi ------------------------------ */
+/* ------------------------------ yordamchi ------------------------------ */
 
 const SOURCE_LABEL: Record<AudioAsset['source'], string> = {
   original: 'loyihada original yaratilgan',
   'public-domain': 'jamoat mulki',
-  cc: 'CC lisenziyali taşqi manba',
+  cc: 'CC lisenziyali tashqi manba',
   'generated-tts': 'sintez qilingan (rasmiy emas)',
   missing: 'audio yo‘q',
 }
 
 const POLICY_LABEL: Record<ListeningTask['transcriptPolicy'], string> = {
-  always: 'har doim oçiq',
-  'after-first-listen': 'bir marta tinglangaç',
-  'never-until-çecked': 'maşqlar tekşirilgaç',
+  always: 'har doim ochiq',
+  'after-first-listen': 'bir marta tinglangach',
+  'never-until-checked': 'mashqlar tekshirilgach',
 }
 
 function fmtClock(sec: number): string {
