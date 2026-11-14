@@ -19,6 +19,7 @@ import MockExam from './pages/MockExam'
 import ErrorLog from './pages/ErrorLog'
 import Progress from './pages/Progress'
 import Settings from './pages/Settings'
+import LanguageHome from './pages/LanguageHome'
 
 /**
  * Router tanlovi:
@@ -71,6 +72,7 @@ function Shell({ auth, onAuth }: { auth: AuthState; onAuth: (s: AuthState) => vo
         <Route path="/errors" element={<ErrorLog />} />
         <Route path="/progress" element={<Progress />} />
         <Route path="/settings" element={<Settings />} />
+        <Route path="/lang/:code" element={<LanguageHome />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       {needsOnboarding && loc.pathname === '/dashboard' && <FirstRunHint />}
