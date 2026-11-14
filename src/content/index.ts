@@ -23,6 +23,8 @@ import { mockExamA1 } from './mockExamA1'
 import { diagnosticTest } from './diagnostic'
 
 import { day1 as a2day1, vocabDay1 as avocabDay1_a2, grammarDay1 as agramDay1_a2, readingDay1 as areadDay1_a2, listeningDay1 as alistDay1_a2, writingDay1 as awritDay1_a2, speakingDay1 as aspeaDay1_a2, testDay1 as atestDay1_a2 } from './a2/day-01'
+
+import { day1 as b1day1, vocabDay1 as b1vocabDay1, grammarDay1 as b1grammarDay1, readingDay1 as b1readingDay1, listeningDay1 as b1listeningDay1, writingDay1 as b1writingDay1, speakingDay1 as b1speakingDay1, testDay1 as b1testDay1 } from './b1/day-01'
 import { day2, vocabDay2_b1, grammarDay2_b1, readingDay2_b1, listeningDay2_b1, writingDay2_b1, speakingDay2_b1, testDay2_b1 } from './b1/day-02'
 import { day3, vocabDay3_b1, grammarDay3_b1, readingDay3_b1, listeningDay3_b1, writingDay3_b1, speakingDay3_b1, testDay3_b1 } from './b1/day-03'
 import { day4, vocabDay4_b1, grammarDay4_b1, readingDay4_b1, listeningDay4_b1, writingDay4_b1, speakingDay4_b1, testDay4_b1 } from './b1/day-04'
@@ -30,7 +32,23 @@ import { day5, vocabDay5_b1, grammarDay5_b1, readingDay5_b1, listeningDay5_b1, w
 import { day6, vocabDay6_b1, grammarDay6_b1, readingDay6_b1, listeningDay6_b1, writingDay6_b1, speakingDay6_b1, testDay6_b1 } from './b1/day-06'
 import { day7, vocabDay7_b1, grammarDay7_b1, readingDay7_b1, listeningDay7_b1, writingDay7_b1, speakingDay7_b1, testDay7_b1 } from './b1/day-07'
 import { mockExamB1 } from './mockExamA1'
-import { mockExamA2 } from './mockExamA1'
+
+import { day1 as b2day1, vocabDay1 as b2vocabDay1, grammarDay1 as b2grammarDay1, readingDay1 as b2readingDay1, listeningDay1 as b2listeningDay1, writingDay1 as b2writingDay1, speakingDay1 as b2speakingDay1, testDay1 as b2testDay1 } from './b2/day-01'
+import { day2, vocabDay2_b2, grammarDay2_b2, readingDay2_b2, listeningDay2_b2, writingDay2_b2, speakingDay2_b2, testDay2_b2 } from './b2/day-02'
+import { day3, vocabDay3_b2, grammarDay3_b2, readingDay3_b2, listeningDay3_b2, writingDay3_b2, speakingDay3_b2, testDay3_b2 } from './b2/day-03'
+import { day4, vocabDay4_b2, grammarDay4_b2, readingDay4_b2, listeningDay4_b2, writingDay4_b2, speakingDay4_b2, testDay4_b2 } from './b2/day-04'
+import { day5, vocabDay5_b2, grammarDay5_b2, readingDay5_b2, listeningDay5_b2, writingDay5_b2, speakingDay5_b2, testDay5_b2 } from './b2/day-05'
+import { day6, vocabDay6_b2, grammarDay6_b2, readingDay6_b2, listeningDay6_b2, writingDay6_b2, speakingDay6_b2, testDay6_b2 } from './b2/day-06'
+import { day7, vocabDay7_b2, grammarDay7_b2, readingDay7_b2, listeningDay7_b2, writingDay7_b2, speakingDay7_b2, testDay7_b2 } from './b2/day-07'
+import { mockExamB2 } from './mockExamA1'
+
+import { day1 as c1day1, vocabDay1 as c1vocabDay1, grammarDay1 as c1grammarDay1, readingDay1 as c1readingDay1, listeningDay1 as c1listeningDay1, writingDay1 as c1writingDay1, speakingDay1 as c1speakingDay1, testDay1 as c1testDay1 } from './c1/day-01'
+import { day2, vocabDay2, grammarDay2, readingDay2, listeningDay2, writingDay2, speakingDay2, testDay2 } from './c1/day-02'
+import { day3, vocabDay3, grammarDay3, readingDay3, listeningDay3, writingDay3, speakingDay3, testDay3 } from './c1/day-03'
+import { day4, vocabDay4, grammarDay4, readingDay4, listeningDay4, writingDay4, speakingDay4, testDay4 } from './c1/day-04'
+import { day5, vocabDay5, grammarDay5, readingDay5, listeningDay5, writingDay5, speakingDay5, testDay5 } from './c1/day-05'
+import { day6, vocabDay6, grammarDay6, readingDay6, listeningDay6, writingDay6, speakingDay6, testDay6 } from './c1/day-06'
+import { day7, vocabDay7, grammarDay7, readingDay7, listeningDay7, writingDay7, speakingDay7, testDay7 } from './c1/day-07'
 
 /** Har bir daraja uchun to'plam. A2/B1/B2/C1 shu strukturada qo'shiladi. */
 export interface LevelBundle {
@@ -101,6 +119,19 @@ export const b1: LevelBundle = {
   mockExam: mockExamB1,
 }
 
+export const b2: LevelBundle = {
+  level: 'B2',
+  days: [b2day1, b2day2, b2day3, b2day4, b2day5, b2day6, b2day7],
+  vocab: [...b2vocabDay1, ...vocabDay2_b2, ...vocabDay3_b2, ...vocabDay4_b2, ...vocabDay5_b2, ...vocabDay6_b2, ...vocabDay7_b2],
+  grammar: [b2grammarDay1, b2grammarDay2, b2grammarDay3, b2grammarDay4, b2grammarDay5, b2grammarDay6, b2grammarDay7],
+  reading: [b2readingDay1, b2readingDay2, b2readingDay3, b2readingDay4, b2readingDay5, b2readingDay6, b2readingDay7],
+  listening: [b2listeningDay1, b2listeningDay2, b2listeningDay3, b2listeningDay4, b2listeningDay5, b2listeningDay6, b2listeningDay7],
+  writing: [b2writingDay1, b2writingDay2, b2writingDay3, b2writingDay4, b2writingDay5, b2writingDay6, b2writingDay7],
+  speaking: [...b2speakingDay1, ...b2speakingDay2, ...b2speakingDay3, ...b2speakingDay4, ...b2speakingDay5, ...b2speakingDay6, ...b2speakingDay7],
+  tests: [b2testDay1, b2testDay2, b2testDay3, b2testDay4, b2testDay5, b2testDay6, b2testDay7],
+  mockExam: mockExamB2,
+}
+
 export const c1: LevelBundle = {
   level: 'C1',
   days: [c1day1, c1day2, c1day3, c1day4, c1day5, c1day6, c1day7],
@@ -123,8 +154,6 @@ export function normalizeDayMinutes(
   const weights = day.sections.map((s) => s.minutes / raw)
   const exact = weights.map((w) => total * w)
   const scaled = exact.map((x) => Math.floor(x))
-  // Kasr qoldig'ini eng katta bo'lganlardan birlab beramiz — yig'indi
-  // ANIQ `total` ga teng bo'ladi va tartib (vocab<grammar<…) buzilmaydi.
   const order = scaled
     .map((v, i) => ({ i, frac: exact[i] - v }))
     .sort((a, b) => b.frac - a.frac)
@@ -137,12 +166,8 @@ export function normalizeDayMinutes(
   return { ...day, sections: day.sections.map((s, i) => ({ ...s, minutes: scaled[i] })) }
 }
 
-/** Talabnomadagi asosiy kunlik reja (daqiqa). */
 export const DAILY_PLAN_TOTAL = 90
 
-/* ------------------- MATN (GLOSSARIY) SO'ZLARI ---------------------------- */
-
-/** So'zni solishtirish kaliti — Reading/Lug'at sahifalari BIR XIL kalit ishlatadi. */
 export function wordKeyOf(s: string): string {
   return s
     .toLocaleLowerCase('en')
@@ -152,17 +177,12 @@ export function wordKeyOf(s: string): string {
     .trim()
 }
 
-/** Matn glossariyi so'zi uchun barqaror SRS kaliti. */
 export function glossaryVocabId(word: string): string {
   return `gl-${wordKeyOf(word)}`
 }
 
-/* Eski SRS kaliti (`<matn>|gl-<so'z>`) faqat kesh migratsiyasi uchun kerak —
-* u `lib/storage.ts`da yashaydi (kontentkalit qoidasini o'zi belgilamaydi). */
-
 let glossaryCache: VocabularyItem[] | null = null
 
-/** Barcha o'qish matnlarining glossariy so'zlari — `VocabularyItem` ko'rinishida. */
 export function allGlossaryVocab(levels: readonly CefrLevel[] = LOADED_LEVELS): VocabularyItem[] {
   if (glossaryCache) return glossaryCache
   const mainKeys = new Set(allVocab(levels).map((v) => wordKeyOf(v.word)))
