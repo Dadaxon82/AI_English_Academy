@@ -30,7 +30,7 @@ export const vocabDay7: VocabularyItem[] = [
   { id: 'b2-v7-2', word: 'feasible', translationUz: 'imkoniyati bor', explanationEn: 'Possible to do easily or conveniently.', exampleEn: 'Is this plan feasible?', exampleUz: 'Bu reja imkoniyati bormi?', pos: 'adj', topic: 'planning', level: 'B2' },
   { id: 'b2-v7-3', word: 'contingency', translationUz: 'kutilmagan holat', explanationEn: 'A future event or circumstance that is possible but cannot be predicted.', exampleEn: 'We have a contingency plan.', exampleUz: 'Bizda kutilmagan holat uchun reja bor.', pos: 'noun', topic: 'planning', level: 'B2' },
   { id: 'b2-v7-4', word: 'attainment', translationUz: 'erishish', explanationEn: 'The action or process of achieving something.', exampleEn: 'The attainment of his goals.', exampleUz: 'Uning maqsadlariga erishishi.', pos: 'noun', topic: 'future', level: 'B2' },
-  { id: 'b2-v7-5', word: 'reiterate', translationUz: 'qayta ta'kidlash', explanationEn: 'Say something again or more clearly.', exampleEn: 'Let me reiterate our main point.', exampleUz: 'Asosiy nuqtamizni qayta ta\'kidlashga ruxsat bering.', pos: 'verb', topic: 'communication', level: 'B2' },
+  { id: 'b2-v7-5', word: 'reiterate', translationUz: 'qayta ta\'kidlash', explanationEn: 'Say something again or more clearly.', exampleEn: 'Let me reiterate our main point.', exampleUz: 'Asosiy nuqtamizni qayta ta\'kidlashga ruxsat bering.', pos: 'verb', topic: 'communication', level: 'B2' },
 ]
 
 export const grammarDay7: GrammarTopic = {

@@ -3,8 +3,8 @@
 
 // ---------- 1. MOCK EXAM Tuzilmasi ----------
 export const mockExam = {
-  title: 'A2 Mock Exam — To'liq Imtihon',
-  descriptionUz: 'Barcha ko'nikmalar va mavzularni qamrovchi namunaviy to\'liq imtihon.',
+  title: 'A2 Mock Exam — To\'liq Imtihon',
+  descriptionUz: 'Barcha ko\'nikmalar va mavzularni qamrovchi namunaviy to\'liq imtihon.',
   timeLimit: 60, // daqiqa
   passScore: 20, // ball
   sections: [

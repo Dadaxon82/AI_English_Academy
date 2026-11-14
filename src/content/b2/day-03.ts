@@ -30,7 +30,7 @@ export const vocabDay3: VocabularyItem[] = [
   { id: 'b2-v3-2', word: 'biodegradable', translationUz: 'biodegradatsiyalanadigan', explanationEn: 'Capable of being decomposed by bacteria.', exampleEn: 'The packaging is biodegradable.', exampleUz: 'Qadoqlovchi biodegradatsiyalanadigan.', pos: 'adj', topic: 'environment', level: 'B2' },
   { id: 'b2-v3-3', word: 'depletion', translationUz: 'kamayish', explanationEn: 'Reduction in the number or quantity.', exampleEn: 'The depletion of natural resources.', exampleUz: 'Tabiiy resurslarning kamayishi.', pos: 'noun', topic: 'ecology', level: 'B2' },
   { id: 'b2-v3-4', word: 'conservation', translationUz: 'muhofaza', explanationEn: 'Prevention of waste.', exampleEn: 'Wildlife conservation is crucial.', exampleUz: 'Yovvoyi tabiatni muhofazalash juda muhim.', pos: 'noun', topic: 'environment', level: 'B2' },
-  { id: 'b2-v3-5', word: 'impact', translationUz: 'ta'sir', explanationEn: 'The effect or influence of something.', exampleEn: 'Global warming has a huge impact.', exampleUz: 'Global isitish katta ta'sirga ega.', pos: 'noun', topic: 'ecology', level: 'B2' },
+  { id: 'b2-v3-5', word: 'impact', translationUz: 'ta\'sir', explanationEn: 'The effect or influence of something.', exampleEn: 'Global warming has a huge impact.', exampleUz: 'Global isitish katta ta\'sirga ega.', pos: 'noun', topic: 'ecology', level: 'B2' },
 ]
 
 export const grammarDay3: GrammarTopic = {

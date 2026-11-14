@@ -115,7 +115,7 @@ export const readingDay3 = {
   level: 'A2',
   paragraphs: [
     'Ahmad va Farida O\'zbekistonga safar qilishdi. Ular Toshkent aeroportiga bordilar va u yerdan Tashkentga poyezdga chiqdilar. Ular shahar markaziga 2 soat ichida yetib keldilar.',
-    'Ahmad aytib o\'tadiki, O\'zbekiston juda qiziq joy. Shahar ko'p madaniy va tarixiy joylarga ega. Ular ko'p joylarni ko\'rishdi va ko\'p narsalarni bilishdi.',
+    'Ahmad aytib o\'tadiki, O\'zbekiston juda qiziq joy. Shahar ko\'p madaniy va tarixiy joylarga ega. Ular ko\'p joylarni ko\'rishdi va ko\'p narsalarni bilishdi.',
     'Kechqurun, ular mehmonxona vaqtlarini qidirishdi. Ular xar xonali mehmonxonani topishdi va mehmonxona juda qulay va arzon edi. Ahmad aytib o\'tadiki, O\'zbekiston arzon va qulay joydir.',
     "Kechqurun, Ahmad va Farida mehmonxona yotoqxonaga ketdilar. Ular uzoq vaqt dam olishdi. Ertalab ular shaharda sayr qilishga chiqishdi. Ular ko'p narsalarni ko'rishdi va ko'p narsalarni bilishdi.",
   ],

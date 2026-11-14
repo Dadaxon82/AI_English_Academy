@@ -114,8 +114,8 @@ export const readingDay5 = {
   level: 'A2',
   paragraphs: [
     'Toshkent shahri O\'zbekistondagi eng katta shahar. U juda ko\'p odamlar va ko\'p binolarga ega. Toshkentda ko\'p transport turlari mavjud: poyezdlar, avtobuslar va metro. Shahar juda tez va zo\'r.',
-    "Biroq, shahar tabiatga nisbatan yomonroq. Shaharda ko'p qatorlar, shovqin va iflos havo. Shaharda dam olish va dam olish uchun ko'p joylar yo'q. Shahar aholisi bu muammoni yechishga urinmoqda.",
-    'Shahardan tashqarida esa, tabiat chiroyli va qulay. Tog'lar, daryolar va o\'rmonlar mavjud. Katta shahardan chiqib, siz chiroyli joylarni ko\'rishingiz mumkin. Ko\'plab odamlar hafta oxirida shahardan chiqib, dam olmoqchilar.',
+    "Biroq, shahar tabiatga nisbatan yomonroq. Shaharda ko\'p qatorlar, shovqin va iflos havo. Shaharda dam olish va dam olish uchun ko\'p joylar yo\'q. Shahar aholisi bu muammoni yechishga urinmoqda.",
+    'Shahardan tashqarida esa, tabiat chiroyli va qulay. Tog\'lar, daryolar va o\'rmonlar mavjud. Katta shahardan chiqib, siz chiroyli joylarni ko\'rishingiz mumkin. Ko\'plab odamlar hafta oxirida shahardan chiqib, dam olmoqchilar.',
     'Shahar va yovvoyi tabiat o\'rtasida muvozanat yaratish muhim. Shahar rivojlanishi kerak, lekin tabiatni ham himoya qilish kerak. O\'zbekiston bu muammolarni hal qilish uchun ko\'p ish qilib kelmoqda.',
   ],
   exercises: [

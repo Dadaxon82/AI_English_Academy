@@ -21,13 +21,13 @@ export const vocabDay2 = [
 
 // ---------- 2. GRAMMATIKA (Past Simple: Regular/Irregular Verbs) ----------
 export const grammarDay2 = {
-  title: 'Kecha va o'tgan voqealar: Past Simple (Regular va Irregular Feallar)',
+  title: 'Kecha va o\'tgan voqealar: Past Simple (Regular va Irregular Feallar)',
   explanationUz: [
     'Past Simple zamon faqat o\'tmishdagi voqealar uchun ishlatiladi. Masalan, "I worked yesterday" (Men kecha ishlaganman) yoki "She cooked dinner last night" (U kechqurun xomir pishirgan).',
     'FEALLARNING O\'ZGARISHLARI: Ingliz tilida feallar Past Simple zamonida ikki xil o\'zgaradi:',
     'REGULAR VERBS (QOIDA BOYIGA FEALLAR): Ko\'pchilik feallar -d/-ed qo\'shimchasi bilan o\'zgaradi. Masalan: work → worked, play → played, visit → visited.',
     'IRREGULAR VERBS (QOIDASIZ FEALLAR): Ba\'zi feallar qoidaga bo\'ysunmaydi va butunlay boshqa shaklga o\'tadi. Masalan: go → went, eat → ate, have → had, see → saw.',
-    'ADVERBS OF FREQUENCY (Tezlik So\'zlari): "Always" (har doim), "often" (kўp hollarda), "sometimes" (ba\'zan), "rarely" (deyarli hech qachon), "never" (hech qachon) so\'zlar Past Simple bilan ishlatiladi. Ko'pincha ular fealdan oldin keladi, masalan: "I often go to work" yoki "She never drinks coffee".',
+    'ADVERBS OF FREQUENCY (Tezlik So\'zlari): "Always" (har doim), "often" (kўp hollarda), "sometimes" (ba\'zan), "rarely" (deyarli hech qachon), "never" (hech qachon) so\'zlar Past Simple bilan ishlatiladi. Ko\'pincha ular fealdan oldin keladi, masalan: "I often go to work" yoki "She never drinks coffee".',
   ],
   formula: [
     { formula: 'Regular: verb + ed', exampleUz: 'work → worked', exampleEn: 'I worked yesterday (Men kecha ishlaganman)' },

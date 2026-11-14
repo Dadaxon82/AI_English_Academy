@@ -26,7 +26,7 @@ export const day1: DailyPlanDay = {
 }
 
 export const vocabDay1: VocabularyItem[] = [
-  { id: 'c1-v1-1', word: 'substantiate', translationUz: 'tasdiqlamoq, dalil keltirmoq', explanationEn: 'Provide evidence to support or prove the truth of.', exampleEn: 'You need to substantiate your claims with data.', exampleUz: 'Siz o\'z da'volaringizni ma\'lumotlar bilan tasdiqlashingiz kerak.', pos: 'verb', topic: 'rhetoric', level: 'C1' },
+  { id: 'c1-v1-1', word: 'substantiate', translationUz: 'tasdiqlamoq, dalil keltirmoq', explanationEn: 'Provide evidence to support or prove the truth of.', exampleEn: 'You need to substantiate your claims with data.', exampleUz: 'Siz o\'z da\'volaringizni ma\'lumotlar bilan tasdiqlashingiz kerak.', pos: 'verb', topic: 'rhetoric', level: 'C1' },
   { id: 'c1-v1-2', word: 'nuanced', translationUz: 'nozik farqlar bilan', explanationEn: 'Characterized by subtle differences or shades of meaning.', exampleEn: 'The situation requires a more nuanced approach.', exampleUz: 'Vaziyat ko\'proq nozik farqlar bilan yondashuvni talab qiladi.', pos: 'adj', topic: 'communication', level: 'C1' },
   { id: 'c1-v1-3', word: 'paradigm', translationUz: 'paradigma, model', explanationEn: 'A typical example or pattern of something.', exampleEn: 'A shift in the scientific paradigm.', exampleUz: 'Ilmiy paradigmadagi o\'zgarish.', pos: 'noun', topic: 'academic', level: 'C1' },
   { id: 'c1-v1-4', word: 'equivocal', translationUz: 'noaniq, ikkilamchi', explanationEn: 'Open to more than one interpretation; ambiguous.', exampleEn: 'His reply was somewhat equivocal.', exampleUz: 'Uning javobi biroz noaniq edi.', pos: 'adj', topic: 'rhetoric', level: 'C1' },

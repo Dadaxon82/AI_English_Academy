@@ -37,7 +37,7 @@ export const grammarDay5: GrammarTopic = {
   id: 'b2-g5',
   titleUz: 'Reporting Verbs',
   titleEn: 'Reporting Verbs',
-  explanationUz: 'Xabarlarni yoki boshqalar fikrlarini qayta aytishda foydalaniladigan fe''llar (claim, suggest, deny, insist).',
+  explanationUz: 'Xabarlarni yoki boshqalar fikrlarini qayta aytishda foydalaniladigan fe\'llar (claim, suggest, deny, insist).',
   explanationEn: 'Reporting verbs are used to convey what someone else said or thought. They add nuance that simple verbs like "said" or "told" do not.',
   exercises: [
     {

@@ -113,8 +113,8 @@ export const readingDay6 = {
   level: 'A2',
   paragraphs: [
     'Salomatlik juda muhim. Har kuni sog\'lom yashash uchun qoidalar bo\'lishi kerak. Biz ko\'proq sabzavotlar va mevalarni yemoqchimiz. Biz kamroq shakar va qaynoq ovqatlarni yemoqchimiz.',
-    'Shaharda ko\'p xavflar bor. Ko\'chalar xavflidir, shuning uchun biz avtobuslarning yurishini va xavfsizlik ehtiyotchilari ehtiyotkorlik bilan ishlatilishi kerak. Biz ko\'cha o\'rta chizig'idan o\'tishimiz kerak.',
-    'Shaharda ko\'p odamlar o\'ynashni yoqtiradilar, lekin bu xavfli bo\'lishi mumkin. Biz ko\'cha o\'rta chizig'idan o\'tishimiz kerak. Avtomobillar tez yuradilar va biz xavfsizlik ehtiyotchilarini ehtiyotkorlik bilan ishlatishimiz kerak.',
+    'Shaharda ko\'p xavflar bor. Ko\'chalar xavflidir, shuning uchun biz avtobuslarning yurishini va xavfsizlik ehtiyotchilari ehtiyotkorlik bilan ishlatilishi kerak. Biz ko\'cha o\'rta chizig\'idan o\'tishimiz kerak.',
+    'Shaharda ko\'p odamlar o\'ynashni yoqtiradilar, lekin bu xavfli bo\'lishi mumkin. Biz ko\'cha o\'rta chizig\'idan o\'tishimiz kerak. Avtomobillar tez yuradilar va biz xavfsizlik ehtiyotchilarini ehtiyotkorlik bilan ishlatishimiz kerak.',
     "Biz sog'liqni saqlash uchun harakat qilish kerak. Kechki tushlikda harakat qilish foydali. Biz har kuni 30 daqiqa yoki ko'proq vaqt harakat qilishimiz kerak. Bu bizning yuragimiz va boshqalarimiz uchun yaxshi.",
   ],
   exercises: [

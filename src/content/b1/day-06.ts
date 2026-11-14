@@ -514,7 +514,7 @@ export const day6: DailyPlanDay = {
     { skill: 'grammar', minutes: 15, itemIds: [grammarDay6.id], titleUz: 'Grammatika: Present Perfect Continuous' },
     { skill: 'reading', minutes: 15, itemIds: [readingDay6.id], titleUz: 'O\'qish: Ishning kelajagi' },
     { skill: 'listening', minutes: 15, itemIds: [listeningDay6.id], titleUz: 'Tinglash: Yangi ofis dizayni' },
-    { skill: 'writing', minutes: 15, itemIds: [writingDay6.id], titleUz: 'Yozish: Ofis haqidagi fikr-multiz',
+    { skill: 'writing', minutes: 15, itemIds: [writingDay6.id], titleUz: 'Yozish: Ofis haqidagi fikr-mulohaza' },
     { skill: 'speaking', minutes: 15, itemIds: speakingDay6.map((s) => s.id), titleUz: 'Gapirish: Masofaviy ish va Texnologiyalar' },
   ],
   sectionTest: testDay6,

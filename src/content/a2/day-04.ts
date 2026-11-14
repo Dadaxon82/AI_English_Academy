@@ -23,9 +23,9 @@ export const vocabDay4 = [
 export const grammarDay4 = {
   title: 'Kelajak vaqtlar: Will, Going to, Future Continuous',
   explanationUz: [
-    'FUTURE WITH WILL: Bu zamon sponton harakatlarni, va'dalarni, va bashoratlarni ifodalaydi. Feal "will" + V1 (asosiy feal) shaklida ishlatiladi. Masalan: "I will call you later" (Men sizga keyinroq qo\'ng\'iroq qilaman).',
-    'WILL FEALLARI: Will barcha shaxslar uchun bir xil. I, You, We, They, He, She, It uchun hammasi "will" ishlatiladi. Manfiy: "I will not" (yoki "I won't")',
-    'GOING TO: Bu zamon rejalashtirilgan harakatlarni va oldindan ko'rilgan voqealarni ifodalaydi. Feal "am/is/are + going to" + V1 shaklida ishlatiladi. Masalan: "I am going to visit my friend" (Men do'stimga boraman — reja tayyor).',
+    'FUTURE WITH WILL: Bu zamon sponton harakatlarni, va\'dalarni, va bashoratlarni ifodalaydi. Feal "will" + V1 (asosiy feal) shaklida ishlatiladi. Masalan: "I will call you later" (Men sizga keyinroq qo\'ng\'iroq qilaman).',
+    'WILL FEALLARI: Will barcha shaxslar uchun bir xil. I, You, We, They, He, She, It uchun hammasi "will" ishlatiladi. Manfiy: "I will not" (yoki "I won\'t")',
+    'GOING TO: Bu zamon rejalashtirilgan harakatlarni va oldindan ko\'rilgan voqealarni ifodalaydi. Feal "am/is/are + going to" + V1 shaklida ishlatiladi. Masalan: "I am going to visit my friend" (Men do\'stimga boraman — reja tayyor).',
     'GOING TO FEALLARI: I/You/We/They uchun "am/is/are" ishlatiladi. I — am, You/We/They — are, He/She/It — is. Masalan: "She is going to study" yoki "They are going to travel".',
     'FUTURE CONTINUOUS ZOMON: Bu zamon kelajakning ma\'lum vaqtida davom etayotgan harakatlarni ifodalaydi. Feal "will be + V-ing" shaklida ishlatiladi. Masalan: "I will be working at 9 AM tomorrow" (Ertab 9 soatda men ishlayotganman).',
   ],

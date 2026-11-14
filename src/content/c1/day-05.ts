@@ -37,7 +37,7 @@ export const grammarDay5: GrammarTopic = {
   id: 'c1-g5',
   titleUz: 'Advanced Reporting Verbs',
   titleEn: 'Advanced Reporting Verbs',
-  explanationUz: 'Murakkab fe''llar (allege, concede, refute, underscore) orqali ma\'lumotlarni aniqroq ifodalash.',
+  explanationUz: 'Murakkab fe\'llar (allege, concede, refute, underscore) orqali ma\'lumotlarni aniqroq ifodalash.',
   explanationEn: 'Using advanced reporting verbs to express nuanced viewpoints and academic positions.',
   exercises: [
     {
