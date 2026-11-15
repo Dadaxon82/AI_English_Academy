@@ -1,5 +1,5 @@
 /**
- * Header'dagi til bayroqlari (Angliya, Germaniya, Rossiya, Xitoy, Koreya).
+ * Header'dagi til bayroqlari (Buyuk Britaniya, Germaniya, Rossiya, Xitoy, Koreya).
  * Bayroq bosilsa — o'sha tilni o'rganish sahifasi ochiladi (`languageHref`).
  */
 import { Link, useLocation } from 'react-router-dom'

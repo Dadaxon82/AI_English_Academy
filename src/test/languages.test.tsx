@@ -7,7 +7,7 @@ import { LANGUAGES, activeLanguage, languageHref } from '../lib/languages'
 afterEach(cleanup)
 
 describe('til bayroqlari', () => {
-  it('beşta til: Angliya, Germaniya, Rossiya, Xitoy, Koreya', () => {
+  it('beşta til: Buyuk Britaniya, Germaniya, Rossiya, Xitoy, Koreya', () => {
     expect(LANGUAGES.map((l) => l.code)).toEqual(['en', 'de', 'ru', 'zh', 'ko'])
   })
 
