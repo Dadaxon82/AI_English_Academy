@@ -59,7 +59,7 @@ describe('Matn glossariyi sözlari', () => {
       expect(g.translationUz.length, `no translation for ${g.word}`).toBeGreaterThan(0)
       expect(g.topic).toBe('matndan olingan')
       // Daraja — so'z olingan matn darajasi (A1, A2 …)
-      expect(['A1', 'A2']).toContain(g.level)
+      expect(['A1', 'A2', 'B1', 'B2', 'C1']).toContain(g.level)
     }
   })
 

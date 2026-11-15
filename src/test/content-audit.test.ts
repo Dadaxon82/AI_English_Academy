@@ -313,10 +313,11 @@ describe('Kontent auditi — maşqlar yaxlitligi', () => {
   })
 })
 
-describe('A2 kontenti — tuzilma (A1 bilan bir xil)', () => {
-  const a2 = getBundle('A2')
-  it('A2 yuklangan', () => {
-    expect(LOADED_LEVELS).toContain('A2')
+describe.each(['A2', 'B1'] as const)('%s kontenti — tuzilma (A1 bilan bir xil)', (LVL) => {
+  const a2 = getBundle(LVL)
+  const lvl = LVL.toLowerCase()
+  it(`${LVL} yuklangan`, () => {
+    expect(LOADED_LEVELS).toContain(LVL)
     expect(a2.days.length).toBeGreaterThan(0)
   })
   it('har kun: 12 söz + 5 glossariy, grammatika, öqiş, tinglaş, yoziş, 3 gapiriş, kun testi', () => {
@@ -333,12 +334,12 @@ describe('A2 kontenti — tuzilma (A1 bilan bir xil)', () => {
       if (!d.sectionTest || d.sectionTest.exercises.length < 8) bad.push(`${d.id}: kun testi 8 savoldan kam`)
       for (const id of [...ids('vocabulary')]) if (!a2.vocab.some((v) => v.id === id)) bad.push(`${d.id}: söz ${id} topilmadi`)
     }
-    expectClean(bad, 'A2 kun tuzilmasi')
+    expectClean(bad, `${LVL} kun tuzilmasi`)
   })
-  it('A2 maşqlari darajasi A2, IDlari a2- bilan boşlanadi', () => {
+  it(`${LVL} maşqlari darajasi ${LVL}, IDlari ${lvl}- bilan boşlanadi`, () => {
     const exs = [...a2.grammar, ...a2.reading, ...a2.listening].flatMap((x) => x.exercises).concat(a2.tests.flatMap((t) => t.exercises))
-    const bad = exs.filter((e) => e.level !== 'A2' || !e.id.startsWith('a2-')).map((e) => e.id)
-    expectClean(bad, 'A2 darajasi / ID')
+    const bad = exs.filter((e) => e.level !== LVL || !e.id.startsWith(`${lvl}-`)).map((e) => e.id)
+    expectClean(bad, `${LVL} darajasi / ID`)
   })
   it('audio fayli yöq tinglaşlar pleyersiz (soxta audio yöq)', () => {
     const bad = a2.listening.filter((l) => !l.audio.fileAvailable && l.audio.src !== '').map((l) => l.id)
