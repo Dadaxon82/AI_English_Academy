@@ -18,7 +18,7 @@ function walk(node: unknown, key: string, path: string, out: string[]) {
     const s = node.replace(/o’clock/g, '')
     if (OLD_OG.test(s)) out.push(`${path}: eski o‘/g‘ — ${node.slice(0, 80)}`)
     if (/[öğÖĞ][‘’'ʻ`]/.test(s)) out.push(`${path}: ortiqcha apostrof (ö‘ / ğ‘) — ${node.slice(0, 80)}`)
-    if (/[šŠčČáíúàèùâîûüÜ]/.test(s)) out.push(`${path}: begona harf (š, č, á …) — ${node.slice(0, 80)}`)
+    if (/[šŠčČáíúàèùâîûüÜıİ]/.test(s)) out.push(`${path}: begona harf (š, č, á …) — ${node.slice(0, 80)}`)
     if (/[a-zöğşç][\u0400-\u04FF]|[\u0400-\u04FF][a-zöğşç]/i.test(s)) out.push(`${path}: lotin so‘z ichida kirill harf — ${node.slice(0, 80)}`)
     if (PURE_UZ_KEYS.has(key) && /sh|ch/i.test(s.replace(EN_TERMS, '')))
       out.push(`${path}: eski sh/ch — ${node.slice(0, 80)}`)
