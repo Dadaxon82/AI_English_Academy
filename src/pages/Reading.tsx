@@ -1,15 +1,15 @@
 /**
- * O'QISH bölimi.
+ * O'QISH bo'limi.
  *
  * Qilinadi:
- *  - Matnlar röyxati (sarlavha, daraja, taxminiy daqiqa, provenance)
- *  - Matn sahifasi: katta qator oraliği bilan öqiş, glossariy, haqiqiy
- *    taymer (store içida saqlanadi — navigatsiyada reset bölmaydi)
- *  - "Vaqt bilan maşq" rejimi — estMinutes dan countdown, 0 da töxtaydi va
- *    natijani körsatadi
- *  - Maşqlar ExerciseRunner orqali (barça turlar, True/False/Not Given ham)
- *  - Sözlarni luğatga saqlaş: glossariy + matndan ajratib olingan söz
- *  - Natija: ball, töğri/xato röyxati izoh bilan, Xatolar daftariga havola
+ *  - Matnlar ro'yxati (sarlavha, daraja, taxminiy daqiqa, provenance)
+ *  - Matn sahifasi: katta qator oralig'i bilan o'qish, glossariy, haqiqiy
+ *    taymer (store ichida saqlanadi — navigatsiyada reset bo'lmaydi)
+ *  - "Vaqt bilan mashq" rejimi — estMinutes dan countdown, 0 da to'xtaydi va
+ *    natijani ko'rsatadi
+ *  - Mashqlar ExerciseRunner orqali (barcha turlar, True/False/Not Given ham)
+ *  - So'zlarni lug'atga saqlash: glossariy + matndan ajratib olingan so'z
+ *  - Natija: ball, to'g'ri/xato ro'yxati izoh bilan, Xatolar daftariga havola
  *
  * Provenance: 'original' matnlar rasmiy imtihon savoli deb atalmaydi.
  */
@@ -21,13 +21,15 @@ import { Button, Card, Chip, EmptyState, InfoBanner, Kbd, LoadingBlock, SpeakBut
 import { allVocab, getBundle, glossaryVocabId, wordKeyOf } from '../content'
 import type { ReadingPassage, VocabularyItem } from '../content/types'
 import { formatDuration } from '../lib/timer'
-import type { CheckResult } from '../lib/çeck'
-import { useStore } from '../lib/store'
+import type { CheckResult } from '../lib/check'
+import { useStore } from '../lib/storeContext'
+import { LessonStartCard, ReadingLesson } from '../components/SectionLessons'
+import { readingLesson } from '../lib/lessons'
 
 /**
  * Kalit va SRS idsi LUG'AT sahifasi bilan BIR XIL manbadan (content/index) —
- * eski xato: sahifalar bitta kalitni ikki marta yozib olgani uçun birida
- * özgartirilsa, saqlangan söz Luğat bölimida topilmay qolardi.
+ * eski xato: sahifalar bitta kalitni ikki marta yozib olgani uchun birida
+ * o'zgartirilsa, saqlangan so'z Lug'at bo'limida topilmay qolardi.
  */
 const wordKey = wordKeyOf
 const glossaryId = glossaryVocabId
@@ -37,7 +39,7 @@ interface Saver {
   id: string
   word: string
   uz: string
-  /** luğatda topilgan item bölsa uning id'si */
+  /** lug'atda topilgan item bo'lsa uning id'si */
   fromVocab: boolean
 }
 
@@ -46,23 +48,42 @@ interface Saver {
 export default function Reading() {
   const { data, ready, timerLabel } = useStore()
   const [openId, setOpenId] = useState<string | null>(null)
+  const [lessonId, setLessonId] = useState<string | null>(null)
 
   const passages = getBundle(data.settings.currentLevel).reading
 
-  if (!ready) return <LoadingBlock label={'O\'qiş matnlari yuklanmoqda…'} />
+  if (!ready) return <LoadingBlock label={'Öqiş matnlari yuklanmoqda…'} />
 
   const opened = openId ? passages.find((p) => p.id === openId) ?? null : null
+  const lessonPassage = lessonId ? passages.find((p) => p.id === lessonId) ?? null : null
+  if (lessonPassage) return <ReadingLesson passage={lessonPassage} onClose={() => setLessonId(null)} />
+  // Tavsiya: mashqlari hali tugallanmagan birinchi matn.
+  const nextPassage =
+    passages.find((p) => {
+      const ids = new Set(p.exercises.map((e) => e.id))
+      return new Set(data.attempts.filter((a) => ids.has(a.exerciseId)).map((a) => a.exerciseId)).size < p.exercises.length
+    }) ?? passages[0]
 
   if (!opened) {
     return (
       <div className="grid gap-4">
         <header>
-          <h1 className="text-xl sm:text-2xl font-bold">O'qiş</h1>
+          <h1 className="text-xl sm:text-2xl font-bold">Öqiş</h1>
           <p className="muted text-sm">
             {data.settings.currentLevel} darajasi · {passages.length} ta matn · öqiş vaqti taymer bilan
             ölçanadi, maşqlar matn asosida.
           </p>
         </header>
+
+        {nextPassage && (
+          <LessonStartCard
+            kicker="Öqiş darsi"
+            title={nextPassage.title}
+            body="Matnni öqing, söng savollarga javob bering"
+            steps={readingLesson(nextPassage)}
+            onStart={() => setLessonId(nextPassage.id)}
+          />
+        )}
 
         {passages.length === 0 ? (
           <EmptyState
@@ -96,8 +117,11 @@ export default function Reading() {
                     {done > 0 && <Chip tone="ok">maşqlar: {done}/{p.exercises.length}</Chip>}
                     {readTime && <Chip tone="brand">taymer: {readTime}</Chip>}
                   </div>
-                  <div className="flex gap-2">
-                    <Button onClick={() => setOpenId(p.id)}>{done > 0 ? 'Davom etiş' : 'Matnni oçiş'}</Button>
+                  <div className="flex flex-wrap gap-2">
+                    <Button variant="success" onClick={() => setLessonId(p.id)}>
+                      Darsni boşlaş
+                    </Button>
+                    <Button variant="secondary" onClick={() => setOpenId(p.id)}>{done > 0 ? 'Davom etiş' : 'Matnni oçiş'}</Button>
                     {data.timer.sessionId === p.id && (
                       <Button variant="secondary" size="sm" onClick={() => setOpenId(p.id)}>
                         Taymer bu matnda yurmoqda
@@ -124,19 +148,19 @@ function PassageDetail({ passage, onBack }: { passage: ReadingPassage; onBack: (
   const textRef = useRef<HTMLDivElement>(null)
   const exercisesRef = useRef<HTMLDivElement>(null)
 
-  // --- maşqlar holati ---
+  // --- mashqlar holati ---
   const total = passage.exercises.length
   const [pos, setPos] = useState(0)
   const [results, setResults] = useState<Record<number, CheckResult>>({})
-  const [şowResults, setShowResults] = useState(false)
+  const [showResults, setShowResults] = useState(false)
 
-  // --- vaqt bilan maşq ---
+  // --- vaqt bilan mashq ---
   const [timedMode, setTimedMode] = useState(false)
   const [deadline, setDeadline] = useState<number | null>(null)
   const [now, setNow] = useState(() => Date.now())
   const autoStopped = useRef(false)
 
-  // --- luğatga saqlaş ---
+  // --- lug'atga saqlash ---
   const [selection, setSelection] = useState<string>('')
   const [savedIds, setSavedIds] = useState<string[]>([])
 
@@ -148,7 +172,7 @@ function PassageDetail({ passage, onBack }: { passage: ReadingPassage; onBack: (
 
   const glossaryIds = useMemo(() => (passage.glossary ?? []).map((g) => glossaryId(g.word)), [passage])
 
-  // Taymer holati (store içida — sahifani almaştirsak ham yöqolmaydi).
+  // Taymer holati (store ichida — sahifani almashtirsak ham yo'qolmaydi).
   const timerHere = data.timer.sessionId === passage.id
   const timerRunning = timerHere && data.timer.startedAt !== null
 
@@ -162,8 +186,8 @@ function PassageDetail({ passage, onBack }: { passage: ReadingPassage; onBack: (
   const remainingSec = deadline === null ? passage.estMinutes * 60 : Math.max(0, Math.round((deadline - now) / 1000))
   const timeUp = deadline !== null && remainingSec <= 0
 
-  // Muddat tugasa: maşq töxtaydi, natija körsatiladi (javobsiz savollar
-  // notöğri deb baholanmaydi — şunçaki hisobga olinmaydi).
+  // Muddat tugasa: mashq to'xtaydi, natija ko'rsatiladi (javobsiz savollar
+  // noto'g'ri deb baholanmaydi — shunchaki hisobga olinmaydi).
   useEffect(() => {
     if (!timeUp || autoStopped.current) return
     autoStopped.current = true
@@ -175,7 +199,7 @@ function PassageDetail({ passage, onBack }: { passage: ReadingPassage; onBack: (
     autoStopped.current = false
     setNow(Date.now())
     setDeadline(Date.now() + passage.estMinutes * 60_000)
-    actions.startTimer(passage.id, 'readinğ)
+    actions.startTimer(passage.id, 'reading')
     exercisesRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 
@@ -205,6 +229,10 @@ function PassageDetail({ passage, onBack }: { passage: ReadingPassage; onBack: (
   const onNext = () => {
     const answered = Object.keys(results).length
     if (answered >= total) {
+      // Dars yakuni: bonus XP + xatosiz dars hisobi (`lessonComplete`).
+      // Muddat tugab, natija o'z-o'zidan ochilganda (~167-qator) bu chaqiruv
+      // YUBORILMAYDI — dars tugagani yo'q, javobsiz savollar qolgan; halol bo'lgani shu.
+      actions.completeLesson(answered, Object.values(results).filter((r) => !r.correct).length)
       setShowResults(true)
       if (timerHere) actions.stopTimer()
       return
@@ -221,7 +249,7 @@ function PassageDetail({ passage, onBack }: { passage: ReadingPassage; onBack: (
     setSelection(sel)
   }
 
-  // Matn içidan ajratib olingan söz/dastur: glossariy va luğat böyiça tekşiriladi.
+  // Matn ichidan ajratib olingan so'z/dastur: glossariy va lug'at bo'yicha tekshiriladi.
   const picked: Saver | null = useMemo(() => {
     const key = wordKey(selection)
     if (!key || key.split(' ').length > 3) return null
@@ -233,11 +261,13 @@ function PassageDetail({ passage, onBack }: { passage: ReadingPassage; onBack: (
     const item = vocabIndex.get(key)
     if (item) return { id: item.id, word: item.word, uz: item.translationUz, fromVocab: true }
     return null
-    // `passage.id` boğliq EMAS: SRS kaliti endi matndan qat'iy emas.
+    // `passage.id` bog'liq EMAS: SRS kaliti endi matndan qat'iy emas.
   }, [selection, passage.glossary, vocabIndex])
 
-  const saveWord = (s: Saver, grade: 'again' | 'good') => {
-    actions.gradeVocab(s.id, grade)
+  // "Saqlash" — takrorlash jadvaliga qo'shish (xato emas); "Bilaman" — haqiqiy baho.
+  const saveWord = (s: Saver, how: 'save' | 'good') => {
+    if (how === 'save') actions.saveVocab(s.id)
+    else actions.gradeVocab(s.id, 'good')
     setSavedIds((prev) => (prev.includes(s.id) ? prev : [...prev, s.id]))
   }
 
@@ -268,18 +298,18 @@ function PassageDetail({ passage, onBack }: { passage: ReadingPassage; onBack: (
           </div>
         </div>
         <div className="panel p-3 grid gap-1.5 min-w-44">
-          <span className="text-[11px] font-semibold uppercase tracking-wider muted">O'qiş taymeri</span>
+          <span className="text-[11px] font-semibold uppercase tracking-wider muted">Öqiş taymeri</span>
           <span className="text-2xl font-bold tabular-nums">{timerHere ? timerLabel : '—:—'}</span>
           <span className="text-[11px] muted">
             {timerRunning
               ? "Yurmoqda — sahifani almaştirsangiz ham töxtamaydi."
               : timerHere
-                ? 'To\'xtatilgan / pauzada.'
+                ? 'Töxtatilgan / pauzada.'
                 : 'Bu matn uçun boşlanmagan.'}
           </span>
           <div className="flex flex-wrap gap-1.5">
             {!timerRunning ? (
-              <Button size="sm" onClick={() => actions.startTimer(passage.id, 'readinğ)}>
+              <Button size="sm" onClick={() => actions.startTimer(passage.id, 'reading')}>
                 Taymer
               </Button>
             ) : (
@@ -313,10 +343,10 @@ function PassageDetail({ passage, onBack }: { passage: ReadingPassage; onBack: (
         <StatTile label="Töğri" value={right.length} tone="ok" />
         <StatTile label="Xato" value={wrong.length} tone={wrong.length > 0 ? 'bad' : 'ok'} />
         <StatTile
-          label={timedMode ? 'Qolgan vaqt' : 'Bu matnda o\'qilgan'}
+          label={timedMode ? 'Qolgan vaqt' : 'Bu matnda öqilgan'}
           value={timedMode ? formatDuration(remainingSec) : timerHere ? timerLabel : '—:—'}
           tone={timedMode && deadline !== null && remainingSec < 60 ? 'bad' : 'default'}
-          hint={timedMode ? `${passage.estMinutes} daqiqalik muddatdan` : 'taymer yuritilsa ko‘rinadi'}
+          hint={timedMode ? `${passage.estMinutes} daqiqalik muddatdan` : 'taymer yuritilsa körinadi'}
         />
       </div>
 
@@ -324,7 +354,7 @@ function PassageDetail({ passage, onBack }: { passage: ReadingPassage; onBack: (
       <article ref={textRef} className="panel p-4 sm:p-6 grid gap-4">
         <div className="flex items-center justify-between gap-2">
           <h2 className="font-bold">Matn</h2>
-          <span className="text-[11px] muted">So‘zni ajratib oling — pastdagi panelga qo‘şiladi</span>
+          <span className="text-[11px] muted">Sözni ajratib oling — pastdagi panelga qöşiladi</span>
         </div>
         <div className="grid gap-4 text-[15px] sm:text-base leading-9 sm:leading-10 selection:bg-navy-200 dark:selection:bg-navy-800">
           {passage.paragraphs.map((par, i) => (
@@ -341,7 +371,7 @@ function PassageDetail({ passage, onBack }: { passage: ReadingPassage; onBack: (
             </span>
           </div>
           {selection.trim() !== '' && (
-            <InfoBanner tone={picked ? 'infö : 'warn'}>
+            <InfoBanner tone={picked ? 'info' : 'warn'}>
               Tanlangan matn: <b className="select-text">{selection.trim().slice(0, 60)}</b>
               {picked ? null : (
                 <span className="block mt-1">
@@ -359,13 +389,13 @@ function PassageDetail({ passage, onBack }: { passage: ReadingPassage; onBack: (
                 </span>
                 <div className="flex flex-wrap gap-1.5">
                   <Chip tone={picked.fromVocab ? 'ok' : 'warn'}>
-                    {picked.fromVocab ? 'lug\'at ro\'yxatida bor' : 'faqat matn glossariyasida'}
+                    {picked.fromVocab ? 'luğat röyxatida bor' : 'faqat matn glossariyasida'}
                   </Chip>
                   <SpeakButton text={picked.word} label={`${picked.word} — talaffuz`} />
                 </div>
               </div>
               <div className="flex flex-wrap gap-2">
-                <Button size="sm" variant="secondary" onClick={() => saveWord(picked, 'again')}>
+                <Button size="sm" variant="secondary" onClick={() => saveWord(picked, 'save')}>
                   Luğatga saqlaş (takrorlaşga)
                 </Button>
                 <Button size="sm" variant="success" onClick={() => saveWord(picked, 'good')}>
@@ -373,7 +403,7 @@ function PassageDetail({ passage, onBack }: { passage: ReadingPassage; onBack: (
                 </Button>
               </div>
               <p className="text-[11px] muted">
-                "Qayta maşq qiliş" ma'nosida <code>again</code> baholanadi — söz SRS jadvaliga kiritiladi.
+                Saqlangan söz takrorlaş jadvaliga qöşiladi va bugun takrorlanadi — bu xato deb sanalmaydi.
               </p>
             </div>
           )}
@@ -403,7 +433,11 @@ function PassageDetail({ passage, onBack }: { passage: ReadingPassage; onBack: (
                   </span>
                   <div className="flex items-center gap-1.5">
                     <SpeakButton text={g.word} label={`${g.word} — talaffuz`} />
-                    <Button size="sm" variant={known ? 'ghost' : 'secondary'} onClick={() => actions.gradeVocab(id, 'again')}>
+                    <Button
+                      size="sm"
+                      variant={known ? 'ghost' : 'secondary'}
+                      onClick={() => (known ? actions.gradeVocab(id, 'again') : actions.saveVocab(id))}
+                    >
                       {known ? 'Qayta maşq qiliş' : "Luğatga"}
                     </Button>
                   </div>
@@ -467,15 +501,18 @@ function PassageDetail({ passage, onBack }: { passage: ReadingPassage; onBack: (
 
         {total === 0 ? (
           <EmptyState title="Bu matnda maşq yöq" body="Matnni öqib, glossariydagi sözlarni luğatingizga saqlang." />
-        ) : !şowResults && current ? (
+        ) : !showResults && current ? (
           <Card className="grid gap-4">
             <ExerciseRunner
               key={`${passage.id}-${current.id}`}
               exercise={current}
               index={pos}
               total={total}
-              çecked={(r, secondsSpent) => record(pos, r, secondsSpent)}
+              checked={(r, secondsSpent) => record(pos, r, secondsSpent)}
               onNext={onNext}
+              /* `record()` har javobni `actions.recordAttempt(...)` bilan yozadi
+                 — combo store'da o'sadi, shuning uchun chiziq haqiqiy. */
+              comboTracked
             />
             <InfoBanner tone="muted">
               Bu maşqlar <b>matn asosida</b> — javoblarni yuqoridagi matndan topiş mumkin. True / False / Not Given

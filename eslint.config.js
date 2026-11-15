@@ -5,7 +5,7 @@ import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
 
 export default tseslint.config(
-  { ignores: ['dist', 'dev-dist', 'node_modules', 'public/audio'] },
+  { ignores: ['dist', 'dev-dist', 'node_modules', 'public/audio', 'test-results', 'playwright-report', 'mobile'] },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ['**/*.{ts,tsx}'],
@@ -19,24 +19,20 @@ export default tseslint.config(
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
-      'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
-      // Ilova ataylab soatga asoslangan (jonli taymerlar, SRS due vaqtlari):
-      // render paytida Date.now() o'qish va store'dan keyin keladigan holatni
-      // effect orqali sinxronlash — loyiha dizayni. Qoidalar xato emas,
-      // ogohlantirish sifatida saqlanadi (kodda izohlanadigan joylar).
-      'react-hooks/purity': 'warn',
-      'react-hooks/set-state-in-render': 'warn',
-      'react-hooks/set-state-in-effect': 'warn',
-      'react-hooks/immutability': 'warn',
-      // Store har safar yangi `actions` obyekti qaytaradi (useCallback
-      // bilan stabil funksiyalar ichida). Qo'lda deps ro'yxatiga `actions`
-      // yozish qoidani buzadi — shuning uchun bu warnings darajasida.
-      'react-hooks/exhaustive-deps': 'warn',
+      'react-refresh/only-export-components': ['error', { allowConstantExport: true }],
+      // Render SOF bo'lishi shart: vaqt `lib/clock.ts` (useNow/nowMs) orqali,
+      // prop o'zgarsa holat render paytida moslanadi (effect'da setState yo'q).
+      // Ogohlantirishlar ham CI'da xato (`lint:ci` → --max-warnings 0).
+      'react-hooks/purity': 'error',
+      'react-hooks/set-state-in-render': 'error',
+      'react-hooks/set-state-in-effect': 'error',
+      'react-hooks/immutability': 'error',
+      'react-hooks/exhaustive-deps': 'error',
       '@typescript-eslint/no-unused-vars': [
         'error',
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
       ],
-      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-explicit-any': 'error',
     },
   },
   {

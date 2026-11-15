@@ -1,16 +1,16 @@
 import { describe, expect, it } from 'vitest'
 import { currentElapsed, formatDuration, idleTimer, pauseTimer, planProgress, startTimer, stopTimer } from '../lib/timer'
 
-describe('Taymer — sahifa yangilansa ham yo‘qolmaydi', () => {
+describe('Taymer — sahifa yangilansa ham yöqolmaydi', () => {
   const T0 = 1_000_000_000_000
 
-  it('startTimer → elapsed o‘sadi, startedAt saqlanadi', () => {
+  it('startTimer → elapsed ösadi, startedAt saqlanadi', () => {
     const t = startTimer(idleTimer, 'session-a', 'reading', T0)
     expect(t.startedAt).toBe(T0)
     expect(currentElapsed(t, T0 + 45_000)).toBe(45)
   })
 
-  it('pauseTimer → elapsed hisoblanadi va startedAt null bo‘ladi', () => {
+  it('pauseTimer → elapsed hisoblanadi va startedAt null böladi', () => {
     let t = startTimer(idleTimer, 'session-a', 'reading', T0)
     t = pauseTimer(t, T0 + 30_000)
     expect(t.startedAt).toBeNull()
@@ -18,14 +18,14 @@ describe('Taymer — sahifa yangilansa ham yo‘qolmaydi', () => {
     expect(currentElapsed(t, T0 + 120_000)).toBe(30)
   })
 
-  it('Davom etish: pauzadan keyin hisob ustiga qo‘shiladi', () => {
+  it('Davom etiş: pauzadan keyin hisob ustiga qöşiladi', () => {
     let t = startTimer(idleTimer, 's', 'reading', T0)
     t = pauseTimer(t, T0 + 30_000)
     t = startTimer(t, 's', 'reading', T0 + 60_000)
     expect(currentElapsed(t, T0 + 80_000)).toBe(50)
   })
 
-  it('stopTimer → hisob yig‘iladi, startedAt null bo‘ladi', () => {
+  it('stopTimer → hisob yiğiladi, startedAt null böladi', () => {
     let t = startTimer(idleTimer, 's', 'writing', T0)
     t = stopTimer(t, 's', 'writing', T0 + 90_000)
     expect(t.startedAt).toBeNull()
@@ -53,22 +53,22 @@ describe('Taymer — sahifa yangilansa ham yo‘qolmaydi', () => {
   })
 })
 
-describe('Taymer — uyqu/oraliq vaqt va soat siljishi chegaralari', () => {
+describe('Taymer — uyqu/oraliq vaqt va soat siljişi çegaralari', () => {
   const T0 = 1_700_000_000_000
 
-  it('uzluk 3 soatdan oshsa kundalik hisob shu chegarada to‘xtaydi', () => {
+  it('uzluk 3 soatdan oşsa kundalik hisob şu çegarada töxtaydi', () => {
     const t = startTimer(idleTimer, 's', 'writing', T0)
     const after25h = currentElapsed(t, T0 + 25 * 3_600_000)
     expect(after25h).toBe(3 * 3600)
   })
 
-  it('tizim soati orqaga siljisa manfiy sekund bo‘lmaydi', () => {
+  it('tizim soati orqaga siljisa manfiy sekund bölmaydi', () => {
     const t = startTimer(idleTimer, 's', 'reading', T0)
     expect(currentElapsed(t, T0 - 10_000)).toBe(0)
     expect(currentElapsed(pauseTimer(t, T0 - 10_000), T0)).toBe(0)
   })
 
-  it('stopTimer sessiyani tozalaydi — „pauzada“ belgisi yolg‘on bo‘lmasin', () => {
+  it('stopTimer sessiyani tozalaydi — „pauzada“ belgisi yolğon bölmasin', () => {
     let t = startTimer(idleTimer, 's', 'writing', T0)
     t = stopTimer(t, 's', 'writing', T0 + 90_000)
     expect(t.sessionId).toBeNull()
@@ -76,7 +76,7 @@ describe('Taymer — uyqu/oraliq vaqt va soat siljishi chegaralari', () => {
     expect(t.elapsedSec).toBe(90)
   })
 
-  it('bir xil sessiyada ko‘nikma o‘zgarsa hisob yig‘iladi va skill yangilanadi', () => {
+  it('bir xil sessiyada könikma özgarsa hisob yiğiladi va skill yangilanadi', () => {
     let t = startTimer(idleTimer, 'day-1', 'vocabulary', T0)
     t = startTimer(t, 'day-1', 'grammar', T0 + 60_000)
     expect(t.skill).toBe('grammar')
@@ -84,7 +84,7 @@ describe('Taymer — uyqu/oraliq vaqt va soat siljishi chegaralari', () => {
     expect(currentElapsed(t, T0 + 60_000)).toBe(60)
   })
 
-  it('xuddi shu sessiya + skill: „Davom etish“ holat tiqilinch qayta start beradi', () => {
+  it('xuddi şu sessiya + skill: „Davom etiş“ holat tiqilinç qayta start beradi', () => {
     let t = startTimer(idleTimer, 's', 'reading', T0)
     t = pauseTimer(t, T0 + 30_000)
     const again = startTimer(t, 's', 'reading', T0 + 40_000)

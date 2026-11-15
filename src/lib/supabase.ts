@@ -8,23 +8,27 @@
  *  - Service role key bu yerga HECH QACHON kirmaydi (serverda qoladi).
  */
 
-import { createClient, type SupabaseClient } from '@supabase/supabase-js'
+import type { SupabaseClient } from '@supabase/supabase-js'
 
 const url = (import.meta.env.VITE_SUPABASE_URL as string | undefined)?.trim()
 const anon = (import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined)?.trim()
 
 export const supabaseConfigured = Boolean(url && anon && /^https?:\/\//.test(url))
 
-let client: SupabaseClient | null = null
+let client: Promise<SupabaseClient> | null = null
 
-export function getSupabase(): SupabaseClient | null {
-  if (!supabaseConfigured) return null
-  if (!client) {
-    client = createClient(url as string, anon as string, {
+/**
+ * Mijoz KERAK bo'lganda yuklanadi (dinamik import, alohida chunk): Supabase
+ * sozlanmagan (mehmon) rejimda ~170 KB kutubxona umuman yuklanmaydi.
+ */
+export function getSupabase(): Promise<SupabaseClient | null> {
+  if (!supabaseConfigured) return Promise.resolve(null)
+  client ??= import('@supabase/supabase-js').then(({ createClient }) =>
+    createClient(url as string, anon as string, {
       auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true },
       global: { headers: { 'x-application-name': 'ai-english-academy' } },
-    })
-  }
+    }),
+  )
   return client
 }
 
@@ -57,13 +61,13 @@ export function localGuestId(): string {
 
 /** Xatolarni xavfsiz matnga aylantirish (token/SQL sizib chiqmasin). */
 export function safeErrorMessage(err: unknown): string {
-  if (!err) return "Noma'lum xatolik. Qayta urinib ko'ring."
+  if (!err) return "Noma'lum xatolik. Qayta urinib köring."
   const e = err as { message?: string; code?: string; status?: number }
   const msg = (e.message ?? '').toLowerCase()
-  if (e.status === 401 || msg.includes('invalid login')) return 'Email yoki parol noto‘g‘ri.'
-  if (msg.includes('network') || msg.includes('failed to fetch')) return 'Internet aloqasi yo‘q. Ulanishni tekshiring.'
-  if (msg.includes('rate')) return 'Juda ko‘p urinish. Birozdan keyin qayta urinib ko‘ring.'
-  if (msg.includes('already registered')) return 'Bu email allaqachon ro‘yxatdan o‘tgan.'
-  if (msg.includes('confirm')) return 'Emailingizni tasdiqlang. Kelgan xatni tekshiring.'
-  return 'Xatolik yuz berdi. Keyinroq qayta urinib ko‘ring.'
+  if (e.status === 401 || msg.includes('invalid login')) return 'Email yoki parol notöğri.'
+  if (msg.includes('network') || msg.includes('failed to fetch')) return 'Internet aloqasi yöq. Ulanişni tekşiring.'
+  if (msg.includes('rate')) return 'Juda köp uriniş. Birozdan keyin qayta urinib köring.'
+  if (msg.includes('already registered')) return 'Bu email allaqaçon röyxatdan ötgan.'
+  if (msg.includes('confirm')) return 'Emailingizni tasdiqlang. Kelgan xatni tekşiring.'
+  return 'Xatolik yuz berdi. Keyinroq qayta urinib köring.'
 }

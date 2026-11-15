@@ -5,7 +5,7 @@ const T0 = Date.UTC(2026, 0, 1, 12, 0, 0)
 const DAY = 86_400_000
 
 describe('SRS (SM-2)', () => {
-  it('learnedAt birinchi muvaffaqiyatli bahoda O‘RNATILADI va keyin o‘zgarmaydi', () => {
+  it('learnedAt birinçi muvaffaqiyatli bahoda ÖRNATILADI va keyin özgarmaydi', () => {
     let s = initialSrsState(T0)
     s = review(s, 'good', T0)
     const first = s.learnedAt
@@ -16,7 +16,7 @@ describe('SRS (SM-2)', () => {
     expect(s.learnedAt).toBe(first) // takrorlar learnedAt ni o‘zgartirmaydi
   })
 
-  it('xato learnedAt ni o‘chirmaydi, lekin intervalni qaytaradi', () => {
+  it('xato learnedAt ni öçirmaydi, lekin intervalni qaytaradi', () => {
     let s = review(initialSrsState(T0), 'good', T0)
     s = review(s, 'again', T0 + DAY)
     expect(s.learnedAt).toBe(T0)
@@ -25,7 +25,7 @@ describe('SRS (SM-2)', () => {
     expect(isDue(s, T0 + DAY + 11 * 60 * 1000)).toBe(true)
   })
 
-  it('interval ease bilan o‘sadi', () => {
+  it('interval ease bilan ösadi', () => {
     let s = review(initialSrsState(T0), 'good', T0)
     expect(s.intervalDays).toBe(1)
     const prev = s.intervalDays
@@ -33,7 +33,7 @@ describe('SRS (SM-2)', () => {
     expect(s.intervalDays).toBeGreaterThan(prev)
   })
 
-  it('bir necha marta takrorlangan so‘z ham BIR dona hisoblanadi', () => {
+  it('bir neça marta takrorlangan söz ham BIR dona hisoblanadi', () => {
     // Store`da srs — `vocabId -> state` xaritasi, shuning uchun bitta so‘z
     // uchun bitta holat saqlanadi; qancha reps bo‘lishidan qat’i nazar,
     // hisob bitta.
@@ -45,7 +45,7 @@ describe('SRS (SM-2)', () => {
     expect(countLearned([a])).toBe(1)
   })
 
-  it('again → ease pasаdi, lekin minimal chegaradan tushmaydi', () => {
+  it('again → ease pasаdi, lekin minimal çegaradan tuşmaydi', () => {
     let s = initialSrsState(T0)
     for (let i = 0; i < 10; i++) s = review(s, 'again', T0 + i * DAY)
     expect(s.ease).toBeGreaterThanOrEqual(1.3)

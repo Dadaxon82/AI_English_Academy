@@ -1,33 +1,50 @@
 /**
- * Shaxsiy öquv yöli — vertikal xronologik kunlar röyxati.
+ * Shaxsiy o'quv yo'li — Duolingo uslubidagi yilonsimon YO'L XARITASI
+ * (`DuoPathMap`) + tanlangan bo'lim/kun uchun pastda ochiladigan tafsilot
+ * paneli. Xaritadagi har tugun — bitta bo'lim (yoki bo'lim yakuniy testi);
+ * tugun rangi/qulfi `lessonChain.ts::buildChain` natijasidan to'g'ridan-to'g'ri
+ * olinadi — qulf qoidasi IKKI MARTA YOZILMAYDI.
  *
- * Ketma-ketlik halol körsatiladi: oldingi kunni yakunlamasça keyingi kun
- * yopiq körinadi va "Oçiş" tugmasi disabled (+ izoh). Har kun içida
- * bölimlar, ularning haqiqiy kontenti va bölim yakuniy testi
- * ExerciseRunner orqali. Kun taymeri store.ga boğlangan (sessionId = dayId).
+ * Ketma-ketlik halol ko'rsatiladi: oldingi kunni yakunlamascha keyingi kun
+ * yopiq ko'rinadi va tugun bosilmaydi (qulf belgisi bilan). Tugun bosilganda
+ * pastda shu KUN kartasi ochiladi — bo'limlar, ularning haqiqiy kontenti va
+ * bo'lim yakuniy testi ExerciseRunner orqali (avvalgi vertikal ro'yxatdagi
+ * `DayCard`/`SectionDetail` mantiqi saqlanadi, faqat kirish nuqtasi xarita).
+ * Kun taymeri store.ga bog'langan (sessionId = dayId).
  */
 
-import { useMemo, useRef, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import UzTranslation from '../components/UzTranslation'
+import { Suspense, lazy, useEffect, useMemo, useRef, useState } from 'react'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import DuoPathMap from '../components/DuoPathMap'
+import SectionBanner from '../components/SectionBanner'
 import ExerciseRunner from '../components/ExerciseRunner'
 import { Button, Card, Chip, EmptyState, InfoBanner, LoadingBlock, ProgressRing, SpeakButton, SuccessBanner } from '../components/ui'
-import { getBundle } from '../content'
+import { findExercise, getBundle, vocabQuizExercise } from '../content'
 import type { LevelBundle } from '../content'
 import type { DailyPlanDay, DaySection, Skill, VocabularyItem } from '../content/types'
-import type { CheckResult } from '../lib/çeck'
-import { skillLabelUz } from '../lib/planninğ
-import { useStore } from '../lib/store'
+import type { CheckResult } from '../lib/check'
+import { buildChain, chainAudit, exerciseIdsForSection } from '../lib/lessonChain'
+import { buildPathLayout, focalNode } from '../lib/pathMap'
+import { pathMilestoneSpecs, pathLevel } from '../lib/sections'
+import { stepDoneChecker, stepScoreReader } from '../lib/stepProgress'
+import { buildWorld, loadPathView, savePathView, type PathView } from '../lib/world3d'
+import { skillLabelUz } from '../lib/planning'
+import { useStore } from '../lib/storeContext'
 import { currentElapsed, formatDuration } from '../lib/timer'
 import { todayKey } from '../lib/types'
 import type { AppData } from '../lib/types'
 
+// 3D olam — alohida chunk (`three` faqat 3D rejim tanlanganda yuklanadi).
+const WorldView = lazy(() => import('../components/world3d/WorldView'))
+
 const SKILL_ROUTE: Record<Skill, string> = {
   vocabulary: '/vocabulary',
   grammar: '/grammar',
-  reading: '/readinğ,
-  listening: '/listeninğ,
-  writing: '/writinğ,
-  speaking: '/speakinğ,
+  reading: '/reading',
+  listening: '/listening',
+  writing: '/writing',
+  speaking: '/speaking',
 }
 
 const linkSecondary =
@@ -36,20 +53,26 @@ const linkSecondary =
 
 type DayStatus = 'completed' | 'current' | 'locked'
 
-/** Bugungi faoliyatda skill böyiça sarflangan sekundlar. */
+/** Bugungi faoliyatda skill bo'yicha sarflangan sekundlar. */
 function secondsToday(data: AppData, skill: Skill): number {
   return data.activity[todayKey()]?.skills?.[skill] ?? 0
 }
 
-/** Kun bölimlaridan bugun yetarliça vaqt sarflanmagan birinçisi. */
+/** Kun bo'limlaridan bugun yetarlicha vaqt sarflanmagan birinchisi. */
 function firstOpenSection(day: DailyPlanDay, data: AppData): DaySection | null {
   return day.sections.find((s) => secondsToday(data, s.skill) < s.minutes * 60) ?? day.sections[0] ?? null
 }
 
 export default function LearningPath() {
-  const { data, ready } = useStore()
+  const { data, ready, actions } = useStore()
+  const nav = useNavigate()
 
-  const bundle = useMemo(() => getBundle(data.settings.currentLevel), [data.settings.currentLevel])
+  // O'quv yo'li darajasi (A1 tugasa yoki A2.1 ga sakralsa — A2 kunlari).
+  // Baholangan daraja (`settings.currentLevel`) bundan o'zgarmaydi.
+  const pLevel = pathLevel(data)
+  const bundle = useMemo(() => getBundle(pLevel), [pLevel])
+  const stepDone = useMemo(() => stepDoneChecker(data), [data])
+  const stepScore = useMemo(() => stepScoreReader(data), [data])
   const days = bundle.days
   const completed = data.path.completedDays
 
@@ -60,9 +83,15 @@ export default function LearningPath() {
     return open >= 0 ? open : days.length - 1
   }, [days, data.path.currentDayId, completed])
 
-  // Oçiq kun: yuklangandan keyin joriy kun avtomatik oçiladi; foydalanuvçi
-  // boşqa kunni oçsa/yopsa şu tanlov hurmat qilinadi.
-  const [openOverride, setOpenOverride] = useState<string | null>(null)
+  // Ochiq kun: yuklangandan keyin joriy kun avtomatik ochiladi; foydalanuvchi
+  // xaritada boshqa tugunni bossa shu tanlov hurmat qilinadi.
+  // `/path?test=<kun>` (Dashboard xaritasidagi 🏆) — o'sha kun ochilib, test darhol boshlanadi.
+  const [params] = useSearchParams()
+  const [openOverride, setOpenOverride] = useState<string | null>(() => params.get('test'))
+  const [autoTest, setAutoTest] = useState<{ dayId: string; nonce: number } | null>(() => {
+    const d = params.get('test')
+    return d ? { dayId: d, nonce: 1 } : null
+  })
   const defaultOpenId = days[currentIdx]?.id ?? null
   const openDayId = openOverride !== null ? openOverride : defaultOpenId
 
@@ -72,18 +101,88 @@ export default function LearningPath() {
     return 'locked'
   }
 
-  if (!ready) return <LoadingBlock label="O‘quv yo‘li yuklanmoqda…" />
+  // ---------- Xarita joylash (DuoPathMap) ----------
+  // `buildChain` — mavjud HALOL manba (`ChainOverview` ham aynan shu yerdan
+  // oladi), shuning uchun qulf/holat qoidasi IKKI MARTA YOZILMAYDI.
+  const chains = useMemo(
+    () =>
+      days.map((day, i) =>
+        buildChain(
+          day,
+          Object.fromEntries(
+            day.sections.map((s) => [
+              s.skill,
+              exerciseIdsForSection(s, {
+                vocabQuizIds: (ids) =>
+                  ids
+                    .map((id) => bundle.vocab.find((v) => v.id === id))
+                    .filter((v): v is VocabularyItem => v !== undefined)
+                    .map((v) => vocabQuizExercise(v).id),
+                grammarExercises: (id) => bundle.grammar.find((g) => g.id === id)?.exercises ?? [],
+                readingExercises: (id) => bundle.reading.find((r) => r.id === id)?.exercises ?? [],
+                listeningExercises: (id) => bundle.listening.find((l) => l.id === id)?.exercises ?? [],
+                findExercise,
+              }),
+            ]),
+          ),
+          i,
+          day.id === (days[currentIdx]?.id ?? ''),
+          completed.includes(day.id),
+        ),
+      ),
+    [days, completed, currentIdx, bundle],
+  )
+
+  const layout = useMemo(
+    () => buildPathLayout(chains, 360, pathMilestoneSpecs(pLevel), stepDone, stepScore),
+    [chains, pLevel, stepDone, stepScore],
+  )
+  const focus = useMemo(() => focalNode(layout), [layout])
+
+  // ---------- 2D xarita / 3D olam ----------
+  const [view, setView] = useState<PathView>(loadPathView)
+  const pickView = (v: PathView) => {
+    setView(v)
+    savePathView(v)
+  }
+  // 3D olam — JORIY kun zanjirining boshqa ko'rinishi (kontent va qulf manbasi o'sha).
+  const worldChain = chains[currentIdx]
+  const world = useMemo(
+    () => (worldChain ? buildWorld(worldChain, stepDone, stepScore, completed.includes(worldChain.day.id)) : null),
+    [worldChain, stepDone, stepScore, completed],
+  )
+  // G'alaba ekrani: shu sahifa ochiq paytda yangi kun yakunlansa ko'rsatiladi.
+  const [ackDays, setAckDays] = useState(completed.length)
+  const wonDay = completed.length > ackDays ? days.find((d) => d.id === completed[completed.length - 1]) : undefined
+  const dayCardRef = useRef<HTMLDivElement>(null)
+  const startDayTest = (dayId: string) => {
+    const d = days.find((x) => x.id === dayId)
+    if (d?.sectionTest) actions.startTimer(d.id, d.sectionTest.section)
+    setOpenOverride(dayId)
+    setAutoTest((a) => ({ dayId, nonce: (a?.nonce ?? 0) + 1 }))
+  }
+  // Xaritada tanlangan tugun — bosilganda shu KUN kartasi pastda ochiladi
+  // (bitta bo'lim emas, butun kun: ExerciseRunner/test mantiqi kun darajasida).
+  const selectedNodeId = openDayId
+    ? layout.nodes.find((n) => n.dayId === openDayId)?.id ?? focus?.id ?? null
+    : focus?.id ?? null
+
+  const stepsTotal = chains.reduce((a, c) => a + c.steps.length, 0)
+  const kindsOf = (id: string) => findExercise(id)?.kind
+  const audit = chainAudit(chains, kindsOf)
+
+  if (!ready) return <LoadingBlock label="Öquv yöli yuklanmoqda…" />
 
   if (days.length === 0) {
     return (
       <div className="grid gap-4">
-        <h1 className="text-2xl font-bold">Shaxsiy o‘quv yo‘li</h1>
+        <h1 className="text-2xl font-bold">Şaxsiy öquv yöli</h1>
         <EmptyState
-          title={`${data.settings.currentLevel} uçun reja hali mavjud emas`}
-          body="Hozirça faqat A1 yo‘li yuklangan. Sozlamalardan A1 ga qaytib davom eting."
+          title={`${pLevel} uçun reja hali mavjud emas`}
+          body="Hozirça faqat A1 yöli yuklangan. Sozlamalardan A1 ga qaytib davom eting."
           action={
             <Link to="/settings" className={linkSecondary}>
-              Sozlamalarga o‘tiş
+              Sozlamalarga ötiş
             </Link>
           }
         />
@@ -93,13 +192,16 @@ export default function LearningPath() {
 
   return (
     <div className="grid gap-4 sm:gap-5">
+      {/* ---------- Joriy bo'lim banneri (→ /sections) ---------- */}
+      <SectionBanner />
+
       {/* ---------- Progress sarlavhasi ---------- */}
       <Card as="section" className="flex flex-wrap items-center gap-4">
         <ProgressRing value={completed.length / days.length} label={`${completed.length}/${days.length} kun`} />
         <div className="flex-1 min-w-48 grid gap-1.5">
-          <h1 className="text-2xl font-bold">Shaxsiy o‘quv yo‘li</h1>
+          <h1 className="text-2xl font-bold">Şaxsiy öquv yöli</h1>
           <p className="muted text-sm">
-            {data.settings.currentLevel} darajasi — {days.length} kunlik bosqiç. Har kuni 6 ta bo‘lim va yakuniy test.
+            {pLevel} darajasi — {days.length} kunlik bosqiç. Har kuni 6 ta bölim va yakuniy test.
             Kunlar ketma-ket oçiladi.
           </p>
           <div className="flex flex-wrap gap-1.5">
@@ -109,40 +211,122 @@ export default function LearningPath() {
             {days[currentIdx] && !completed.includes(days[currentIdx].id) && (
               <Chip>Bosqiç: {days[currentIdx].id}</Chip>
             )}
+            <Link to="/sections" className="text-xs font-semibold text-navy-700 dark:text-navy-300 hover:underline self-center">
+              Barça bölimlar (A1.1 … C1.2) →
+            </Link>
           </div>
         </div>
       </Card>
 
-      {/* ---------- Vertikal xronologik röyxat ---------- */}
-      <div className="relative grid gap-4 pl-5 sm:pl-7">
-        <span aria-hidden className="absolute left-[7px] sm:left-[11px] top-2 bottom-2 w-0.5 bg-[var(--border)]" />
-        {days.map((day, idx) => {
-          const status = statusOf(day, idx)
-          const open = openDayId === day.id
-          return (
-            <div key={day.id} className="relative">
-              <span
-                aria-hidden
-                className={`absolute -left-5 sm:-left-7 top-5 w-4 h-4 rounded-full border-2 ${
-                  status === 'completed'
-                    ? 'bg-[var(--ok)] border-[var(--ok)]'
-                    : status === 'current'
-                      ? 'bg-navy-700 dark:bg-navy-400 border-navy-700 dark:border-navy-400'
-                      : 'bg-[var(--panel)] border-[var(--border)]'
-                }`}
+      {/* ---------- Yo'l xaritasi (Duolingo uslubida, yilonsimon) ---------- */}
+      <Card as="section" className="grid gap-3">
+        <div className="flex flex-wrap items-center gap-2">
+          <h2 className="font-bold">{view === '3d' ? '3D olam' : 'Darslar xaritasi'}</h2>
+          {view === '2d' ? (
+            <>
+              <Chip>{stepsTotal} qadam</Chip>
+              <Chip>{chains.length} kun</Chip>
+            </>
+          ) : (
+            world && <Chip>{worldChain?.day.id}</Chip>
+          )}
+          <span className="flex-1" />
+          <div role="group" aria-label="Xarita körinişi" className="inline-flex rounded-full border p-0.5 text-xs font-bold">
+            {(
+              [
+                ['2d', '🗺️ 2D xarita'],
+                ['3d', '🏝️ 3D olam'],
+              ] as const
+            ).map(([v, label]) => (
+              <button
+                key={v}
+                type="button"
+                aria-pressed={view === v}
+                onClick={() => pickView(v)}
+                className={`rounded-full px-3 py-1.5 transition-colors ${view === v ? 'bg-navy-700 text-white dark:bg-navy-300 dark:text-navy-950' : 'hover:bg-[var(--panel-2)]'}`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+        {view === '3d' && world ? (
+          <>
+            <p className="text-xs muted">
+              Qahramonni yurgizib stansiyalarga boring: Luğat → Grammatika → Öqiş → Tinglaş → Yoziş → Gapiriş. Har stansiya
+              oldingisi yakunlangaç oçiladi; hammasidan keyin oltin Finiş qasrida kun yakuniy sinovi kutadi. Topşiriqlar —
+              şu kunning haqiqiy darslari.
+            </p>
+            <Suspense fallback={<LoadingBlock label="3D olam yuklanmoqda…" />}>
+              <WorldView
+                key={world.dayId}
+                world={world}
+                victory={
+                  wonDay
+                    ? {
+                        dayTitle: wonDay.titleUz,
+                        nextTitle: worldChain && worldChain.day.id !== wonDay.id ? worldChain.day.titleUz : null,
+                        score: wonDay.sectionTest ? (data.path.passedTests[wonDay.sectionTest.id] ?? null) : null,
+                      }
+                    : null
+                }
+                onVictoryClose={() => setAckDays(completed.length)}
+                onStartStation={(st) => nav(`/lesson/${world.dayId}/${st.skill}`)}
+                onStartFinish={() => {
+                  startDayTest(world.dayId)
+                  // Sinov shu sahifada, 3D olam ostidagi kun kartasida ochiladi
+                  setTimeout(() => dayCardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60)
+                }}
               />
-              <DayCard
-                day={day}
-                status={status}
-                open={open}
-                onOpen={() => setOpenOverride(day.id)}
-                onClose={() => setOpenOverride('')}
-                bundle={bundle}
-              />
-            </div>
-          )
-        })}
-      </div>
+            </Suspense>
+          </>
+        ) : (
+          <>
+        <p className="text-xs muted">
+          Har tanga — bitta bölim (belgisi va nomi ostida), 🏆 — kun yakuniy testi. Tangani bosing — öşa bölim
+          darsi oçiladi; yakunlangaç olingan ball tanga ustida körinadi. Oltin — bajarilgan, yaşil — oçiq, kulrang —
+          qulflangan. Sandiq — kun yarmi, katta kubok — keyingi bölim oçiladigan joy.
+        </p>
+        <DuoPathMap
+          layout={layout}
+          selectedId={selectedNodeId}
+          focusId={focus?.id ?? null}
+          onSelect={(node) => {
+            // Tugun — biriktirilgan bo'lim topshirig'ini to'g'ridan-to'g'ri ochadi.
+            if (!node.isTest) {
+              nav(`/lesson/${node.dayId}/${node.skill}`)
+              return
+            }
+            startDayTest(node.dayId)
+          }}
+        />
+        <p className="text-[11px] muted">
+          Zanjir böyiça: {audit.rotationSteps} maşq qadami (+{audit.reinforcement} takrorlaş) · bir xil tur
+          qöşni: {audit.sameNeighbours} (majburiy: {audit.unavoidable}) · eng qisqa tur masofasi: {audit.minGap}
+        </p>
+          </>
+        )}
+      </Card>
+      <div ref={dayCardRef} className="scroll-mt-20" />
+
+      {/* ---------- Tanlangan kun kartasi ---------- */}
+      {days.map((day, idx) => {
+        const status = statusOf(day, idx)
+        const open = openDayId === day.id
+        if (!open) return null
+        return (
+          <DayCard
+            key={autoTest?.dayId === day.id ? `${day.id}:${autoTest.nonce}` : day.id}
+            autoStartTest={autoTest?.dayId === day.id}
+            day={day}
+            status={status}
+            open={open}
+            onOpen={() => setOpenOverride(day.id)}
+            onClose={() => setOpenOverride('')}
+            bundle={bundle}
+          />
+        )
+      })}
     </div>
   )
 }
@@ -156,7 +340,9 @@ function DayCard({
   onOpen,
   onClose,
   bundle,
+  autoStartTest = false,
 }: {
+  autoStartTest?: boolean
   day: DailyPlanDay
   status: DayStatus
   open: boolean
@@ -173,14 +359,19 @@ function DayCard({
   const isCompleted = status === 'completed'
   const total = test?.exercises.length ?? 0
 
-  // Bölim testi holati: idle → running → done
-  const [phase, setPhase] = useState<'idle' | 'runninğ | 'done'>('idle')
+  // Bo'lim testi holati: idle → running → done
+  // Xaritadagi 🏆 bosilsa — test darhol boshlanadi (taymer bosish ishlovchisida yoqilgan).
+  const [phase, setPhase] = useState<'idle' | 'running' | 'done'>(() => (autoStartTest && test ? 'running' : 'idle'))
+  const cardRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    if (autoStartTest) cardRef.current?.scrollIntoView({ block: 'start', behavior: 'smooth' })
+  }, [autoStartTest])
   const [pos, setPos] = useState(0)
   const [lastResult, setLastResult] = useState<CheckResult | null>(null)
   const [score, setScore] = useState<number | null>(null)
   const acc = useRef<Record<string, CheckResult>>({})
 
-  // "Testni taşlab, kunni belgilaş" halol yöli uçun tasdiq
+  // "Testni tashlab, kunni belgilash" halol yo'li uchun tasdiq
   const [skipAck, setSkipAck] = useState(false)
 
   const startTest = () => {
@@ -188,7 +379,7 @@ function DayCard({
     setPos(0)
     setLastResult(null)
     setScore(null)
-    setPhase('runninğ)
+    setPhase('running')
     actions.startTimer(day.id, test?.section ?? 'vocabulary')
   }
 
@@ -219,6 +410,13 @@ function DayCard({
     setScore(s)
     setPhase('done')
     actions.stopTimer()
+    // Bo'lim testi ham dars hisoblanadi: bonus XP va (0 xato bo'lsa) "xatosiz
+    // dars". Yurak bu manbada JARIMA QILINMAYDI (`HEART_FREE_SOURCES`), lekin
+    // bonus beriladi — shuning uchun aynan shu yerda chaqiriladi.
+    actions.completeLesson(
+      Object.keys(acc.current).length,
+      Object.values(acc.current).filter((r) => !r.correct).length,
+    )
     if (s >= test.passScore) actions.completeDay(day.id, test.id, s)
   }
 
@@ -232,9 +430,9 @@ function DayCard({
   const beginDay = () => {
     const sec = firstOpenSection(day, data)
     if (!sec) return
-    // Taymer böş bölsa şu bölim uçun darhol yoqiladi — kun şu yerda
-    // "boşlanadi"; böş bölmasa sahifaga ötiladi (yoqiş sörovini
-    // foydalanuvçi özi beradi).
+    // Taymer bo'sh bo'lsa shu bo'lim uchun darhol yoqiladi — kun shu yerda
+    // "boshlanadi"; bo'sh bo'lmasa sahifaga o'tiladi (yoqish so'rovini
+    // foydalanuvchi o'zi beradi).
     if (timer.startedAt === null && timer.sessionId === null) {
       actions.startTimer(day.id, sec.skill)
     }
@@ -242,6 +440,7 @@ function DayCard({
   }
 
   return (
+    <div ref={cardRef} className="scroll-mt-20">
     <Card className={`grid gap-3.5 ${status === 'locked' ? 'opacity-70' : ''}`}>
       <div className="flex flex-wrap items-start gap-2">
         <div className="flex-1 min-w-0 grid gap-1">
@@ -257,7 +456,7 @@ function DayCard({
         </div>
         <div className="flex gap-2 flex-wrap">
           {status !== 'locked' && (
-            <Button size="sm" variant="secondary" onClick={beginDay} title="Tugallanmagan birinçi bo‘lim sahifasiga o‘tadi">
+            <Button size="sm" variant="secondary" onClick={beginDay} title="Tugallanmagan birinçi bölim sahifasiga ötadi">
               Kunni boşlaş
             </Button>
           )}
@@ -279,7 +478,7 @@ function DayCard({
         </div>
       </div>
 
-      {/* Bölimlar röyxati (har doim körinadi) */}
+      {/* Bo'limlar ro'yxati (har doim ko'rinadi) */}
       <ul className="grid gap-1.5">
         {day.sections.map((s) => {
           const spentSec = secondsToday(data, s.skill)
@@ -310,12 +509,12 @@ function DayCard({
             </span>
             {mine && running && <Chip tone="ok">Yurmoqda</Chip>}
             {mine && !running && mineElapsed > 0 && <Chip tone="warn">Pauzada</Chip>}
-            {otherRunning && timer.sessionId && <Chip tone="warn">Boşqa maşg‘ulot yuradi: {timer.sessionId}</Chip>}
+            {otherRunning && timer.sessionId && <Chip tone="warn">Boşqa maşğulot yuradi: {timer.sessionId}</Chip>}
             <span className="flex-1" />
             <Button
               size="sm"
               disabled={otherRunning || running || !firstOpenSection(day, data)}
-              title={otherRunning ? 'Avval boşqa maşg‘ulot taymerini to‘xtatinğ : undefined}
+              title={otherRunning ? 'Avval boşqa maşğulot taymerini töxtating' : undefined}
               onClick={() => {
                 const sec = firstOpenSection(day, data)
                 if (sec) actions.startTimer(day.id, sec.skill)
@@ -327,42 +526,42 @@ function DayCard({
               Pauza
             </Button>
             <Button size="sm" variant="danger" disabled={!mine} onClick={actions.stopTimer}>
-              To‘xtatiş
+              Töxtatiş
             </Button>
           </div>
 
           <p className="text-[11px] muted">
-            Taymer {day.id} seaniga bog‘langan. Sahifaga o‘tganingizda sahifa o‘z bo‘lim taymerini yoqsa, hisob şu
-            maşg‘ulotga ko‘çadi — buni oldindan to‘xtatiş halolroq.
+            Taymer {day.id} sessiyasiga boğlangan. Sahifaga ötganingizda sahifa öz bölim taymerini yoqsa, hisob şu
+            maşğulotga köçadi — buni oldindan töxtatiş halolroq.
           </p>
 
-          {/* --- Har bölimning kontenti --- */}
+          {/* --- Har bo'limning kontenti --- */}
           {day.sections.map((s) => (
             <SectionDetail key={`${day.id}-detail-${s.skill}`} day={day} section={s} bundle={bundle} />
           ))}
 
-          {/* --- Bölim yakuni testi --- */}
+          {/* --- Bo'lim yakuni testi --- */}
           {test ? (
             <div className="rounded-xl border p-3.5 grid gap-3">
               <div className="flex flex-wrap items-center gap-2">
                 <h3 className="font-bold">{test.titleUz}</h3>
                 <Chip>{test.exercises.length} savol</Chip>
-                <Chip>O‘tiş bosqiçi: {test.passScore}</Chip>
+                <Chip>Ötiş bosqiçi: {test.passScore}</Chip>
                 {passedScore !== null && (
                   <Chip tone={alreadyPassed ? 'ok' : 'warn'}>Sizning ball: {passedScore}</Chip>
                 )}
               </div>
 
-              {alreadyPassed && phase !== 'runninğ && phase !== 'done' && (
+              {alreadyPassed && phase !== 'running' && phase !== 'done' && (
                 <SuccessBanner>
-                  Test avval muvaffaqiyatli topşirilgan ({passedScore} ≥ {test.passScore}). Bo‘limlar ro‘yxatini
-                  qayta ko‘rib çiqing yoki yuqoridagi kunlarni davom ettiring.
+                  Test avval muvaffaqiyatli topşirilgan ({passedScore} ≥ {test.passScore}). Bölimlar röyxatini
+                  qayta körib çiqing yoki yuqoridagi kunlarni davom ettiring.
                 </SuccessBanner>
               )}
 
               {phase === 'idle' && !alreadyPassed && (
                 total === 0 ? (
-                  <InfoBanner tone="muted">Bu testda hozirça maşq yo‘q.</InfoBanner>
+                  <InfoBanner tone="muted">Bu testda hozirça maşq yöq.</InfoBanner>
                 ) : (
                   <div className="flex flex-wrap gap-2">
                     <Button onClick={startTest}>Testni boşlaş</Button>
@@ -373,14 +572,23 @@ function DayCard({
                 )
               )}
 
-              {phase === 'runninğ && test.exercises[pos] && (
+              {phase === 'running' && test.exercises[pos] && (
                 <ExerciseRunner
                   exercise={test.exercises[pos]}
-                  çecked={onChecked}
+                  checked={onChecked}
                   index={pos}
                   total={total}
                   onNext={onNext}
                   prevResult={lastResult && !lastResult.correct ? lastResult : null}
+                  heartFree
+                  /* Combo chizig'i HAQQONIY: `onChecked` har javobni
+                     `actions.recordAttempt(..., source:'section_test')` bilan
+                     yozadi — combo shu yerda o'sadi. `heartFree` bo'lsa-chi?
+                     Bo'lim testi yurak sarflamaydi, lekin combo baribir
+                     hisoblanadi (`afterAttempt`), shuning uchun son ko'rsatiladi;
+                     chipdagi "yana N — yurak qaytadi" qismi `heartFree` bilan
+                     o'zi yashiriladi. */
+                  comboTracked
                 />
               )}
 
@@ -391,8 +599,8 @@ function DayCard({
                   </SuccessBanner>
                 ) : (
                   <InfoBanner tone="warn">
-                    Test tugadi: <b>{score}</b> &lt; {test.passScore} — o‘tiş uçun yetarli emas. Bo‘limlarni qayta
-                    o‘qib, yana urining.
+                    Test tugadi: <b>{score}</b> &lt; {test.passScore} — ötiş uçun yetarli emas. Bölimlarni qayta
+                    öqib, yana urining.
                   </InfoBanner>
                 )
               )}
@@ -409,7 +617,7 @@ function DayCard({
             <InfoBanner tone="muted">Bu kun uçun yakuniy test hali tayyorlanmagan.</InfoBanner>
           )}
 
-          {/* --- Kunni yakunlaş (halol qoida) --- */}
+          {/* --- Kunni yakunlash (halol qoida) --- */}
           {isCompleted ? (
             <SuccessBanner>Bu kun yakunlangan. Davom etiş uçun keyingi kunni oçing.</SuccessBanner>
           ) : (
@@ -417,17 +625,17 @@ function DayCard({
               <h3 className="font-bold text-sm">Kunni yakunlaş</h3>
               <p className="text-sm muted">
                 Kun yakunlanişi uçun yakuniy testni {test ? `${test.passScore}+ ball bilan` : ''} topşiriş
-                talab qilinadi. Testni hozirça taşlab ketmoqçi bo‘lsangiz — buni halol tasdiqlang.
+                talab qilinadi. Testni hozirça taşlab ketmoqçi bölsangiz — buni halol tasdiqlang.
               </p>
               <label className="flex items-start gap-2 text-sm">
                 <input
-                  type="çeckbox"
+                  type="checkbox"
                   className="mt-0.5 accent-[var(--accent)]"
-                  çecked={skipAck}
-                  onChange={(e) => setSkipAck(e.target.çecked)}
+                  checked={skipAck}
+                  onChange={(e) => setSkipAck(e.target.checked)}
                 />
                 <span>
-                  Testni topşirmay kunni belgilayman — bu holda ko‘nikma bahosiga test dalili kirmaydi va qulf
+                  Testni topşirmay kunni belgilayman — bu holda könikma bahosiga test dalili kirmaydi va qulf
                   baribir oçiladi.
                 </span>
               </label>
@@ -436,10 +644,10 @@ function DayCard({
                   disabled={!(alreadyPassed || skipAck)}
                   title={
                     alreadyPassed
-                      ? 'Test o‘tilgan — kunni belgilanğ
+                      ? 'Test ötilgan — kunni belgilang'
                       : skipAck
                         ? 'Test taşlandi — baribir belgilanadi (halol)'
-                        : 'Avval testni topşiring yoki “test topşirmay belgilaş”ni belgilanğ
+                        : 'Avval testni topşiring yoki “test topşirmay belgilaş”ni belgilang'
                   }
                   onClick={() =>
                     actions.completeDay(
@@ -459,32 +667,34 @@ function DayCard({
         </div>
       )}
     </Card>
+    </div>
   )
 }
 
-// --------------------------- Bölim kontenti ---------------------------
+
+// --------------------------- Bo'lim kontenti ---------------------------
 
 function resolveContentTitle(section: DaySection, bundle: LevelBundle): string | null {
   const id = section.itemIds[0]
   if (!id) return null
-  switç (section.skill) {
+  switch (section.skill) {
     case 'vocabulary':
-      return null // luğat bölimida töliq röyxat körsatiladi
+      return null // lug'at bo'limida to'liq ro'yxat ko'rsatiladi
     case 'grammar':
       return bundle.grammar.find((g) => g.id === id)?.titleUz ?? null
-    case 'readinğ:
+    case 'reading':
       return bundle.reading.find((r) => r.id === id)?.title ?? null
-    case 'listeninğ:
+    case 'listening':
       return bundle.listening.find((l) => l.id === id)?.title ?? null
-    case 'writinğ:
+    case 'writing':
       return bundle.writing.find((w) => w.id === id)?.instructionUz ?? null
-    case 'speakinğ:
+    case 'speaking':
       return bundle.speaking.find((s) => s.id === id)?.topicUz ?? null
   }
 }
 
 function SectionDetail({ day, section, bundle }: { day: DailyPlanDay; section: DaySection; bundle: LevelBundle }) {
-  const [şow, setShow] = useState(false)
+  const [show, setShow] = useState(false)
 
   const words: VocabularyItem[] =
     section.skill === 'vocabulary'
@@ -501,19 +711,19 @@ function SectionDetail({ day, section, bundle }: { day: DailyPlanDay; section: D
         <Chip>{skillLabelUz(section.skill)}</Chip>
         <Chip>{section.minutes}′</Chip>
         <span className="flex-1" />
-        <Button size="sm" variant="ghost" onClick={() => setShow((v) => !v)} aria-expanded={şow}>
-          {şow ? 'Kontentni yopiş' : 'Kontentni ko‘riş'}
+        <Button size="sm" variant="ghost" onClick={() => setShow((v) => !v)} aria-expanded={show}>
+          {show ? 'Kontentni yopiş' : 'Kontentni köriş'}
         </Button>
         <Link to={SKILL_ROUTE[section.skill]} className={linkSecondary}>
           {skillLabelUz(section.skill)}da oçiş
         </Link>
       </div>
 
-      {şow && (
+      {show && (
         <div className="grid gap-2 animate-[var(--animate-fade-in)]">
           {section.skill === 'vocabulary' ? (
             words.length === 0 ? (
-              <p className="text-sm muted">Uşbu bo‘lim so‘zlari topilmadi — kontent hali yuklanmagan.</p>
+              <p className="text-sm muted">Uşbu bölim sözlari topilmadi — kontent hali yuklanmagan.</p>
             ) : (
               <ul className="grid gap-1.5">
                 {words.map((v) => (
@@ -522,7 +732,10 @@ function SectionDetail({ day, section, bundle }: { day: DailyPlanDay; section: D
                     className="flex flex-wrap items-center gap-2 rounded-lg bg-[var(--panel-2)] px-3 py-2 text-sm"
                   >
                     <span className="font-semibold">
-                      {v.word} <span className="muted font-normal">— {v.translationUz}</span>
+                      {v.word}{' '}
+                      <span className="muted font-normal">
+                        — <UzTranslation>{v.translationUz}</UzTranslation>
+                      </span>
                     </span>
                     {v.ipa && <span className="text-xs muted">{v.ipa}</span>}
                     <span className="flex-1" />
@@ -535,10 +748,10 @@ function SectionDetail({ day, section, bundle }: { day: DailyPlanDay; section: D
             <div className="text-sm grid gap-1">
               <p>
                 Birinçi material: <b>{title}</b>{' '}
-                <span className="muted">(bo‘limda {section.itemIds.length} ta element)</span>
+                <span className="muted">(bölimda {section.itemIds.length} ta element)</span>
               </p>
               <p className="text-xs muted">
-                To‘liq material “{skillLabelUz(section.skill)}” sahifasida — yuqoridagi tugma orqali oçiladi. Kun idsi:{' '}
+                Töliq material “{skillLabelUz(section.skill)}” sahifasida — yuqoridagi tugma orqali oçiladi. Kun idsi:{' '}
                 {day.id}
               </p>
             </div>

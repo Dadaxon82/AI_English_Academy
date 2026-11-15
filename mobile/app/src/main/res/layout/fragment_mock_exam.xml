@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Mock imtihon ekrani — bo'limlar ro'yxati + yakuniy natija.
+    Bo'lim qatorlari va natija kartalari `Rows` orqali `mockRows` ga
+    qo'shiladi (soni statik emas: darajaga qarab 4 ta bo'lim).
+    `mockFinish` — natijani hisoblab saqlash, `mockReset` — oraliq holatni
+    tozalash. Qahramon HAR ekranda.
+-->
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/mockScroll"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/screen_pad">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/mockTitle"
+                    style="@style/Text.Aea.Title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/mockSubtitle"
+                    style="@style/Text.Aea.Small"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp" />
+            </LinearLayout>
+
+            <com.dadaxon.aienglishacademy.ui.MascotView
+                android:id="@+id/mockMascot"
+                android:layout_width="@dimen/mascot_md"
+                android:layout_height="@dimen/mascot_md"
+                android:contentDescription="@string/mascot_alt" />
+        </LinearLayout>
+
+        <!-- Yakuniy umumiy baho (`mock_total_score` yoki `mock_score_na`) -->
+        <TextView
+            android:id="@+id/mockTotal"
+            style="@style/Text.Aea.Number"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_m"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/mockRows"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_s"
+            android:orientation="vertical" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/mockFinish"
+            style="@style/Widget.Aea.Button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_m"
+            android:text="@string/mock_finish"
+            android:visibility="gone" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/mockReset"
+            style="@style/Widget.Aea.Button.Outlined"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_s"
+            android:text="@string/mock_reset"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/mockEmpty"
+            style="@style/Text.Aea.Small"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_m"
+            android:visibility="gone" />
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

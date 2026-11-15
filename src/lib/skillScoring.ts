@@ -92,8 +92,8 @@ export function evaluateLevelPromotion(
       readySkills: ready,
       weakSkills: weak,
       reasonUz:
-        `To'rt asosiy ko'nikma bo'yicha yetarli dalil to'plandi (har biri ≥${PROMOTION_THRESHOLD} ball va ≥${MIN_EVIDENCE_PER_SKILL} natija). ` +
-        `${next} bosqichiga o‘tish tavsiya etiladi. Bu avtomatik o‘tish emas — faqat tavsiya.`,
+        `Tört asosiy könikma böyiça yetarli dalil töplandi (har biri ≥${PROMOTION_THRESHOLD} ball va ≥${MIN_EVIDENCE_PER_SKILL} natija). ` +
+        `${next} bosqiçiga ötiş tavsiya etiladi. Bu avtomatik ötiş emas — faqat tavsiya.`,
     }
   }
 
@@ -103,8 +103,8 @@ export function evaluateLevelPromotion(
     weakSkills: weak,
     reasonUz:
       ready.length >= SKILLS_REQUIRED_TO_PROMOTE
-        ? 'Keyingi bosqich hozircha oxirgi daraja.'
-        : `Daraja oshirish uchun kamida ${SKILLS_REQUIRED_TO_PROMOTE} ko‘nikma bo‘yicha dalil kerak. Hozircha ${ready.length} ta tayyor; zaif: ${weak.join(', ') || 'yo‘q'}. XP va kunlar soni darajani o‘zgartirmaydi.`,
+        ? 'Keyingi bosqiç hozirça oxirgi daraja.'
+        : `Daraja oşiriş uçun kamida ${SKILLS_REQUIRED_TO_PROMOTE} könikma böyiça dalil kerak. Hozirça ${ready.length} ta tayyor; zaif: ${weak.join(', ') || 'yöq'}. XP va kunlar soni darajani özgartirmaydi.`,
   }
 }
 
@@ -130,10 +130,10 @@ export function streakFor(dates: readonly string[], today: string): number {
 
 export function levelLabel(level: CefrLevel): { titleEn: string; titleUz: string } {
   const map: Record<CefrLevel, { titleEn: string; titleUz: string }> = {
-    A1: { titleEn: 'Beginner', titleUz: 'Boshlang‘ich' },
-    A2: { titleEn: 'Elementary', titleUz: 'O‘rtacha past' },
-    B1: { titleEn: 'Intermediate', titleUz: 'O‘rtacha' },
-    B2: { titleEn: 'Upper-Intermediate', titleUz: 'O‘rtachadan yuqori' },
+    A1: { titleEn: 'Beginner', titleUz: 'Boşlanğiç' },
+    A2: { titleEn: 'Elementary', titleUz: 'Örtaça past' },
+    B1: { titleEn: 'Intermediate', titleUz: 'Örtaça' },
+    B2: { titleEn: 'Upper-Intermediate', titleUz: 'Örtaçadan yuqori' },
     C1: { titleEn: 'Advanced', titleUz: 'Yuqori' },
   }
   return map[level]

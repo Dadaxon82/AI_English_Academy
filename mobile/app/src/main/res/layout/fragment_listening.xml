@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Tinglash ekrani — ikki holat: mashg'ulotlar ro'yxati va bitta mashg'ulot
+    (audio + transkript + mashqlar). Ro'yxat qatorlari `Rows` orqali
+    `listeningRows` ga qo'shiladi; transkript `listeningTranscriptBox` ichida
+    (holatga qarab ko'rinadi/yashirinadi). Qahramon HAR ekranda.
+-->
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/listeningScroll"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/screen_pad">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/listeningTitle"
+                    style="@style/Text.Aea.Title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/listeningSubtitle"
+                    style="@style/Text.Aea.Small"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp" />
+            </LinearLayout>
+
+            <com.dadaxon.aienglishacademy.ui.MascotView
+                android:id="@+id/listeningMascot"
+                android:layout_width="@dimen/mascot_md"
+                android:layout_height="@dimen/mascot_md"
+                android:contentDescription="@string/mascot_alt" />
+        </LinearLayout>
+
+        <!-- Audio holati: joriy / umumiy vaqt (`listening_time` = %1$s / %2$s) -->
+        <TextView
+            android:id="@+id/listeningTime"
+            style="@style/Text.Aea.Number"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_m"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/listeningAudioRow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_s"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/listeningPlayPause"
+                style="@style/Widget.Aea.Button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/gap_s"
+                android:layout_weight="1"
+                android:text="@string/listening_play" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/listeningReplay"
+                style="@style/Widget.Aea.Button.Outlined"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/listening_replay" />
+        </LinearLayout>
+
+        <!-- Audio fayl yo'q — halol sabab -->
+        <TextView
+            android:id="@+id/listeningNoAudio"
+            style="@style/Text.Aea.Small"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_m"
+            android:text="@string/listening_no_audio"
+            android:visibility="gone" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/listeningTranscriptButton"
+            style="@style/Widget.Aea.Button.Outlined"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_s"
+            android:text="@string/listening_show_transcript"
+            android:visibility="gone" />
+
+        <!-- Transkript (`transcriptPolicy == "after-first-listen"` bo'lsa bir
+             marta ijrodan keyin ochiladi) -->
+        <LinearLayout
+            android:id="@+id/listeningTranscriptBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_m"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/listeningTranscriptTitle"
+                style="@style/Text.Aea.Section"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/listening_transcript" />
+
+            <TextView
+                android:id="@+id/listeningTranscriptNote"
+                style="@style/Text.Aea.Small"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp" />
+
+            <LinearLayout
+                android:id="@+id/listeningTranscriptRows"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/listeningRows"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/listeningStart"
+            style="@style/Widget.Aea.Button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_l"
+            android:text="@string/listening_start"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/listeningEmpty"
+            style="@style/Text.Aea.Small"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_m"
+            android:visibility="gone" />
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

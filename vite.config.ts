@@ -2,6 +2,22 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
+import type { Plugin } from 'vite'
+import { cspContent } from './src/lib/csp'
+
+function securityMeta(): Plugin {
+  return {
+    name: 'aea-security-meta',
+    apply: 'build',
+    transformIndexHtml(html) {
+      const csp = cspContent(process.env.VITE_SUPABASE_URL)
+      return html.replace(
+        '<head>',
+        `<head>\n    <meta http-equiv="Content-Security-Policy" content="${csp}" />\n    <meta name="referrer" content="strict-origin-when-cross-origin" />`,
+      )
+    },
+  }
+}
 
 // GitHub project page `/AI_English_Academy/` ostida turadi. Barcha resurs
 // yo'llari shu bazaga nisbatan chiqarilishi kerak — aks holda brauzer
@@ -9,9 +25,14 @@ import { VitePWA } from 'vite-plugin-pwa'
 // uchun: VITE_BASE=/ npm run build
 export const APP_BASE = process.env.VITE_BASE ?? '/AI_English_Academy/'
 
+// OG / canonical uchun MUTLAQ manzil (index.html'da %VITE_SITE_URL%). Custom domain
+// bo'lsa: VITE_SITE_URL=https://example.uz/ npm run build
+process.env.VITE_SITE_URL ??= `https://dadaxon82.github.io${APP_BASE}`
+
 export default defineConfig({
   base: APP_BASE,
   plugins: [
+    securityMeta(),
     react(),
     tailwindcss(),
     VitePWA({
@@ -20,7 +41,7 @@ export default defineConfig({
       manifest: {
         name: 'AI English Academy',
         short_name: 'AEA',
-        description: "Ingliz tilini A1 dan C1 gacha o'rganish platformasi",
+        description: "Ingliz tilini özbek tilida, öyin şaklida örganiş: CEFR yöli (hozir A1 va A2 darslari), Mock Exam, oflayn",
         lang: 'uz',
         dir: 'ltr',
         display: 'standalone',
@@ -41,9 +62,16 @@ export default defineConfig({
             purpose: 'maskable',
           },
         ],
+        // Do'kon / o'rnatish oynasidagi skrinshotlar — haqiqiy ilovadan (scripts/make-share-images.mjs).
+        screenshots: [
+          { src: 'screenshots/wide-dashboard.png', sizes: '1280x800', type: 'image/png', form_factor: 'wide', label: 'Boş sahifa: kunlik reja va darslar xaritasi' },
+          { src: 'screenshots/wide-path.png', sizes: '1280x800', type: 'image/png', form_factor: 'wide', label: 'Öquv yöli xaritasi' },
+          { src: 'screenshots/narrow-dashboard.png', sizes: '390x844', type: 'image/png', form_factor: 'narrow', label: 'Boş sahifa (telefon)' },
+          { src: 'screenshots/narrow-path.png', sizes: '390x844', type: 'image/png', form_factor: 'narrow', label: 'Öquv yöli (telefon)' },
+        ],
         shortcuts: [
           { name: 'Dashboard', url: 'dashboard', description: 'Asosiy panel' },
-          { name: 'Vocabulary', url: 'vocabulary', description: "Lug'at va flashcard" },
+          { name: 'Vocabulary', url: 'vocabulary', description: "Luğat va flashcard" },
           { name: 'Mock Exam', url: 'mock-exam', description: 'Sinov namunasi' },
         ],
       },
@@ -52,6 +80,10 @@ export default defineConfig({
         // Uning o'rniga pastdagi runtimeCaching `/audio/` qoidasi birinchi
         // tinglashdan keyin faylni keshlaydi → keyingi safar offline ishlaydi.
         globPatterns: ['**/*.{js,css,html,ico,png,svg,webmanifest,json}'],
+        // Ulashish rasmlari oflayn kerak emas — precache'ni og'irlashtirmaydi.
+        // Admin panel (grafiklar ~400 KB) oflayn keshga KIRMAYDI: u faqat
+        // server bilan ishlaydi va o'quvchilarga kerak emas.
+        globIgnores: ['**/og-image.png', '**/screenshots/**', '**/assets/admin-vendor-*.js', '**/assets/AdminDashboard-*.js'],
         navigateFallback: `${APP_BASE}index.html`,
         navigateFallbackDenylist: [/^\/api\//],
         runtimeCaching: [
@@ -97,6 +129,30 @@ export default defineConfig({
     target: 'es2022',
     sourcemap: false,
     reportCompressedSize: false,
+    rollupOptions: {
+      output: {
+        // Kutubxonalar alohida, kam o'zgaradigan chunk'larda — ilova kodi
+        // yangilanganda brauzer/SW keshidagi vendor fayllar qayta yuklanmaydi.
+        // Supabase dinamik import qilinadi (`lib/supabase.ts`) — mehmon
+        // rejimida umuman yuklanmaydi.
+        manualChunks(id) {
+          if (!id.includes('node_modules')) return undefined
+          if (/node_modules\/(react|react-dom|scheduler|react-router|react-router-dom|cookie|set-cookie-parser)\//.test(id)) return 'react'
+          if (id.includes('@supabase')) return 'supabase'
+          // Faqat admin panel ishlatadi — boshlang'ich yuklanishga kirmasin
+          // (Recharts + uning bog'liqliklari, ikonkalar).
+          if (/node_modules\/(recharts|victory-vendor|d3-[a-z-]+|internmap|@reduxjs|redux|react-redux|reselect|immer|es-toolkit|decimal\.js-light|eventemitter3|tiny-invariant|clsx|react-is|lucide-react)\//.test(id))
+            return 'admin-vendor'
+          // 3D olam (three + fiber + drei va ularning bog'liqliklari) — faqat 3D rejimda
+          // yuklanadi. Nomli bo'lakka QO'YILMAYDI (Rollup umumiy yordamchilarni o'sha bo'lakka
+          // solib, uni boshlang'ich yuklanishga tortib ketardi): `undefined` — Rollup ularni
+          // dangasa `World3D` bo'lagi yoniga o'zi joylaydi.
+          if (/node_modules\/(three|@react-three|three-stdlib|three-mesh-bvh|zustand|its-fine|suspend-react|react-reconciler|maath|troika-[a-z-]+|bidi-js|webgl-sdf-generator|meshline|camera-controls|detect-gpu|hls\.js|stats-gl|stats\.js|tunnel-rat|@monogrid|@mediapipe|glsl-noise|draco3d|fflate|potpack|react-use-measure|utility-types|@use-gesture)\//.test(id))
+            return undefined
+          return 'vendor'
+        },
+      },
+    },
   },
   server: {
     port: 5173,

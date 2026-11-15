@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    O'yin belgisi — geometria veb `src/components/icons.tsx` dag `heart` yo'lidan
+    SO'ZMA-SO'Z nusxa (test: `src/test/game-icons.test.ts` yo'l matnini ikkala
+    faylda solishtiradi). Rang veb `src/index.css` dag `heart (CSS)` o'zgaruvchisi
+    bilan bir xil (`@color/heart`). Viewport 24×24 — veqdagi `viewBox="0 0 24 24"`.
+    `fillColor` + `strokeColor` veqdagi `filled=true` holatiga mos (belgi SOLID
+    ro'yxatida); `tint` — bitta faylni boshqa rangda ham ishlatish uchun
+    (masalan yurak tugaganida `@color/heart_dark` yoki kulrang).
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24"
+    android:tint="@color/heart">
+    <path
+        android:pathData="M12 20.7 4.6 13.4a5 5 0 1 1 7.4-6.7 5 5 0 1 1 7.4 6.7z"
+        android:fillColor="@color/heart"
+        android:strokeColor="@color/heart"
+        android:strokeWidth="1"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+</vector>

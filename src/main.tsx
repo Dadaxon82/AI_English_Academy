@@ -1,7 +1,12 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App'
+import { initInstallPrompt } from './lib/install'
 import './index.css'
+
+// PWA o'rnatish hodisasi sahifa yuklanishi bilan keladi — Dashboard'dagi
+// "Mobil ilova" tugmasi uchun boshidanoq ushlab qolinadi.
+initInstallPrompt()
 
 // Xatolar oqibati — foydalanuvchi ko'rmaydigan "jim" xatolarni oldini olish
 window.addEventListener('error', (e) => {
@@ -9,7 +14,7 @@ window.addEventListener('error', (e) => {
 })
 
 const el = document.getElementById('root')
-if (!el) throw new Error('#root topilmadi — index.html tekshiring')
+if (!el) throw new Error('#root topilmadi — index.html tekşiring')
 
 createRoot(el).render(
   <StrictMode>

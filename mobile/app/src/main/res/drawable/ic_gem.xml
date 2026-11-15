@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    O'yin belgisi — geometria veb `src/components/icons.tsx` dag `gem` yo'llaridan
+    SO'ZMA-SO'Z nusxa (test: `src/test/game-icons.test.ts`). `gem` SOLID
+    ro'yxatida YO'Q — veqdagi kabi faqat kontur (`fill=none`, `strokeWidth=2`).
+    Rang veb `src/index.css` dag `gem (CSS)` (`@color/gem`).
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24"
+    android:tint="@color/gem">
+    <path
+        android:pathData="M7 3h10l4 6-9 12L3 9z"
+        android:fillColor="@android:color/transparent"
+        android:strokeColor="@color/gem"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <path
+        android:pathData="M3 9h18"
+        android:fillColor="@android:color/transparent"
+        android:strokeColor="@color/gem"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <path
+        android:pathData="M9.5 3 7 9l5 12 5-12-2.5-6"
+        android:fillColor="@android:color/transparent"
+        android:strokeColor="@color/gem"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+</vector>

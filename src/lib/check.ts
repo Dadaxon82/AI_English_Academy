@@ -7,6 +7,7 @@
  */
 
 import type { Exercise } from '../content/types'
+import { foldUzLatin } from './uzAlphabet'
 
 export interface CheckResult {
   correct: boolean
@@ -21,7 +22,9 @@ export interface CheckResult {
 }
 
 export function normalize(value: string): string {
-  return value
+  // Yangi alifbo harflari (ö, ğ, ş, ç) eski shaklga keltiriladi — aks holda
+  // NFD ularni diakritiksiz «o, g, s, c» ga aylantirib, «o'qish» ≠ «öqiş» bo'lardi.
+  return foldUzLatin(value)
     .toLocaleLowerCase('en')
     .normalize('NFD')
     .replace(/[̀-ͯ]/g, '')
@@ -56,10 +59,28 @@ export function checkAnswer(exercise: Exercise, answer: unknown): CheckResult {
       return checkTfng(exercise, answer)
     case 'matching':
       return checkMatching(exercise, answer)
+    case 'audio-matching':
+      return checkAudioMatching(exercise, answer)
+    case 'listening-select':
+      return checkListeningSelect(exercise, answer)
+    case 'listening-fill':
+      return checkListeningFill(exercise, answer)
+    case 'listening-choice':
+      return checkListeningChoice(exercise, answer)
     case 'gap-fill':
       return checkGapFill(exercise, answer)
     case 'word-order':
       return checkWordOrder(exercise, answer)
+    case 'multi-select':
+      return checkMultiSelect(exercise, answer)
+    case 'dropdown-cloze':
+      return checkDropdown(exercise, answer)
+    case 'sequence':
+      return checkSequence(exercise, answer)
+    case 'categorize':
+      return checkCategorize(exercise, answer)
+    case 'short-answer':
+      return checkShortAnswer(exercise, answer)
     case 'translation':
       return checkTranslation(exercise, answer)
   }
@@ -83,7 +104,7 @@ function checkChoice(exercise: Extract<Exercise, { kind: 'multiple-choice' }>, a
     correct,
     given: chosen,
     expected: exercise.options[exercise.answerIndex],
-    whyUz: correct ? exercise.explanationUz : `Tanlovingiz noto‘g‘ri. ${exercise.explanationUz}`,
+    whyUz: correct ? exercise.explanationUz : `Tanlovingiz notöğri. ${exercise.explanationUz}`,
     partial: correct ? 1 : 0,
   }
 }
@@ -99,12 +120,124 @@ function checkTfng(exercise: Extract<Exercise, { kind: 'true-false-notgiven' }>,
   const correct = given === exercise.answer
   let why = exercise.explanationUz
   if (!correct) {
-    why = `To‘g‘ri javob — ${TFNG_LABEL[exercise.answer]}. ${exercise.explanationUz}`
+    why = `Töğri javob — ${TFNG_LABEL[exercise.answer]}. ${exercise.explanationUz}`
     if (exercise.evidence) why += ` Matndagi asos: “${exercise.evidence}”.`
   } else if (exercise.evidence) {
     why += ` Matndagi asos: “${exercise.evidence}”.`
   }
   return { correct, given: TFNG_LABEL[given] ?? '', expected: TFNG_LABEL[exercise.answer], whyUz: why, partial: correct ? 1 : 0 }
+}
+
+/** Bir nechta javob: to'plam aniq teng bo'lsa to'g'ri; ortiqcha tanlov ballni kamaytiradi. */
+function checkMultiSelect(exercise: Extract<Exercise, { kind: 'multi-select' }>, answer: unknown): CheckResult {
+  const raw = Array.isArray(answer) ? answer : []
+  const chosen = [...new Set(raw.map((x) => Number(x)).filter((n) => Number.isInteger(n) && n >= 0 && n < exercise.options.length))].sort(
+    (a, b) => a - b,
+  )
+  const right = [...new Set(exercise.answerIndexes)].sort((a, b) => a - b)
+  const hits = chosen.filter((i) => right.includes(i)).length
+  const extra = chosen.length - hits
+  const correct = hits === right.length && extra === 0
+  const partial = right.length === 0 ? 0 : Math.max(0, (hits - extra) / right.length)
+  const missed = right.filter((i) => !chosen.includes(i)).map((i) => `“${exercise.options[i]}”`)
+  const wrong = chosen.filter((i) => !right.includes(i)).map((i) => `“${exercise.options[i]}”`)
+  let why = exercise.explanationUz
+  if (!correct) {
+    const bits: string[] = []
+    if (missed.length) bits.push(`belgilanmagan töğri javob: ${missed.join(', ')}`)
+    if (wrong.length) bits.push(`ortiqça belgilangan: ${wrong.join(', ')}`)
+    why = `${bits.join('; ')}. ${exercise.explanationUz}`
+  }
+  return {
+    correct,
+    given: chosen.map((i) => exercise.options[i]).join(', '),
+    expected: right.map((i) => exercise.options[i]).join(', '),
+    whyUz: why,
+    partial: correct ? 1 : partial,
+  }
+}
+
+/** Ochiluvchi ro'yxat: har bo'shliq alohida baholanadi. */
+function checkDropdown(exercise: Extract<Exercise, { kind: 'dropdown-cloze' }>, answer: unknown): CheckResult {
+  const given = toList(answer)
+  let ok = 0
+  const detail: string[] = []
+  exercise.answers.forEach((expected, i) => {
+    const user = given[i] ?? ''
+    if (norm(user) === norm(expected)) ok += 1
+    else detail.push(`${i + 1}-böşliq: “${user || '—'}” emas, “${expected}”`)
+  })
+  const total = exercise.answers.length
+  return {
+    correct: ok === total && total > 0,
+    given: given.join(' / '),
+    expected: exercise.answers.join(' / '),
+    whyUz: ok === total ? exercise.explanationUz : `${detail.join('; ')}. ${exercise.explanationUz}`,
+    partial: total === 0 ? 0 : ok / total,
+  }
+}
+
+/** Ketma-ketlik: to'liq tartib mos bo'lsa to'g'ri; qisman — to'g'ri o'rindagilar ulushi. */
+function checkSequence(exercise: Extract<Exercise, { kind: 'sequence' }>, answer: unknown): CheckResult {
+  const given = toList(answer)
+  const n = exercise.items.length
+  let ok = 0
+  exercise.items.forEach((it, i) => {
+    if (norm(given[i] ?? '') === norm(it)) ok += 1
+  })
+  const correct = ok === n && given.length === n
+  let why = exercise.explanationUz
+  if (!correct) {
+    const first = exercise.items.findIndex((it, i) => norm(given[i] ?? '') !== norm(it))
+    why = `${ok}/${n} ta element öz joyida. ${first + 1}-örinda “${exercise.items[first] ?? '—'}” turişi kerak edi. ${exercise.explanationUz}`
+  }
+  return {
+    correct,
+    given: given.map((g, i) => `${i + 1}) ${g}`).join(' '),
+    expected: exercise.items.map((g, i) => `${i + 1}) ${g}`).join(' '),
+    whyUz: why,
+    partial: n === 0 ? 0 : ok / n,
+  }
+}
+
+/** Saralash: javob — element matni → guruh indeksi. */
+function checkCategorize(exercise: Extract<Exercise, { kind: 'categorize' }>, answer: unknown): CheckResult {
+  const map = (answer && typeof answer === 'object' && !Array.isArray(answer) ? answer : {}) as Record<string, unknown>
+  let ok = 0
+  const wrong: string[] = []
+  for (const it of exercise.sortItems) {
+    if (Number(map[it.text]) === it.category) ok += 1
+    else wrong.push(`“${it.text}” → ${exercise.categories[it.category] ?? '—'}`)
+  }
+  const total = exercise.sortItems.length
+  const group = (pick: (i: number) => boolean) =>
+    exercise.categories
+      .map((c, ci) => `${c}: ${exercise.sortItems.filter((it) => pick(ci) && it.category === ci).map((it) => it.text).join(', ')}`)
+      .join(' | ')
+  return {
+    correct: ok === total && total > 0,
+    given: exercise.categories
+      .map((c, ci) => `${c}: ${exercise.sortItems.filter((it) => Number(map[it.text]) === ci).map((it) => it.text).join(', ')}`)
+      .join(' | '),
+    expected: group(() => true),
+    whyUz: ok === total ? exercise.explanationUz : `${ok}/${total} töğri. Töğrisi: ${wrong.slice(0, 4).join('; ')}. ${exercise.explanationUz}`,
+    partial: total === 0 ? 0 : ok / total,
+  }
+}
+
+/** Qisqa javob: qabul qilinadigan variantlardan biriga bardoshli tenglik. */
+function checkShortAnswer(exercise: Extract<Exercise, { kind: 'short-answer' }>, answer: unknown): CheckResult {
+  const given = toList(answer)[0] ?? ''
+  const correct = given.trim() !== '' && exercise.accepted.some((a) => looseEquals(a, given))
+  return {
+    correct,
+    given,
+    expected: exercise.accepted[0] ?? '',
+    whyUz: correct
+      ? exercise.explanationUz
+      : `Kutilgan javob: ${exercise.accepted.map((a) => `“${a}”`).join(' yoki ')}. ${exercise.explanationUz}`,
+    partial: correct ? 1 : 0,
+  }
 }
 
 function checkMatching(exercise: Extract<Exercise, { kind: 'matching' }>, answer: unknown): CheckResult {
@@ -124,8 +257,74 @@ function checkMatching(exercise: Extract<Exercise, { kind: 'matching' }>, answer
     whyUz:
       ok === total
         ? exercise.explanationUz
-        : `${ok}/${total} juftlik to‘g‘ri. Xatolar: ${wrongPairs.slice(0, 4).join(', ')}. ${exercise.explanationUz}`,
+        : `${ok}/${total} juftlik töğri. Xatolar: ${wrongPairs.slice(0, 4).join(', ')}. ${exercise.explanationUz}`,
     partial,
+  }
+}
+
+function checkAudioMatching(exercise: Extract<Exercise, { kind: 'audio-matching' }>, answer: unknown): CheckResult {
+  const map = (answer ?? {}) as Record<string, string>
+  let ok = 0
+  const wrongPairs: string[] = []
+  for (const pair of exercise.pairs) {
+    if (norm(map[pair.left.word] ?? '') === norm(pair.right)) ok += 1
+    else wrongPairs.push(`“${pair.left.word}” → ${pair.right}`)
+  }
+  const total = exercise.pairs.length
+  const partial = total === 0 ? 0 : ok / total
+  return {
+    correct: ok === total,
+    given: exercise.pairs.map((p) => `${p.left.word} → ${map[p.left.word] ?? '—'}`).join('; '),
+    expected: exercise.pairs.map((p) => `${p.left.word} → ${p.right}`).join('; '),
+    whyUz:
+      ok === total
+        ? exercise.explanationUz
+        : `${ok}/${total} juftlik töğri. Xatolar: ${wrongPairs.slice(0, 4).join(', ')}. ${exercise.explanationUz}`,
+    partial,
+  }
+}
+
+/** «Что вы услышали?» — plitkalardan tartib bilan yig'ilgan matn so'z-so'z solishtiriladi. */
+function checkListeningSelect(exercise: Extract<Exercise, { kind: 'listening-select' }>, answer: unknown): CheckResult {
+  const given = toList(answer)
+  const correct = given.length === exercise.answer.length && given.every((w, i) => norm(w) === norm(exercise.answer[i] ?? ''))
+  const ok = exercise.answer.filter((w, i) => norm(given[i] ?? '') === norm(w)).length
+  const total = exercise.answer.length
+  return {
+    correct,
+    given: given.join(' '),
+    expected: exercise.answer.join(' '),
+    whyUz: correct ? exercise.explanationUz : `Eşitilgan matn: “${exercise.answer.join(' ')}”. ${exercise.explanationUz}`,
+    partial: total === 0 ? 0 : ok / total,
+  }
+}
+
+/** «Введите пропущенное слово» — audio orqali eşitilgan gapdagi bo'shliqqa klaviaturadan yozilgan javob. */
+function checkListeningFill(exercise: Extract<Exercise, { kind: 'listening-fill' }>, answer: unknown): CheckResult {
+  const given = toList(answer)[0] ?? ''
+  const acceptable = [exercise.answer, ...(exercise.acceptAlternatives ?? [])]
+  const correct = given.trim() !== '' && acceptable.some((a) => looseEquals(a, given))
+  return {
+    correct,
+    given,
+    expected: exercise.answer,
+    whyUz: correct ? exercise.explanationUz : `Töğri söz: “${exercise.answer}”. ${exercise.explanationUz}`,
+    partial: correct ? 1 : 0,
+  }
+}
+
+/** «Послушайте и заполните пропуск» — 2 audio variantdan töğrisini tanlash (multiple-choice bilan bir xil shartnoma). */
+function checkListeningChoice(exercise: Extract<Exercise, { kind: 'listening-choice' }>, answer: unknown): CheckResult {
+  const answered = typeof answer === 'number' ? Number.isFinite(answer) : answer !== null && answer !== undefined && String(answer).trim() !== ''
+  const idx = answered ? (typeof answer === 'number' ? answer : Number(answer)) : -1
+  const chosen = idx >= 0 ? exercise.options[idx] ?? '' : ''
+  const correct = answered && idx === exercise.answerIndex
+  return {
+    correct,
+    given: chosen,
+    expected: exercise.options[exercise.answerIndex] ?? '',
+    whyUz: correct ? exercise.explanationUz : `Töğri variant eşitilgan gapqa mos keladi: “${exercise.options[exercise.answerIndex]}”. ${exercise.explanationUz}`,
+    partial: correct ? 1 : 0,
   }
 }
 
@@ -140,7 +339,7 @@ function checkGapFill(exercise: Extract<Exercise, { kind: 'gap-fill' }>, answer:
     const acceptable = [expected, ...(alternatives[i] ?? [])]
     const hit = acceptable.some((a) => (exercise.caseSensitive ? a === user : looseEquals(a, user)))
     if (hit) ok += 1
-    else detail.push(`${i + 1}-bo‘shliq: sizda “${user || 'bo‘sh'}”, to‘g‘ri: “${expected}”`)
+    else detail.push(`${i + 1}-böşliq: sizda “${user || 'böş'}”, töğri: “${expected}”`)
   })
 
   const total = exercise.answers.length
@@ -169,7 +368,7 @@ function checkWordOrder(exercise: Extract<Exercise, { kind: 'word-order' }>, ans
     const firstWrong = exercise.answer.findIndex((w, i) => norm(given[i] ?? '') !== norm(w))
     const pos = firstWrong + 1
     why =
-      `Tartibda xato bor: ${pos}-o‘rinda “${exercise.answer[firstWrong] ?? '—'}” turishi kerak edi` +
+      `Tartibda xato bor: ${pos}-örinda “${exercise.answer[firstWrong] ?? '—'}” turişi kerak edi` +
       (given[firstWrong] ? `, sizda “${given[firstWrong]}”.` : '.') +
       ` ${exercise.noteUz ?? ''} ${exercise.explanationUz}`.trim()
   }

@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Yozish ekrani: ro'yxat (ARG_ID yo'q) yoki bitta topshiriq + FORMA.
+    Forma XML'da (matn kiritish), tahlil natijalari `writingResultRows` ga
+    `Rows` orqali qo'shiladi — sonlar soni statik emas. Qahramon HAR ekranda.
+-->
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/writingScroll"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/screen_pad">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/writingTitle"
+                    style="@style/Text.Aea.Title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/writingSubtitle"
+                    style="@style/Text.Aea.Small"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp" />
+            </LinearLayout>
+
+            <com.dadaxon.aienglishacademy.ui.MascotView
+                android:id="@+id/writingMascot"
+                android:layout_width="@dimen/mascot_md"
+                android:layout_height="@dimen/mascot_md"
+                android:contentDescription="@string/mascot_alt" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/writingRows"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+
+        <!-- ===================== Forma (faqat topshiriq holatida) ======== -->
+        <LinearLayout
+            android:id="@+id/writingFormBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.Aea.Field"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/gap_m"
+                android:hint="@string/writing_input_hint">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/writingField"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="top"
+                    android:inputType="textMultiLine|textCapSentences"
+                    android:minLines="6" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                android:id="@+id/writingWords"
+                style="@style/Text.Aea.Small"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/gap_s" />
+
+            <TextView
+                android:id="@+id/writingWarn"
+                style="@style/Text.Aea.Small"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textColor="@color/warn"
+                android:visibility="gone" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/writingSubmit"
+                style="@style/Widget.Aea.Button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/gap_m"
+                android:text="@string/writing_submit" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/writingResubmit"
+                style="@style/Widget.Aea.Button.Outlined"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/gap_s"
+                android:text="@string/writing_resubmit"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/writingResultRows"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+
+        <TextView
+            android:id="@+id/writingEmpty"
+            style="@style/Text.Aea.Small"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_m"
+            android:visibility="gone" />
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

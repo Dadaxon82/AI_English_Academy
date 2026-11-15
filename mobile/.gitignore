@@ -1,0 +1,17 @@
+# Gradle chiqindilari — repoga kirmaydi (kecha va build natijalari)
+.gradle/
+app/build/
+build/
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Mahalliy SDK yo'li — har mashinada o'ziki (ANDROID_HOME ham yetarli)
+local.properties
+
+# Imzo kalitlari va parollari — HECH QACHON repoga kirmaydi
+keystore.properties
+*.jks
+*.keystore
+keystores/*
+!keystores/README.md

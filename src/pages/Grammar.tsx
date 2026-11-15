@@ -1,16 +1,16 @@
 /**
- * GRAMMATIKA bölimi.
+ * GRAMMATIKA bo'limi.
  *
  * Qilinadi:
- *  - Mavzular röyxati: titleUz, level, maşqlar soni, progress (data.attempts
- *    içida şu mavzu maşq id'lari böyiça sanaladi)
+ *  - Mavzular ro'yxati: titleUz, level, mashqlar soni, progress (data.attempts
+ *    ichida shu mavzu mashq id'lari bo'yicha sanaladi)
  *  - Mavzu sahifasi: izoh paragraflari, formula, misollar (en+uz),
- *    forms (ijobiy / inkor / söroq), commonMistakes jadvali
- *  - Maşqlar ExerciseRunner orqali; natija recordAttempt bilan yoziladi
- *  - Moslaşuvçan tartib: nextExerciseIndex (src/lib/çeck.ts) — order massivi
- *  - 2 ta ketma-ket xatoda izohni qayta öqiş taklif qilinadi (scroll)
+ *    forms (ijobiy / inkor / so'roq), commonMistakes jadvali
+ *  - Mashqlar ExerciseRunner orqali; natija recordAttempt bilan yoziladi
+ *  - Moslashuvchan tartib: nextExerciseIndex (src/lib/check.ts) — order massivi
+ *  - 2 ta ketma-ket xatoda izohni qayta o'qish taklif qilinadi (scroll)
  *
- * Izohlar va tekşiruv töliq lokal qoidalarga asoslangan (AI yöq).
+ * Izohlar va tekshiruv to'liq lokal qoidalarga asoslangan (AI yo'q).
  */
 
 import { useCallback, useMemo, useRef, useState, type RefObject } from 'react'
@@ -18,8 +18,11 @@ import ExerciseRunner from '../components/ExerciseRunner'
 import { Button, Card, Chip, EmptyState, InfoBanner, LoadingBlock, ProgressRing, StatTile } from '../components/ui'
 import { getBundle } from '../content'
 import type { Exercise, GrammarTopic } from '../content/types'
-import { nextExerciseIndex, type CheckResult } from '../lib/çeck'
-import { useStore } from '../lib/store'
+import { nextExerciseIndex, type CheckResult } from '../lib/check'
+import { lessonSequence } from '../lib/lessonChain'
+import { useStore } from '../lib/storeContext'
+import { GrammarLesson, LessonStartCard } from '../components/SectionLessons'
+import { grammarLesson } from '../lib/lessons'
 
 /* --------------------------- progress hisobi --------------------------- */
 
@@ -60,6 +63,7 @@ function agoLabel(at: number): string {
 export default function Grammar() {
   const { data, ready, actions } = useStore()
   const [openId, setOpenId] = useState<string | null>(null)
+  const [lessonId, setLessonId] = useState<string | null>(null)
 
   const bundle = getBundle(data.settings.currentLevel)
   const topics = bundle.grammar
@@ -67,6 +71,10 @@ export default function Grammar() {
   if (!ready) return <LoadingBlock label="Grammatika materiallari yuklanmoqda…" />
 
   const opened = openId ? topics.find((t) => t.id === openId) ?? null : null
+  const lessonTopic = lessonId ? topics.find((t) => t.id === lessonId) ?? null : null
+  if (lessonTopic) return <GrammarLesson topic={lessonTopic} onClose={() => setLessonId(null)} />
+  // Tavsiya: hali to'liq bajarilmagan birinchi mavzu (yo'q bo'lsa — birinchisi).
+  const nextTopic = topics.find((t) => topicProgress(t, data.attempts).ratio < 1) ?? topics[0]
 
   if (!opened) {
     return (
@@ -79,13 +87,23 @@ export default function Grammar() {
           </p>
         </header>
 
+        {nextTopic && (
+          <LessonStartCard
+            kicker="Grammatika darsi"
+            title={nextTopic.titleUz}
+            body="Qoida kartasi, maşqlar va misol gaplarni plitkalardan yiğiş"
+            steps={grammarLesson(nextTopic)}
+            onStart={() => setLessonId(nextTopic.id)}
+          />
+        )}
+
         {topics.length === 0 ? (
           <EmptyState
             title={`${data.settings.currentLevel} darajasi grammatikasi hali yuklanmagan`}
             body="Hozirça faqat A1 kontenti mavjud. Sozlamalardan darajani A1 qilib qöying yoki keyinroq qaytaning."
             action={
               data.settings.currentLevel !== 'A1' ? (
-                <Button onClick={() => actions.setLevel('A1')}>A1 darajasiga o‘tiş</Button>
+                <Button onClick={() => actions.setLevel('A1')}>A1 darajasiga ötiş</Button>
               ) : undefined
             }
           />
@@ -113,7 +131,7 @@ export default function Grammar() {
                     <Chip>{t.explanationUz.length} izoh qismi</Chip>
                     {p.attempts > 0 && (
                       <Chip tone={p.correct === p.attempted ? 'ok' : p.correct === 0 ? 'bad' : 'warn'}>
-                        to‘g‘ri: {p.correct}/{p.attempted}
+                        töğri: {p.correct}/{p.attempted}
                       </Chip>
                     )}
                   </div>
@@ -132,10 +150,13 @@ export default function Grammar() {
                     </p>
                   </div>
 
-                  <div className="flex gap-2">
-                    <Button onClick={() => setOpenId(t.id)}>{p.attempted > 0 ? 'Davom etiş' : 'Mavzuni oçiş'}</Button>
+                  <div className="flex flex-wrap gap-2">
+                    <Button variant="success" onClick={() => setLessonId(t.id)}>
+                      Darsni boşlaş
+                    </Button>
+                    <Button variant="secondary" onClick={() => setOpenId(t.id)}>{p.attempted > 0 ? 'Davom etiş' : 'Mavzuni oçiş'}</Button>
                     <Button variant="ghost" size="sm" onClick={() => setOpenId(t.id)} title="Faqat izohni öqiş">
-                      Izohni o‘qiş
+                      Izohni öqiş
                     </Button>
                   </div>
                 </Card>
@@ -155,7 +176,7 @@ export default function Grammar() {
 const FORM_TITLES: { key: 'affirmative' | 'negative' | 'question'; label: string }[] = [
   { key: 'affirmative', label: 'Ijobiy şakl' },
   { key: 'negative', label: 'Inkor şakli' },
-  { key: 'question', label: 'So‘roq şakli' },
+  { key: 'question', label: 'Söroq şakli' },
 ]
 
 function TopicDetail({ topic, onBack }: { topic: GrammarTopic; onBack: () => void }) {
@@ -166,12 +187,14 @@ function TopicDetail({ topic, onBack }: { topic: GrammarTopic; onBack: () => voi
 
   const total = topic.exercises.length
 
-  // --- moslaşuvçan tartib: qADAMMA-qADAM köringan maşqlar ketma-ketligi ---
-  const [order, setOrder] = useState<number[]>([0])
+  // --- moslashuvchan tartib: qADAMMA-qADAM ko'ringan mashqlar ketma-ketligi ---
+  // `order` bo'sh boshlanadi: birinchi mashq `baseOrder`dan (DULO tur
+  // almashinuvi) olinadi.
+  const [order, setOrder] = useState<number[]>([])
   const [pos, setPos] = useState(0)
   const [results, setResults] = useState<CheckResult[]>([])
   const [answered, setAnswered] = useState<Record<number, CheckResult>>({})
-  const [finişed, setFinişed] = useState(false)
+  const [finished, setFinished] = useState(false)
 
   const consecutiveErrors = useMemo(() => {
     let n = 0
@@ -181,6 +204,34 @@ function TopicDetail({ topic, onBack }: { topic: GrammarTopic; onBack: () => voi
     }
     return n
   }, [results])
+
+  /**
+   * DULO tarzidagi ASOSIY tartib: bir xil turdagi mashq qo'shni kelmasligi
+   * uchun pool tartibi qayta tartiblanadi (`src/lib/lessonChain.ts`,
+   * MIN_KIND_GAP=2 — `DULO_mod.apk` `math/math_lesson.json`dan o'lchangan).
+   * Bu ro'yxat qADAMMA mashq tanlashda ishlatiladi; natijaga qarab keyingi
+   * mashqni tanlash qoidasi (`check.ts::nextExerciseIndex`) o'zgarmaydi,
+   * shuning uchun adaptivlik ham, tur almashinuvi ham saqlanadi.
+   */
+  const baseOrder = useMemo(() => {
+    const ids = topic.exercises.map((e) => e.id)
+    const kind = new Map(ids.map((id, i) => [id, topic.exercises[i]?.kind]))
+    // reinforce=false: mustahkamlashni bizda `nextExerciseIndex` xato bo'lsa
+    // qiladi (oldingi mashqni qaytaradi) — ro'yxat shishmaydi, son o'zgarmaydi.
+    return lessonSequence(ids, (id) => kind.get(id), false).map((id) => ids.indexOf(id))
+  }, [topic])
+
+  /** Bajarilmagan mashqni DULO tartibida topish (aylana bo'yicha). */
+  const pickUnanswered = (candidate: number): number => {
+    if (answered[candidate] === undefined) return candidate
+    const start = baseOrder.indexOf(candidate)
+    if (start < 0) return candidate
+    for (let k = 1; k <= total; k++) {
+      const c = baseOrder[(start + k) % total]
+      if (c !== undefined && answered[c] === undefined) return c
+    }
+    return candidate
+  }
 
   const scrollToShow = (ref: RefObject<HTMLElement | null>) => {
     ref.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
@@ -194,34 +245,34 @@ function TopicDetail({ topic, onBack }: { topic: GrammarTopic; onBack: () => voi
   const onNext = () => {
     const answeredCount = Object.keys(answered).length
     if (answeredCount >= total) {
-      setFinişed(true)
+      // Dars yakuni — o'yin qatlami: bonus XP va (0 xato bo'lsa) "xatosiz
+      // dars" hisobi `lessonComplete` ichida qo'shiladi. Xatolar sanoqi
+      // shu yerda hisoblanadi (`wrong` konstanti quyida — olddan havola
+      // qilmaslik uchun `answered` dan bevosita sanaymiz).
+      actions.completeLesson(answeredCount, Object.values(answered).filter((r) => !r.correct).length)
+      setFinished(true)
       return
     }
-    const currentBase = order[pos] ?? 0
-    let candidate = nextExerciseIndex(currentBase, results, total)
-    // Agar tanlangan maşq allaqaçon bajarilgan bölsa — keyingi bajarilmaganini
-    // olamiz (xato bölsa bir poğona orqaga qaytiş qoidasi saqlanadi).
-    if (answered[candidate] !== undefined) {
-      let steps = 0
-      while (answered[candidate] !== undefined && steps < total * 2) {
-        candidate = (candidate + 1) % total
-        steps += 1
-      }
-    }
+    const currentBase = order[pos] ?? baseOrder[pos] ?? 0
+    const candidate = pickUnanswered(nextExerciseIndex(currentBase, results, total))
+    // `pickUnanswered` bajarilgan mashq o'rniga DULO tartibidagi
+    // (`baseOrder`) keyingi bajarilmaganini oladi — xato bo'lsa bir pog'ona
+    // orqaga qaytish qoidasi (`nextExerciseIndex`) shu yerda saqlanadi.
     setOrder((prev) => [...prev, candidate])
     setPos((prev) => prev + 1)
     scrollToShow(runnerRef)
   }
 
   const restart = () => {
-    setOrder([0])
+    setOrder([])
     setPos(0)
     setResults([])
     setAnswered({})
-    setFinişed(false)
+    setFinished(false)
   }
 
-  const currentIdx = order[pos] ?? 0
+  // Birinchi qadam `order`da yo'q — DULO tartibi (`baseOrder`)dan olinadi.
+  const currentIdx = order[pos] ?? baseOrder[pos] ?? 0
   const current: Exercise | undefined = topic.exercises[currentIdx]
   const prevResult = pos > 0 ? results[pos - 1] ?? null : null
 
@@ -262,12 +313,12 @@ function TopicDetail({ topic, onBack }: { topic: GrammarTopic; onBack: () => voi
           <div className="grid gap-2">
             <b>{consecutiveErrors} ta ketma-ket xato bor.</b>
             <span>
-              Shu mavzuni mustahkamlaş tavsiya etiladi: izohni qayta öqib çiqing, keyingi maşq oldingi qiyinlikda
+              Şu mavzuni mustahkamlaş tavsiya etiladi: izohni qayta öqib çiqing, keyingi maşq oldingi qiyinlikda
               qoladi.
             </span>
             <div className="flex flex-wrap gap-2">
               <Button size="sm" onClick={() => scrollToShow(explanationRef)}>
-                Izohni ko‘riş
+                Izohni köriş
               </Button>
               <Button size="sm" variant="secondary" onClick={() => scrollToShow(mistakesRef)}>
                 Köp qiladigan xatolar
@@ -342,7 +393,7 @@ function TopicDetail({ topic, onBack }: { topic: GrammarTopic; onBack: () => voi
                   <thead>
                     <tr className="text-left text-[11px] uppercase tracking-wider muted">
                       <th className="py-2 pr-3 font-semibold">Xato</th>
-                      <th className="py-2 pr-3 font-semibold">To‘g‘ri</th>
+                      <th className="py-2 pr-3 font-semibold">Töğri</th>
                       <th className="py-2 font-semibold">Nega</th>
                     </tr>
                   </thead>
@@ -371,24 +422,24 @@ function TopicDetail({ topic, onBack }: { topic: GrammarTopic; onBack: () => voi
               Qayta boşlaş
             </Button>
             <Button variant="secondary" size="sm" onClick={() => scrollToShow(explanationRef)}>
-              Izohni ko‘riş
+              Izohni köriş
             </Button>
           </div>
         </div>
 
         {total === 0 ? (
           <EmptyState title="Bu mavzuda maşq yöq" body="Izoh va misollarni öqib, boşqa mavzuga öting." />
-        ) : finişed ? (
+        ) : finished ? (
           <Card className="grid gap-3">
             <h3 className="font-bold text-lg">Maşqlar tugadi</h3>
             <p className="text-sm">
-              {answeredList.length} ta maşqning {answeredList.length - wrong.length} tasi to‘g‘ri — ball {score}%.
+              {answeredList.length} ta maşqning {answeredList.length - wrong.length} tasi töğri — ball {score}%.
             </p>
             {wrong.length > 0 && <WrongList wrong={wrong} exercises={topic.exercises} />}
             <div className="flex flex-wrap gap-2">
               <Button onClick={restart}>Yana maşq qiliş</Button>
               <Button variant="secondary" onClick={onBack}>
-                Boşqa mavzuga o‘tiş
+                Boşqa mavzuga ötiş
               </Button>
             </div>
           </Card>
@@ -400,7 +451,14 @@ function TopicDetail({ topic, onBack }: { topic: GrammarTopic; onBack: () => voi
               index={currentIdx}
               total={total}
               prevResult={prevResult}
-              çecked={(r, secondsSpent) => {
+              /* Combo chizig'i HAQQONIY: bu sahifa har javobni
+                 `actions.recordAttempt(...)` bilan yozadi (pastdagi `checked`)
+                 — shuning uchun `data.game.combo` shu yerda o'sadi va uni
+                 ko'rsatish mumkin. Mobilda `ExerciseFragment` ham har javobni
+                 yozadi (`StoreAction.Attempt`) — u yerda qo'shimcha belgi
+                 shart emas. */
+              comboTracked
+              checked={(r, secondsSpent) => {
                 onChecked(r, currentIdx)
                 actions.recordAttempt({
                   exercise: current,
@@ -414,13 +472,13 @@ function TopicDetail({ topic, onBack }: { topic: GrammarTopic; onBack: () => voi
               onNext={onNext}
             />
             <p className="text-[11px] muted">
-              Maşq ketma-ketligi natijaga qarab tanlanadi (çeck.ts → nextExerciseIndex): to‘g‘ri javob qiyinlikni
-              oşiradi, xato bo‘lsa şu darajada mustahkamlaydi.
+              Maşq ketma-ketligi natijaga qarab tanlanadi (check.ts → nextExerciseIndex): töğri javob qiyinlikni
+              oşiradi, xato bölsa şu darajada mustahkamlaydi.
             </p>
           </Card>
         ) : null}
 
-        {!finişed && wrong.length > 0 && <WrongList wrong={wrong} exercises={topic.exercises} />}
+        {!finished && wrong.length > 0 && <WrongList wrong={wrong} exercises={topic.exercises} />}
       </section>
     </div>
   )
@@ -443,7 +501,7 @@ function WrongList({
             <li key={`${ex?.id ?? index}`} className="rounded-xl border bg-[var(--panel-2)] p-3 grid gap-1 text-sm">
               <span className="font-semibold">{ex ? ex.instructionUz : 'Maşq'}</span>
               <span className="muted">
-                Sizning javobingiz: <b>{result.given || '—'}</b> · To‘g‘ri: <b>{result.expected}</b>
+                Sizning javobingiz: <b>{result.given || '—'}</b> · Töğri: <b>{result.expected}</b>
               </span>
               <span>{result.whyUz}</span>
             </li>

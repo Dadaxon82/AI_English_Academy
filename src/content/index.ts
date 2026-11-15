@@ -1,18 +1,34 @@
+/**
+ * Kontent registri — UI kontentga shu yer orqali murojaat qiladi.
+ * Yangi daraja qo'shish uchun faqat shu fayl va yangi papka kifoya.
+ */
+
+import { DIALOGUE_PREFIX, findDialogueExercise } from './dialogues'
+import { SHORT_PREFIX, findShortExercise } from './shorts'
+import { CEFR_LEVELS } from './types'
 import type {
+  AudioMatchingExercise,
   CefrLevel,
   DailyPlanDay,
   Exercise,
   GrammarTopic,
+  ListeningChoiceExercise,
+  ListeningFillExercise,
+  ListeningSelectExercise,
   ListeningTask,
+  MatchingExercise,
   MockExamSpec,
+  MultipleChoiceExercise,
   ReadingPassage,
   SectionTest,
   SpeakingTask,
+  TranslationExercise,
   VocabularyItem,
+  WordOrderExercise,
   WritingTask,
-} from '../types'
+} from './types'
 
-import { day1 as a1day1, vocabDay1 as avocabDay1, grammarDay1 as agramDay1, readingDay1 as areadDay1, listeningDay1 as alistDay1, writingDay1 as awritDay1, speakingDay1 as aspeaDay1, testDay1 as atestDay1 } from './a1/day-01'
+import { day1, vocabDay1, grammarDay1, readingDay1, listeningDay1, writingDay1, speakingDay1, testDay1 } from './a1/day-01'
 import { day2, vocabDay2, grammarDay2, readingDay2, listeningDay2, writingDay2, speakingDay2, testDay2 } from './a1/day-02'
 import { day3, vocabDay3, grammarDay3, readingDay3, listeningDay3, writingDay3, speakingDay3, testDay3 } from './a1/day-03'
 import { day4, vocabDay4, grammarDay4, readingDay4, listeningDay4, writingDay4, speakingDay4, testDay4 } from './a1/day-04'
@@ -20,35 +36,9 @@ import { day5, vocabDay5, grammarDay5, readingDay5, listeningDay5, writingDay5, 
 import { day6, vocabDay6, grammarDay6, readingDay6, listeningDay6, writingDay6, speakingDay6, testDay6 } from './a1/day-06'
 import { day7, vocabDay7, grammarDay7, readingDay7, listeningDay7, writingDay7, speakingDay7, testDay7 } from './a1/day-07'
 import { mockExamA1 } from './mockExamA1'
+import { GRAMMAR_EXTRA, READING_EXTRA } from './a1/new-types'
+import { REMIX_PREFIX, baseExerciseId, remixExercise } from './remix'
 import { diagnosticTest } from './diagnostic'
-
-import { day1 as a2day1, vocabDay1 as avocabDay1_a2, grammarDay1 as agramDay1_a2, readingDay1 as areadDay1_a2, listeningDay1 as alistDay1_a2, writingDay1 as awritDay1_a2, speakingDay1 as aspeaDay1_a2, testDay1 as atestDay1_a2 } from './a2/day-01'
-
-import { day1 as b1day1, vocabDay1 as b1vocabDay1, grammarDay1 as b1grammarDay1, readingDay1 as b1readingDay1, listeningDay1 as b1listeningDay1, writingDay1 as b1writingDay1, speakingDay1 as b1speakingDay1, testDay1 as b1testDay1 } from './b1/day-01'
-import { day2, vocabDay2_b1, grammarDay2_b1, readingDay2_b1, listeningDay2_b1, writingDay2_b1, speakingDay2_b1, testDay2_b1 } from './b1/day-02'
-import { day3, vocabDay3_b1, grammarDay3_b1, readingDay3_b1, listeningDay3_b1, writingDay3_b1, speakingDay3_b1, testDay3_b1 } from './b1/day-03'
-import { day4, vocabDay4_b1, grammarDay4_b1, readingDay4_b1, listeningDay4_b1, writingDay4_b1, speakingDay4_b1, testDay4_b1 } from './b1/day-04'
-import { day5, vocabDay5_b1, grammarDay5_b1, readingDay5_b1, listeningDay5_b1, writingDay5_b1, speakingDay5_b1, testDay5_b1 } from './b1/day-05'
-import { day6, vocabDay6_b1, grammarDay6_b1, readingDay6_b1, listeningDay6_b1, writingDay6_b1, speakingDay6_b1, testDay6_b1 } from './b1/day-06'
-import { day7, vocabDay7_b1, grammarDay7_b1, readingDay7_b1, listeningDay7_b1, writingDay7_b1, speakingDay7_b1, testDay7_b1 } from './b1/day-07'
-import { mockExamB1 } from './mockExamA1'
-
-import { day1 as b2day1, vocabDay1 as b2vocabDay1, grammarDay1 as b2grammarDay1, readingDay1 as b2readingDay1, listeningDay1 as b2listeningDay1, writingDay1 as b2writingDay1, speakingDay1 as b2speakingDay1, testDay1 as b2testDay1 } from './b2/day-01'
-import { day2, vocabDay2_b2, grammarDay2_b2, readingDay2_b2, listeningDay2_b2, writingDay2_b2, speakingDay2_b2, testDay2_b2 } from './b2/day-02'
-import { day3, vocabDay3_b2, grammarDay3_b2, readingDay3_b2, listeningDay3_b2, writingDay3_b2, speakingDay3_b2, testDay3_b2 } from './b2/day-03'
-import { day4, vocabDay4_b2, grammarDay4_b2, readingDay4_b2, listeningDay4_b2, writingDay4_b2, speakingDay4_b2, testDay4_b2 } from './b2/day-04'
-import { day5, vocabDay5_b2, grammarDay5_b2, readingDay5_b2, listeningDay5_b2, writingDay5_b2, speakingDay5_b2, testDay5_b2 } from './b2/day-05'
-import { day6, vocabDay6_b2, grammarDay6_b2, readingDay6_b2, listeningDay6_b2, writingDay6_b2, speakingDay6_b2, testDay6_b2 } from './b2/day-06'
-import { day7, vocabDay7_b2, grammarDay7_b2, readingDay7_b2, listeningDay7_b2, writingDay7_b2, speakingDay7_b2, testDay7_b2 } from './b2/day-07'
-import { mockExamB2 } from './mockExamA1'
-
-import { day1 as c1day1, vocabDay1 as c1vocabDay1, grammarDay1 as c1grammarDay1, readingDay1 as c1readingDay1, listeningDay1 as c1listeningDay1, writingDay1 as c1writingDay1, speakingDay1 as c1speakingDay1, testDay1 as c1testDay1 } from './c1/day-01'
-import { day2, vocabDay2, grammarDay2, readingDay2, listeningDay2, writingDay2, speakingDay2, testDay2 } from './c1/day-02'
-import { day3, vocabDay3, grammarDay3, readingDay3, listeningDay3, writingDay3, speakingDay3, testDay3 } from './c1/day-03'
-import { day4, vocabDay4, grammarDay4, readingDay4, listeningDay4, writingDay4, speakingDay4, testDay4 } from './c1/day-04'
-import { day5, vocabDay5, grammarDay5, readingDay5, listeningDay5, writingDay5, speakingDay5, testDay5 } from './c1/day-05'
-import { day6, vocabDay6, grammarDay6, readingDay6, listeningDay6, writingDay6, speakingDay6, testDay6 } from './c1/day-06'
-import { day7, vocabDay7, grammarDay7, readingDay7, listeningDay7, writingDay7, speakingDay7, testDay7 } from './c1/day-07'
 
 /** Har bir daraja uchun to'plam. A2/B1/B2/C1 shu strukturada qo'shiladi. */
 export interface LevelBundle {
@@ -66,85 +56,38 @@ export interface LevelBundle {
 
 export const a1: LevelBundle = {
   level: 'A1',
-  days: [a1day1, a1day2, a1day3, a1day4, a1day5, a1day6, a1day7],
-  vocab: [...avocabDay1, ...vocabDay2, ...vocabDay3, ...vocabDay4, ...vocabDay5, ...vocabDay6, ...vocabDay7],
-  grammar: [agramDay1, grammarDay2, grammarDay3, grammarDay4, grammarDay5, grammarDay6, grammarDay7],
-  reading: [areadDay1, readingDay2, readingDay3, readingDay4, readingDay5, readingDay6, readingDay7],
-  listening: [alistDay1, listeningDay2, listeningDay3, listeningDay4, listeningDay5, listeningDay6, listeningDay7],
-  writing: [awritDay1, writingDay2, writingDay3, writingDay4, writingDay5, writingDay6, writingDay7],
-  speaking: [...aspeaDay1, ...speakingDay2, ...speakingDay3, ...speakingDay4, ...speakingDay5, ...speakingDay6, ...speakingDay7],
-  tests: [atestDay1, testDay2, testDay3, testDay4, testDay5, testDay6, testDay7],
+  days: [day1, day2, day3, day4, day5, day6, day7],
+  vocab: [...vocabDay1, ...vocabDay2, ...vocabDay3, ...vocabDay4, ...vocabDay5, ...vocabDay6, ...vocabDay7],
+  // Yangi mashq turlari (`a1/new-types.ts`) tegishli mavzu / matn oxiriga qo'shiladi.
+  grammar: [grammarDay1, grammarDay2, grammarDay3, grammarDay4, grammarDay5, grammarDay6, grammarDay7].map((t) => ({
+    ...t,
+    exercises: [...t.exercises, ...(GRAMMAR_EXTRA[t.id] ?? [])],
+  })),
+  reading: [readingDay1, readingDay2, readingDay3, readingDay4, readingDay5, readingDay6, readingDay7].map((p) => ({
+    ...p,
+    exercises: [...p.exercises, ...(READING_EXTRA[p.id] ?? [])],
+  })),
+  listening: [listeningDay1, listeningDay2, listeningDay3, listeningDay4, listeningDay5, listeningDay6, listeningDay7],
+  writing: [writingDay1, writingDay2, writingDay3, writingDay4, writingDay5, writingDay6, writingDay7],
+  speaking: [...speakingDay1, ...speakingDay2, ...speakingDay3, ...speakingDay4, ...speakingDay5, ...speakingDay6, ...speakingDay7],
+  tests: [testDay1, testDay2, testDay3, testDay4, testDay5, testDay6, testDay7],
   mockExam: mockExamA1,
 }
 
-export const a2: LevelBundle = {
-  level: 'A2',
-  days: [a2day1, day2, day3, day4, day5, day6, day7],
-  vocab: [
-    ...avocabDay1_a2,
-    ...vocabDay2,
-    ...vocabDay3,
-    ...vocabDay4,
-    ...vocabDay5,
-    ...vocabDay6,
-    ...vocabDay7,
-  ],
-  grammar: [agramDay1_a2, grammarDay2, grammarDay3, grammarDay4, grammarDay5, grammarDay6, grammarDay7],
-  reading: [areadDay1_a2, readingDay2, readingDay3, readingDay4, readingDay5, readingDay6, readingDay7],
-  listening: [alistDay1_a2, listeningDay2, listeningDay3, listeningDay4, listeningDay5, listeningDay6, listeningDay7],
-  writing: [awritDay1_a2, writingDay2, writingDay3, writingDay4, writingDay5, writingDay6, writingDay7],
-  speaking: [
-    ...aspeaDay1_a2,
-    ...speakingDay2,
-    ...speakingDay3,
-    ...speakingDay4,
-    ...speakingDay5,
-    ...speakingDay6,
-    ...speakingDay7,
-  ],
-  tests: [atestDay1_a2, testDay2, testDay3, testDay4, testDay5, testDay6, testDay7],
-  mockExam: mockExamA2,
-}
-
-export const b1: LevelBundle = {
-  level: 'B1',
-  days: [b1day1, b1day2, b1day3, b1day4, b1day5, b1day6, b1day7],
-  vocab: [...b1vocabDay1, ...vocabDay2_b1, ...vocabDay3_b1, ...vocabDay4_b1, ...vocabDay5_b1, ...vocabDay6_b1, ...vocabDay7_b1],
-  grammar: [b1grammarDay1, b1grammarDay2, b1grammarDay3, b1grammarDay4, b1grammarDay5, b1grammarDay6, b1grammarDay7],
-  reading: [b1readingDay1, b1readingDay2, b1readingDay3, b1readingDay4, b1readingDay5, b1readingDay6, b1readingDay7],
-  listening: [b1listeningDay1, b1listeningDay2, b1listeningDay3, b1listeningDay4, b1listeningDay5, b1listeningDay6, b1listeningDay7],
-  writing: [b1writingDay1, b1writingDay2, b1writingDay3, b1writingDay4, b1writingDay5, b1writingDay6, b1writingDay7],
-  speaking: [...b1speakingDay1, ...b1speakingDay2, ...b1speakingDay3, ...b1speakingDay4, ...b1speakingDay5, ...b1speakingDay6, ...b1speakingDay7],
-  tests: [b1testDay1, b1testDay2, b1testDay3, b1testDay4, b1testDay5, b1testDay6, b1testDay7],
-  mockExam: mockExamB1,
-}
-
-export const b2: LevelBundle = {
-  level: 'B2',
-  days: [b2day1, b2day2, b2day3, b2day4, b2day5, b2day6, b2day7],
-  vocab: [...b2vocabDay1, ...vocabDay2_b2, ...vocabDay3_b2, ...vocabDay4_b2, ...vocabDay5_b2, ...vocabDay6_b2, ...vocabDay7_b2],
-  grammar: [b2grammarDay1, b2grammarDay2, b2grammarDay3, b2grammarDay4, b2grammarDay5, b2grammarDay6, b2grammarDay7],
-  reading: [b2readingDay1, b2readingDay2, b2readingDay3, b2readingDay4, b2readingDay5, b2readingDay6, b2readingDay7],
-  listening: [b2listeningDay1, b2listeningDay2, b2listeningDay3, b2listeningDay4, b2listeningDay5, b2listeningDay6, b2listeningDay7],
-  writing: [b2writingDay1, b2writingDay2, b2writingDay3, b2writingDay4, b2writingDay5, b2writingDay6, b2writingDay7],
-  speaking: [...b2speakingDay1, ...b2speakingDay2, ...b2speakingDay3, ...b2speakingDay4, ...b2speakingDay5, ...b2speakingDay6, ...b2speakingDay7],
-  tests: [b2testDay1, b2testDay2, b2testDay3, b2testDay4, b2testDay5, b2testDay6, b2testDay7],
-  mockExam: mockExamB2,
-}
-
-export const c1: LevelBundle = {
-  level: 'C1',
-  days: [c1day1, c1day2, c1day3, c1day4, c1day5, c1day6, c1day7],
-  vocab: [...c1vocabDay1, ...vocabDay2, ...vocabDay3, ...vocabDay4, ...vocabDay5, ...vocabDay6, ...vocabDay7],
-  grammar: [c1grammarDay1, grammarDay2, grammarDay3, grammarDay4, grammarDay5, grammarDay6, grammarDay7],
-  reading: [c1readingDay1, readingDay2, readingDay3, readingDay4, readingDay5, readingDay6, readingDay7],
-  listening: [c1listeningDay1, listeningDay2, listeningDay3, listeningDay4, listeningDay5, listeningDay6, listeningDay7],
-  writing: [c1writingDay1, writingDay2, writingDay3, writingDay4, writingDay5, writingDay6, writingDay7],
-  speaking: [...c1speakingDay1, ...speakingDay2, ...speakingDay3, ...speakingDay4, ...speakingDay5, ...speakingDay6, ...speakingDay7],
-  tests: [c1testDay1, testDay2, testDay3, testDay4, testDay5, testDay6, testDay7],
-}
-
-/** Kundalik bo'lim minutlarini kunlik rejaga (90′) moslashtirish. */
+/**
+ * Kundalik bo'lim minutlarini kunlik rejaga (90′) moslashtirish.
+ *
+ * MUAMMO: a1 day fayllaridagi `sections[].minutes` yig'indisi 110–115′ —
+ * talabnomadagi 90′ (Vocab 10 / Grammar 15 / Reading 15 / Listening 15 /
+ * Writing 20 / Speaking 15) bilan mos kelmas edi. Natijada O'quv yo'li
+ * "kun 110 daqiqa" deb ko'rsatadi, Dashboard esa 90′ hisoblab beradi —
+ * ikki sahifa bir-biriga zid.
+ *
+ * YECHIM: bitta joyda (shu registarda) nisbatan taqsimlab chiqamiz. Kasr
+ * qoldig'i eng katta bo'lgan bo'limlarga beriladi, shuning uchun yig'indi
+ * ANIQ `total` ga teng bo'ladi va tartib (vocab<grammar<…) buzilmaydi.
+ * Kontent fayllari o'zgarishsiz qoladi — ular "xom material".
+ */
 export function normalizeDayMinutes(
   day: DailyPlanDay,
   total = DAILY_PLAN_TOTAL,
@@ -154,6 +97,8 @@ export function normalizeDayMinutes(
   const weights = day.sections.map((s) => s.minutes / raw)
   const exact = weights.map((w) => total * w)
   const scaled = exact.map((x) => Math.floor(x))
+  // Kasr qoldig'ini eng katta bo'lganlardan birlab beramiz — yig'indi aniq
+  // `total` chiqadi va nisbat (katta bo'lim kichigidan kam emas) saqlanadi.
   const order = scaled
     .map((v, i) => ({ i, frac: exact[i] - v }))
     .sort((a, b) => b.frac - a.frac)
@@ -166,8 +111,12 @@ export function normalizeDayMinutes(
   return { ...day, sections: day.sections.map((s, i) => ({ ...s, minutes: scaled[i] })) }
 }
 
+/** Talabnomadagi asosiy kunlik reja (daqiqa). */
 export const DAILY_PLAN_TOTAL = 90
 
+/* ------------------- MATN (GLOSSARIY) SO'ZLARI ---------------------------- */
+
+/** So'zni solishtirish kaliti — Reading/Lug'at sahifalari BIR XIL kalit ishlatadi. */
 export function wordKeyOf(s: string): string {
   return s
     .toLocaleLowerCase('en')
@@ -177,12 +126,34 @@ export function wordKeyOf(s: string): string {
     .trim()
 }
 
+/**
+ * Matn glossariyi so'zi uchun barqaror SRS kaliti.
+ * Reading sahifasi shu kalit bilan `gradeVocab` chaqiradi.
+ *
+ * Matn id'si kalitga KIRTMAYDI: bir so'z ikki matnda uchrasa ikki xil kalit
+ * bo'lib, Lug'at ro'yxatidagi bittasi bilan adashib qolardi. So'z bitta —
+ * kalit ham bitta.
+ */
 export function glossaryVocabId(word: string): string {
   return `gl-${wordKeyOf(word)}`
 }
 
+// Eski SRS kaliti (`<matn>|gl-<so'z>`) faqat kesh migratsiyasi uchun kerak —
+// u `lib/storage.ts`da yashaydi (kontentkalit qoidasini o'zi belgilamaydi).
+
 let glossaryCache: VocabularyItem[] | null = null
 
+/**
+ * Barcha o'qish matnlarining glossariy so'zlari — `VocabularyItem` ko'rinishida.
+ *
+ * ESKI KAMCHILIK: Reading sahifasida "Lug'atga" saqlangan glossariy so'zlari
+ * SRS'ga yozilardi (`<matn>|gl-<so'z>` kaliti bilan), lekin Lug'at sahifasi
+ * faqat asosiy lug'at ro'yxatini ko'rsatgani uchun ular BIR ORA QAYTA
+ * KO'RIKMASDI — saqlanganligi ma'nosiz qolardi.
+ *
+ * Asosiy lug'atda ALLQACHON bor so'zlar qayta qo'shilmaydi (bir xil so'z ikki
+ * marta ko'rinmasin va SRSda bitta kalit bo'lsin).
+ */
 export function allGlossaryVocab(levels: readonly CefrLevel[] = LOADED_LEVELS): VocabularyItem[] {
   if (glossaryCache) return glossaryCache
   const mainKeys = new Set(allVocab(levels).map((v) => wordKeyOf(v.word)))
@@ -198,7 +169,7 @@ export function allGlossaryVocab(levels: readonly CefrLevel[] = LOADED_LEVELS): 
           id: glossaryVocabId(g.word),
           word: g.word,
           translationUz: g.uz,
-          explanationEn: `Bu so‘z “${p.title}” matnining glossariyidan olindi.`,
+          explanationEn: `Bu söz “${p.title}” matnining glossariyidan olindi.`,
           exampleEn: '',
           exampleUz: '',
           pos: 'noun',
@@ -212,28 +183,63 @@ export function allGlossaryVocab(levels: readonly CefrLevel[] = LOADED_LEVELS): 
   return out
 }
 
+
+/**
+ * Darajalar registri. A1 asosiy bundle'da (diagnostika, mock imtihon unga
+ * tayanadi); qolgan darajalar ALOHIDA chunk'da va `loadLevels()` bilan
+ * yuklanadi (store ma'lumot bilan parallel yuklaydi, `ready` shundan keyin).
+ * Yuklanmagan daraja bo'sh to'plam qaytaradi ("Tayyorlanmoqda").
+ *
+ * Natija KESHLANADI: to'plam immutabl, `normalizeDayMinutes` esa har chaqiruvda
+ * qayta massiv yasardi va har safar yangi obyekt qaytargani uchun
+ * sahifalardagi useMemo'lar ishlamasdi.
+ */
 const bundleCache = new Map<CefrLevel, LevelBundle>()
+const loadedBundles = new Map<CefrLevel, LevelBundle>([['A1', a1]])
+
+/** Kontenti mavjud (yuklab olinadigan) darajalar — CEFR tartibida. */
+const LEVEL_LOADERS: Partial<Record<CefrLevel, () => Promise<LevelBundle>>> = {
+  A2: () => import('./a2').then((m) => m.a2),
+  B1: () => import('./b1').then((m) => m.b1),
+  B2: () => import('./b2').then((m) => m.b2),
+  C1: () => import('./c1').then((m) => m.c1),
+}
 
 export function getBundle(level: CefrLevel): LevelBundle {
   const hit = bundleCache.get(level)
   if (hit) return hit
-  const made: LevelBundle =
-    level === 'A1'
-      ? { ...a1, days: a1.days.map((d) => normalizeDayMinutes(d)) }
-      : level === 'A2'
-      ? { ...a2, days: a2.days.map((d) => normalizeDayMinutes(d)) }
-      : level === 'B1'
-      ? { ...b1, days: b1.days.map((d) => normalizeDayMinutes(d)) }
-      : level === 'B2'
-      ? { ...b2, days: b2.days.map((d) => normalizeDayMinutes(d)) }
-      : level === 'C1'
-      ? { ...c1, days: c1.days.map((d) => normalizeDayMinutes(d)) }
-      : { level, days: [], vocab: [], grammar: [], reading: [], listening: [], writing: [], speaking: [], tests: [] }
+  const src = loadedBundles.get(level)
+  const made: LevelBundle = src
+    ? { ...src, days: src.days.map((d) => normalizeDayMinutes(d)) }
+    : { level, days: [], vocab: [], grammar: [], reading: [], listening: [], writing: [], speaking: [], tests: [] }
   bundleCache.set(level, made)
   return made
 }
 
-export const LOADED_LEVELS: CefrLevel[] = ['A1', 'A2', 'B1', 'B2', 'C1']
+/**
+ * Yuklangan darajalar. JOYIDA yangilanadi (`loadLevels`) — import qilgan
+ * modullar bir xil massivni ko'radi.
+ */
+export const LOADED_LEVELS: CefrLevel[] = ['A1']
+
+const LEVEL_ORDER: CefrLevel[] = ['A1', 'A2', 'B1', 'B2', 'C1']
+let loading: Promise<void> | null = null
+
+/** Barcha mavjud darajalarni yuklaydi (takroriy chaqiruv — bitta va'da). */
+export function loadLevels(): Promise<void> {
+  loading ??= Promise.all(
+    Object.entries(LEVEL_LOADERS).map(async ([lvl, load]) => {
+      const level = lvl as CefrLevel
+      if (loadedBundles.has(level) || !load) return
+      loadedBundles.set(level, await load())
+    }),
+  ).then(() => {
+    LOADED_LEVELS.splice(0, LOADED_LEVELS.length, ...LEVEL_ORDER.filter((l) => loadedBundles.has(l)))
+    bundleCache.clear()
+    glossaryCache = null
+  })
+  return loading
+}
 
 export function allVocab(levels: readonly CefrLevel[] = LOADED_LEVELS): VocabularyItem[] {
   return levels.flatMap((l) => getBundle(l).vocab)
@@ -253,7 +259,477 @@ export function allExercises(level: CefrLevel = 'A1'): Exercise[] {
   ]
 }
 
+/** Lug'at testidagi savollar shu prefiks + so'z idsi bilan yoziladi. */
+export const VOCAB_QUIZ_PREFIX = 'vocab-quiz-'
+
+/**
+ * Lug'at testi savoli (tarjima tanlovi). Variantlar test paytida aralashtiriladi;
+ * berilmasa — faqat to'g'ri javob (Xatolar daftarida "to'g'ri javob"ni ko'rsatish uchun).
+ */
+export function vocabQuizExercise(v: VocabularyItem, options: string[] = [v.translationUz]): MultipleChoiceExercise {
+  return {
+    id: `${VOCAB_QUIZ_PREFIX}${v.id}`,
+    kind: 'multiple-choice',
+    instructionUz: `“${v.word}” sözining özbekça ma’nosini tanlang.`,
+    level: v.level,
+    skill: 'vocabulary',
+    explanationUz: `${v.word} — ${v.translationUz}. ${v.explanationEn}`,
+    difficulty: v.level === 'A1' ? 1 : 2,
+    tags: ['vocab quiz', v.topic],
+    question: `What does “${v.word}” mean?`,
+    options,
+    answerIndex: options.indexOf(v.translationUz),
+  }
+}
+
+/* ---------------- Lug'at O'YINI topshiriqlari (id'dan tiklanadi) ---------------- */
+
+export const VOCAB_PIC_PREFIX = 'vocab-pic-'
+export const VOCAB_SENT_PREFIX = 'vocab-sent-'
+export const VOCAB_MATCH_PREFIX = 'vocab-match-'
+export const VOCAB_AUDIO_MATCH_PREFIX = 'vocab-audiomatch-'
+
+/** Rasmli tanlov: «X» so'zini tanlang — variantlar inglizcha so'zlar. */
+export function vocabPictureExercise(v: VocabularyItem, options: string[] = [v.word]): MultipleChoiceExercise {
+  return {
+    id: `${VOCAB_PIC_PREFIX}${v.id}`,
+    kind: 'multiple-choice',
+    instructionUz: `«${v.translationUz.split(/[,;]/)[0]!.trim()}» sözini tanlang`,
+    level: v.level,
+    skill: 'vocabulary',
+    explanationUz: `${v.translationUz} — ${v.word}.`,
+    difficulty: 1,
+    tags: ['vocab game', v.topic],
+    question: '',
+    options,
+    answerIndex: options.indexOf(v.word),
+  }
+}
+
+/** Misol gapni tarjima qilish (so'z plitkalari). `en` — inglizchadan o'zbekchaga. */
+export function vocabSentenceExercise(v: VocabularyItem, from: 'en' | 'uz'): TranslationExercise {
+  return {
+    id: `${VOCAB_SENT_PREFIX}${from}-${v.id}`,
+    kind: 'translation',
+    instructionUz: from === 'en' ? 'Özbekçaga tarjima qiling' : 'Inglizçaga tarjima qiling',
+    level: v.level,
+    skill: 'vocabulary',
+    explanationUz: `${v.exampleEn} — ${v.exampleUz}`,
+    difficulty: from === 'en' ? 1 : 2,
+    tags: ['vocab game', v.topic],
+    source: from === 'en' ? v.exampleEn : v.exampleUz,
+    sourceLang: from,
+    accepted: [from === 'en' ? v.exampleUz : v.exampleEn],
+  }
+}
+
+/** Juftlik: so'z ↔ tarjima (id'da so'z id'lari `~` bilan). */
+export function vocabMatchExercise(vs: readonly VocabularyItem[]): MatchingExercise {
+  return {
+    id: `${VOCAB_MATCH_PREFIX}${vs.map((v) => v.id).join('~')}`,
+    kind: 'matching',
+    instructionUz: 'Juftliklarni toping',
+    level: vs[0]?.level ?? 'A1',
+    skill: 'vocabulary',
+    explanationUz: vs.map((v) => `${v.word} — ${v.translationUz}`).join('; '),
+    difficulty: 1,
+    tags: ['vocab game'],
+    pairs: vs.map((v) => ({ left: v.word, right: v.translationUz })),
+  }
+}
+
+/**
+ * Tinglab juftlashtirish — Duolingo "Выберите пары слов" ko'rinishi
+ * (id'da so'z id'lari `~` bilan). `vocabMatchExercise`ning audio variantidek:
+ * pronunciation mavjud bo'lsa u, aks holda browser-tts (`v.word`) ishlatiladi
+ * — son ixtiro qilinmaydi, faqat mavjud `VocabularyItem`lar guruhlanadi.
+ */
+export function vocabAudioMatchExercise(vs: readonly VocabularyItem[]): AudioMatchingExercise {
+  return {
+    id: `${VOCAB_AUDIO_MATCH_PREFIX}${vs.map((v) => v.id).join('~')}`,
+    kind: 'audio-matching',
+    instructionUz: 'Tovuşni tinglang, möslaşadigan tarjimani tanlang',
+    level: vs[0]?.level ?? 'A1',
+    skill: 'vocabulary',
+    explanationUz: vs.map((v) => `${v.word} — ${v.translationUz}`).join('; '),
+    difficulty: 1,
+    tags: ['vocab game'],
+    pairs: vs.map((v) => ({
+      left: { word: v.word, pronunciation: v.pronunciation ?? { kind: 'browser-tts', ttsText: v.word, lang: 'en-US' } },
+      right: v.translationUz,
+    })),
+  }
+}
+
+export const VOCAB_LISTEN_SELECT_PREFIX = 'vocab-lsel-'
+export const VOCAB_LISTEN_FILL_PREFIX = 'vocab-lfill-'
+export const VOCAB_LISTEN_CHOICE_PREFIX = 'vocab-lchoice-'
+
+/**
+ * «Что вы услышали?» — audio (yoki TTS) orqali so'z o'qiladi, o'quvchi
+ * plitkalardan eshitgan so'zni tanlaydi. Chalg'ituvchi so'zlar — shu
+ * daraja lug'atidan, deterministik aralashtirilgan (son ixtiro qilinmaydi).
+ * Id'da so'z id'lari `~` bilan (birinchisi — javob, qolganlari — plitkadagi
+ * chalg'ituvchilar) — `findExercise` guruhni TO'LIQ qayta tiklaydi.
+ */
+export function vocabListenSelectExercise(v: VocabularyItem, distractors: readonly VocabularyItem[]): ListeningSelectExercise {
+  const bank = seededShuffle([v.word, ...distractors.map((d) => d.word)], `${v.id}:lsel`)
+  return {
+    id: `${VOCAB_LISTEN_SELECT_PREFIX}${[v, ...distractors].map((x) => x.id).join('~')}`,
+    kind: 'listening-select',
+    instructionUz: 'Tovuşni tinglang va eşitgan sözni tanlang',
+    level: v.level,
+    skill: 'vocabulary',
+    explanationUz: `Eşitilgan söz: “${v.word}” — ${v.translationUz}.`,
+    difficulty: 1,
+    tags: ['vocab game', v.topic],
+    pronunciation: v.pronunciation,
+    targetText: v.word,
+    answer: [v.word],
+    bank,
+  }
+}
+
+/**
+ * So'zni misol gapda (`exampleEn`) topib bo'shliqqa aylantiradi (katta-kichik
+ * harfga bardoshli, bir so'zlik chegarada). So'z gapda aniq uchramasa (masalan
+ * ko'plik/boshqa shakl) `undefined` qaytadi — bo'shliq ixtiro qilinmaydi.
+ */
+function blankOutWord(sentence: string, word: string): { text: string; before: string } | undefined {
+  const re = new RegExp(`\\b${word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i')
+  const m = re.exec(sentence)
+  if (!m) return undefined
+  return { text: `${sentence.slice(0, m.index)}___${sentence.slice(m.index + m[0].length)}`, before: sentence.slice(0, m.index) }
+}
+
+/**
+ * «Введите пропущенное слово» — misol gap (`exampleEn`) TTS orqali to'liq
+ * o'qiladi, so'z o'rni bo'shliqqa aylantiriladi, o'quvchi klaviaturadan
+ * javob yozadi. So'z gapda topilmasa `undefined` (mashq yaratilmaydi).
+ */
+export function vocabListenFillExercise(v: VocabularyItem): ListeningFillExercise | undefined {
+  const blanked = blankOutWord(v.exampleEn, v.word)
+  if (!blanked) return undefined
+  return {
+    id: `${VOCAB_LISTEN_FILL_PREFIX}${v.id}`,
+    kind: 'listening-fill',
+    instructionUz: 'Gapni tinglang va tüşgan sözni yozing',
+    level: v.level,
+    skill: 'vocabulary',
+    explanationUz: `${v.exampleEn} — ${v.exampleUz}`,
+    difficulty: 2,
+    tags: ['vocab game', v.topic],
+    audioText: v.exampleEn,
+    text: blanked.text,
+    answer: v.word,
+  }
+}
+
+/**
+ * «Послушайте и заполните пропуск» — misol gap TTS orqali o'qiladi, o'quvchi
+ * bo'shliqni to'ldiruvchi so'zni 2 AUDIO variantdan (to'g'risi + chalg'ituvchi)
+ * tanlaydi. So'z gapda topilmasa yoki chalg'ituvchi berilmasa `undefined`.
+ */
+export function vocabListenChoiceExercise(v: VocabularyItem, distractor: VocabularyItem | undefined): ListeningChoiceExercise | undefined {
+  const blanked = blankOutWord(v.exampleEn, v.word)
+  if (!blanked || !distractor) return undefined
+  const options = seededShuffle([v.word, distractor.word], `${v.id}:lchoice`)
+  return {
+    id: `${VOCAB_LISTEN_CHOICE_PREFIX}${v.id}~${distractor.id}`,
+    kind: 'listening-choice',
+    instructionUz: 'Gapni tinglang va böşliqqa mos audio variantni tanlang',
+    level: v.level,
+    skill: 'vocabulary',
+    explanationUz: `${v.exampleEn} — ${v.exampleUz}`,
+    difficulty: 2,
+    tags: ['vocab game', v.topic],
+    text: blanked.text,
+    audioText: v.exampleEn,
+    options,
+    answerIndex: options.indexOf(v.word),
+  }
+}
+
+/* -------- Bo'lim DARSLARI (o'yin) uchun yasalgan topshiriqlar (id'dan tiklanadi) -------- */
+
+export const LESSON_GRAMMAR_PREFIX = 'lesson-gtr-'
+export const LESSON_WRITING_PREFIX = 'lesson-wwo-'
+export const LESSON_SPEAK_PREFIX = 'lesson-spk-'
+
+/** Plitkalar uchun gap uzunligi chegarasi (so'z). */
+export const LESSON_SENTENCE_MAX = 12
+
+function wordsOf(s: string): string[] {
+  return s.trim().split(/\s+/).filter(Boolean)
+}
+
+/** Deterministik aralashtirish (id bo'yicha — har qurilmada bir xil). */
+function seededShuffle<T>(arr: readonly T[], seed: string): T[] {
+  const out = [...arr]
+  let h = 2166136261
+  for (const ch of seed) h = Math.imul(h ^ ch.charCodeAt(0), 16777619) >>> 0
+  for (let i = out.length - 1; i > 0; i--) {
+    h = (Math.imul(h, 1103515245) + 12345) >>> 0
+    const j = h % (i + 1)
+    const t = out[i]!
+    out[i] = out[j]!
+    out[j] = t
+  }
+  // Aralash natija javobning o'zi bo'lib qolmasin (2+ so'zda).
+  if (out.length > 1 && out.every((x, i) => x === arr[i])) out.push(out.shift()!)
+  return out
+}
+
+/** Grammatika misolini o'zbekchadan inglizchaga yig'ish (plitkalar). */
+export function grammarExampleExercise(topic: GrammarTopic, i: number): TranslationExercise | undefined {
+  const ex = topic.examples[i]
+  if (!ex) return undefined
+  return {
+    id: `${LESSON_GRAMMAR_PREFIX}${topic.id}-${i}`,
+    kind: 'translation',
+    instructionUz: 'Inglizçaga tarjima qiling',
+    level: topic.level,
+    skill: 'grammar',
+    explanationUz: `${ex.uz} — ${ex.en}`,
+    difficulty: 2,
+    tags: ['lesson', topic.id],
+    source: ex.uz,
+    sourceLang: 'uz',
+    accepted: [ex.en],
+  }
+}
+
+/** Matnni gaplarga bo'lish (plitkalar uchun qisqalari). */
+export function shortSentences(text: string, max = 4): string[] {
+  return text
+    .split(/(?<=[.!?])\s+/)
+    .map((x) => x.trim())
+    .filter((x) => {
+      const n = wordsOf(x).length
+      return n >= 3 && n <= LESSON_SENTENCE_MAX
+    })
+    .slice(0, max)
+}
+
+function wordOrder(
+  id: string,
+  sentence: string,
+  level: CefrLevel,
+  skill: 'writing' | 'speaking' | 'vocabulary',
+  instructionUz: string,
+  note: string,
+): WordOrderExercise {
+  const answer = wordsOf(sentence)
+  return {
+    id,
+    kind: 'word-order',
+    instructionUz,
+    level,
+    skill,
+    explanationUz: note,
+    difficulty: 2,
+    tags: ['lesson'],
+    answer,
+    bank: seededShuffle(answer, id),
+  }
+}
+
+/** Yozish darsi: namuna javob gaplarini plitkalardan tuzish. */
+export function writingSentenceExercise(task: WritingTask, i: number): WordOrderExercise | undefined {
+  const s = shortSentences(task.modelAnswerEn ?? '')[i]
+  if (!s) return undefined
+  return wordOrder(`${LESSON_WRITING_PREFIX}${task.id}-${i}`, s, task.level, 'writing', 'Gapni töğri tartibda tuzing', `Namuna javobdan: “${s}”`)
+}
+
+/** Gapirish darsi gaplari: savol va qo'shimcha savollar (qisqalari). */
+export function speakingSentences(task: SpeakingTask): string[] {
+  return [task.questionEn, ...(task.followUpsEn ?? [])].filter((x) => {
+    const n = wordsOf(x).length
+    return n >= 2 && n <= LESSON_SENTENCE_MAX + 2
+  })
+}
+
+/** Gapirish darsi: gapni takrorlash (mikrofonsiz — plitkalar bilan). */
+export function speakingRepeatExercise(task: SpeakingTask, i: number): WordOrderExercise | undefined {
+  const s = speakingSentences(task)[i]
+  if (!s) return undefined
+  return wordOrder(`${LESSON_SPEAK_PREFIX}${task.id}-${i}`, s, task.level, 'speaking', 'Gapni tinglang va takrorlang', `Savol: “${s}”`)
+}
+
+export const VOCAB_REPEAT_PREFIX = 'vocab-repeat-'
+
+/**
+ * «Повторите это предложение вслух» — lug'at misol gapini (`exampleEn`)
+ * ovoz chiqarib takrorlash; mikrofon yöq qurilmalarda plitkalardan yig'ish
+ * (`WordOrderExercise` fallback, `speakingRepeatExercise` bilan bir xil
+ * mexanika). Gap juda uzun bo'lsa (`LessonPlayer`dagi mikrofon rejimi matn
+ * uzunligidan qat'i nazar işlaydi, lekin plitka fallback uzun gapda
+ * noqulay) mashq yaratilmaydi.
+ */
+export function vocabRepeatExercise(v: VocabularyItem): WordOrderExercise | undefined {
+  const n = wordsOf(v.exampleEn).length
+  if (n < 2 || n > LESSON_SENTENCE_MAX) return undefined
+  return wordOrder(`${VOCAB_REPEAT_PREFIX}${v.id}`, v.exampleEn, v.level, 'vocabulary', 'Gapni tinglang va takrorlang', `Söz: “${v.word}” — ${v.translationUz}.`)
+}
+
+function allWritingTasks(): WritingTask[] {
+  return LOADED_LEVELS.flatMap((l) => {
+    const b = getBundle(l)
+    return [...b.writing, ...(b.mockExam?.sections.flatMap((s) => (s.writingTask ? [s.writingTask] : [])) ?? [])]
+  })
+}
+
+function allSpeakingTasks(): SpeakingTask[] {
+  return LOADED_LEVELS.flatMap((l) => {
+    const b = getBundle(l)
+    return [...b.speaking, ...(b.mockExam?.sections.flatMap((s) => (s.speakingTask ? [s.speakingTask] : [])) ?? [])]
+  })
+}
+
+/** `<prefix><ownerId>-<index>` id'ni ajratish (owner id'da ham "-" bo'ladi). */
+function splitIndexed(rest: string): [string, number] | null {
+  const m = /^(.*)-(\d+)$/.exec(rest)
+  return m ? [m[1]!, Number(m[2])] : null
+}
+
+function lessonExercise(id: string): Exercise | undefined {
+  if (id.startsWith(LESSON_GRAMMAR_PREFIX)) {
+    const p = splitIndexed(id.slice(LESSON_GRAMMAR_PREFIX.length))
+    const topic = p && LOADED_LEVELS.flatMap((l) => getBundle(l).grammar).find((t) => t.id === p[0])
+    return topic && p ? grammarExampleExercise(topic, p[1]) : undefined
+  }
+  if (id.startsWith(LESSON_WRITING_PREFIX)) {
+    const p = splitIndexed(id.slice(LESSON_WRITING_PREFIX.length))
+    const task = p && allWritingTasks().find((t) => t.id === p[0])
+    return task && p ? writingSentenceExercise(task, p[1]) : undefined
+  }
+  if (id.startsWith(LESSON_SPEAK_PREFIX)) {
+    const p = splitIndexed(id.slice(LESSON_SPEAK_PREFIX.length))
+    const task = p && allSpeakingTasks().find((t) => t.id === p[0])
+    return task && p ? speakingRepeatExercise(task, p[1]) : undefined
+  }
+  return undefined
+}
+
+/* ---------------- AI suhbatdosh tuzatishlari (id'dan tiklanadi) ---------------- */
+
+/**
+ * Suhbatda topilgan xato → «to'g'ri gapni tuzing» mashqi. Ma'lumot (asl gap,
+ * tuzatilgan gap, izoh, daraja) to'liq ID ichida (base64url JSON) — saqlash
+ * kerak emas, `findExercise()` uni qayta yasaydi va Xatolar daftari ishlaydi.
+ */
+export const ROLEPLAY_FIX_PREFIX = 'rpfix-'
+/** Uzun gaplar plitkada noqulay — undan uzun tuzatish mashqqa aylanmaydi. */
+export const ROLEPLAY_FIX_MAX_WORDS = 14
+
+function b64urlEncode(text: string): string {
+  const bytes = new TextEncoder().encode(text)
+  let bin = ''
+  for (const b of bytes) bin += String.fromCharCode(b)
+  return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
+}
+
+function b64urlDecode(s: string): string | null {
+  try {
+    const bin = atob(s.replace(/-/g, '+').replace(/_/g, '/'))
+    return new TextDecoder().decode(Uint8Array.from(bin, (c) => c.charCodeAt(0)))
+  } catch {
+    return null
+  }
+}
+
+/** Tuzatish mashq bo'la oladimi bo'lsa — uning ID'si, aks holda null. */
+export function roleplayFixId(fix: { original: string; corrected: string; whyUz: string }, level: CefrLevel): string | null {
+  const words = wordsOf(fix.corrected)
+  if (words.length < 2 || words.length > ROLEPLAY_FIX_MAX_WORDS) return null
+  const payload = JSON.stringify({ o: fix.original.slice(0, 200), c: fix.corrected.slice(0, 200), w: fix.whyUz.slice(0, 200), l: level })
+  return `${ROLEPLAY_FIX_PREFIX}${b64urlEncode(payload)}`
+}
+
+export function roleplayFixExercise(id: string): WordOrderExercise | undefined {
+  if (!id.startsWith(ROLEPLAY_FIX_PREFIX)) return undefined
+  const raw = b64urlDecode(id.slice(ROLEPLAY_FIX_PREFIX.length))
+  if (!raw) return undefined
+  let v: { o?: unknown; c?: unknown; w?: unknown; l?: unknown }
+  try {
+    v = JSON.parse(raw) as typeof v
+  } catch {
+    return undefined
+  }
+  if (typeof v.o !== 'string' || typeof v.c !== 'string' || typeof v.w !== 'string' || typeof v.l !== 'string') return undefined
+  if (!(CEFR_LEVELS as readonly string[]).includes(v.l)) return undefined
+  const answer = wordsOf(v.c)
+  if (answer.length < 2 || answer.length > ROLEPLAY_FIX_MAX_WORDS) return undefined
+  return {
+    id,
+    kind: 'word-order',
+    instructionUz: `Suhbatda şunday dedingiz: “${v.o}”. Töğri gapni sözlardan tuzing.`,
+    level: v.l as CefrLevel,
+    skill: 'grammar',
+    explanationUz: `${v.w} Töğri: “${v.c}”.`,
+    difficulty: 2,
+    tags: ['roleplay'],
+    answer,
+    bank: seededShuffle(answer, id),
+  }
+}
+
 export function findExercise(id: string): Exercise | undefined {
+  // Xatolar daftari o'yini: "boshqa ko'rinishda" — asl mashqdan qayta quriladi.
+  if (id.startsWith(REMIX_PREFIX)) {
+    const orig = findExercise(baseExerciseId(id))
+    return orig ? remixExercise(orig) ?? undefined : undefined
+  }
+  if (id.startsWith('lesson-')) return lessonExercise(id)
+  if (id.startsWith(ROLEPLAY_FIX_PREFIX)) return roleplayFixExercise(id)
+  // Real hayot suhbatlari (`dialogues.ts`) — `dlg-<suhbat>-<qator>`.
+  if (id.startsWith(DIALOGUE_PREFIX)) return findDialogueExercise(id)
+  // Video shortlar (`shorts.ts`) — `short-<suhbat>-<qator>-<m|l>`.
+  if (id.startsWith(SHORT_PREFIX)) return findShortExercise(id)
+  const vocabById = (vid: string) => [...allVocab(), ...allGlossaryVocab()].find((x) => x.id === vid)
+  if (id.startsWith(VOCAB_PIC_PREFIX)) {
+    const v = vocabById(id.slice(VOCAB_PIC_PREFIX.length))
+    return v ? vocabPictureExercise(v) : undefined
+  }
+  if (id.startsWith(VOCAB_SENT_PREFIX)) {
+    const rest = id.slice(VOCAB_SENT_PREFIX.length)
+    const from = rest.startsWith('uz-') ? 'uz' : 'en'
+    const v = vocabById(rest.slice(3))
+    return v ? vocabSentenceExercise(v, from) : undefined
+  }
+  if (id.startsWith(VOCAB_MATCH_PREFIX)) {
+    const vs = id.slice(VOCAB_MATCH_PREFIX.length).split('~').map(vocabById)
+    return vs.every((v): v is VocabularyItem => v !== undefined) && vs.length > 0 ? vocabMatchExercise(vs) : undefined
+  }
+  if (id.startsWith(VOCAB_AUDIO_MATCH_PREFIX)) {
+    const vs = id.slice(VOCAB_AUDIO_MATCH_PREFIX.length).split('~').map(vocabById)
+    return vs.every((v): v is VocabularyItem => v !== undefined) && vs.length > 0 ? vocabAudioMatchExercise(vs) : undefined
+  }
+  if (id.startsWith(VOCAB_LISTEN_SELECT_PREFIX)) {
+    const vs = id.slice(VOCAB_LISTEN_SELECT_PREFIX.length).split('~').map(vocabById)
+    return vs.every((v): v is VocabularyItem => v !== undefined) && vs.length > 0 ? vocabListenSelectExercise(vs[0]!, vs.slice(1)) : undefined
+  }
+  if (id.startsWith(VOCAB_LISTEN_FILL_PREFIX)) {
+    const v = vocabById(id.slice(VOCAB_LISTEN_FILL_PREFIX.length))
+    return v ? vocabListenFillExercise(v) : undefined
+  }
+  if (id.startsWith(VOCAB_LISTEN_CHOICE_PREFIX)) {
+    const [vid, did] = id.slice(VOCAB_LISTEN_CHOICE_PREFIX.length).split('~')
+    const v = vid ? vocabById(vid) : undefined
+    const d = did ? vocabById(did) : undefined
+    return v ? vocabListenChoiceExercise(v, d) : undefined
+  }
+  if (id.startsWith(VOCAB_REPEAT_PREFIX)) {
+    const v = vocabById(id.slice(VOCAB_REPEAT_PREFIX.length))
+    return v ? vocabRepeatExercise(v) : undefined
+  }
+  // ESKI KAMCHILIK: lug'at testi savollari hech qayerda ro'yxatda yo'q edi —
+  // Xatolar daftari ular uchun to'g'ri javob o'rniga "—" ko'rsatardi.
+  if (id.startsWith(VOCAB_QUIZ_PREFIX)) {
+    const vocabId = id.slice(VOCAB_QUIZ_PREFIX.length)
+    const v = [...allVocab(), ...allGlossaryVocab()].find((x) => x.id === vocabId)
+    return v ? vocabQuizExercise(v) : undefined
+  }
   for (const lvl of LOADED_LEVELS) {
     const hit = allExercises(lvl).find((e) => e.id === id)
     if (hit) return hit
@@ -268,3 +744,4 @@ export function findExercise(id: string): Exercise | undefined {
 
 export { mockExamA1 } from './mockExamA1'
 export { diagnosticTest } from './diagnostic'
+export * from './types'
