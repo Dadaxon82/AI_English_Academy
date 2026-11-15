@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-10T18:16:18.553Z",
+  "generatedAt": "2026-11-15T06:25:10.667Z",
   "source": "web/src/content",
   "levels": [
     {
@@ -15,6 +15,27 @@
       "vocab": 84,
       "exercises": 238,
       "bytes": 284335
+    },
+    {
+      "level": "B1",
+      "days": 7,
+      "vocab": 84,
+      "exercises": 218,
+      "bytes": 284862
+    },
+    {
+      "level": "B2",
+      "days": 7,
+      "vocab": 84,
+      "exercises": 217,
+      "bytes": 294034
+    },
+    {
+      "level": "C1",
+      "days": 7,
+      "vocab": 84,
+      "exercises": 217,
+      "bytes": 301998
     }
   ]
 }

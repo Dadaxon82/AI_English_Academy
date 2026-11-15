@@ -38,9 +38,9 @@ export interface SectionPlanEntry {
 }
 
 /**
- * Bo'limlar rejasi. A1 kontenti 7 kun: 1–4 (asoslar) va 5–7 (kundalik
- * vaziyatlar). Qolgan darajalar uchun kunlar hali yozilmagan — `dayNumbers`
- * bo'sh, karta "Kontent tayyorlanmoqda" deb ochiq yozadi.
+ * Bo'limlar rejasi. Har daraja (A1–C1) 7 kun: 1-qism 1–4 kunlar, 2-qism 5–7
+ * kunlar. `dayNumbers` bo'sh bo'lsa, karta "Kontent tayyorlanmoqda" deb ochiq
+ * yozadi (yangi daraja qo'shilganda).
  */
 export const SECTION_PLAN: readonly SectionPlanEntry[] = [
   { id: 'a1-1', level: 'A1', part: 1, dayNumbers: [1, 2, 3, 4], summaryUz: 'Salomlaşiş, oila va egalik, kunlik tartib, uy va xonalar: “to be”, “have got”, Present Simple, “there is / are”.' },
@@ -51,15 +51,8 @@ export const SECTION_PLAN: readonly SectionPlanEntry[] = [
   { id: 'b1-2', level: 'B1', part: 2, dayNumbers: [5, 6, 7], summaryUz: 'Soğlom ovqatlaniş, masofaviy iş, madaniyat va an’analar: First Conditional va unless, Present Perfect Continuous, Second Conditional.' },
   { id: 'b2-1', level: 'B2', part: 1, dayNumbers: [1, 2, 3, 4], summaryUz: 'Kasbiy muloqot, texnologiya, ekologiya, sayohat hikoyalari: Reported Speech, Relative Clauses, Third Conditional va should have, hikoya zamonlari (Past Perfect).' },
   { id: 'b2-2', level: 'B2', part: 2, dayNumbers: [5, 6, 7], summaryUz: 'Şaxsiy moliya, jamiyat va qadriyatlar, kelajak rejalari: Gerund va Infinitive, wish / if only, Future Continuous va Future Perfect.' },
-  ...CEFR_LEVELS.filter((l) => l !== 'A1' && l !== 'A2' && l !== 'B1' && l !== 'B2').flatMap((level) =>
-    [1, 2].map((part) => ({
-      id: `${level.toLowerCase()}-${part}`,
-      level,
-      part,
-      dayNumbers: [] as number[],
-      summaryUz: '',
-    })),
-  ),
+  { id: 'c1-1', level: 'C1', part: 1, dayNumbers: [1, 2, 3, 4], summaryUz: 'Tanqidiy fikrlaş, mehnat bozori, global savdo, globallaşuv va özlik: Inversion, Cleft sentences, şaxssiz passiv (It is said that…), Mixed Conditionals.' },
+  { id: 'c1-2', level: 'C1', part: 2, dayNumbers: [5, 6, 7], summaryUz: 'Biznes etikasi, fan va jamiyat, akademik yoziş: Hedging, Participle clauses, discourse markers va nominalisation.' },
 ]
 
 /** Sakrash testidan o'tish chegarasi (%) — BIZNING qarorimiz (kun testi 70 dan qattiqroq). */

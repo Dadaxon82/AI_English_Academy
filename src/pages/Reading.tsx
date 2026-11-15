@@ -52,7 +52,7 @@ export default function Reading() {
 
   const passages = getBundle(data.settings.currentLevel).reading
 
-  if (!ready) return <LoadingBlock label={'O\'qiş matnlari yuklanmoqda…'} />
+  if (!ready) return <LoadingBlock label={'Öqiş matnlari yuklanmoqda…'} />
 
   const opened = openId ? passages.find((p) => p.id === openId) ?? null : null
   const lessonPassage = lessonId ? passages.find((p) => p.id === lessonId) ?? null : null
@@ -304,7 +304,7 @@ function PassageDetail({ passage, onBack }: { passage: ReadingPassage; onBack: (
             {timerRunning
               ? "Yurmoqda — sahifani almaştirsangiz ham töxtamaydi."
               : timerHere
-                ? 'To\'xtatilgan / pauzada.'
+                ? 'Töxtatilgan / pauzada.'
                 : 'Bu matn uçun boşlanmagan.'}
           </span>
           <div className="flex flex-wrap gap-1.5">
@@ -343,7 +343,7 @@ function PassageDetail({ passage, onBack }: { passage: ReadingPassage; onBack: (
         <StatTile label="Töğri" value={right.length} tone="ok" />
         <StatTile label="Xato" value={wrong.length} tone={wrong.length > 0 ? 'bad' : 'ok'} />
         <StatTile
-          label={timedMode ? 'Qolgan vaqt' : 'Bu matnda o\'qilgan'}
+          label={timedMode ? 'Qolgan vaqt' : 'Bu matnda öqilgan'}
           value={timedMode ? formatDuration(remainingSec) : timerHere ? timerLabel : '—:—'}
           tone={timedMode && deadline !== null && remainingSec < 60 ? 'bad' : 'default'}
           hint={timedMode ? `${passage.estMinutes} daqiqalik muddatdan` : 'taymer yuritilsa körinadi'}
@@ -389,7 +389,7 @@ function PassageDetail({ passage, onBack }: { passage: ReadingPassage; onBack: (
                 </span>
                 <div className="flex flex-wrap gap-1.5">
                   <Chip tone={picked.fromVocab ? 'ok' : 'warn'}>
-                    {picked.fromVocab ? 'lug\'at ro\'yxatida bor' : 'faqat matn glossariyasida'}
+                    {picked.fromVocab ? 'luğat röyxatida bor' : 'faqat matn glossariyasida'}
                   </Chip>
                   <SpeakButton text={picked.word} label={`${picked.word} — talaffuz`} />
                 </div>

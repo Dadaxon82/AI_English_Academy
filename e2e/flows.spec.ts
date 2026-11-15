@@ -39,7 +39,8 @@ test('söz öyini: luğat öyini oxirigaça', async ({ page }) => {
   await page.getByRole('button', { name: 'Öyinni boşlaş' }).click()
   await expect(page.locator('.aea-lesson').first()).toBeVisible()
   await expectClean(page, errors)
-  await skipThroughLesson(page)
+  // Söz öyinida xatolar raundi ham bor (ötkazilgan maşqlar qaytadi) — qadamlar köproq.
+  await skipThroughLesson(page, 200)
   await expectClean(page, errors)
 })
 
@@ -96,6 +97,22 @@ test('A2: onboardingda A2 tanlansa — yöl, grammatika va tinglaş A2 kontentin
   await expect(page.getByText(/fayl hali yaratilmagan/).first()).toBeVisible()
   // Fayl yo'q — soxta pleyer ko'rsatilmaydi
   await expect(page.locator('audio')).toHaveCount(0)
+  await expectClean(page, errors)
+})
+
+test('C1: onboardingda C1 tanlansa — yöl va grammatika C1 kontentini oçadi', async ({ page }) => {
+  const errors = watchErrors(page)
+  await page.goto('onboarding')
+  await page.getByRole('button', { name: 'C1', exact: true }).first().click()
+  await page.getByRole('button', { name: 'Davom etiş' }).click()
+  await page.getByRole('button', { name: 'Davom etiş' }).click()
+  await page.getByRole('button', { name: 'Hozir ötkazmayman' }).click()
+  await page.getByRole('button', { name: 'Dashboardga ötiş' }).click()
+  await waitPersist(page)
+  await page.goto('path')
+  await expect(page.getByText('Tanqidiy fikrlaş va ritorika').first()).toBeVisible()
+  await page.goto('grammar')
+  await expect(page.getByText(/Inversion/).first()).toBeVisible()
   await expectClean(page, errors)
 })
 

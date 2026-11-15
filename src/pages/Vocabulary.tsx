@@ -30,19 +30,19 @@ type Mode = 'game' | 'browse' | 'flash' | 'test'
 
 const POS_UZ: Record<PartOfSpeech, string> = {
   noun: 'ot',
-  verb: 'fe\'l',
+  verb: 'fe’l',
   adjective: 'sifat',
   adverb: 'ravish',
   pronoun: 'olmoş',
   preposition: 'predlog',
-  conjunction: 'bog\'lovçi',
+  conjunction: 'boğlovçi',
   determiner: 'belgilovçi',
   interjection: 'undov',
 }
 
 const GRADE_LABELS: { grade: SrsGrade; label: string }[] = [
   { grade: 'again', label: 'Qayta maşq qiliş' },
-  { grade: 'hard', label: 'Qiyin bo\'ldi' },
+  { grade: 'hard', label: 'Qiyin böldi' },
   { grade: 'good', label: 'Bilaman' },
   { grade: 'easy', label: 'Juda oson' },
 ]
@@ -161,13 +161,13 @@ export default function Vocabulary() {
     setDueOnly(false)
   }
 
-  if (!ready) return <LoadingBlock label={'Lug\'at ma\'lumotlari yuklanmoqda…'} />
+  if (!ready) return <LoadingBlock label={'Luğat ma’lumotlari yuklanmoqda…'} />
 
   return (
     <div className="grid gap-4">
       <header className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold">{'Lug\'at'}</h1>
+          <h1 className="text-xl sm:text-2xl font-bold">{'Luğat'}</h1>
           <p className="muted text-sm">
             {data.settings.currentLevel} darajasi · {pool.length} ta söz · takrorlaş jadvali SM-2 qoidasi (srs.ts)
             böyiça hisoblanadi.
@@ -182,7 +182,7 @@ export default function Vocabulary() {
               aria-pressed={mode === m}
               className={`px-3.5 py-2 rounded-lg text-sm font-semibold ${mode === m ? 'bg-[var(--panel)] shadow-sm' : 'muted hover:text-[var(--text)]'}`}
             >
-              {m === 'game' ? 'O\'yin' : m === 'browse' ? 'Ro\'yxat' : m === 'flash' ? 'Flashcard' : 'Test'}
+              {m === 'game' ? 'Öyin' : m === 'browse' ? 'Röyxat' : m === 'flash' ? 'Flashcard' : 'Test'}
             </button>
           ))}
         </div>
@@ -261,7 +261,7 @@ export default function Vocabulary() {
           {filtered.length === 0 ? (
             <EmptyState
               title="Heç narsa topilmadi"
-              body={'Boşqa so\'z bilan qidirib ko\'ring yoki filtrlarni tozalang. Mavzular ro\'yxati yuqorida.'}
+              body={'Boşqa söz bilan qidirib köring yoki filtrlarni tozalang. Mavzular röyxati yuqorida.'}
               action={
                 <Button variant="secondary" onClick={resetFilters}>
                   Filtrlarni tozalaş
@@ -508,7 +508,7 @@ function Flashcards({
     return (
       <EmptyState
         title="Flashcard uçun söz yöq"
-        body={'Filtrlarni tozalasangiz butun lug\'at ro\'yxati bo\'yiça işlaysiz.'}
+        body={'Filtrlarni tozalasangiz butun luğat röyxati böyiça işlaysiz.'}
       />
     )
   }
@@ -575,7 +575,7 @@ function Flashcards({
       <button
         type="button"
         onClick={() => setFlipped((v) => !v)}
-        aria-label={flipped ? 'Tarjimani yopiş' : 'Tarjimani ko\'riş'}
+        aria-label={flipped ? 'Tarjimani yopiş' : 'Tarjimani köriş'}
         className="min-h-44 rounded-2xl border bg-[var(--panel-2)] p-5 grid place-items-center text-center animate-[var(--animate-pop)]"
       >
         <span className="grid gap-2">

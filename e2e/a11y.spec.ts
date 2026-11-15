@@ -6,6 +6,22 @@ import { disableHearts, skipThroughLesson } from './helpers'
  * WCAG 2.1 AA — axe-core. Har marshrutda `serious` va `critical`
  * buzilishlar soni 0 bo'lishi shart (yorug' va qorong'i mavzuda).
  */
+/**
+ * Kirish animatsiyalari (fade-in, slide-up) tugashini kutamiz — aks holda axe
+ * shaffof holatdagi matnni o'lchab, soxta kontrast xatosi beradi. Qat'iy vaqt
+ * o'rniga haqiqiy holat: barcha cheklangan animatsiyalar `finished` bo'lsin.
+ */
+async function settleAnimations(page: import('@playwright/test').Page): Promise<void> {
+  // Daraja bundle'lari lazy yuklanadi: avval ular kelsin, keyin kontent chizilsin.
+  await page.waitForLoadState('networkidle')
+  await page.waitForTimeout(150)
+  await page.waitForFunction(
+    () => document.getAnimations().every((a) => a.playState !== 'running' || a.effect?.getTiming().iterations === Infinity),
+    undefined,
+    { timeout: 5000 },
+  )
+}
+
 const ROUTES = [
   'dashboard', 'path', 'sections', 'vocabulary', 'grammar', 'reading', 'listening',
   'writing', 'speaking', 'mock-exam', 'progress', 'errors', 'settings', 'onboarding', 'quick', 'dialogues', 'community', 'conversation', 'pronunciation', 'shorts', 'support',
@@ -17,7 +33,7 @@ for (const scheme of ['light', 'dark'] as const) {
       await page.emulateMedia({ colorScheme: scheme })
       await page.goto(route)
       await page.locator('main, #root > *').first().waitFor()
-      await page.waitForTimeout(400)
+      await settleAnimations(page)
       const res = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).analyze()
       const bad = res.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical')
       const report = bad.map((v) => `${v.id} (${v.impact}) ×${v.nodes.length}: ${v.nodes.slice(0, 4).map((n) => n.target.join(' ')).join(' | ')}`)
@@ -27,9 +43,7 @@ for (const scheme of ['light', 'dark'] as const) {
 }
 
 async function seriousViolations(page: import('@playwright/test').Page): Promise<string[]> {
-  // Kirish animatsiyalari (fade-in) tugashini kutamiz — aks holda axe
-  // shaffof holatdagi matnni o'lchab, soxta kontrast xatosi beradi.
-  await page.waitForTimeout(900)
+  await settleAnimations(page)
   const res = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).analyze()
   return res.violations
     .filter((v) => v.impact === 'serious' || v.impact === 'critical')
