@@ -7,8 +7,9 @@ import type { GrammarTopic, ReadingPassage } from '../types'
 import type { LevelBundle } from '../index'
 import * as d1 from './day-01'
 import * as d2 from './day-02'
+import * as d3 from './day-03'
 
-const days = [d1, d2]
+const days = [d1, d2, d3]
 const withExtra = <T extends GrammarTopic | ReadingPassage>(t: T, extra: T['exercises']): T => ({ ...t, exercises: [...t.exercises, ...extra] })
 
 export const b2: LevelBundle = {

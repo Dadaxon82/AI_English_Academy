@@ -568,7 +568,7 @@ export const extraGrammar: Exercise[] = [
       'They are collected by a truck.',
       'They are taken to a recycling centre.',
     ],
-    explanationUz: 'Qutiga taşlanadi → yük maşinasi töplaydi → markazga olib boriladi → yuviladi va maydalanadi → yangi mahsulot yasaladi.',
+    explanationUz: 'Qutiga taşlanadi → yuk maşinasi töplaydi → markazga olib boriladi → yuviladi va maydalanadi → yangi mahsulot yasaladi.',
     difficulty: 2,
   },
 ]
