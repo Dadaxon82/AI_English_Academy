@@ -23,7 +23,7 @@ export interface Language {
 }
 
 export const LANGUAGES: readonly Language[] = [
-  { code: 'en', nameUz: 'Ingliz tili', nativeName: 'English', countryUz: 'Angliya', hello: 'Hello!', ready: true },
+  { code: 'en', nameUz: 'Ingliz tili', nativeName: 'English', countryUz: 'Buyuk Britaniya', hello: 'Hello!', ready: true },
   { code: 'de', nameUz: 'Nemis tili', nativeName: 'Deutsch', countryUz: 'Germaniya', hello: 'Hallo!', ready: false },
   { code: 'ru', nameUz: 'Rus tili', nativeName: 'Русский', countryUz: 'Rossiya', hello: 'Привет!', ready: false },
   { code: 'zh', nameUz: 'Xitoy tili', nativeName: '中文', countryUz: 'Xitoy', hello: '你好！', ready: false },

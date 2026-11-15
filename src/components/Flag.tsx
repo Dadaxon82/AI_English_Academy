@@ -2,6 +2,7 @@
  * Davlat bayroqlari — inline SVG (emoji bayroqlar Windows'da harf bo'lib
  * chiqadi, rasm fayllari esa qo'shimcha so'rov). Nisbat 3:2, soddalashtirilgan.
  */
+import { useId } from 'react'
 import type { LanguageCode } from '../lib/languages'
 
 /** 5 burchakli yulduz yo'li (markaz, tashqi radius, burilish gradusda). */
@@ -33,16 +34,35 @@ function Trigram({ x, y, angle, pattern }: { x: number; y: number; angle: number
   )
 }
 
+/** Union Jack: ko'k fon, oq-qizil diagonallar (qizil chiziq soat yo'nalishida siljigan) va oq hoshiyali qizil xoch. */
+function UnionJack() {
+  // Bir sahifada bir nechta bayroq bo'lishi mumkin — clipPath id'lari noyob bo'lsin.
+  const id = useId().replace(/:/g, '')
+  return (
+    <g transform="scale(0.5 0.6667)">
+      <defs>
+        <clipPath id={`uj-s-${id}`}>
+          <path d="M0,0 v30 h60 v-30 z" />
+        </clipPath>
+        <clipPath id={`uj-t-${id}`}>
+          <path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z" />
+        </clipPath>
+      </defs>
+      <g clipPath={`url(#uj-s-${id})`}>
+        <path d="M0,0 v30 h60 v-30 z" fill="#012169" />
+        <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" strokeWidth="6" />
+        <path d="M0,0 L60,30 M60,0 L0,30" clipPath={`url(#uj-t-${id})`} stroke="#C8102E" strokeWidth="4" />
+        <path d="M30,0 v30 M0,15 h60" stroke="#fff" strokeWidth="10" />
+        <path d="M30,0 v30 M0,15 h60" stroke="#C8102E" strokeWidth="6" />
+      </g>
+    </g>
+  )
+}
+
 function FlagShapes({ code }: { code: LanguageCode }) {
   switch (code) {
-    case 'en': // Angliya — Avliyo Georgiy xochi
-      return (
-        <>
-          <rect width="30" height="20" fill="#fff" />
-          <rect x="13" width="4" height="20" fill="#CE1124" />
-          <rect y="8" width="30" height="4" fill="#CE1124" />
-        </>
-      )
+    case 'en': // Buyuk Britaniya — Union Jack (60×30 andozada chizilib, 30×20 ga moslanadi)
+      return <UnionJack />
     case 'de':
       return (
         <>
