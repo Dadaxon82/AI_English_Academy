@@ -38,7 +38,7 @@ Loyiha talabnomasi (`AI English Academy_v2.docx`) to'liq bajarilgan:
 <!-- STATS:START -->
 _Avtomatik o‘lchandi (`npm run stats`, 2026-11-15). Qo‘lda tahrirlamang._
 
-**Testlar:** vitest **590/590** (60 fayl) · **Kod:** veb 256 fayl / 65038 qator (TS/TSX), mobil 119 fayl / 29295 qator (Kotlin)
+**Testlar:** vitest **592/592** (61 fayl) · **Kod:** veb 258 fayl / 65416 qator (TS/TSX), mobil 119 fayl / 29295 qator (Kotlin)
 
 | Daraja | Kun | Lug‘at | Mashq | Turlar | Audio fayl / tinglash | Mock |
 |---|---|---|---|---|---|---|

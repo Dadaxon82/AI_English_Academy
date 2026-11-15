@@ -179,6 +179,9 @@ html.no-motion *, html.no-motion *::before, html.no-motion *::after {
     --map-locked: #e2e8f0;
     --map-locked-edge: #b8c2d0;
     --map-locked-ink: #8a96a8;
+    --map-done-hi: #ffe680;
+    --map-current-hi: #7ee89a;
+    --map-locked-hi: #f1f5f9;
     --map-chest: #b7791f;
     --map-chest-lid: #d69e2e;
     --map-chest-edge: #7c4a03;
@@ -203,6 +206,7 @@ html.no-motion *, html.no-motion *::before, html.no-motion *::after {
     --scene-pill-edge: #dfe5ee;
     --scene-pill-ink: #13233f;
     --scene-banner: #3557d6;
+    --scene-banner-hi: #5b7cf0;
     --scene-banner-edge: #2440a8;
     --scene-ray: #ffc93c;
     --scene-wood: #c98a4b;
@@ -239,6 +243,8 @@ html.no-motion *, html.no-motion *::before, html.no-motion *::after {
     --map-locked: #1e3a63;
     --map-locked-edge: #16304f;
     --map-locked-ink: #7d93b5;
+    --map-locked-hi: #2a4a78;
+    --scene-banner-hi: #5a7cf2;
 
     --scene-sky-top: #0b1840;
     --scene-sky-bottom: #1b3466;

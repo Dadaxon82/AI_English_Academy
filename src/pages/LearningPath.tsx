@@ -17,6 +17,8 @@ import UzTranslation from '../components/UzTranslation'
 import { Suspense, lazy, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import DuoPathMap from '../components/DuoPathMap'
+import MapBell from '../components/MapBell'
+import { MascotAvatar } from '../components/Mascot'
 import SectionBanner from '../components/SectionBanner'
 import ExerciseRunner from '../components/ExerciseRunner'
 import { Button, Card, Chip, EmptyState, InfoBanner, LoadingBlock, ProgressRing, SpeakButton, SuccessBanner } from '../components/ui'
@@ -64,7 +66,7 @@ function firstOpenSection(day: DailyPlanDay, data: AppData): DaySection | null {
 }
 
 export default function LearningPath() {
-  const { data, ready, streak, actions } = useStore()
+  const { data, ready, streak, dueCount, actions } = useStore()
   const nav = useNavigate()
 
   // O'quv yo'li darajasi (A1 tugasa yoki A2.1 ga sakralsa — A2 kunlari).
@@ -229,8 +231,18 @@ export default function LearningPath() {
           <h2 className="text-lg font-extrabold">{view === '3d' ? '3D olam' : 'Darslar xaritasi'}</h2>
           {view === '2d' ? (
             <>
-              <Chip>{stepsTotal} qadam</Chip>
-              <Chip>{chains.length} kun</Chip>
+              <span className="inline-flex items-center gap-1.5 rounded-full border-2 px-3 py-1 text-sm font-bold">
+                <svg aria-hidden viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="m12 3 9 5-9 5-9-5 9-5Zm-9 9 9 5 9-5M3 16l9 5 9-5" />
+                </svg>
+                {stepsTotal} qadam
+              </span>
+              <span className="inline-flex items-center gap-1.5 rounded-full border-2 px-3 py-1 text-sm font-bold">
+                <svg aria-hidden viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M4 6.5A1.5 1.5 0 0 1 5.5 5h13A1.5 1.5 0 0 1 20 6.5V19a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 19V6.5ZM4 10h16M8 3v4m8-4v4" />
+                </svg>
+                {chains.length} kun
+              </span>
             </>
           ) : (
             world && <Chip>{worldChain?.day.id}</Chip>
@@ -257,6 +269,17 @@ export default function LearningPath() {
               </button>
             ))}
           </div>
+          <MapBell
+            dueCount={dueCount}
+            current={
+              focus && focus.status !== 'done'
+                ? { label: `${focus.dayNumber}-kun · ${focus.skill === 'test' || focus.isTest ? 'Kun testi' : skillLabelUz(focus.skill)}`, to: focus.isTest ? null : `/lesson/${focus.dayId}/${focus.skill}` }
+                : null
+            }
+          />
+          <Link to="/settings" aria-label="Profil va sozlamalar" className="rounded-full ring-2 ring-white dark:ring-[var(--border)] shadow-sm hover:scale-105 transition-transform">
+            <MascotAvatar size="sm" alt="" />
+          </Link>
         </div>
         {view === '3d' && world ? (
           <>
@@ -290,11 +313,6 @@ export default function LearningPath() {
           </>
         ) : (
           <>
-        <p className="text-xs muted">
-          Har tanga — bitta bölim, kubok belgisi — kun yakuniy testi. Tangani bosing — öşa bölim darsi oçiladi;
-          yakunlangaç ball tanga ustida körinadi. Oltin — bajarilgan, yaşil — oçiq, kulrang — qulflangan. Sandiq — kun
-          yarmi, marra bayroği — keyingi bölim oçiladigan joy.
-        </p>
         <DuoPathMap
           layout={layout}
           achievements={{ badges: data.badges.length, streak }}
@@ -309,6 +327,11 @@ export default function LearningPath() {
             startDayTest(node.dayId)
           }}
         />
+        <p className="text-xs muted">
+          Har tanga — bitta bölim, kubok belgisi — kun yakuniy testi. Tangani bosing — öşa bölim darsi oçiladi;
+          yakunlangaç ball tanga ustida körinadi. Oltin — bajarilgan, yaşil — oçiq, kulrang — qulflangan. Sandiq — kun
+          yarmi, marra bayroği — keyingi bölim oçiladigan joy.
+        </p>
         <p className="text-[11px] muted">
           Zanjir böyiça: {audit.rotationSteps} maşq qadami (+{audit.reinforcement} takrorlaş) · bir xil tur
           qöşni: {audit.sameNeighbours} (majburiy: {audit.unavoidable}) · eng qisqa tur masofasi: {audit.minGap}
