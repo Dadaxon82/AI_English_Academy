@@ -47,7 +47,9 @@ export const SECTION_PLAN: readonly SectionPlanEntry[] = [
   { id: 'a1-2', level: 'A1', part: 2, dayNumbers: [5, 6, 7], summaryUz: 'Ovqat va içimliklar, böş vaqt va rejalar, sayohat va yöl söraş: “some / any”, “can”, “going to”, “was / were”.' },
   { id: 'a2-1', level: 'A2', part: 1, dayNumbers: [1, 2, 3, 4], summaryUz: 'Ötgan hafta oxiri, bolalik xotiralari, şahar va qişloq, rejalar va ob-havo: Past Simple (töğri va notöğri fe’llar), qiyosiy daraja, “going to / will”.' },
   { id: 'a2-2', level: 'A2', part: 2, dayNumbers: [5, 6, 7], summaryUz: 'Hayot tajribalari, soğliq va maslahat, oşxona va xarid: Present Perfect, “should / must / have to”, “some / any, much / many”.' },
-  ...CEFR_LEVELS.filter((l) => l !== 'A1' && l !== 'A2').flatMap((level) =>
+  { id: 'b1-1', level: 'B1', part: 1, dayNumbers: [1, 2, 3, 4], summaryUz: 'Kasb yöli, texnologiya, sayohat va ekologiya, odatlar: Present Perfect va Past Simple, must / might / can’t, Passive Voice, used to / would.' },
+  { id: 'b1-2', level: 'B1', part: 2, dayNumbers: [5, 6, 7], summaryUz: 'Soğlom ovqatlaniş, masofaviy iş, madaniyat va an’analar: First Conditional va unless, Present Perfect Continuous, Second Conditional.' },
+  ...CEFR_LEVELS.filter((l) => l !== 'A1' && l !== 'A2' && l !== 'B1').flatMap((level) =>
     [1, 2].map((part) => ({
       id: `${level.toLowerCase()}-${part}`,
       level,

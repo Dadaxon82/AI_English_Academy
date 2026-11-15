@@ -14,7 +14,7 @@ import { useNow } from '../lib/clock'
 import { useStore } from '../lib/storeContext'
 import { Button, Card, Chip, InfoBanner, inputCls } from './ui'
 
-const LEVELS: CefrLevel[] = ['A1', 'A2']
+const LEVELS: CefrLevel[] = ['A1', 'A2', 'B1']
 
 export default function CertificateCard() {
   const { data } = useStore()

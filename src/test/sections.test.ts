@@ -1,3 +1,4 @@
+import { CEFR_LEVELS } from '../content/types'
 import { describe, expect, it } from 'vitest'
 import { getBundle } from '../content'
 import { reducer } from '../lib/reducer'
@@ -32,12 +33,15 @@ describe('Bölimlar rejasi', () => {
 describe('buildSections — holatlar', () => {
   it('yangi foydalanuvçi: A1.1 joriy, A1.2 va A2 qulflangan, kontentsizlari böş', () => {
     const cards = buildSections(emptyData('u'))
-    expect(cards.map((c) => c.status)).toEqual(['current', 'locked', 'locked', 'locked', 'empty', 'empty', 'empty', 'empty', 'empty', 'empty'])
+    // Kontentli bo'limlar soni kontentdan hisoblanadi (yangi daraja qo'shilsa test o'zgarmaydi).
+    const withContent = SECTION_PLAN.filter((p) => p.dayNumbers.length > 0).length
+    const expected = SECTION_PLAN.map((_, i) => (i === 0 ? 'current' : i < withContent ? 'locked' : 'empty'))
+    expect(cards.map((c) => c.status)).toEqual(expected)
     expect(cards[0]!.daysDone).toBe(0)
     expect(cards[1]!.canJump).toBe(true)
     expect(cards[2]!.canJump).toBe(true)
     // Kontenti yo'q bo'limga sakrash tugmasi chiqmaydi (soxta tugma yo'q)
-    expect(cards[4]!.canJump).toBe(false)
+    for (const c of cards.slice(withContent)) expect(c.canJump).toBe(false)
   })
 
   it('namuna ibora kontentdan olinadi (ixtiro emas)', () => {
@@ -117,9 +121,10 @@ describe('currentSectionInfo — banner', () => {
 
   it('hamma kun tugasa: oxirgi bölimning oxirgi kuni', () => {
     const d = emptyData('u')
-    d.path.completedDays = [...a1Days, ...getBundle('A2').days].map((x) => x.id)
+    d.path.completedDays = CEFR_LEVELS.flatMap((l) => getBundle(l).days).map((x) => x.id)
     const info = currentSectionInfo(d)!
-    expect(info.section.label).toBe('A2.2')
+    const last = [...SECTION_PLAN].reverse().find((p) => p.dayNumbers.length > 0)!
+    expect(info.section.label).toBe(`${last.level}.${last.part}`)
     expect(info.day.dayNumber).toBe(7)
   })
 })
@@ -140,9 +145,11 @@ describe('pathLevel — öquv yöli darajasi', () => {
     expect(pathLevel(d)).toBe('A2')
     expect(currentSectionInfo(d)!.section.label).toBe('A2.1')
   })
-  it('kontenti yöq daraja (B1) baholangan bölsa — B1 qaytadi (yöl “reja yöq” deydi)', () => {
+  it('kontentsiz (yoki eng yuqori) daraja baholangan bo‘lsa — o‘sha daraja qaytadi', () => {
+    // Kontenti hali yo'q daraja bo'lsa — o'sha (yo'l «reja yo'q» deydi); hammasi tayyor bo'lsa — C1.
+    const level = CEFR_LEVELS.find((l) => getBundle(l).days.length === 0) ?? 'C1'
     const d = emptyData('u')
-    d.settings.currentLevel = 'B1'
-    expect(pathLevel(d)).toBe('B1')
+    d.settings.currentLevel = level
+    expect(pathLevel(d)).toBe(level)
   })
 })
