@@ -14,7 +14,7 @@
 import { useMemo } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { BarChart, Button, Card, Chip, EmptyState, InfoBanner, LoadingBlock, StatTile } from '../components/ui'
-import DuoPathMap from '../components/DuoPathMap'
+import ScenePathMap from '../components/ScenePathMap'
 import SectionBanner from '../components/SectionBanner'
 import InstallAppCard from '../components/InstallAppCard'
 import LeaguePanel from '../components/LeaguePanel'
@@ -243,7 +243,7 @@ export default function Dashboard() {
             <h2 className="font-bold">Darslar xaritasi</h2>
             <Chip tone="brand">{bundle.days[currentDayIdx]?.titleUz ?? ''}</Chip>
           </div>
-          <DuoPathMap
+          <ScenePathMap
             layout={pathLayout}
             achievements={{ badges: data.badges.length, streak }}
             selectedId={pathFocus?.id ?? null}
