@@ -202,6 +202,7 @@ const LEVEL_LOADERS: Partial<Record<CefrLevel, () => Promise<LevelBundle>>> = {
   A2: () => import('./a2').then((m) => m.a2),
   B1: () => import('./b1').then((m) => m.b1),
   B2: () => import('./b2').then((m) => m.b2),
+  C1: () => import('./c1').then((m) => m.c1),
 }
 
 export function getBundle(level: CefrLevel): LevelBundle {
