@@ -179,10 +179,39 @@ html.no-motion *, html.no-motion *::before, html.no-motion *::after {
     --map-locked: #e2e8f0;
     --map-locked-edge: #b8c2d0;
     --map-locked-ink: #8a96a8;
+    --map-done-hi: #ffe680;
+    --map-current-hi: #7ee89a;
+    --map-locked-hi: #f1f5f9;
     --map-chest: #b7791f;
     --map-chest-lid: #d69e2e;
     --map-chest-edge: #7c4a03;
     --map-chest-lock: #f5b301;
+    /* 2D xarita manzarasi: osmon, o'tloq, qum yo'l, tosh tagliklar. */
+    --scene-sky-top: #8fd3ff;
+    --scene-sky-bottom: #d9f1ff;
+    --scene-grass: #9fdc6a;
+    --scene-grass-2: #86cf55;
+    --scene-tuft: #5fb53a;
+    --scene-tree: #4caf3f;
+    --scene-tree-dark: #3a9132;
+    --scene-trunk: #8a5a2b;
+    --scene-road: #f6e3b8;
+    --scene-road-edge: #e3c88f;
+    --scene-road-dash: #ffffff;
+    --scene-stone: #d5dbe3;
+    --scene-stone-edge: #a9b3c1;
+    --scene-cloud: #ffffff;
+    --scene-city: #a8c8e8;
+    --scene-pill: #ffffff;
+    --scene-pill-edge: #dfe5ee;
+    --scene-pill-ink: #13233f;
+    --scene-banner: #3557d6;
+    --scene-banner-hi: #5b7cf0;
+    --scene-banner-edge: #2440a8;
+    --scene-ray: #ffc93c;
+    --scene-wood: #c98a4b;
+    --scene-wood-edge: #8f5a26;
+    --scene-wood-ink: #4a2a0c;
   }
   .dark {
     color-scheme: dark;
@@ -214,6 +243,33 @@ html.no-motion *, html.no-motion *::before, html.no-motion *::after {
     --map-locked: #1e3a63;
     --map-locked-edge: #16304f;
     --map-locked-ink: #7d93b5;
+    --map-locked-hi: #2a4a78;
+    --scene-banner-hi: #5a7cf2;
+
+    --scene-sky-top: #0b1840;
+    --scene-sky-bottom: #1b3466;
+    --scene-grass: #1f4a2c;
+    --scene-grass-2: #1a4026;
+    --scene-tuft: #2f6b3c;
+    --scene-tree: #2e6b3a;
+    --scene-tree-dark: #23552d;
+    --scene-trunk: #5c3d1f;
+    --scene-road: #5d5038;
+    --scene-road-edge: #4a3f2b;
+    --scene-road-dash: #a89b7c;
+    --scene-stone: #3a4a63;
+    --scene-stone-edge: #2a374c;
+    --scene-cloud: #2a4378;
+    --scene-city: #20386a;
+    --scene-pill: #102444;
+    --scene-pill-edge: #2a4a78;
+    --scene-pill-ink: #eaf1fb;
+    --scene-banner: #3b5fe0;
+    --scene-banner-edge: #2a47b5;
+    --scene-ray: #f5b301;
+    --scene-wood: #9c6a38;
+    --scene-wood-edge: #6b4420;
+    --scene-wood-ink: #fff4e3;
   }
 
   * { border-color: var(--border); }

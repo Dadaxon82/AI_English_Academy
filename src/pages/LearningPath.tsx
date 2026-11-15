@@ -17,6 +17,8 @@ import UzTranslation from '../components/UzTranslation'
 import { Suspense, lazy, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import DuoPathMap from '../components/DuoPathMap'
+import MapBell from '../components/MapBell'
+import { MascotAvatar } from '../components/Mascot'
 import SectionBanner from '../components/SectionBanner'
 import ExerciseRunner from '../components/ExerciseRunner'
 import { Button, Card, Chip, EmptyState, InfoBanner, LoadingBlock, ProgressRing, SpeakButton, SuccessBanner } from '../components/ui'
@@ -64,7 +66,7 @@ function firstOpenSection(day: DailyPlanDay, data: AppData): DaySection | null {
 }
 
 export default function LearningPath() {
-  const { data, ready, actions } = useStore()
+  const { data, ready, streak, dueCount, actions } = useStore()
   const nav = useNavigate()
 
   // O'quv yo'li darajasi (A1 tugasa yoki A2.1 ga sakralsa — A2 kunlari).
@@ -221,34 +223,63 @@ export default function LearningPath() {
       {/* ---------- Yo'l xaritasi (Duolingo uslubida, yilonsimon) ---------- */}
       <Card as="section" className="grid gap-3">
         <div className="flex flex-wrap items-center gap-2">
-          <h2 className="font-bold">{view === '3d' ? '3D olam' : 'Darslar xaritasi'}</h2>
+          <span aria-hidden className="grid place-items-center size-9 rounded-xl bg-violet-600 text-white shadow-sm">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 6.5C10.5 5 8 4.5 4 4.5v13c4 0 6.5.5 8 2 1.5-1.5 4-2 8-2v-13c-4 0-6.5.5-8 2Zm0 0v13" />
+            </svg>
+          </span>
+          <h2 className="text-lg font-extrabold">{view === '3d' ? '3D olam' : 'Darslar xaritasi'}</h2>
           {view === '2d' ? (
             <>
-              <Chip>{stepsTotal} qadam</Chip>
-              <Chip>{chains.length} kun</Chip>
+              <span className="inline-flex items-center gap-1.5 rounded-full border-2 px-3 py-1 text-sm font-bold">
+                <svg aria-hidden viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="m12 3 9 5-9 5-9-5 9-5Zm-9 9 9 5 9-5M3 16l9 5 9-5" />
+                </svg>
+                {stepsTotal} qadam
+              </span>
+              <span className="inline-flex items-center gap-1.5 rounded-full border-2 px-3 py-1 text-sm font-bold">
+                <svg aria-hidden viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M4 6.5A1.5 1.5 0 0 1 5.5 5h13A1.5 1.5 0 0 1 20 6.5V19a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 19V6.5ZM4 10h16M8 3v4m8-4v4" />
+                </svg>
+                {chains.length} kun
+              </span>
             </>
           ) : (
             world && <Chip>{worldChain?.day.id}</Chip>
           )}
           <span className="flex-1" />
-          <div role="group" aria-label="Xarita körinişi" className="inline-flex rounded-full border p-0.5 text-xs font-bold">
+          <div role="group" aria-label="Xarita körinişi" className="inline-flex rounded-full border-2 bg-[var(--panel-2)] p-0.5 text-sm font-bold">
             {(
               [
-                ['2d', '🗺️ 2D xarita'],
-                ['3d', '🏝️ 3D olam'],
+                ['2d', '2D xarita', 'M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2Zm0 0v14m6-12v14'],
+                ['3d', '3D olam', 'M12 2 3 7v10l9 5 9-5V7l-9-5Zm0 10 9-5M12 12 3 7m9 5v10'],
               ] as const
-            ).map(([v, label]) => (
+            ).map(([v, label, icon]) => (
               <button
                 key={v}
                 type="button"
                 aria-pressed={view === v}
                 onClick={() => pickView(v)}
-                className={`rounded-full px-3 py-1.5 transition-colors ${view === v ? 'bg-navy-700 text-white dark:bg-navy-300 dark:text-navy-950' : 'hover:bg-[var(--panel-2)]'}`}
+                className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 transition-colors ${view === v ? 'bg-[var(--accent)] text-white shadow-sm dark:bg-navy-300 dark:text-navy-950' : 'hover:bg-[var(--panel)]'}`}
               >
+                <svg aria-hidden viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d={icon} />
+                </svg>
                 {label}
               </button>
             ))}
           </div>
+          <MapBell
+            dueCount={dueCount}
+            current={
+              focus && focus.status !== 'done'
+                ? { label: `${focus.dayNumber}-kun · ${focus.skill === 'test' || focus.isTest ? 'Kun testi' : skillLabelUz(focus.skill)}`, to: focus.isTest ? null : `/lesson/${focus.dayId}/${focus.skill}` }
+                : null
+            }
+          />
+          <Link to="/settings" aria-label="Profil va sozlamalar" className="rounded-full ring-2 ring-white dark:ring-[var(--border)] shadow-sm hover:scale-105 transition-transform">
+            <MascotAvatar size="sm" alt="" />
+          </Link>
         </div>
         {view === '3d' && world ? (
           <>
@@ -282,13 +313,9 @@ export default function LearningPath() {
           </>
         ) : (
           <>
-        <p className="text-xs muted">
-          Har tanga — bitta bölim (belgisi va nomi ostida), 🏆 — kun yakuniy testi. Tangani bosing — öşa bölim
-          darsi oçiladi; yakunlangaç olingan ball tanga ustida körinadi. Oltin — bajarilgan, yaşil — oçiq, kulrang —
-          qulflangan. Sandiq — kun yarmi, katta kubok — keyingi bölim oçiladigan joy.
-        </p>
         <DuoPathMap
           layout={layout}
+          achievements={{ badges: data.badges.length, streak }}
           selectedId={selectedNodeId}
           focusId={focus?.id ?? null}
           onSelect={(node) => {
@@ -300,6 +327,11 @@ export default function LearningPath() {
             startDayTest(node.dayId)
           }}
         />
+        <p className="text-xs muted">
+          Har tanga — bitta bölim, kubok belgisi — kun yakuniy testi. Tangani bosing — öşa bölim darsi oçiladi;
+          yakunlangaç ball tanga ustida körinadi. Oltin — bajarilgan, yaşil — oçiq, kulrang — qulflangan. Sandiq — kun
+          yarmi, marra bayroği — keyingi bölim oçiladigan joy.
+        </p>
         <p className="text-[11px] muted">
           Zanjir böyiça: {audit.rotationSteps} maşq qadami (+{audit.reinforcement} takrorlaş) · bir xil tur
           qöşni: {audit.sameNeighbours} (majburiy: {audit.unavoidable}) · eng qisqa tur masofasi: {audit.minGap}

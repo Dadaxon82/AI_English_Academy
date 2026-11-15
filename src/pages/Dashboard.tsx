@@ -245,6 +245,7 @@ export default function Dashboard() {
           </div>
           <DuoPathMap
             layout={pathLayout}
+            achievements={{ badges: data.badges.length, streak }}
             selectedId={pathFocus?.id ?? null}
             focusId={pathFocus?.id ?? null}
             onSelect={(node) => {

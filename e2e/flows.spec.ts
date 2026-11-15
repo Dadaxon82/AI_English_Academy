@@ -201,7 +201,7 @@ test('immersion: Sozlamada yoqilsa luğat kartasida tarjima yaşirinadi va tugma
   await page.goto('settings')
   await page.getByRole('checkbox', { name: /Özbekça tarjimalarni yaşiriş/ }).check()
   await page.goto('vocabulary')
-  await page.getByRole('button', { name: 'Ro\'yxat' }).click()
+  await page.getByRole('button', { name: 'Röyxat' }).click()
   const card = page.locator('article').first()
   await expect(card.getByRole('button', { name: 'Tarjimani körsatiş' })).toBeVisible()
   await card.getByRole('button', { name: 'Tarjimani körsatiş' }).click()
