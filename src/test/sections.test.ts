@@ -16,36 +16,59 @@ import {
 import { emptyData } from '../lib/types'
 
 const a1Days = getBundle('A1').days
+const a0Days = getBundle('A0').days
+const byId = (cards: ReturnType<typeof buildSections>, id: string) => cards.find((c) => c.id === id)!
 
 describe('Bölimlar rejasi', () => {
-  it('har CEFR darajasi 2 bölim: A1.1 … C1.2', () => {
+  it('har CEFR darajasi 2 bölim: A0.1 … C1.2', () => {
     expect(SECTION_PLAN.map((s) => `${s.level}.${s.part}`)).toEqual([
-      'A1.1', 'A1.2', 'A2.1', 'A2.2', 'B1.1', 'B1.2', 'B2.1', 'B2.2', 'C1.1', 'C1.2',
+      'A0.1', 'A0.2', 'A1.1', 'A1.2', 'A2.1', 'A2.2', 'B1.1', 'B1.2', 'B2.1', 'B2.2', 'C1.1', 'C1.2',
     ])
   })
 
-  it('A1 kunlari bölimlarga töliq va takrorsiz taqsimlangan', () => {
-    const nums = SECTION_PLAN.filter((s) => s.level === 'A1').flatMap((s) => s.dayNumbers)
-    expect([...nums].sort((a, b) => a - b)).toEqual(a1Days.map((d) => d.dayNumber))
+  it.each(['A0', 'A1'] as const)('%s kunlari bölimlarga töliq va takrorsiz taqsimlangan', (lvl) => {
+    const nums = SECTION_PLAN.filter((s) => s.level === lvl).flatMap((s) => s.dayNumbers)
+    expect([...nums].sort((a, b) => a - b)).toEqual(getBundle(lvl).days.map((d) => d.dayNumber))
   })
 })
 
 describe('buildSections — holatlar', () => {
-  it('yangi foydalanuvçi: A1.1 joriy, A1.2 va A2 qulflangan, kontentsizlari böş', () => {
+  it('yangi foydalanuvçi (A1): A0 ixtiyoriy, A1.1 joriy, qolganlari qulflangan', () => {
     const cards = buildSections(emptyData('u'))
-    // Kontentli bo'limlar soni kontentdan hisoblanadi (yangi daraja qo'shilsa test o'zgarmaydi).
-    const withContent = SECTION_PLAN.filter((p) => p.dayNumbers.length > 0).length
-    const expected = SECTION_PLAN.map((_, i) => (i === 0 ? 'current' : i < withContent ? 'locked' : 'empty'))
+    const expected = SECTION_PLAN.map((p) =>
+      p.dayNumbers.length === 0 ? 'empty' : p.level === 'A0' ? 'optional' : p.id === 'a1-1' ? 'current' : 'locked',
+    )
     expect(cards.map((c) => c.status)).toEqual(expected)
-    expect(cards[0]!.daysDone).toBe(0)
-    expect(cards[1]!.canJump).toBe(true)
-    expect(cards[2]!.canJump).toBe(true)
-    // Kontenti yo'q bo'limga sakrash tugmasi chiqmaydi (soxta tugma yo'q)
-    for (const c of cards.slice(withContent)) expect(c.canJump).toBe(false)
+    expect(byId(cards, 'a1-1').daysDone).toBe(0)
+    expect(byId(cards, 'a1-2').canJump).toBe(true)
+    expect(byId(cards, 'a2-1').canJump).toBe(true)
+    // Ixtiyoriy (darajadan past) bo'limga sakrash tugmasi chiqmaydi
+    expect(byId(cards, 'a0-1').canJump).toBe(false)
+  })
+
+  it('noldan boşlagan (A0) öquvçi: A0.1 joriy, A1.1 qulflangan', () => {
+    const d = emptyData('u')
+    d.settings.currentLevel = 'A0'
+    const cards = buildSections(d)
+    expect(byId(cards, 'a0-1').status).toBe('current')
+    expect(byId(cards, 'a1-1').status).toBe('locked')
+    expect(currentSectionInfo(d)!.section.label).toBe('A0.1')
+    expect(pathLevel(d)).toBe('A0')
+  })
+
+  it('A0 tugasa: A0 bölimlari yakunlangan, A1.1 joriy', () => {
+    const d = emptyData('u')
+    d.settings.currentLevel = 'A0'
+    d.path.completedDays = a0Days.map((x) => x.id)
+    const cards = buildSections(d)
+    expect(byId(cards, 'a0-1').status).toBe('done')
+    expect(byId(cards, 'a0-2').status).toBe('done')
+    expect(byId(cards, 'a1-1').status).toBe('current')
+    expect(pathLevel(d)).toBe('A1')
   })
 
   it('namuna ibora kontentdan olinadi (ixtiro emas)', () => {
-    const card = buildSections(emptyData('u'))[0]!
+    const card = byId(buildSections(emptyData('u')), 'a1-1')
     const vocab = getBundle('A1').vocab
     expect(card.sample).not.toBeNull()
     expect(vocab.some((v) => v.exampleEn === card.sample!.en)).toBe(true)
@@ -55,8 +78,8 @@ describe('buildSections — holatlar', () => {
     const d = emptyData('u')
     d.path.completedDays = a1Days.filter((x) => x.dayNumber <= 4).map((x) => x.id)
     const cards = buildSections(d)
-    expect(cards[0]!.status).toBe('done')
-    expect(cards[1]!.status).toBe('current')
+    expect(byId(cards, 'a1-1').status).toBe('done')
+    expect(byId(cards, 'a1-2').status).toBe('current')
   })
 })
 
@@ -77,7 +100,9 @@ describe('Sakraş testi', () => {
     expect(after.path.currentDayId).toBe(a1Days.find((x) => x.dayNumber === 5)!.id)
     expect(after.path.passedTests[jumpKey('a1-2')]).toBe(JUMP_PASS_SCORE)
     expect(after.settings.currentLevel).toBe(before.settings.currentLevel)
-    expect(buildSections(after)[1]!.status).toBe('current')
+    expect(byId(buildSections(after), 'a1-2').status).toBe('current')
+    // A1 o'quvchisining sakrashi A0 kunlarini "bajarildi" qilmaydi
+    expect(after.path.completedDays.some((id) => id.startsWith('a0-'))).toBe(false)
   })
 
   it('ötilmasa: kunlar özgarmaydi, faqat eng yaxşi natija yoziladi', () => {

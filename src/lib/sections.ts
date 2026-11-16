@@ -38,11 +38,13 @@ export interface SectionPlanEntry {
 }
 
 /**
- * Bo'limlar rejasi. Har daraja (A1–C1) 7 kun: 1-qism 1–4 kunlar, 2-qism 5–7
+ * Bo'limlar rejasi. Har daraja (A0–C1) 7 kun: 1-qism 1–4 kunlar, 2-qism 5–7
  * kunlar. `dayNumbers` bo'sh bo'lsa, karta "Kontent tayyorlanmoqda" deb ochiq
  * yozadi (yangi daraja qo'shilganda).
  */
 export const SECTION_PLAN: readonly SectionPlanEntry[] = [
+  { id: 'a0-1', level: 'A0', part: 1, dayNumbers: [1, 2, 3, 4], summaryUz: 'Noldan: salomlaşiş va alifbo, 0–20 sonlar, ranglar va narsalar, oila: “My name is…”, harflab aytiş, ko‘plik -s, “a / an”, “my / your / his / her”.' },
+  { id: 'a0-2', level: 'A0', part: 2, dayNumbers: [5, 6, 7], summaryUz: 'Ovqat va içimliklar, hafta kunlari va vaqt, şahar va yozuvlar: “I like / I don’t like”, “on Monday”, “Where is…? — here / there”, “Stop. Open.”' },
   { id: 'a1-1', level: 'A1', part: 1, dayNumbers: [1, 2, 3, 4], summaryUz: 'Salomlaşiş, oila va egalik, kunlik tartib, uy va xonalar: “to be”, “have got”, Present Simple, “there is / are”.' },
   { id: 'a1-2', level: 'A1', part: 2, dayNumbers: [5, 6, 7], summaryUz: 'Ovqat va içimliklar, böş vaqt va rejalar, sayohat va yöl söraş: “some / any”, “can”, “going to”, “was / were”.' },
   { id: 'a2-1', level: 'A2', part: 1, dayNumbers: [1, 2, 3, 4], summaryUz: 'Ötgan hafta oxiri, bolalik xotiralari, şahar va qişloq, rejalar va ob-havo: Past Simple (töğri va notöğri fe’llar), qiyosiy daraja, “going to / will”.' },
@@ -60,7 +62,8 @@ export const JUMP_PASS_SCORE = 80
 /** Sakrash testiga har o'tkazib yuboriladigan kundan olinadigan savollar soni — BIZNING qarorimiz. */
 export const JUMP_ITEMS_PER_DAY = 3
 
-export type SectionStatus = 'done' | 'current' | 'locked' | 'empty'
+/** `optional` — o'quvchi darajasidan PAST, tugallanmagan bo'lim (masalan A1 o'quvchisi uchun A0): majburiy emas, xohlasa shu yerdan boshlaydi. */
+export type SectionStatus = 'done' | 'current' | 'locked' | 'empty' | 'optional'
 
 export interface SectionCard {
   id: string
@@ -97,11 +100,16 @@ function daysOf(entry: SectionPlanEntry): DailyPlanDay[] {
  * Bo'lim kartalari. Holat qoidasi:
  *  - kontenti yo'q → `empty`;
  *  - hamma kuni `completedDays`da → `done`;
+ *  - o'quvchi darajasidan past va tugallanmagan → `optional` (A1 o'quvchisiga
+ *    A0 majburiy emas — joriy bo'lim uning darajasidan tanlanadi);
  *  - birinchi tugallanmagan bo'lim (kontentli) → `current`;
  *  - qolganlari → `locked` (sakrash testi bilan ochiladi).
  */
-export function buildSections(data: Pick<AppData, 'path'>): SectionCard[] {
+export function buildSections(
+  data: Pick<AppData, 'path'> & { settings?: Pick<AppData['settings'], 'currentLevel'> },
+): SectionCard[] {
   const done = new Set(data.path.completedDays)
+  const from = data.settings ? CEFR_LEVELS.indexOf(data.settings.currentLevel) : 0
   let currentGiven = false
   return SECTION_PLAN.map((entry) => {
     const days = daysOf(entry)
@@ -109,6 +117,7 @@ export function buildSections(data: Pick<AppData, 'path'>): SectionCard[] {
     let status: SectionStatus
     if (days.length === 0) status = 'empty'
     else if (daysDone === days.length) status = 'done'
+    else if (CEFR_LEVELS.indexOf(entry.level) < from) status = 'optional'
     else if (!currentGiven) {
       status = 'current'
       currentGiven = true
@@ -131,12 +140,20 @@ export function buildSections(data: Pick<AppData, 'path'>): SectionCard[] {
   })
 }
 
-/** Shu bo'limga sakrashda o'tkazib yuboriladigan (hali tugallanmagan) kunlar. */
-export function skippedDaysFor(sectionId: string, data: Pick<AppData, 'path'>): DailyPlanDay[] {
+type SectionData = Pick<AppData, 'path'> & { settings?: Pick<AppData['settings'], 'currentLevel'> }
+
+/**
+ * Shu bo'limga sakrashda o'tkazib yuboriladigan (hali tugallanmagan) kunlar.
+ * O'quvchi darajasidan PAST bo'limlar (`optional`) hisobga olinmaydi — A1
+ * o'quvchisi A1.2 ga sakrasa, A0 kunlari testga ham, "bajarildi"ga ham kirmaydi.
+ */
+export function skippedDaysFor(sectionId: string, data: SectionData): DailyPlanDay[] {
   const idx = SECTION_PLAN.findIndex((s) => s.id === sectionId)
   if (idx < 0) return []
   const done = new Set(data.path.completedDays)
+  const from = data.settings ? CEFR_LEVELS.indexOf(data.settings.currentLevel) : 0
   return SECTION_PLAN.slice(0, idx)
+    .filter((e) => CEFR_LEVELS.indexOf(e.level) >= from)
     .flatMap((e) => daysOf(e))
     .filter((d) => !done.has(d.id))
 }
@@ -146,7 +163,7 @@ export function skippedDaysFor(sectionId: string, data: Pick<AppData, 'path'>): 
  * testidan birinchi `JUMP_ITEMS_PER_DAY` ta mashq (deterministik — har
  * qurilmada bir xil test).
  */
-export function jumpTestExercises(sectionId: string, data: Pick<AppData, 'path'>): Exercise[] {
+export function jumpTestExercises(sectionId: string, data: SectionData): Exercise[] {
   return skippedDaysFor(sectionId, data).flatMap((d) => (d.sectionTest?.exercises ?? []).slice(0, JUMP_ITEMS_PER_DAY))
 }
 

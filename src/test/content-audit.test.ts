@@ -313,7 +313,7 @@ describe('Kontent auditi — maşqlar yaxlitligi', () => {
   })
 })
 
-describe.each(['A2', 'B1', 'B2', 'C1'] as const)('%s kontenti — tuzilma (A1 bilan bir xil)', (LVL) => {
+describe.each(['A0', 'A2', 'B1', 'B2', 'C1'] as const)('%s kontenti — tuzilma (A1 bilan bir xil)', (LVL) => {
   const a2 = getBundle(LVL)
   const lvl = LVL.toLowerCase()
   it(`${LVL} yuklangan`, () => {

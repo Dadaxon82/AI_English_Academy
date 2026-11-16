@@ -130,6 +130,7 @@ export function streakFor(dates: readonly string[], today: string): number {
 
 export function levelLabel(level: CefrLevel): { titleEn: string; titleUz: string } {
   const map: Record<CefrLevel, { titleEn: string; titleUz: string }> = {
+    A0: { titleEn: 'Pre-A1 (Starter)', titleUz: 'Noldan' },
     A1: { titleEn: 'Beginner', titleUz: 'Boşlanğiç' },
     A2: { titleEn: 'Elementary', titleUz: 'Örtaça past' },
     B1: { titleEn: 'Intermediate', titleUz: 'Örtaça' },

@@ -28,7 +28,7 @@ function walk(node: unknown, key: string, path: string, out: string[]) {
   else if (node && typeof node === 'object') for (const [k, v] of Object.entries(node)) walk(v, k, `${path}.${k}`, out)
 }
 
-describe.each(['B1', 'B2', 'C1'] as const)('%s — yangi alifbo', (LVL) => {
+describe.each(['A0', 'B1', 'B2', 'C1'] as const)('%s — yangi alifbo', (LVL) => {
   it('o‘zbekcha maydonlarda eski yozuv qolmagan', () => {
     const out: string[] = []
     walk(getBundle(LVL), '', LVL, out)

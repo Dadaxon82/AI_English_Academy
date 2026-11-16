@@ -7,7 +7,7 @@
  * kontenti keyin shu kontrakt ustiga qo'shiladi.
  */
 
-export const CEFR_LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1'] as const
+export const CEFR_LEVELS = ['A0', 'A1', 'A2', 'B1', 'B2', 'C1'] as const
 export type CefrLevel = (typeof CEFR_LEVELS)[number]
 
 export const SKILLS = ['reading', 'listening', 'writing', 'speaking', 'vocabulary', 'grammar'] as const

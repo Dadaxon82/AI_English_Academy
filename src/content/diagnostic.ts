@@ -184,7 +184,7 @@ export function diagnose(exerciseResults: Record<string, boolean>): {
   labelUz: string
   confidence: number
 } {
-  const band: Record<CefrLevel, { ids: string[]; hits: number }> = {
+  const band: Record<Exclude<CefrLevel, 'A0'>, { ids: string[]; hits: number }> = {
     A1: { ids: ['dg-01', 'dg-02', 'dg-03'], hits: 0 },
     A2: { ids: ['dg-04', 'dg-05', 'dg-06'], hits: 0 },
     B1: { ids: ['dg-07'], hits: 0 },
@@ -197,7 +197,7 @@ export function diagnose(exerciseResults: Record<string, boolean>): {
 
   // Daraja: barcha savollar to'g'ri bo'lgan eng yuqori banda,
   // qo'shni bandaga o'tish uchun kamida 2/3 to'g'ri bo'lishi kerak.
-  const order: CefrLevel[] = ['A1', 'A2', 'B1', 'B2', 'C1']
+  const order: Exclude<CefrLevel, 'A0'>[] = ['A1', 'A2', 'B1', 'B2', 'C1']
   let reached: CefrLevel | null = null
   let confidentBands = 0
   for (const lvl of order) {
@@ -207,6 +207,10 @@ export function diagnose(exerciseResults: Record<string, boolean>): {
   }
 
   const confidence = Number((confidentBands / order.length).toFixed(2))
+  // A1 savollarining birortasi ham topilmasa — noldan (A0, Pre-A1) boshlash aniq tavsiya.
+  if (band.A1.hits === 0 && Object.values(band).every((b) => b.hits === 0)) {
+    return { level: 'A0', confidence: 1, labelUz: 'Diagnostika natijasi: A0 — noldan boşlaymiz (alifbo, sonlar, eng kerakli sözlar).' }
+  }
   if (!reached) {
     return { level: null, confidence, labelUz: 'Natija noaniq — A1 dan boşlaymiz va diagnostikani keyin takrorlaymiz.' }
   }

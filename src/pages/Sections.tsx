@@ -27,6 +27,7 @@ const STATUS_CHIP: Record<SectionCard['status'], { text: string; tone: 'ok' | 'b
   current: { text: 'Joriy bölim', tone: 'brand' },
   locked: { text: 'Qulflangan', tone: 'warn' },
   empty: { text: 'Tayyorlanmoqda', tone: 'default' },
+  optional: { text: 'Ixtiyoriy', tone: 'default' },
 }
 
 /** Katta "3D" tugma (pastki chegara — chuqurlik). */
@@ -154,6 +155,11 @@ function SectionCardView({
             </p>
           )}
           {empty && <p className="text-sm muted">Bu bölim darslari hali tayyorlanmoqda — hozirça oçib bölmaydi.</p>}
+          {s.status === 'optional' && (
+            <p className="text-sm muted">
+              Darajangizdan past bölim — majburiy emas. Asoslarni takrorlamoqçi bölsangiz, şu yerdan boşlang ({s.daysDone} / {total} kun bajarilgan).
+            </p>
+          )}
 
           {!empty && (
             <button
@@ -216,6 +222,7 @@ function SectionCardView({
           Takrorlaş
         </button>
       )}
+      {!guestLocked && s.status === 'optional' && <StartHereButton level={s.level} label={s.label} />}
       {!guestLocked && s.canJump && !jumping && (
         <button type="button" className={chunkyBlue} onClick={onJump}>
           {s.label} ga sakraş testi
@@ -224,6 +231,24 @@ function SectionCardView({
 
       {!guestLocked && jumping && <JumpTest section={s} onClose={onCloseJump} />}
     </article>
+  )
+}
+
+/** Darajadan past (ixtiyoriy) bo'limni boshlash: o'quvchi o'zi tanlaydi — Sozlamalardagi daraja tanlovi bilan bir xil amal. */
+function StartHereButton({ level, label }: { level: SectionCard['level']; label: string }) {
+  const { actions } = useStore()
+  const nav = useNavigate()
+  return (
+    <button
+      type="button"
+      className={chunkyPlain}
+      onClick={() => {
+        actions.setLevel(level)
+        nav('/path')
+      }}
+    >
+      {label} dan boşlaş
+    </button>
   )
 }
 
