@@ -36,12 +36,13 @@ Loyiha talabnomasi (`AI English Academy_v2.docx`) to'liq bajarilgan:
 ### Joriy sonlar
 
 <!-- STATS:START -->
-_Avtomatik o‘lchandi (`npm run stats`, 2026-11-15). Qo‘lda tahrirlamang._
+_Avtomatik o‘lchandi (`npm run stats`, 2026-11-16). Qo‘lda tahrirlamang._
 
-**Testlar:** vitest **592/592** (61 fayl) · **Kod:** veb 258 fayl / 65416 qator (TS/TSX), mobil 119 fayl / 29295 qator (Kotlin)
+**Testlar:** vitest **600/600** (61 fayl) · **Kod:** veb 268 fayl / 69441 qator (TS/TSX), mobil 119 fayl / 29295 qator (Kotlin)
 
 | Daraja | Kun | Lug‘at | Mashq | Turlar | Audio fayl / tinglash | Mock |
 |---|---|---|---|---|---|---|
+| A0 | 7 | 84 + 35 glossariy | 217 | multiple-choice 69, true-false-notgiven 42, gap-fill 30, matching 27, word-order 14, translation 14, short-answer 7, categorize 6, sequence 5, dropdown-cloze 2, multi-select 1 | 0/7 | yo‘q |
 | A1 | 7 | 84 + 35 glossariy | 238 | multiple-choice 62, true-false-notgiven 49, gap-fill 37, translation 22, matching 18, word-order 15, multi-select 7, dropdown-cloze 7, categorize 7, sequence 7, short-answer 7 | 7/7 | bor |
 | A2 | 7 | 84 + 35 glossariy | 238 | multiple-choice 69, gap-fill 42, true-false-notgiven 36, translation 21, matching 21, word-order 14, multi-select 7, dropdown-cloze 7, categorize 7, sequence 7, short-answer 7 | 0/7 | yo‘q |
 | B1 | 7 | 84 + 35 glossariy | 218 | multiple-choice 72, true-false-notgiven 42, gap-fill 33, translation 21, matching 21, word-order 14, short-answer 7, categorize 3, multi-select 2, dropdown-cloze 2, sequence 1 | 0/7 | yo‘q |

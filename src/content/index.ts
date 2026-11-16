@@ -199,6 +199,7 @@ const loadedBundles = new Map<CefrLevel, LevelBundle>([['A1', a1]])
 
 /** Kontenti mavjud (yuklab olinadigan) darajalar — CEFR tartibida. */
 const LEVEL_LOADERS: Partial<Record<CefrLevel, () => Promise<LevelBundle>>> = {
+  A0: () => import('./a0').then((m) => m.a0),
   A2: () => import('./a2').then((m) => m.a2),
   B1: () => import('./b1').then((m) => m.b1),
   B2: () => import('./b2').then((m) => m.b2),
@@ -222,7 +223,7 @@ export function getBundle(level: CefrLevel): LevelBundle {
  */
 export const LOADED_LEVELS: CefrLevel[] = ['A1']
 
-const LEVEL_ORDER: CefrLevel[] = ['A1', 'A2', 'B1', 'B2', 'C1']
+const LEVEL_ORDER: CefrLevel[] = ['A0', 'A1', 'A2', 'B1', 'B2', 'C1']
 let loading: Promise<void> | null = null
 
 /** Barcha mavjud darajalarni yuklaydi (takroriy chaqiruv — bitta va'da). */

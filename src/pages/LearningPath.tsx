@@ -214,7 +214,7 @@ export default function LearningPath() {
               <Chip>Bosqiç: {days[currentIdx].id}</Chip>
             )}
             <Link to="/sections" className="text-xs font-semibold text-navy-700 dark:text-navy-300 hover:underline self-center">
-              Barça bölimlar (A1.1 … C1.2) →
+              Barça bölimlar (A0.1 … C1.2) →
             </Link>
           </div>
         </div>

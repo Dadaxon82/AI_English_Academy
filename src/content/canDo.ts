@@ -26,6 +26,14 @@ export const LIKERT_LABELS: readonly string[] = [
 ]
 
 export const CAN_DO: readonly CanDoStatement[] = [
+  // ------------------------------ A0 (Pre-A1) ------------------------------
+  // CEFR Companion Volume (2020) dagi Pre-A1 tavsiflari asosida.
+  { id: 'cd-a0-speak', level: 'A0', skill: 'speaking', textUz: 'Salomlaşa olaman, ismimni aytaman va “please”, “thank you” deya olaman.' },
+  { id: 'cd-a0-listen', level: 'A0', skill: 'listening', textUz: 'Sekin aytilgan sonlarni, ranglarni va kundalik narsalar nomini taniy olaman.' },
+  { id: 'cd-a0-read', level: 'A0', skill: 'reading', textUz: 'Oddiy yozuv va belgilarni taniy olaman: Open, Closed, Exit, Toilet.' },
+  { id: 'cd-a0-write', level: 'A0', skill: 'writing', textUz: 'Ismim, familiyam va telefon raqamimni anketaga yoza olaman.' },
+  { id: 'cd-a0-vocab', level: 'A0', skill: 'vocabulary', textUz: 'Alifbo harflarini, 0–20 sonlarini va hafta kunlarini bilaman.' },
+  { id: 'cd-a0-grammar', level: 'A0', skill: 'grammar', textUz: '“This is…”, “I like…”, “my / your” kabi tayyor iboralarni işlataman.' },
   // ------------------------------ A1 ------------------------------
   { id: 'cd-a1-speak', level: 'A1', skill: 'speaking', textUz: 'Özimni taniştira olaman: ismim, yoşim, qayerda yaşaşim.' },
   { id: 'cd-a1-listen', level: 'A1', skill: 'listening', textUz: 'Sekin va aniq aytilgan oddiy savollarni (ism, yoş, soat) tuşunaman.' },

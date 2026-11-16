@@ -133,14 +133,14 @@ function Basics({
               title={loaded.has(l) ? undefined : `${l} kontenti hali yuklanmagan — A1 dan boşlang`}
               className={`px-4 py-2 rounded-xl border font-bold ${level === l ? 'border-[var(--accent)] bg-navy-50 dark:bg-navy-900/40' : 'hover:bg-[var(--panel-2)]'} ${!loaded.has(l) ? 'opacity-50' : ''}`}
             >
-              {l}
+              {l === 'A0' ? 'A0 · noldan' : l}
             </button>
           ))}
         </div>
       </Field>
       <Field label="Qaysi darajaga yetmoqçisiz?">
         <div className="flex flex-wrap gap-2">
-          {CEFR_LEVELS.map((l) => (
+          {CEFR_LEVELS.filter((l) => l !== 'A0').map((l) => (
             <button
               key={l}
               type="button"
