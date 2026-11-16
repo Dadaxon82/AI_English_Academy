@@ -1,6 +1,6 @@
 /**
  * Shaxsiy o'quv yo'li — Duolingo uslubidagi yilonsimon YO'L XARITASI
- * (`DuoPathMap`) + tanlangan bo'lim/kun uchun pastda ochiladigan tafsilot
+ * (`ScenePathMap`) + tanlangan bo'lim/kun uchun pastda ochiladigan tafsilot
  * paneli. Xaritadagi har tugun — bitta bo'lim (yoki bo'lim yakuniy testi);
  * tugun rangi/qulfi `lessonChain.ts::buildChain` natijasidan to'g'ridan-to'g'ri
  * olinadi — qulf qoidasi IKKI MARTA YOZILMAYDI.
@@ -16,7 +16,7 @@
 import UzTranslation from '../components/UzTranslation'
 import { Suspense, lazy, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
-import DuoPathMap from '../components/DuoPathMap'
+import ScenePathMap from '../components/ScenePathMap'
 import MapBell from '../components/MapBell'
 import { MascotAvatar } from '../components/Mascot'
 import SectionBanner from '../components/SectionBanner'
@@ -103,7 +103,7 @@ export default function LearningPath() {
     return 'locked'
   }
 
-  // ---------- Xarita joylash (DuoPathMap) ----------
+  // ---------- Xarita joylash (ScenePathMap) ----------
   // `buildChain` — mavjud HALOL manba (`ChainOverview` ham aynan shu yerdan
   // oladi), shuning uchun qulf/holat qoidasi IKKI MARTA YOZILMAYDI.
   const chains = useMemo(
@@ -313,7 +313,7 @@ export default function LearningPath() {
           </>
         ) : (
           <>
-        <DuoPathMap
+        <ScenePathMap
           layout={layout}
           achievements={{ badges: data.badges.length, streak }}
           selectedId={selectedNodeId}

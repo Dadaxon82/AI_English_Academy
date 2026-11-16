@@ -168,7 +168,7 @@ html.no-motion *, html.no-motion *::before, html.no-motion *::after {
     --btn-off-text: var(--color-slate-500);
     --btn-off-edge: var(--color-slate-300);
 
-    /* O'quv yo'li xaritasi — `DuoPathMap.tsx` (qorong'ida ham o'qiladigan). */
+    /* O'quv yo'li xaritasi — `ScenePathMap.tsx` (qorong'ida ham o'qiladigan). */
     --map-done: #f5b301;
     --map-done-edge: #c98f00;
     /* Sariq ustidagi matn — to'q (oq matn ≈1.9:1 edi). */
@@ -431,3 +431,7 @@ html.no-motion *, html.no-motion *::before, html.no-motion *::after {
   animation: none;
   display: none;
 }
+
+/* 2D «Dars sayohati» xaritasi (ScenePathMap) */
+.aea-hit:focus-visible { outline: none; stroke: #3557d6; stroke-width: 8; }
+.dark .aea-scene-img { filter: brightness(0.82) saturate(0.92); }
