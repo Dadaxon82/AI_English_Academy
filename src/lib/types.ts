@@ -124,6 +124,8 @@ export interface WritingSubmission {
   /** Qayta yozish versiyalari shu ustuma orqali bog'lanadi */
   supersedesId: string | null
   createdAt: number
+  /** Ustoz / shaxsiy mentor izohi (o'quvchi kiritadi yoki ustozdan ko'chiradi). */
+  mentorNote?: string
 }
 
 export interface WritingAnalysis {

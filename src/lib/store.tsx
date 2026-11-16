@@ -272,6 +272,14 @@ export function StoreProvider({
     dispatch({ type: 'section-jump', sectionId, score })
   }, [])
 
+  const recordLevelExam = useCallback((level: CefrLevel, score: number) => {
+    dispatch({ type: 'level-exam', level, score })
+  }, [])
+
+  const setWritingNote = useCallback((id: string, note: string) => {
+    dispatch({ type: 'writing-note', id, note })
+  }, [])
+
   const rateCanDo = useCallback((id: string, score: number) => {
     dispatch({ type: 'self-assess', id, score, at: Date.now() })
   }, [])
@@ -458,6 +466,8 @@ export function StoreProvider({
       recordMockTime,
       completeDay,
       jumpToSection,
+      recordLevelExam,
+      setWritingNote,
       recordStepScore,
       rateCanDo,
       setDiagnostic,

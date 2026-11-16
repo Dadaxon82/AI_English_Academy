@@ -20,6 +20,7 @@ import { DiagnosticStep } from './Onboarding'
 import SelfAssessment from '../components/SelfAssessment'
 import CertificateCard from '../components/CertificateCard'
 import UsageCard from '../components/UsageCard'
+import { AdaptivePlanCard, AnalyticsCard, LevelExamCard } from '../components/AddieCards'
 import type { SkillEvidence } from '../lib/skillScoring'
 
 export default function Progress() {
@@ -91,6 +92,13 @@ export default function Progress() {
         <StatTile label={`${range} kun içida`} value={formatDuration(totals.seconds)} hint="Faoliyat vaqti" />
         <StatTile label="Aniqlik" value={`${totals.acc}%`} tone={totals.acc >= 70 ? 'ok' : totals.acc >= 50 ? 'warn' : 'bad'} hint={`${totals.correct}/${totals.attempts} töğri`} />
         <StatTile label="Sözlar" value={vocabSummary} hint={`${dueCount} ta takror navbatda`} />
+      </div>
+
+      {/* --- ADDIE: moslashuvchan reja, tahlil, daraja imtihoni --- */}
+      <AdaptivePlanCard />
+      <div className="grid lg:grid-cols-2 gap-4">
+        <AnalyticsCard />
+        <LevelExamCard />
       </div>
 
       {/* --- Ko'nikma isbotlari (daraja ko'tarish shartlari) --- */}

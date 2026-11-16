@@ -61,6 +61,10 @@ export interface StoreValue {
     completeDay(dayId: string, testId?: string, testScore?: number): void
     /** Bo'limga sakrash testi yakuni: o'tilsa oldingi kunlar ochiladi (daraja o'zgarmaydi). */
     jumpToSection(sectionId: string, score: number): void
+    /** Daraja imtihoni natijasi (`passedTests['level:<L>']`, eng yaxshisi). Darajani o'zgartirmaydi. */
+    recordLevelExam(level: CefrLevel, score: number): void
+    /** Yozma ishga ustoz / mentor izohi. */
+    setWritingNote(id: string, note: string): void
     /** Xaritadan ochilgan bo'lim darsi natijasi (0–100) — tugun ustida ko'rsatiladi. Daraja o'zgarmaydi. */
     recordStepScore(dayId: string, skill: string, score: number): void
     /** O'z-o'zini baholash: da'vo id va 1–5 baho (darajaga ta'sir qilmaydi). */

@@ -88,6 +88,7 @@ export const TABLE_REQUIRES_MIGRATION: Record<string, string> = { weekly_xp: '00
 /** Migratsiya qo'shgan IXTIYORIY ustunlar: yo'q bo'lsa so'rovdan tushiriladi. */
 export const OPTIONAL_COLUMNS: Record<string, Record<string, string>> = {
   user_settings: { motion_enabled: '0003_motion.sql', xp_goal_xp: '0004_weekly_xp.sql', hearts_enabled: '0004_weekly_xp.sql' },
+  writing_submissions: { mentor_note: '0010_addie.sql' },
 }
 
 /** Ustun nomini xatolik matnidan topish (so'z chegarasi bilan — `xp` `xp_goal_xp` ichiga kirmasin). */

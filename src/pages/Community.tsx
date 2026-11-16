@@ -17,6 +17,7 @@ import { Link } from 'react-router-dom'
 import { Button, Card, Chip, EmptyState, InfoBanner, LoadingBlock, SuccessBanner, inputCls } from '../components/ui'
 import { LOADED_LEVELS, getBundle } from '../content'
 import type { CefrLevel } from '../content/types'
+import GroupSessions from '../components/GroupSessions'
 import {
   PEER_LIMITS,
   PEER_REPORT_REASONS,
@@ -177,6 +178,8 @@ export default function Community() {
 
       {gate.ok && (
         <>
+          <GroupSessions />
+
           {/* -------------------- 1) Yuborish -------------------- */}
           <Card as="section" className="grid gap-3">
             <h2 className="font-bold">Javobimni tekşiruvga yuboriş</h2>
