@@ -13,8 +13,10 @@ import * as d1 from './day-01'
 import * as d2 from './day-02'
 import * as d3 from './day-03'
 import * as d4 from './day-04'
+import * as d5 from './day-05'
+import * as d6 from './day-06'
 
-const days = [d1, d2, d3, d4]
+const days = [d1, d2, d3, d4, d5, d6]
 const withExtra = <T extends GrammarTopic | ReadingPassage>(t: T, extra: T['exercises']): T => ({ ...t, exercises: [...t.exercises, ...extra] })
 
 export const a0: LevelBundle = {
