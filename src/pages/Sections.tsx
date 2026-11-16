@@ -1,5 +1,5 @@
 /**
- * Bo'limlar sahifasi — kursning A1.1 … C1.2 bo'limlari kartalari, progress va
+ * Bo'limlar sahifasi — kursning A0.1 … C1.2 bo'limlari kartalari, progress va
  * sakrash testi. Mantiq: `src/lib/sections.ts` (sof funksiyalar).
  *
  * HAR TUGMA HAQIQIY: "Davom etish"/"Takrorlash" o'quv yo'liga o'tadi,

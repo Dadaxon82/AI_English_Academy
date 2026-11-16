@@ -1,7 +1,14 @@
 {
-  "generatedAt": "2026-11-15T06:25:10.667Z",
+  "generatedAt": "2026-11-16T14:38:44.748Z",
   "source": "web/src/content",
   "levels": [
+    {
+      "level": "A0",
+      "days": 7,
+      "vocab": 84,
+      "exercises": 217,
+      "bytes": 217621
+    },
     {
       "level": "A1",
       "days": 7,

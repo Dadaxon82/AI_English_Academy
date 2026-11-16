@@ -116,6 +116,22 @@ test('C1: onboardingda C1 tanlansa — yöl va grammatika C1 kontentini oçadi',
   await expectClean(page, errors)
 })
 
+test('A0 (noldan): «A0.1 dan boşlaş» → öquv yöli A0, birinçi grammatika darsi oxirigaça', async ({ page }) => {
+  const errors = watchErrors(page)
+  await disableHearts(page)
+  await page.goto('sections')
+  await expect(page.getByText('Ixtiyoriy').first()).toBeVisible()
+  await page.getByRole('button', { name: 'A0.1 dan boşlaş' }).click()
+  await expect(page).toHaveURL(/\/path$/)
+  await expect(page.getByText('Salom va alifbo').first()).toBeVisible()
+  await waitPersist(page)
+  await page.goto('grammar')
+  await expect(page.getByText(/Alifbo va ism/).first()).toBeVisible()
+  await page.getByRole('button', { name: 'Darsni boşlaş' }).first().click()
+  await skipThroughLesson(page)
+  await expectClean(page, errors)
+})
+
 test('SEO/OG meta va PWA manifest skrinşotlari haqiqatan mavjud', async ({ page, request }) => {
   await page.goto('dashboard')
   const og = await page.locator('meta[property="og:image"]').getAttribute('content')
