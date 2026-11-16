@@ -132,6 +132,24 @@ test('A0 (noldan): «A0.1 dan boşlaş» → öquv yöli A0, birinçi grammatika
   await expectClean(page, errors)
 })
 
+test('öquv yöli: A0 … C1 darajalari, har birida 1–7-kun kartalari; yuqori daraja qulflangan', async ({ page }) => {
+  const errors = watchErrors(page)
+  await page.goto('path')
+  const dayCards = page.locator('h2', { hasText: /^\d-kun — / })
+  await expect(dayCards).toHaveCount(7)
+  await expect(page.getByRole('button', { name: /^A1/ })).toHaveAttribute('aria-pressed', 'true')
+  for (const lvl of ['A0', 'A2', 'B1', 'B2', 'C1']) {
+    await page.getByRole('button', { name: new RegExp(`^${lvl}`) }).click()
+    await expect(page.getByRole('heading', { name: `${lvl} darajasi kunlari` })).toBeVisible()
+    await expect(dayCards).toHaveCount(7)
+    await expect(dayCards.first()).toHaveText(/^1-kun — /)
+    await expect(dayCards.last()).toHaveText(/^7-kun — /)
+  }
+  // C1 — joriy (A1) darajadan yuqori: qulf haqida tuşuntiriş va sakraş testiga havola
+  await expect(page.getByText(/C1 darajasi hali qulflangan/)).toBeVisible()
+  await expectClean(page, errors)
+})
+
 test('SEO/OG meta va PWA manifest skrinşotlari haqiqatan mavjud', async ({ page, request }) => {
   await page.goto('dashboard')
   const og = await page.locator('meta[property="og:image"]').getAttribute('content')
