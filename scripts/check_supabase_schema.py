@@ -55,6 +55,10 @@ EXPECTED: list[dict] = [
         "columns": ["user_id", "week_start", "xp", "league_id", "display_name", "updated_at"],
         "settings_columns": ["xp_goal_xp", "hearts_enabled"],
     },
+    {"migration": "0010_addie.sql", "table": "user_progress", "columns": ["user_id", "day", "level", "skills", "velocity", "error_categories"]},
+    {"migration": "0010_addie.sql", "table": "adaptive_plans", "columns": ["id", "user_id", "level", "target_difficulty", "plan"]},
+    {"migration": "0010_addie.sql", "table": "ai_chat_logs", "columns": ["id", "user_id", "dialogue_id", "level", "engine", "lines"]},
+    {"migration": "0010_addie.sql", "table": "group_sessions", "columns": ["id", "host_id", "kind", "level", "title", "starts_at", "capacity", "status"]},
 ]
 
 # PostgREST/Postgres kodlari — 2026-11-08 JonLI o'lchovdan (ixtira emas):

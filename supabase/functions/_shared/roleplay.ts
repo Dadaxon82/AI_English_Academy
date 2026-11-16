@@ -47,12 +47,12 @@ export interface RoleplayTurn {
 
 export const MAX_TURNS = 24
 export const MAX_LINE_CHARS = 400
-const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1']
+const LEVELS = ['A0', 'A1', 'A2', 'B1', 'B2', 'C1']
 
 export function parseRoleplayRequest(body: unknown): { ok: true; req: RoleplayRequest } | { ok: false; reasonUz: string } {
   if (!body || typeof body !== 'object') return { ok: false, reasonUz: 'Sörov tanasi JSON obyekt bölişi kerak.' }
   const b = body as Record<string, unknown>
-  if (typeof b.level !== 'string' || !LEVELS.includes(b.level)) return { ok: false, reasonUz: 'level: A1–C1.' }
+  if (typeof b.level !== 'string' || !LEVELS.includes(b.level)) return { ok: false, reasonUz: 'level: A0–C1.' }
   for (const k of ['situation', 'partnerRole', 'learnerRole'] as const) {
     if (typeof b[k] !== 'string' || !(b[k] as string).trim()) return { ok: false, reasonUz: `${k} böş.` }
     if ((b[k] as string).length > 600) return { ok: false, reasonUz: `${k} juda uzun.` }

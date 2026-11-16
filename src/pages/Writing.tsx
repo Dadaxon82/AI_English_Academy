@@ -17,6 +17,7 @@ import { criterionLabelUz } from '../lib/analyze'
 import { formatDuration } from '../lib/timer'
 import type { CoreCriterionKey } from '../lib/types'
 import type { WritingTask } from '../content/types'
+import { MentorNoteField } from '../components/AddieCards'
 
 export default function Writing() {
   const { data, actions, netOnline, timerElapsed, ready } = useStore()
@@ -209,6 +210,8 @@ export default function Writing() {
                   </Button>
                 )}
               </div>
+
+              <MentorNoteField id={sub.id} note={sub.mentorNote} />
 
               {sub.analysis && (
                 <>

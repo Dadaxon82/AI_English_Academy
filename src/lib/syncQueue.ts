@@ -183,6 +183,8 @@ export const pushWriting = (items: Omit<QueueItem, 'id' | 'tries'>[], uid: strin
       seconds_spent: w.secondsSpent,
       analysis: w.analysis,
       supersedes_id: w.supersedesId,
+      // 0010_addie.sql ustuni — eski bazada so'rovdan tushirib qoldiriladi (OPTIONAL_COLUMNS).
+      ...(w.mentorNote !== undefined ? { mentor_note: w.mentorNote } : {}),
       created_at: new Date(w.createdAt).toISOString(),
     },
   })

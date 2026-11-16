@@ -212,6 +212,7 @@ export function writingFromRow(r: Row): WritingSubmission | null {
     analysis: writingAnalysis(r.analysis),
     supersedesId: str(r.supersedes_id),
     createdAt: at,
+    ...(str(r.mentor_note) ? { mentorNote: str(r.mentor_note)! } : {}),
   }
 }
 

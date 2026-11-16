@@ -12,6 +12,7 @@ import { afterAttempt, afterReview, buy as buyItem, lessonComplete, placeBet, se
 import type { ShopItemId } from './gameConfig'
 import { mergeRemote, type RemoteSnapshot } from './merge'
 import { applySectionJump } from './sections'
+import { levelExamKey } from './levelExam'
 import type { AppData, AttemptRecord, MockExamAttempt, SpeakingAnalysis, SpeakingSession, UserSettings, WritingAnalysis, WritingSubmission } from './types'
 import { HISTORY_LIMITS, emptyData, nearestXpGoal, todayKey } from './types'
 
@@ -36,6 +37,8 @@ export type Action =
   | { type: 'day-complete'; dayId: string; testScore?: number; testId?: string }
   /** Bo'lim sakrash testi natijasi (`src/lib/sections.ts::applySectionJump`). */
   | { type: 'section-jump'; sectionId: string; score: number }
+  | { type: 'level-exam'; level: CefrLevel; score: number }
+  | { type: 'writing-note'; id: string; note: string }
   /** O'z-o'zini baholash (Likert 1–5). */
   | { type: 'self-assess'; id: string; score: number; at: number }
   /** Xaritadan ochilgan bo'lim darsi natijasi (`passedTests['step:<kun>:<bo'lim>']`, eng yaxshisi). */
@@ -272,6 +275,19 @@ export function reducer(state: AppData, action: Action): AppData {
     }
     case 'section-jump':
       return applySectionJump(state, action.sectionId, action.score)
+    case 'level-exam': {
+      // Daraja imtihoni: faqat eng yaxshi natija saqlanadi; daraja o'zgarmaydi (o'quvchi o'zi tasdiqlaydi).
+      if (!Number.isFinite(action.score)) return state
+      const key = levelExamKey(action.level)
+      const s = Math.max(0, Math.min(100, Math.round(action.score)))
+      if ((state.path.passedTests[key] ?? -1) >= s) return state
+      return { ...state, path: { ...state.path, passedTests: { ...state.path.passedTests, [key]: s } } }
+    }
+    case 'writing-note': {
+      // Ustoz / shaxsiy mentor izohi yozma ishga (2000 belgigacha).
+      const note = action.note.slice(0, 2000)
+      return { ...state, writing: state.writing.map((w) => (w.id === action.id ? { ...w, mentorNote: note } : w)) }
+    }
     case 'step-score': {
       if (!action.key.startsWith('step:') || !Number.isFinite(action.score)) return state
       const s = Math.max(0, Math.min(100, Math.round(action.score)))

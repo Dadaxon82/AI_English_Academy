@@ -13,7 +13,7 @@
  */
 
 import { trackUsage } from '../lib/usage'
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import LessonPlayer from '../components/LessonPlayer'
 import UzTranslation from '../components/UzTranslation'
@@ -26,6 +26,7 @@ import { aiRuntimeEnabled } from '../lib/ai'
 import type { LessonStep } from '../lib/lessons'
 import { compareWithModel, historyForRequest, matchVocab, requestRoleplayTurn, scriptTurns, type RoleplayEngine } from '../lib/roleplay'
 import { useStore } from '../lib/storeContext'
+import { saveChatLog } from '../lib/addieRemote'
 import { SPEECH_UNSUPPORTED_UZ, useSpeechInput } from '../lib/useSpeechInput'
 
 const LEVELS: CefrLevel[] = ['A1', 'A2']
@@ -59,6 +60,23 @@ export default function Conversation() {
   const speech = useSpeechInput((r) => setInput((t) => (t ? `${t} ${r.text}` : r.text)))
   const vocabPool = useMemo<VocabularyItem[]>(() => [...allVocab(), ...allGlossaryVocab()], [])
   const script = useMemo(() => (d ? scriptTurns(d) : null), [d])
+
+  // Suhbat tugagach bir marta: yozuv serverga (`ai_chat_logs`) — faqat hisobga kirganda;
+  // mehmon rejimida yoki server ulanmaganda jim o'tkazib yuboriladi (lokal ish to'xtamaydi).
+  const logged = useRef<string | null>(null)
+  useEffect(() => {
+    if (!finished || !d) return
+    const key = `${d.id}:${lines.length}:${lines[0]?.text ?? ''}`
+    if (logged.current === key) return
+    logged.current = key
+    void saveChatLog({
+      dialogueId: d.id,
+      level: d.level,
+      engine,
+      lines: lines.map((l) => ({ speaker: l.speaker, text: l.text })),
+      corrections: lines.flatMap((l) => (l.corrections ?? []).map((c) => ({ excerpt: c.original, correction: c.corrected, whyUz: c.whyUz }))),
+    })
+  }, [finished, d, engine, lines])
 
   if (!ready) return <LoadingBlock label="Suhbatdoş tayyorlanmoqda…" />
 

@@ -24,14 +24,14 @@ export interface FeedbackRequest {
 
 export const MAX_TEXT_CHARS = 4000
 export const MAX_PROMPT_CHARS = 1000
-const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1']
+const LEVELS = ['A0', 'A1', 'A2', 'B1', 'B2', 'C1']
 
 /** Kiruvchi so'rovni tekshiradi; xato bo'lsa o'zbekcha sabab qaytaradi. */
 export function parseFeedbackRequest(body: unknown): { ok: true; req: FeedbackRequest } | { ok: false; reasonUz: string } {
   if (!body || typeof body !== 'object') return { ok: false, reasonUz: 'Sörov tanasi JSON obyekt bölişi kerak.' }
   const b = body as Record<string, unknown>
   if (b.kind !== 'writing' && b.kind !== 'speaking') return { ok: false, reasonUz: 'kind: "writing" yoki "speaking".' }
-  if (typeof b.level !== 'string' || !LEVELS.includes(b.level)) return { ok: false, reasonUz: 'level: A1–C1.' }
+  if (typeof b.level !== 'string' || !LEVELS.includes(b.level)) return { ok: false, reasonUz: 'level: A0–C1.' }
   if (typeof b.taskPrompt !== 'string' || !b.taskPrompt.trim()) return { ok: false, reasonUz: 'taskPrompt böş.' }
   if (typeof b.text !== 'string' || !b.text.trim()) return { ok: false, reasonUz: 'Javob matni böş.' }
   if (b.text.length > MAX_TEXT_CHARS) return { ok: false, reasonUz: `Matn juda uzun (${MAX_TEXT_CHARS} belgigaça).` }
