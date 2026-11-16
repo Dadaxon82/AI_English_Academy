@@ -17,14 +17,15 @@ import UzTranslation from '../components/UzTranslation'
 import { Suspense, lazy, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import ScenePathMap from '../components/ScenePathMap'
+import { GameIcon } from '../components/icons'
 import MapBell from '../components/MapBell'
 import { MascotAvatar } from '../components/Mascot'
 import SectionBanner from '../components/SectionBanner'
 import ExerciseRunner from '../components/ExerciseRunner'
 import { Button, Card, Chip, EmptyState, InfoBanner, LoadingBlock, ProgressRing, SpeakButton, SuccessBanner } from '../components/ui'
-import { findExercise, getBundle, vocabQuizExercise } from '../content'
+import { LOADED_LEVELS, findExercise, getBundle, vocabQuizExercise } from '../content'
 import type { LevelBundle } from '../content'
-import type { DailyPlanDay, DaySection, Skill, VocabularyItem } from '../content/types'
+import { CEFR_LEVELS, type CefrLevel, type DailyPlanDay, type DaySection, type Skill, type VocabularyItem } from '../content/types'
 import type { CheckResult } from '../lib/check'
 import { buildChain, chainAudit, exerciseIdsForSection } from '../lib/lessonChain'
 import { buildPathLayout, focalNode } from '../lib/pathMap'
@@ -72,18 +73,28 @@ export default function LearningPath() {
   // O'quv yo'li darajasi (A1 tugasa yoki A2.1 ga sakralsa — A2 kunlari).
   // Baholangan daraja (`settings.currentLevel`) bundan o'zgarmaydi.
   const pLevel = pathLevel(data)
-  const bundle = useMemo(() => getBundle(pLevel), [pLevel])
+  // Ko'rilayotgan daraja: sukut bo'yicha o'quv yo'li darajasi; tepadagi
+  // A0 … C1 tanlovidan boshqa darajaning 7 kunini ham ko'rish mumkin.
+  const [viewLevel, setViewLevel] = useState<CefrLevel | null>(null)
+  const shownLevel: CefrLevel = viewLevel ?? pLevel
+  // Joriy darajaga nisbatan: past — ochiq (takrorlash), yuqori — qulflangan (sakrash testi bilan ochiladi).
+  const rel = Math.sign(CEFR_LEVELS.indexOf(shownLevel) - CEFR_LEVELS.indexOf(pLevel))
+  const bundle = useMemo(() => getBundle(shownLevel), [shownLevel])
   const stepDone = useMemo(() => stepDoneChecker(data), [data])
   const stepScore = useMemo(() => stepScoreReader(data), [data])
   const days = bundle.days
   const completed = data.path.completedDays
 
   const currentIdx = useMemo(() => {
-    const i = days.findIndex((d) => d.id === data.path.currentDayId)
-    if (i >= 0) return i
+    if (rel > 0) return -1
+    if (rel === 0) {
+      const i = days.findIndex((d) => d.id === data.path.currentDayId)
+      if (i >= 0) return i
+    }
     const open = days.findIndex((d) => !completed.includes(d.id))
     return open >= 0 ? open : days.length - 1
-  }, [days, data.path.currentDayId, completed])
+  }, [days, data.path.currentDayId, completed, rel])
+  const doneInLevel = days.filter((d) => completed.includes(d.id)).length
 
   // Ochiq kun: yuklangandan keyin joriy kun avtomatik ochiladi; foydalanuvchi
   // xaritada boshqa tugunni bossa shu tanlov hurmat qilinadi.
@@ -99,6 +110,9 @@ export default function LearningPath() {
 
   const statusOf = (day: DailyPlanDay, idx: number): DayStatus => {
     if (completed.includes(day.id)) return 'completed'
+    // Joriy darajadan past daraja — barcha kunlari ochiq; yuqori — qulflangan.
+    if (rel < 0) return 'current'
+    if (rel > 0) return 'locked'
     if (idx <= currentIdx) return 'current'
     return 'locked'
   }
@@ -128,16 +142,16 @@ export default function LearningPath() {
             ]),
           ),
           i,
-          day.id === (days[currentIdx]?.id ?? ''),
+          rel < 0 ? !completed.includes(day.id) : day.id === (days[currentIdx]?.id ?? ''),
           completed.includes(day.id),
         ),
       ),
-    [days, completed, currentIdx, bundle],
+    [days, completed, currentIdx, bundle, rel],
   )
 
   const layout = useMemo(
-    () => buildPathLayout(chains, 360, pathMilestoneSpecs(pLevel), stepDone, stepScore),
-    [chains, pLevel, stepDone, stepScore],
+    () => buildPathLayout(chains, 360, pathMilestoneSpecs(shownLevel), stepDone, stepScore),
+    [chains, shownLevel, stepDone, stepScore],
   )
   const focus = useMemo(() => focalNode(layout), [layout])
 
@@ -180,8 +194,8 @@ export default function LearningPath() {
       <div className="grid gap-4">
         <h1 className="text-2xl font-bold">Şaxsiy öquv yöli</h1>
         <EmptyState
-          title={`${pLevel} uçun reja hali mavjud emas`}
-          body="Hozirça faqat A1 yöli yuklangan. Sozlamalardan A1 ga qaytib davom eting."
+          title={`${shownLevel} uçun reja hali mavjud emas`}
+          body="Bu daraja darslari yuklanmadi. Sahifani yangilang yoki Sozlamalardan boşqa darajani tanlang."
           action={
             <Link to="/settings" className={linkSecondary}>
               Sozlamalarga ötiş
@@ -199,19 +213,19 @@ export default function LearningPath() {
 
       {/* ---------- Progress sarlavhasi ---------- */}
       <Card as="section" className="flex flex-wrap items-center gap-4">
-        <ProgressRing value={completed.length / days.length} label={`${completed.length}/${days.length} kun`} />
+        <ProgressRing value={days.length ? doneInLevel / days.length : 0} label={`${doneInLevel}/${days.length} kun`} />
         <div className="flex-1 min-w-48 grid gap-1.5">
           <h1 className="text-2xl font-bold">Şaxsiy öquv yöli</h1>
           <p className="muted text-sm">
-            {pLevel} darajasi — {days.length} kunlik bosqiç. Har kuni 6 ta bölim va yakuniy test.
+            {shownLevel} darajasi — {days.length} kunlik bosqiç. Har kuni 6 ta bölim va yakuniy test.
             Kunlar ketma-ket oçiladi.
           </p>
           <div className="flex flex-wrap gap-1.5">
-            <Chip tone={completed.length === days.length ? 'ok' : 'brand'}>
-              {completed.length}/{days.length} kun yakunlangan
+            <Chip tone={doneInLevel === days.length ? 'ok' : 'brand'}>
+              {doneInLevel}/{days.length} kun yakunlangan
             </Chip>
-            {days[currentIdx] && !completed.includes(days[currentIdx].id) && (
-              <Chip>Bosqiç: {days[currentIdx].id}</Chip>
+            {rel === 0 && days[currentIdx] && !completed.includes(days[currentIdx].id) && (
+              <Chip>Joriy: {days[currentIdx].dayNumber}-kun</Chip>
             )}
             <Link to="/sections" className="text-xs font-semibold text-navy-700 dark:text-navy-300 hover:underline self-center">
               Barça bölimlar (A0.1 … C1.2) →
@@ -219,6 +233,54 @@ export default function LearningPath() {
           </div>
         </div>
       </Card>
+
+      {/* ---------- Daraja tanlovi: A0 … C1 (har birida 7 kun) ---------- */}
+      <nav aria-label="Darajalar" className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+        {CEFR_LEVELS.filter((l) => LOADED_LEVELS.includes(l)).map((l) => {
+          const lDays = getBundle(l).days
+          const lDone = lDays.filter((d) => completed.includes(d.id)).length
+          const above = CEFR_LEVELS.indexOf(l) > CEFR_LEVELS.indexOf(pLevel)
+          const active = l === shownLevel
+          return (
+            <button
+              key={l}
+              type="button"
+              aria-pressed={active}
+              onClick={() => {
+                setViewLevel(l === pLevel ? null : l)
+                setOpenOverride(null)
+              }}
+              className={`rounded-2xl border-2 px-2 py-2 text-center transition-colors ${active ? 'border-[var(--accent)] bg-navy-50 dark:bg-navy-900/40' : 'hover:bg-[var(--panel-2)]'}`}
+            >
+              <span className="block font-extrabold">
+                {l}
+                {above && lDone < lDays.length && (
+                  <span className="inline-block align-[-2px] ml-1 muted" title="Qulflangan">
+                    <GameIcon name="lock" size={13} title="qulflangan" />
+                  </span>
+                )}
+              </span>
+              <span className="block text-[11px] muted tabular-nums">
+                {lDone}/{lDays.length} kun{l === pLevel ? ' · joriy' : ''}
+              </span>
+            </button>
+          )
+        })}
+      </nav>
+      {rel > 0 && (
+        <InfoBanner tone="warn">
+          {shownLevel} darajasi hali qulflangan: avval {pLevel} kunlarini yakunlang yoki{' '}
+          <Link to="/sections" className="font-semibold underline">
+            Bölimlar sahifasida sakraş testini
+          </Link>{' '}
+          topşiring. Darslar mazmunini quyida körib çiqişingiz mumkin.
+        </InfoBanner>
+      )}
+      {rel < 0 && (
+        <InfoBanner>
+          {shownLevel} — joriy darajangizdan ({pLevel}) past. Barça kunlar oçiq: takrorlaş uçun istalgan darsni boşlang.
+        </InfoBanner>
+      )}
 
       {/* ---------- Yo'l xaritasi (Duolingo uslubida, yilonsimon) ---------- */}
       <Card as="section" className="grid gap-3">
@@ -314,6 +376,7 @@ export default function LearningPath() {
         ) : (
           <>
         <ScenePathMap
+          key={shownLevel}
           layout={layout}
           achievements={{ badges: data.badges.length, streak }}
           selectedId={selectedNodeId}
@@ -341,11 +404,11 @@ export default function LearningPath() {
       </Card>
       <div ref={dayCardRef} className="scroll-mt-20" />
 
-      {/* ---------- Tanlangan kun kartasi ---------- */}
+      {/* ---------- Daraja kunlari: 1-kun … 7-kun (tanlangani ochiq) ---------- */}
+      <h2 className="text-lg font-extrabold">{shownLevel} darajasi kunlari</h2>
       {days.map((day, idx) => {
         const status = statusOf(day, idx)
         const open = openDayId === day.id
-        if (!open) return null
         return (
           <DayCard
             key={autoTest?.dayId === day.id ? `${day.id}:${autoTest.nonce}` : day.id}
