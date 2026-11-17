@@ -77,6 +77,7 @@ export default function GroupSessions() {
   return (
     <Card as="section" className="grid gap-3">
       <div className="flex flex-wrap items-center gap-2">
+<<<<<<< HEAD
         <h2 className="font-bold">Guruh maşğulotlari · {level}</h2>
         <span className="flex-1" />
         <Button size="sm" variant="secondary" aria-expanded={open} onClick={() => setOpen((v) => !v)}>
@@ -85,6 +86,16 @@ export default function GroupSessions() {
       </div>
       <p className="text-sm muted">
         Bir xil darajadagi öquvçilar bilan vaqt belgilab, birga maşq qiling. Ilovada video aloqa yöq: uçraşuv havolasini (masalan,
+=======
+        <h2 className="font-bold">Guruh mashğulotlari · {level}</h2>
+        <span className="flex-1" />
+        <Button size="sm" variant="secondary" aria-expanded={open} onClick={() => setOpen((v) => !v)}>
+          {open ? 'Yopiş' : 'Mashğulot yaratiş'}
+        </Button>
+      </div>
+      <p className="text-sm muted">
+        Bir xil darajadagi öquvçilar bilan vaqt belgilab, birga maşq qiling. Ilovada video aloqa yöq: uçrashuv havolasini (masalan,
+>>>>>>> 42bb0df5de39fb26b49bc030cbd09cb231ef75d7
         Google Meet yoki Telegram guruhi) tashkilotçi mavzu maydoniga yozadi.
       </p>
 
@@ -95,7 +106,11 @@ export default function GroupSessions() {
           className="grid gap-3 rounded-xl border p-3.5"
           onSubmit={async (e) => {
             e.preventDefault()
+<<<<<<< HEAD
             const ok = await act('create', () => createGroupSession({ kind, level, ...input }), 'Maşğulot yaratildi, siz unga qöşildingiz.')
+=======
+            const ok = await act('create', () => createGroupSession({ kind, level, ...input }), 'Mashğulot yaratildi, siz unga qöşildingiz.')
+>>>>>>> 42bb0df5de39fb26b49bc030cbd09cb231ef75d7
             if (ok) {
               setOpen(false)
               setTitle('')
@@ -114,10 +129,17 @@ export default function GroupSessions() {
               </select>
             </Field>
             <Field label="Sarlavha" htmlFor="gs-title">
+<<<<<<< HEAD
               <input id="gs-title" className={inputCls} value={title} maxLength={120} onChange={(e) => setTitle(e.target.value)} placeholder="Masalan: Bozorda narx söraş" />
             </Field>
           </div>
           <Field label="Mavzu va uçraşuv havolasi" htmlFor="gs-topic" hint="500 belgigaça">
+=======
+              <input id="gs-title" className={inputCls} value={title} maxLength={120} onChange={(e) => setTitle(e.target.value)} placeholder="Masalan: Bozorda narx sörash" />
+            </Field>
+          </div>
+          <Field label="Mavzu va uçrashuv havolasi" htmlFor="gs-topic" hint="500 belgigaça">
+>>>>>>> 42bb0df5de39fb26b49bc030cbd09cb231ef75d7
             <textarea id="gs-topic" className={`${inputCls} min-h-20`} value={topic} maxLength={500} onChange={(e) => setTopic(e.target.value)} />
           </Field>
           <div className="grid sm:grid-cols-3 gap-3">
@@ -143,7 +165,11 @@ export default function GroupSessions() {
       {list === null ? (
         <p className="muted text-sm">Yuklanmoqda…</p>
       ) : list.length === 0 ? (
+<<<<<<< HEAD
         <EmptyState title="Yaqin 30 kunda maşğulot yöq" body="Birinçi bölib yarating — boşqa öquvçilar şu yerda köradi." />
+=======
+        <EmptyState title="Yaqin 30 kunda mashğulot yöq" body="Birinçi bölib yarating — boşqa öquvçilar şu yerda köradi." />
+>>>>>>> 42bb0df5de39fb26b49bc030cbd09cb231ef75d7
       ) : (
         <ul className="grid gap-2">
           {list.map((s) => {
@@ -165,6 +191,7 @@ export default function GroupSessions() {
                 {s.topic && <p className="text-sm whitespace-pre-wrap break-words">{s.topic}</p>}
                 <div className="flex flex-wrap gap-2">
                   {host ? (
+<<<<<<< HEAD
                     <Button size="sm" variant="danger" busy={busy === `c:${s.id}`} onClick={() => act(`c:${s.id}`, () => cancelGroupSession(s.id), 'Maşğulot bekor qilindi.')}>
                       Bekor qiliş
                     </Button>
@@ -174,6 +201,17 @@ export default function GroupSessions() {
                     </Button>
                   ) : (
                     <Button size="sm" disabled={full} busy={busy === `j:${s.id}`} onClick={() => act(`j:${s.id}`, () => joinGroupSession(s.id), 'Siz maşğulotga qöşildingiz.')}>
+=======
+                    <Button size="sm" variant="danger" busy={busy === `c:${s.id}`} onClick={() => act(`c:${s.id}`, () => cancelGroupSession(s.id), 'Mashğulot bekor qilindi.')}>
+                      Bekor qiliş
+                    </Button>
+                  ) : s.joined ? (
+                    <Button size="sm" variant="secondary" busy={busy === `l:${s.id}`} onClick={() => act(`l:${s.id}`, () => leaveGroupSession(s.id), 'Mashğulotdan çiqdingiz.')}>
+                      Çiqiş
+                    </Button>
+                  ) : (
+                    <Button size="sm" disabled={full} busy={busy === `j:${s.id}`} onClick={() => act(`j:${s.id}`, () => joinGroupSession(s.id), 'Siz mashğulotga qöşildingiz.')}>
+>>>>>>> 42bb0df5de39fb26b49bc030cbd09cb231ef75d7
                       {full ? 'Joy yöq' : 'Qöşiliş'}
                     </Button>
                   )}

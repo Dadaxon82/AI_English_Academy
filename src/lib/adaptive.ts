@@ -111,7 +111,11 @@ export function buildAdaptivePlan(input: AdaptiveInput): AdaptivePlan {
     })
   }
   if (openMistakes >= 3) {
+<<<<<<< HEAD
     actions.push({ id: 'mistakes', titleUz: 'Xatolar ustida iş', reasonUz: `${openMistakes} ta maşq hali töğri yeçilmagan.`, to: '/errors' })
+=======
+    actions.push({ id: 'mistakes', titleUz: 'Xatolar ustida iş', reasonUz: `${openMistakes} ta mashq hali töğri yeçilmagan.`, to: '/errors' })
+>>>>>>> 42bb0df5de39fb26b49bc030cbd09cb231ef75d7
   }
   const weakest = weakSkills[0]
   if (weakest) {

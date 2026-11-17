@@ -151,7 +151,11 @@ export function AnalyticsCard() {
       </div>
 
       <div className="grid gap-1.5">
+<<<<<<< HEAD
         <h3 className="text-sm font-semibold">Könikma özlaştirilişi (oxirgi 40 uriniş)</h3>
+=======
+        <h3 className="text-sm font-semibold">Könikma özlaştiriliši (oxirgi 40 urinish)</h3>
+>>>>>>> 42bb0df5de39fb26b49bc030cbd09cb231ef75d7
         <div className="flex flex-wrap gap-1.5">
           {a.mastery.map((m) => (
             <Chip key={m.skill} tone={m.accuracy === null ? 'default' : m.accuracy >= 80 ? 'ok' : m.accuracy >= 60 ? 'warn' : 'bad'}>
