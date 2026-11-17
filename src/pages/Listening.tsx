@@ -12,9 +12,11 @@
  *  - Audio manba, litsenziya va atributsiya Chip bilan ko'rsatiladi
  */
 
+import TranscriptAudio from '../components/TranscriptAudio'
+import { ttsSupported } from '../lib/speech'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import ExerciseRunner from '../components/ExerciseRunner'
-import { Button, Card, Chip, EmptyState, ErrorState, InfoBanner, Kbd, LoadingBlock, SpeakButton, StatTile } from '../components/ui'
+import { Button, Card, Chip, EmptyState, ErrorState, InfoBanner, Kbd, LoadingBlock, StatTile } from '../components/ui'
 import { getBundle } from '../content'
 import type { AudioAsset, ListeningTask } from '../content/types'
 import { assetUrl } from '../lib/audio'
@@ -253,7 +255,7 @@ function TaskDetail({ task, onBack }: { task: ListeningTask; onBack: () => void 
   const transcriptOpen =
     unlockMode === 'always' ||
     manualUnlock ||
-    !audioAvailable || // audio bo'lmasa — matn asosida ishlaymiz
+    (!audioAvailable && !ttsSupported()) || // na fayl, na nutq sintezi — matn asosida ishlaymiz
     (unlockMode === 'needs-listen' && listenedOnce) ||
     (unlockMode === 'needs-check' && allChecked)
 
@@ -353,24 +355,10 @@ function TaskDetail({ task, onBack }: { task: ListeningTask; onBack: () => void 
           offline={!netOnline && !cached}
         />
       ) : manifestLoading ? null : (
-        <InfoBanner tone="warn">
-          <div className="grid gap-2">
-            <b>Audio fayl hali yaratilmagan — <code>npm run audio:build</code> bajaring.</b>
-            <span>
-              Manifestda bu topşiriq uçun tayyor fayl yöq, şuning uçun pleyer va eşitiş tugmalari
-              körsatilmaydi (soxta audio yasalmaydi).
-            </span>
-            <div className="flex flex-wrap items-center gap-2">
-              <SpeakButton
-                text={task.audio.transcript.map((s) => s.text).join('. ')}
-                label="Transkriptni TTS orqali eşitiş"
-              />
-              <span className="text-[11px] muted">
-                Bu brauzer TTS'i — audio fayl örnini bosmaydi, faqat transkriptni eşitiş uçun.
-              </span>
-            </div>
-          </div>
-        </InfoBanner>
+        <Card className="grid gap-2">
+          <h2 className="font-bold">Suhbat</h2>
+          <TranscriptAudio transcript={task.audio.transcript} title={task.title} withText={false} onFirstListen={() => setListenedOnce(true)} />
+        </Card>
       )}
 
       {!netOnline && audioAvailable && !cached && (
@@ -405,7 +393,7 @@ function TaskDetail({ task, onBack }: { task: ListeningTask; onBack: () => void 
 
         {transcriptOpen ? (
           <>
-            {!audioAvailable && (
+            {!audioAvailable && !ttsSupported() && (
               <InfoBanner tone="warn">
                 <b>Matn asosida maşq.</b> Audio bölmagani uçun tinglaş örniga transkriptni öqib maşq qilasiz —
                 bu eşitiş könikmasi emas, öqiş + luğat maşqi hisoblanadi.
@@ -434,7 +422,7 @@ function TaskDetail({ task, onBack }: { task: ListeningTask; onBack: () => void 
               <Button variant="secondary" size="sm" onClick={() => setManualUnlock(true)}>
                 Baribir oçiş (maşq qiyinlaşadi)
               </Button>
-              {!audioAvailable && <span className="text-[11px] muted">Audio bölmagani uçun transkript avtomatik oçiladi.</span>}
+
             </div>
           </div>
         )}
@@ -466,7 +454,7 @@ function TaskDetail({ task, onBack }: { task: ListeningTask; onBack: () => void 
               comboTracked
             />
             <InfoBanner tone="muted">
-              Javoblarni audioyidan topiş kerak{audioAvailable ? '' : ' (audio bölmagani uçun transkriptdan)'}. Ba'zi
+              Javoblarni audioyidan topiş kerak{audioAvailable || ttsSupported() ? '' : ' (audio bölmagani uçun transkriptdan)'}. Ba'zi
               savollarda iqtibos körsatiladi — qolgan qismi audioyada.
             </InfoBanner>
           </Card>
