@@ -82,7 +82,7 @@ export const vocabDay2: VocabularyItem[] = [
   {
     id: 'a1-v2-grandfather',
     word: 'grandfather',
-    translationUz: 'bobojon, bobo',
+    translationUz: 'bobo, bobojon',
     explanationEn: 'The father of your mother or your father.',
     ipa: '/ˈɡrænfɑːðər/',
     pronunciation: { kind: 'browser-tts', ttsText: 'grandfather', lang: 'en-US' },
