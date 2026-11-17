@@ -17,6 +17,7 @@ import type { Exercise } from '../content/types'
 import type { CheckResult } from '../lib/check'
 import { SPEECH_PASS, isGraded, speechMatch, type LessonStep } from '../lib/lessons'
 import { playFeedback } from '../lib/feedbackSound'
+import { countWords } from '../lib/analyze'
 import { useStore } from '../lib/storeContext'
 import ExerciseRunner from './ExerciseRunner'
 import { GameIcon } from './icons'
@@ -154,6 +155,12 @@ export default function LessonPlayer({ steps, onClose, renderInfo, renderContext
         onResult={record}
         onNext={next}
       />
+    )
+  }
+
+  if (step.type === 'write') {
+    return wrap(
+      <WriteStep key={`${pos}-${step.id}`} step={step} pos={pos} total={queue.length} streak={streak} onExit={onClose} onResult={record} onNext={next} />
     )
   }
 
@@ -431,6 +438,90 @@ function SpeakStep({
 }
 
 /**
+ * Yoziş qadami: erkin matn (textarea) — topşiriq matnida körsatilgan
+ * böşliqni(lar)ni yoki butun matnni özi yozadi. `actions.addWriting` haqiqiy
+ * saqlaş + tahlilni (qoidaviy, AI ulangan bölsa keyin AI bilan almaşadi)
+ * işga tuşiradi — şu bilan Yoziş sahifasidagi natijalar röyxatida ham
+ * köriniadi. «Töğri» hisoblaniş uçun kamida `minWords` söz yetarli
+ * (hech narsa ixtiro qilinmaydi — faqat söz sonini hisoblaymiz).
+ */
+function WriteStep({
+  step,
+  pos,
+  total,
+  streak,
+  onExit,
+  onResult,
+  onNext,
+}: {
+  step: Extract<LessonStep, { type: 'write' }>
+  pos: number
+  total: number
+  streak: number
+  onExit: () => void
+  onResult: (r: { correct: boolean; partial: number; given: string }, seconds: number) => void
+  onNext: () => void
+}) {
+  const { actions } = useStore()
+  const task = step.task
+  const [text, setText] = useState('')
+  const [startedAt] = useState(() => Date.now())
+  const [done, setDone] = useState(false)
+  const words = countWords(text)
+  const enough = words >= task.minWords
+
+  const submit = () => {
+    if (done || !enough) return
+    const seconds = Math.round((Date.now() - startedAt) / 1000)
+    actions.addWriting(task.id, text, seconds, null)
+    setDone(true)
+    onResult({ correct: true, partial: 1, given: text }, seconds)
+  }
+
+  return (
+    <LessonFrame pos={pos} total={total} streak={streak} onExit={onExit}>
+      <div className="grid gap-1">
+        <p className="text-[11px] font-extrabold uppercase tracking-wider text-violet-600 dark:text-violet-400">Yoziş</p>
+        <h2 className="text-xl sm:text-2xl font-extrabold leading-tight">Endi özingiz yozing</h2>
+      </div>
+      <blockquote className="rounded-2xl border-2 bg-[var(--panel-2)] p-3.5 font-medium" lang="en">
+        {task.promptEn}
+      </blockquote>
+      <p className="text-sm muted">{task.instructionUz}</p>
+      <textarea
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        disabled={done}
+        rows={8}
+        placeholder="Write your answer in English…"
+        className="w-full rounded-xl border bg-[var(--panel)] p-3.5 text-sm leading-6 outline-none focus:border-[var(--accent)] font-[inherit] disabled:opacity-70"
+        aria-label="Yoziş maydoni"
+        autoFocus
+      />
+      <p className={`text-xs tabular-nums font-semibold ${enough ? 'text-[var(--ok)]' : 'muted'}`}>
+        {words} / {task.minWords}–{task.maxWords} söz
+      </p>
+      {done && (
+        <div className="aea-outcome-correct">
+          <MascotExerciseFeedback bare correct expected={task.promptEn} whyUz="Javobingiz saqlandi — tahlilni «Yoziş» bölimida köriş mumkin." />
+        </div>
+      )}
+      <div className="flex justify-end rounded-2xl border-2 bg-[var(--panel-2)] px-3.5 sm:px-5 py-3.5">
+        {!done ? (
+          <button type="button" onClick={submit} disabled={!enough} className={enough ? chunkyGreen : `${CHUNKY} px-6 py-3 ${CHUNKY_NO}`}>
+            Yuboriş
+          </button>
+        ) : (
+          <button type="button" onClick={onNext} className={chunkyGreen} autoFocus>
+            Davom etiş
+          </button>
+        )}
+      </div>
+    </LessonFrame>
+  )
+}
+
+/**
  * Gap pufagi. `hidden` — plitkalar rejimida matn yashirin (aks holda javob
  * ko'chiriladi): faqat 🔊 orqali eshittiriladi, xohlasa "Matnni ko'rsatish".
  */
@@ -519,7 +610,7 @@ function LessonEnd({ results, xp, onClose, timedOut = false }: { results: Result
         <ol className="grid gap-1.5 w-full max-w-lg text-left text-sm">
           {results.map((r, i) => {
             const ex = exerciseOf(r.step)
-            const label = r.step.type === 'speak' ? r.step.sentence : ex?.instructionUz ?? ''
+            const label = r.step.type === 'speak' ? r.step.sentence : r.step.type === 'write' ? 'Özingiz yozgan javob' : ex?.instructionUz ?? ''
             return (
               <li key={i} className={`rounded-xl border-2 px-3 py-2 flex items-start gap-2 ${r.correct ? 'border-emerald-300' : 'border-rose-300'}`}>
                 <span aria-hidden>{r.correct ? '✅' : '❌'}</span>

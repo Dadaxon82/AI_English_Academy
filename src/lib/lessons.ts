@@ -5,7 +5,8 @@
  * Qadam turlari:
  *  - `info`     — o'qish/tinglash/qoida kartasi ("Davom etish" bilan);
  *  - `exercise` — oddiy mashq (ExerciseRunner);
- *  - `speak`    — gapni ovoz chiqarib takrorlash (mikrofon; bo'lmasa plitkalar).
+ *  - `speak`    — gapni ovoz chiqarib takrorlash (mikrofon; bo'lmasa plitkalar);
+ *  - `write`    — özi erkin matn yozish (textarea; qoidaviy/AI tahlil).
  *
  * SOF funksiyalar — kontent obyektlaridan tashqari hech narsaga bog'liq emas.
  */
@@ -31,7 +32,7 @@ import type {
   WritingTask,
 } from '../content/types'
 
-export type InfoKind = 'rule' | 'passage' | 'audio' | 'write-cta' | 'speak-cta'
+export type InfoKind = 'rule' | 'passage' | 'audio' | 'speak-cta'
 
 export type LessonStep =
   | { type: 'info'; id: string; info: InfoKind; titleUz: string }
@@ -48,6 +49,7 @@ export type LessonStep =
       vocabIds?: string[]
     }
   | { type: 'speak'; id: string; sentence: string; fallback: WordOrderExercise; vocabIds?: string[] }
+  | { type: 'write'; id: string; task: WritingTask }
 
 /** Qadam javob talab qiladimi (aniqlik/XP hisobiga kiradimi). */
 export function isGraded(step: LessonStep): boolean {
@@ -90,7 +92,11 @@ export function writingLesson(task: WritingTask): LessonStep[] {
     const e = writingSentenceExercise(task, i)
     if (e) steps.push({ type: 'exercise', id: e.id, exercise: e })
   }
-  steps.push({ type: 'info', id: `${task.id}:write`, info: 'write-cta', titleUz: 'Endi özingiz yozing' })
+  // ESKI BUG: bu yerda faqat «Endi özingiz yozing» info kartasi bölib,
+  // «Davom etiş»dan keyin hech qanday yoziş maydoni oçilmasdi — dars şu
+  // zahoti tugardi va foydalanuvçi hech narsa yoza olmasdi. Endi haqiqiy
+  // `write` qadami bor — textarea'da yoziladi va tahlil qilinadi.
+  steps.push({ type: 'write', id: `${task.id}:write`, task })
   return steps
 }
 

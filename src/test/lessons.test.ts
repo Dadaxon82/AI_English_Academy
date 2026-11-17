@@ -45,7 +45,7 @@ function rightAnswer(ex: Exercise): unknown {
 
 function checkSteps(steps: LessonStep[]) {
   for (const s of steps) {
-    if (s.type === 'info') continue
+    if (s.type === 'info' || s.type === 'write') continue
     const ex = s.type === 'exercise' ? s.exercise : s.fallback
     expect(checkAnswer(ex, rightAnswer(ex)).correct, ex.id).toBe(true)
     expect(findExercise(ex.id), `findExercise(${ex.id})`).toBeDefined()
@@ -79,10 +79,10 @@ describe('Bölim darslari — barça A1 kontentidan quriladi va yeçiladi', () =
     }
   })
 
-  it('Yoziş: namuna gaplar plitkalarda, oxirida yozişga çaqiriq', () => {
+  it('Yoziş: namuna gaplar plitkalarda, oxirida haqiqiy yoziş maydoni (write qadami)', () => {
     for (const t of b.writing) {
       const steps = writingLesson(t)
-      expect(steps.at(-1)).toMatchObject({ type: 'info', info: 'write-cta' })
+      expect(steps.at(-1)).toMatchObject({ type: 'write', task: t })
       checkSteps(steps)
     }
     expect(b.writing.some((t) => writingLesson(t).length > 1), 'kamida bitta yoziş darsida plitkali gap bölişi kerak').toBe(true)

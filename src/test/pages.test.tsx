@@ -152,6 +152,45 @@ describe('Yoziş — AI ulanmagan bölsa "AI" deb körsatilmaydi', () => {
     expect(screen.queryByText('Eski javob')).toBeNull()
   })
 
+  it('ESKI BUG: dars oxiridagi «Endi özingiz yozing» dan keyin yoziş maydoni oçilmasdi — endi oçiladi va saqlanadi', async () => {
+    renderPage(<Writing />)
+    await advance()
+    fireEvent.click(screen.getByRole('button', { name: 'Darsni boşlaş' }))
+    await advance()
+    // Dars ichidagi barça plitkali maşqlarni ötkazib yuboramiz (mazmuni bu
+    // testga daxlsiz — faqat oxirgi qadamga yetiş kerak).
+    for (let guard = 0; guard < 50; guard++) {
+      if (screen.queryByText('Endi özingiz yozing')) break
+      const skip = screen.queryByRole('button', { name: 'Ötkazib yuboriş' })
+      if (skip) {
+        fireEvent.click(skip)
+        await advance()
+        continue
+      }
+      const advanceBtn = screen.queryByRole('button', { name: /Keyingi maşq|Yakunlaş/ })
+      if (advanceBtn) {
+        fireEvent.click(advanceBtn)
+        await advance()
+      }
+    }
+    // Asl xatolik: shu yergacha yetib, hech qanday "Yoziş maydoni" yoq edi —
+    // dars shu zahoti tugardi va foydalanuvçi "..." o'rniga söz yoza olmasdi.
+    const textarea = screen.getByLabelText('Yoziş maydoni')
+    expect(textarea).toBeInTheDocument()
+    fireEvent.change(textarea, {
+      target: {
+        value:
+          'Hello! My name is Aziza and I am a student. I am twelve years old and I live in Tashkent with my family. I like my school very much because my teacher is kind and funny.',
+      },
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'Yuboriş' }))
+    await advance()
+    expect(screen.getByTestId('writing-count')).toHaveTextContent('1')
+    // Saqlangani tasdiqlangandan keyin darsni yakunlaymiz.
+    fireEvent.click(screen.getByRole('button', { name: 'Davom etiş' }))
+    await advance()
+  })
+
   it('"ulangan" faqat VITE_AI_ENABLED=true + foydalanuvçi bayroği + internet + Supabase bölganda', () => {
     expect(aiRuntimeEnabled(true, true, true)).toBe(false)
     vi.stubEnv('VITE_AI_ENABLED', 'true')
