@@ -3,6 +3,7 @@
  * Loading / empty / success / error holatlari uchun alohida komponentlar.
  */
 
+import { speakEnglish } from '../lib/speech'
 import type { ButtonHTMLAttributes, ReactNode } from 'react'
 import { useEffect, useRef, useState } from 'react'
 
@@ -253,14 +254,7 @@ export function SpeakButton({ text, label, size = 'sm' }: { text: string; label?
       variant="secondary"
       size={size}
       onClick={() => {
-        const u = new SpeechSynthesisUtterance(text)
-        u.lang = 'en-US'
-        u.rate = 0.92
-        u.onstart = () => setSpeaking(true)
-        u.onend = () => setSpeaking(false)
-        u.onerror = () => setSpeaking(false)
-        window.speechSynthesis.cancel()
-        window.speechSynthesis.speak(u)
+        speakEnglish(text, { onStart: () => setSpeaking(true), onEnd: () => setSpeaking(false) })
       }}
       aria-label={label ?? `Talaffuz: ${text}`}
       title="Talaffuzni eşitiş"

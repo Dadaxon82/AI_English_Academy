@@ -97,7 +97,12 @@ export function guessLang(text: string): 'en' | 'uz' {
     `(^|\\s)(qaysi|nima|kim|qanday|neçta|qayerda|qaçon|nega|so${a}z|gap|to${a}g${a}ri|ma${a}no|bilan|uçun|emas|yo${a}q|bor|qiling|tanlang)(?=$|[\\s.,?!])`,
     'i',
   )
-  return uz.test(text) ? 'uz' : 'en'
+  if (uz.test(text)) return 'uz'
+  // O'zbekcha harflar (ö, ğ, ş, ç) — inglizcha ovoz bilan o'qib bo'lmaydi.
+  if (/[öğşçÖĞŞÇ]/.test(text)) return 'uz'
+  // "Which word means “oşxona”?" — eshitiladigan qismi o'zbekcha so'z.
+  if (/^which word means\b/i.test(text.trim())) return 'uz'
+  return 'en'
 }
 
 /**

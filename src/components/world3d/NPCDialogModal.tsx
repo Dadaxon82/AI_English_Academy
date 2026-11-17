@@ -3,6 +3,7 @@
  * mikrofon orqali yoki tugma bilan javob beradi — shundan keyin topshiriqlar ochiladi.
  * Ovoz ishlamasa ham matn bilan to'liq ishlaydi.
  */
+import { speakEnglish } from '../../lib/speech'
 import { useEffect, useState } from 'react'
 import { Button } from '../ui'
 import Panel from './Panel'
@@ -20,11 +21,7 @@ const REPLY_PASS = 0.6
 
 function speak(text: string) {
   if (!ttsSupported()) return
-  const u = new SpeechSynthesisUtterance(text)
-  u.lang = 'en-US'
-  u.rate = 0.92
-  window.speechSynthesis.cancel()
-  window.speechSynthesis.speak(u)
+  speakEnglish(text)
 }
 
 function lineFor(t: DialogTarget, world: World): { npc: NpcLine; state: StationState; en: string; uz: string } {

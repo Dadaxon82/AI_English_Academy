@@ -11,6 +11,7 @@
  * Xatolar daftari; yakunda `completeLesson`.
  */
 
+import { speakEnglish } from '../lib/speech'
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import type { Exercise } from '../content/types'
 import type { CheckResult } from '../lib/check'
@@ -272,12 +273,7 @@ function recognizerCtor(): (new () => RecognitionLike) | null {
 }
 
 function speak(text: string) {
-  if (typeof window === 'undefined' || !('speechSynthesis' in window)) return
-  const u = new SpeechSynthesisUtterance(text)
-  u.lang = 'en-US'
-  u.rate = 0.9
-  window.speechSynthesis.cancel()
-  window.speechSynthesis.speak(u)
+  speakEnglish(text, { rate: 0.9 })
 }
 
 function SpeakStep({
