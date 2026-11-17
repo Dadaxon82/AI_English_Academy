@@ -11,7 +11,8 @@ import { grammarLesson, listeningLesson, readingLesson, speakingLesson, writingL
 import { chunkyGreen } from './chunky'
 import LessonPlayer from './LessonPlayer'
 import { MascotFigure } from './Mascot'
-import { Card, InfoBanner, SpeakButton } from './ui'
+import { Card, SpeakButton } from './ui'
+import TranscriptAudio from './TranscriptAudio'
 
 function Shell({ children }: { children: ReactNode }) {
   return <Card className="p-4 sm:p-6">{children}</Card>
@@ -135,18 +136,7 @@ function LessonAudio({ task }: { task: ListeningTask }) {
   }, [task.audio.id, task.audio.fileAvailable])
 
   if (state === 'loading') return <p className="text-sm muted">Audio tekşirilmoqda…</p>
-  if (state === 'missing' || !src) {
-    return (
-      <div className="grid gap-2">
-        <InfoBanner tone="warn">Audio fayl topilmadi — transkript bilan işlang.</InfoBanner>
-        <div className="grid gap-1.5 text-sm" lang="en">
-          {task.audio.transcript.map((t, i) => (
-            <p key={i}>{t.text}</p>
-          ))}
-        </div>
-      </div>
-    )
-  }
+  if (state === 'missing' || !src) return <TranscriptAudio transcript={task.audio.transcript} title={task.title} />
   return (
     <div className="grid gap-2 justify-items-center">
       <MascotFigure maxHeight="max-h-24" alt="" />
@@ -166,9 +156,7 @@ export function ListeningLesson({ task, onClose, onFinish }: { task: ListeningTa
         renderInfo={() => (
           <>
             <p className="text-sm muted">
-              {task.audio.fileAvailable
-                ? 'Audioni tinglang — savollar şu audio böyiça. Savol paytida uni qayta tinglaş mumkin.'
-                : 'Bu suhbatning audio fayli hali yöq — transkriptni öqing, savollar şu matn böyiça.'}
+              Suhbatni tinglang — savollar şu suhbat böyiça. Savol paytida uni qayta tinglaş mumkin.
             </p>
             <LessonAudio task={task} />
           </>
