@@ -1,4 +1,6 @@
 /** Plitkali javoblar: so'z yig'ish, juftlik, tarjima. */
+import { speakEnglish } from '../../lib/speech'
+import { assetUrl } from '../../lib/audio'
 import { useMemo, useState } from 'react'
 import type { Exercise, PronunciationSource } from '../../content/types'
 import { inputCls } from '../ui'
@@ -286,7 +288,7 @@ function AudioMatchCard({
   const speak = (e: React.MouseEvent) => {
     e.stopPropagation()
     if (pronunciation?.kind === 'audio-file' && pronunciation.src) {
-      const audio = new Audio(pronunciation.src)
+      const audio = new Audio(assetUrl(pronunciation.src))
       setPlaying(true)
       audio.onended = () => setPlaying(false)
       audio.onerror = () => setPlaying(false)
@@ -294,14 +296,7 @@ function AudioMatchCard({
       return
     }
     if (ttsSupported) {
-      const u = new SpeechSynthesisUtterance(pronunciation?.ttsText ?? word)
-      u.lang = pronunciation?.lang ?? 'en-US'
-      u.rate = 0.92
-      u.onstart = () => setPlaying(true)
-      u.onend = () => setPlaying(false)
-      u.onerror = () => setPlaying(false)
-      window.speechSynthesis.cancel()
-      window.speechSynthesis.speak(u)
+      speakEnglish(pronunciation?.ttsText ?? word, { lang: pronunciation?.lang, onStart: () => setPlaying(true), onEnd: () => setPlaying(false) })
     }
   }
 

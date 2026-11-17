@@ -1,4 +1,5 @@
 /** Asosiy javob kiritish (variantlar, matn, TFNG, ko'p tanlov). */
+import { speakEnglish } from '../../lib/speech'
 import type { Exercise } from '../../content/types'
 import { inputCls } from '../ui'
 import { choiceLabels, choiceValue, count, toggleIndex } from './helpers'
@@ -15,11 +16,7 @@ export function SpeakIcon({ text }: { text: string }) {
       aria-label={`Tinglaş: ${text}`}
       title="Tinglaş"
       onClick={() => {
-        const u = new SpeechSynthesisUtterance(text)
-        u.lang = 'en-US'
-        u.rate = 0.92
-        window.speechSynthesis.cancel()
-        window.speechSynthesis.speak(u)
+        speakEnglish(text)
       }}
       className="shrink-0 inline-grid place-items-center w-8 h-8 rounded-lg text-sky-700 dark:text-sky-400 hover:bg-sky-50 dark:hover:bg-sky-950/40"
     >

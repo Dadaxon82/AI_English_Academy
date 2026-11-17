@@ -10,6 +10,8 @@
  * qolmasin, deb matn/TTS fallback orqali yana tinglash imkoni qoladi
  * ("hech qanday tugma dekoratsiya bo'lmasin" qoidasi).
  */
+import { speakEnglish } from '../../lib/speech'
+import { assetUrl } from '../../lib/audio'
 import { useState } from 'react'
 import type { Exercise, PronunciationSource } from '../../content/types'
 import { cardCls, cardOn } from './styles'
@@ -31,7 +33,7 @@ export function PlayAudioButton({
 
   const speak = () => {
     if (pronunciation?.kind === 'audio-file' && pronunciation.src) {
-      const audio = new Audio(pronunciation.src)
+      const audio = new Audio(assetUrl(pronunciation.src))
       setPlaying(true)
       audio.onended = () => setPlaying(false)
       audio.onerror = () => setPlaying(false)
@@ -39,14 +41,7 @@ export function PlayAudioButton({
       return
     }
     if (ttsSupported) {
-      const u = new SpeechSynthesisUtterance(pronunciation?.ttsText ?? text)
-      u.lang = pronunciation?.lang ?? 'en-US'
-      u.rate = 0.92
-      u.onstart = () => setPlaying(true)
-      u.onend = () => setPlaying(false)
-      u.onerror = () => setPlaying(false)
-      window.speechSynthesis.cancel()
-      window.speechSynthesis.speak(u)
+      speakEnglish(pronunciation?.ttsText ?? text, { lang: pronunciation?.lang, onStart: () => setPlaying(true), onEnd: () => setPlaying(false) })
     }
   }
 
@@ -196,11 +191,7 @@ function ListeningOptionPlayer({ text }: { text: string }) {
   const play = (e: React.MouseEvent) => {
     e.stopPropagation()
     if (!ttsSupported) return
-    const u = new SpeechSynthesisUtterance(text)
-    u.lang = 'en-US'
-    u.rate = 0.92
-    window.speechSynthesis.cancel()
-    window.speechSynthesis.speak(u)
+    speakEnglish(text)
   }
   return (
     <span className="flex-1 flex items-center justify-center gap-2">
