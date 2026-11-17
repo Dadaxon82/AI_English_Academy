@@ -266,7 +266,7 @@ export default function ExerciseRunner({
               {hearts.minutesLeft > 0 && <span>· {hearts.minutesLeft} daqiqada bittasi qaytadi</span>}
             </div>
             <p>
-              Maşqni davom ettiriş uçun yurak kerak. <b>{hearts.practiceNeeded}</b> ta sözni takrlab bittasini
+              Maşqni davom ettiriş uçun yurak kerak. <b>{hearts.practiceNeeded}</b> ta sözni takrorlab bittasini
               qaytarib oling (ketma-ket {HEART_COMBO_STREAK} ta töğri javob ham bitta yurak qaytaradi).
             </p>
             <div className="flex flex-wrap gap-2">

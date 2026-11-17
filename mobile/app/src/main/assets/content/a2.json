@@ -1439,7 +1439,7 @@
       "a2-s7-shopping",
       "a2-s7-fridge"
      ],
-     "titleUz": "Gapiriş: taom, xarid, muzlatkiç"
+     "titleUz": "Gapiriş: taom, xarid, muzlatgiç"
     }
    ],
    "sectionTest": {
@@ -1496,7 +1496,7 @@
       "options": [
        "gul",
        "un",
-       "yog‘",
+       "yoğ",
        "guruç"
       ],
       "answerIndex": 1
@@ -1911,7 +1911,7 @@
   {
    "id": "a2-v2-garden",
    "word": "garden",
-   "translationUz": "bog‘, hovli",
+   "translationUz": "boğ, hovli",
    "explanationEn": "Land near a house where people grow flowers, fruit or vegetables.",
    "ipa": "/ˈɡɑːrdən/",
    "pronunciation": {
@@ -2679,7 +2679,7 @@
     "lang": "en-US"
    },
    "exampleEn": "Have you finished your homework yet?",
-   "exampleUz": "Uy vazifangizni tugatdingizmi hali?",
+   "exampleUz": "Uy vazifangizni tugatib böldingizmi?",
    "pos": "adverb",
    "topic": "time",
    "level": "A2"
@@ -2964,7 +2964,7 @@
   {
    "id": "a2-v7-oil",
    "word": "oil",
-   "translationUz": "yog‘ (ösimlik yoği)",
+   "translationUz": "yoğ (ösimlik yoği)",
    "explanationEn": "A liquid from plants that you use for cooking.",
    "ipa": "/ɔɪl/",
    "pronunciation": {
@@ -2973,7 +2973,7 @@
     "lang": "en-US"
    },
    "exampleEn": "Don’t put too much oil in the salad.",
-   "exampleUz": "Salatga juda köp yog‘ solmang.",
+   "exampleUz": "Salatga juda köp yoğ solmang.",
    "pos": "noun",
    "topic": "food",
    "level": "A2"
@@ -3015,7 +3015,7 @@
   {
    "id": "a2-v7-bottle",
    "word": "bottle",
-   "translationUz": "shisha, butilka",
+   "translationUz": "şişa, butilka",
    "explanationEn": "A container for liquids, usually made of glass or plastic.",
    "ipa": "/ˈbɑːtəl/",
    "pronunciation": {
@@ -3024,7 +3024,7 @@
     "lang": "en-US"
    },
    "exampleEn": "I bought two bottles of water.",
-   "exampleUz": "Ikki shisha suv sotib oldim.",
+   "exampleUz": "Ikki şişa suv sotib oldim.",
    "pos": "noun",
    "topic": "shopping",
    "level": "A2"
@@ -3108,7 +3108,7 @@
     "ttsText": "delicious",
     "lang": "en-US"
    },
-   "exampleEn": "Your somsa is delicious!",
+   "exampleEn": "Your samsa is delicious!",
    "exampleUz": "Somsangiz juda mazali!",
    "pos": "adjective",
    "topic": "food",
@@ -4639,11 +4639,11 @@
       "They are going to take the night train on Friday.",
       "They are going to arrive in Urgench on Saturday morning.",
       "They will take a taxi to Khiva.",
-      "They will stay at a hotel in Ichan Kala."
+      "They will stay at a hotel in Itchan Kala."
      ],
      "itemsShuffled": [
       "They will take a taxi to Khiva.",
-      "They will stay at a hotel in Ichan Kala.",
+      "They will stay at a hotel in Itchan Kala.",
       "They are going to take the night train on Friday.",
       "They are going to arrive in Urgench on Saturday morning."
      ],
@@ -5462,7 +5462,7 @@
     },
     {
      "en": "There isn’t any milk in the fridge.",
-     "uz": "Muzlatkiçda umuman sut yöq."
+     "uz": "Muzlatgiçda umuman sut yöq."
     },
     {
      "en": "How many eggs do you need for the cake?",
@@ -5640,7 +5640,7 @@
      "tags": [
       "some any"
      ],
-     "source": "Muzlatkiçda sut yöq.",
+     "source": "Muzlatgiçda sut yöq.",
      "sourceLang": "uz",
      "accepted": [
       "There isn’t any milk in the fridge",
@@ -6407,7 +6407,7 @@
    "provenance": "original",
    "paragraphs": [
     "Hi everyone! My name is Zarina and this is my travel blog. Next week my family is going to travel to Khiva for the first time. We are going to take the night train from Tashkent on Friday, and we are going to arrive in Urgench on Saturday morning. From there we will take a taxi to Khiva — it is only thirty kilometres.",
-    "We booked a small hotel inside the old city, Ichan Kala. My father wants to see the Kalta Minor minaret, and my mother is going to visit the craft workshops because she loves carpets. My little brother Timur is only six. I think he will be tired after the train, but he will love the camels near the city walls!",
+    "We booked a small hotel inside the old city, Itchan Kala. My father wants to see the Kalta Minor minaret, and my mother is going to visit the craft workshops because she loves carpets. My little brother Timur is only six. I think he will be tired after the train, but he will love the camels near the city walls!",
     "The forecast says it will be sunny and hot — about thirty-five degrees. So I am going to pack a hat, sunglasses and a big bottle of water. I won’t take my laptop, because I want to relax. But I promise I will write a new blog post every evening. See you in Khiva!"
    ],
    "glossary": [
@@ -6439,7 +6439,7 @@
      "id": "a2-ex-r4-01",
      "kind": "multiple-choice",
      "instructionUz": "Matn asosida savolga javob bering.",
-     "explanationUz": "Birinçi paragraf: ular juma kuni tungi poyezdda jönaşadi.",
+     "explanationUz": "Birinçi paragraf: ular juma kuni tungi poyezdda jönab ketişadi.",
      "difficulty": 1,
      "tags": [
       "reading detail"
@@ -6489,7 +6489,7 @@
      "passageId": "a2-r4-text-01",
      "statement": "The family’s hotel is inside the old city.",
      "answer": "true",
-     "evidence": "We booked a small hotel inside the old city, Ichan Kala."
+     "evidence": "We booked a small hotel inside the old city, Itchan Kala."
     },
     {
      "level": "A2",
@@ -9101,12 +9101,12 @@
   {
    "id": "a2-s7-fridge",
    "level": "A2",
-   "topicUz": "Muzlatkiçingizda nima bor",
+   "topicUz": "Muzlatgiçingizda nima bor",
    "questionEn": "What is in your fridge now? What isn’t there?",
    "hintUz": "“There are some … There is a lot of … There isn’t any …” deb gapiring.",
    "minSeconds": 20,
    "targetSeconds": 45,
-   "textAlternative": "Muzlatkiçingizda bor va yöq narsalar haqida 5 gap yozing (some / any / a lot of).",
+   "textAlternative": "Muzlatgiçingizda bor va yöq narsalar haqida 5 gap yozing (some / any / a lot of).",
    "followUpsEn": [
     "What do you need to buy this week?",
     "How much water do you drink a day?"
@@ -10120,7 +10120,7 @@
      "options": [
       "gul",
       "un",
-      "yog‘",
+      "yoğ",
       "guruç"
      ],
      "answerIndex": 1

@@ -106,7 +106,7 @@ export const diagnosticTest = {
       level: 'B1',
       skill: 'vocabulary',
       difficulty: 3,
-      explanationUz: '“Reluctant” — istagsiz, köngilsiz.',
+      explanationUz: '“Reluctant” — istaksiz, köngilsiz.',
     },
     {
       id: 'dg-08',

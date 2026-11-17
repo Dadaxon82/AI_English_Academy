@@ -684,7 +684,7 @@
    "level": "B1",
    "dayNumber": 4,
    "titleUz": "Odatlar: ilgari va hozir",
-   "goalUz": "Işlatiladi: used to / didn’t use to / would — ötmişdagi odatlar va holatlar; ilgari va hozirni solişturiş.",
+   "goalUz": "Işlatiladi: used to / didn’t use to / would — ötmişdagi odatlar va holatlar; ilgari va hozirni soliştiriş.",
    "sections": [
     {
      "skill": "vocabulary",
@@ -1897,7 +1897,7 @@
     "lang": "en-US"
    },
    "exampleEn": "The app collects data about your sleep.",
-   "exampleUz": "Ilova uyquingiz haqida ma’lumot töplaydi.",
+   "exampleUz": "Ilova uyqungiz haqida ma’lumot töplaydi.",
    "pos": "noun",
    "topic": "technology",
    "level": "B1"
@@ -2393,7 +2393,7 @@
     "lang": "en-US"
    },
    "exampleEn": "I try to eat healthy food.",
-   "exampleUz": "Soğlom ovqat yeşga harakat qilaman.",
+   "exampleUz": "Soğlom ovqat yeyişga harakat qilaman.",
    "pos": "adjective",
    "topic": "lifestyle",
    "level": "B1",
@@ -2930,7 +2930,7 @@
     "lang": "en-US"
    },
    "exampleEn": "The museum preserves old manuscripts.",
-   "exampleUz": "Muzey qadimiy qöllyozmalarni asraydi.",
+   "exampleUz": "Muzey qadimiy qölyozmalarni asraydi.",
    "pos": "verb",
    "topic": "culture",
    "level": "B1"
@@ -3469,7 +3469,7 @@
      "id": "b1-ex-g2-01",
      "kind": "multiple-choice",
      "instructionUz": "Gapga eng mos modal fe’lni tanlang.",
-     "explanationUz": "Dalil kuçli (ekran qorongi, zaryadlovçi yöq) — deyarli aniq: must.",
+     "explanationUz": "Dalil kuçli (ekran qoronği, zaryadlovçi yöq) — deyarli aniq: must.",
      "difficulty": 1,
      "tags": [
       "modals",
@@ -4301,7 +4301,7 @@
    "explanationUz": [
     "First Conditional — kelajakda REAL, ehtimoli katta şart va uning natijasi: If you add too much salt, nobody will eat it. Tuzilma: if + Present Simple, … will + fe’l. Özbekçadagi “agar … sa, … adi” şakliga mos.",
     "MUHIM: if bölagida will işlatilmaydi, kelajak ma’nosi bölsa ham Present Simple keladi: If it rains tomorrow, we will cook at home. (“If it will rain” — xato.) Natija bölagida will dan taşqari may / might / can ham keliş mumkin: If we leave now, we might catch the bus.",
-    "Xuddi şu qoida vaqt bağlovçilariga ham tegişli: when, as soon as, before, after, until. I will call you when I get home. As soon as the water boils, add the pasta. Bu bölaklarda ham will yöq.",
+    "Xuddi şu qoida vaqt boğlovçilariga ham tegişli: when, as soon as, before, after, until. I will call you when I get home. As soon as the water boils, add the pasta. Bu bölaklarda ham will yöq.",
     "Unless = if … not (“agar … masa”): Unless you stir it, the rice will stick = If you don’t stir it, the rice will stick. Unless bilan inkor ikki marta işlatilmaydi: “Unless you don’t hurry” — xato."
    ],
    "formula": [
@@ -5736,7 +5736,7 @@
      "id": "b1-ex-r3-05",
      "kind": "true-false-notgiven",
      "instructionUz": "Matnda ma’lumot bölmasa, notgiven ni tanlang.",
-     "explanationUz": "Bepul suv bor, lekin kirish çiptasining narxi haqida heç narsa aytilmagan.",
+     "explanationUz": "Bepul suv bor, lekin kiriş çiptasining narxi haqida heç narsa aytilmagan.",
      "difficulty": 3,
      "tags": [
       "true false notgiven"
@@ -8402,7 +8402,7 @@
    "level": "B1",
    "topicUz": "Şaharim özgardi",
    "questionEn": "How has your town or street changed in the last ten years?",
-   "hintUz": "“There used to be …, but now there is …” deb bir neçta özgarişni solişturing.",
+   "hintUz": "“There used to be …, but now there is …” deb bir neçta özgarişni soliştiring.",
    "minSeconds": 45,
    "targetSeconds": 90,
    "textAlternative": "Şahringiz yoki köçangiz ön yilda qanday özgargani haqida 6 gap yozing.",

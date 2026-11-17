@@ -405,7 +405,7 @@ export const writing: WritingTask = {
     'Erişilgan maqsadlar Future Perfect bilan (By then you will have …).',
     'Oddiy kun Future Continuous bilan (You will probably be …).',
     'Bitta ögit yoki iltimos (Please don’t forget …).',
-    'Hozirgi holatingiz bilan solişturma.',
+    'Hozirgi holatingiz bilan soliştirma.',
   ],
   mustInclude: [
     { pattern: 'will have', whyUz: 'Erişilgan natija — “will have + V3”.' },

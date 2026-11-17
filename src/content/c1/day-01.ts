@@ -52,8 +52,8 @@ export const grammar: GrammarTopic = {
     { en: 'Never before had the company faced such public criticism.', uz: 'Kompaniya heç qaçon bunday omma tanqidiga uçramagan edi.' },
     { en: 'Not only did the article misquote the expert, but it also used an old photo.', uz: 'Maqola mutaxassis sözlarini nafaqat buzib keltirdi, balki eski suratdan ham foydalandi.' },
     { en: 'Under no circumstances should you share unverified information.', uz: 'Heç qanday holatda tekşirilmagan ma’lumotni tarqatmasligingiz kerak.' },
-    { en: 'Only when we compare several sources can we judge a claim fairly.', uz: 'Bir neçta manbani solişturgandagina da’voga xolis baho bera olamiz.' },
-    { en: 'Little did the readers know that the quote had been invented.', uz: 'Öquvçilar iqtibos tögib çiqarilganini xayollariga ham keltirmagan edi.' },
+    { en: 'Only when we compare several sources can we judge a claim fairly.', uz: 'Bir neçta manbani soliştirgandagina da’voga xolis baho bera olamiz.' },
+    { en: 'Little did the readers know that the quote had been invented.', uz: 'Öquvçilar iqtibos töqib çiqarilganini xayollariga ham keltirmagan edi.' },
   ],
   forms: {
     affirmative: ['Rarely do we check the original source.', 'Not until 2020 did the law change.', 'Only then did I understand.'],
@@ -194,7 +194,7 @@ export const reading: ReadingPassage = {
     { word: 'fall for', uz: 'aldanib qolmoq' },
     { word: 'misinformation', uz: 'notöğri ma’lumot' },
     { word: 'motivated reasoning', uz: 'istakka böysungan fikrlaş' },
-    { word: 'exaggerate', uz: 'böröttirmoq' },
+    { word: 'exaggerate', uz: 'börttirmoq' },
     { word: 'precisely', uz: 'aynan' },
   ],
   exercises: [
@@ -449,7 +449,7 @@ export const speaking: SpeakingTask[] = [
     level: 'C1',
     topicUz: 'Media va işonç',
     questionEn: 'Which sources of information do you trust most, and why?',
-    hintUz: 'Manbalarni solişturing va işonç mezonlarini aniq ayting (muallif, dalil, mustaqillik).',
+    hintUz: 'Manbalarni soliştiring va işonç mezonlarini aniq ayting (muallif, dalil, mustaqillik).',
     minSeconds: 90,
     targetSeconds: 150,
     textAlternative: 'Qaysi axborot manbalariga köproq işonişingiz va nega — 8 gap yozing.',
@@ -463,7 +463,7 @@ export const speaking: SpeakingTask[] = [
     hintUz: 'Pozitsiyangizni tanlang, ikkita dalil va bitta qarşi dalilga javob bering.',
     minSeconds: 90,
     targetSeconds: 150,
-    textAlternative: 'Mavzu böyicha pozitsiyangizni ikki dalil va qarşi dalilga javob bilan yozing (8 gap).',
+    textAlternative: 'Mavzu böyiça pozitsiyangizni ikki dalil va qarşi dalilga javob bilan yozing (8 gap).',
     followUpsEn: ['Can you give a real example?', 'What responsibility do their followers have?'],
   },
 ]

@@ -44,13 +44,13 @@ export default function RewardHUD({ world }: { world: World }) {
           🛡️ {data.game.freezes}
         </span>
         <button type="button" className={`${PILL} pointer-events-auto hover:bg-white/50 focus-visible:outline-2 focus-visible:outline-offset-2`} onClick={() => setShop(true)} aria-label={`Kumuş tangalar: ${coins}. Döqonni oçiş`}>
-          🪙 {coins} <span className="font-semibold">· döqon</span>
+          🪙 {coins} <span className="font-semibold">· dökon</span>
         </button>
       </div>
 
       {shop && (
       <Panel
-        title="Tanga döqoni"
+        title="Tanga dökoni"
         onClose={() => {
           setShop(false)
           setMsg(null)

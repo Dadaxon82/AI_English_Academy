@@ -213,7 +213,7 @@ export function AudioMatchingInput({
 
   return (
     <div className="grid gap-2">
-      <p className="text-xs muted text-center">Tovuşni tinglang, söng möslaşadigan sözni bosing.</p>
+      <p className="text-xs muted text-center">Tovuşni tinglang, söng mos sözni bosing.</p>
       <div className="grid grid-cols-2 gap-2.5">
         <div className="grid gap-2.5 content-start">
           {lefts.map((l) => (

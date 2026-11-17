@@ -3072,11 +3072,11 @@
     },
     {
      "en": "Only when we compare several sources can we judge a claim fairly.",
-     "uz": "Bir neçta manbani solişturgandagina da’voga xolis baho bera olamiz."
+     "uz": "Bir neçta manbani soliştirgandagina da’voga xolis baho bera olamiz."
     },
     {
      "en": "Little did the readers know that the quote had been invented.",
-     "uz": "Öquvçilar iqtibos tögib çiqarilganini xayollariga ham keltirmagan edi."
+     "uz": "Öquvçilar iqtibos töqib çiqarilganini xayollariga ham keltirmagan edi."
     }
    ],
    "forms": {
@@ -4464,7 +4464,7 @@
      "skill": "grammar",
      "id": "c1-d5-seq-01",
      "kind": "sequence",
-     "instructionUz": "Fe’llarni işonç darajasi böyiça — eng kuçlidan eng ehtiyotkorgaça tartiblang.",
+     "instructionUz": "Fe’llarni işonç darajasi böyiça — eng kuçlidan eng ehtiyotkorigaça tartiblang.",
      "question": "Eng kuçli → eng ehtiyotkor.",
      "items": [
       "proves",
@@ -4732,9 +4732,9 @@
      "sourceLang": "en",
      "accepted": [
       "2021-yilda çop etilgan tadqiqot munozarani özgartirdi",
-      "2021-yilda nashr etilgan tadqiqot bahsni özgartirdi",
+      "2021-yilda naşr etilgan tadqiqot bahsni özgartirdi",
       "2021-yilda çop etilgan tadqiqot bahsni özgartirdi",
-      "2021-yilda nashr etilgan tadqiqot munozarani özgartirdi"
+      "2021-yilda naşr etilgan tadqiqot munozarani özgartirdi"
      ]
     },
     {
@@ -4814,7 +4814,7 @@
     },
     {
      "form": "Gap, whereas gap.",
-     "noteUz": "Bitta gap ichida taqqoslaş."
+     "noteUz": "Bitta gap içida taqqoslaş."
     },
     {
      "form": "Gap; consequently, gap.",
@@ -4912,7 +4912,7 @@
      "skill": "grammar",
      "id": "c1-ex-g7-03",
      "kind": "multiple-choice",
-     "instructionUz": "Qaysi gapda tinish belgisi va marker töğri işlatilgan?",
+     "instructionUz": "Qaysi gapda tiniş belgisi va marker töğri işlatilgan?",
      "explanationUz": "However, moreover, therefore ikki gapni faqat vergul bilan ulay olmaydi; whereas esa bitta gap ichida ikki qismni boğlaydi.",
      "difficulty": 3,
      "tags": [
@@ -5130,7 +5130,7 @@
     },
     {
      "word": "exaggerate",
-     "uz": "böröttirmoq"
+     "uz": "börttirmoq"
     },
     {
      "word": "precisely",
@@ -5772,7 +5772,7 @@
      "id": "c1-ex-r4-03",
      "kind": "true-false-notgiven",
      "instructionUz": "Fikr matnga köra true, false yoki notgiven?",
-     "explanationUz": "Lola ösmirlikda buvisini yaxşi tuşungan, lekin ruscha javob bergan.",
+     "explanationUz": "Lola ösmirlikda buvisini yaxşi tuşungan, lekin rusça javob bergan.",
      "difficulty": 1,
      "tags": [
       "true false notgiven"
@@ -6136,7 +6136,7 @@
      "id": "c1-ex-r6-02",
      "kind": "multiple-choice",
      "instructionUz": "Nega tadqiqotçilar oddiy fermer xöjaliklarida sinaşni afzal köradi?",
-     "explanationUz": "Qöşnining dalasidagi natijani köriş hisobot öqişdan ancha işonarliroq.",
+     "explanationUz": "Qöşnining dalasidagi natijani köriş hisobot öqişdan ança işonarliroq.",
      "difficulty": 2,
      "tags": [
       "reading detail"
@@ -6381,7 +6381,7 @@
      "id": "c1-ex-r7-05",
      "kind": "true-false-notgiven",
      "instructionUz": "Matnda ma’lumot bölmasa, notgiven ni tanlang.",
-     "explanationUz": "Esse uzunligi haqida hiç narsa aytilmagan.",
+     "explanationUz": "Esse uzunligi haqida heç narsa aytilmagan.",
      "difficulty": 3,
      "tags": [
       "true false notgiven"
@@ -7085,7 +7085,7 @@
      "skill": "listening",
      "id": "c1-ex-l4-02",
      "kind": "multiple-choice",
-     "instructionUz": "Sözana naqşlarini çiziş Davron uçun nimani anglatgan?",
+     "instructionUz": "Suzana naqşlarini çiziş Davron uçun nimani anglatgan?",
      "explanationUz": "“… a way of keeping her close.”",
      "difficulty": 2,
      "tags": [
@@ -7509,7 +7509,7 @@
      "id": "c1-ex-l6-05",
      "kind": "true-false-notgiven",
      "instructionUz": "Fikr intervyuda aytilganmi?",
-     "explanationUz": "Yangi nav hosili necha foiz oşgani aytilmagan.",
+     "explanationUz": "Yangi nav hosili neça foiz oşgani aytilmagan.",
      "difficulty": 3,
      "tags": [
       "listening notgiven"
@@ -7776,7 +7776,7 @@
    "level": "C1",
    "genre": "report",
    "promptEn": "Your regional youth council has asked for proposals to reduce youth unemployment. Write a proposal describing the main causes of the problem in your area and recommending two practical measures.",
-   "instructionUz": "Hududiy yoşlar kengaşi yoşlar işsizligini kamaytiriş böyicha takliflar sörayapti. Taklifnoma yozing: hududingizdagi muammoning asosiy sabablari va ikkita amaliy çora. Kamida uçta cleft gap (What … is …, It is … that …, The reason why … is that …) işlating.",
+   "instructionUz": "Hududiy yoşlar kengaşi yoşlar işsizligini kamaytiriş böyiça takliflar sörayapti. Taklifnoma yozing: hududingizdagi muammoning asosiy sabablari va ikkita amaliy çora. Kamida uçta cleft gap (What … is …, It is … that …, The reason why … is that …) işlating.",
    "minWords": 220,
    "maxWords": 280,
    "minutes": 35,
@@ -8026,7 +8026,7 @@
    "level": "C1",
    "topicUz": "Media va işonç",
    "questionEn": "Which sources of information do you trust most, and why?",
-   "hintUz": "Manbalarni solişturing va işonç mezonlarini aniq ayting (muallif, dalil, mustaqillik).",
+   "hintUz": "Manbalarni soliştiring va işonç mezonlarini aniq ayting (muallif, dalil, mustaqillik).",
    "minSeconds": 90,
    "targetSeconds": 150,
    "textAlternative": "Qaysi axborot manbalariga köproq işonişingiz va nega — 8 gap yozing.",
@@ -8043,7 +8043,7 @@
    "hintUz": "Pozitsiyangizni tanlang, ikkita dalil va bitta qarşi dalilga javob bering.",
    "minSeconds": 90,
    "targetSeconds": 150,
-   "textAlternative": "Mavzu böyicha pozitsiyangizni ikki dalil va qarşi dalilga javob bilan yozing (8 gap).",
+   "textAlternative": "Mavzu böyiça pozitsiyangizni ikki dalil va qarşi dalilga javob bilan yozing (8 gap).",
    "followUpsEn": [
     "Can you give a real example?",
     "What responsibility do their followers have?"
@@ -8110,7 +8110,7 @@
    "level": "C1",
    "topicUz": "Globallaşuv: kim yutadi?",
    "questionEn": "Who benefits most from globalisation, and who loses?",
-   "hintUz": "Turli guruhlarni (iste’molçi, işçi, kiçik biznes) solişturing va misol keltiring.",
+   "hintUz": "Turli guruhlarni (iste’molçi, işçi, kiçik biznes) soliştiring va misol keltiring.",
    "minSeconds": 90,
    "targetSeconds": 150,
    "textAlternative": "Globallaşuvdan kim yutişi va kim yutqazişi haqida 8–10 gap yozing.",

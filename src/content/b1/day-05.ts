@@ -39,7 +39,7 @@ export const grammar: GrammarTopic = {
   explanationUz: [
     'First Conditional — kelajakda REAL, ehtimoli katta şart va uning natijasi: If you add too much salt, nobody will eat it. Tuzilma: if + Present Simple, … will + fe’l. Özbekçadagi “agar … sa, … adi” şakliga mos.',
     'MUHIM: if bölagida will işlatilmaydi, kelajak ma’nosi bölsa ham Present Simple keladi: If it rains tomorrow, we will cook at home. (“If it will rain” — xato.) Natija bölagida will dan taşqari may / might / can ham keliş mumkin: If we leave now, we might catch the bus.',
-    'Xuddi şu qoida vaqt bağlovçilariga ham tegişli: when, as soon as, before, after, until. I will call you when I get home. As soon as the water boils, add the pasta. Bu bölaklarda ham will yöq.',
+    'Xuddi şu qoida vaqt boğlovçilariga ham tegişli: when, as soon as, before, after, until. I will call you when I get home. As soon as the water boils, add the pasta. Bu bölaklarda ham will yöq.',
     'Unless = if … not (“agar … masa”): Unless you stir it, the rice will stick = If you don’t stir it, the rice will stick. Unless bilan inkor ikki marta işlatilmaydi: “Unless you don’t hurry” — xato.',
   ],
   formula: [

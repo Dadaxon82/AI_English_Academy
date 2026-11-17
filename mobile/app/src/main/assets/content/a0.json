@@ -1813,7 +1813,7 @@
     "lang": "en-US"
    },
    "exampleEn": "Room four, please.",
-   "exampleUz": "Tört raqamli xona, iltimos.",
+   "exampleUz": "Törtinçi xona, iltimos.",
    "pos": "noun",
    "topic": "numbers",
    "level": "A0"
@@ -1846,7 +1846,7 @@
     "ttsText": "ten",
     "lang": "en-US"
    },
-   "exampleEn": "Ten apples cost ten thousand sums.",
+   "exampleEn": "Ten apples cost ten thousand som.",
    "exampleUz": "Önta olma ön ming söm turadi.",
    "pos": "noun",
    "topic": "numbers",
@@ -2476,7 +2476,7 @@
     "lang": "en-US"
    },
    "exampleEn": "Chicken soup, please.",
-   "exampleUz": "Tovuq şörva, iltimos.",
+   "exampleUz": "Tovuq şörvasi, iltimos.",
    "pos": "noun",
    "topic": "food",
    "level": "A0"
@@ -3238,7 +3238,7 @@
        "category": 1
       }
      ],
-     "explanationUz": "Hello / Hi / Nice to meet you — uçrashganda; Bye / Goodbye / See you — ketayotganda.",
+     "explanationUz": "Hello / Hi / Nice to meet you — uçraşganda; Bye / Goodbye / See you — ketayotganda.",
      "difficulty": 1
     }
    ],
@@ -4506,7 +4506,7 @@
     "Hafta kunlari doim katta harf bilan yoziladi: Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday.",
     "Kunda bölgan voqea uçun “on” işlatiladi: on Monday (duşanba kuni), on Friday (juma kuni). “today” va “tomorrow” bilan “on” işlatilmaydi: today, tomorrow.",
     "Kunni söraş: What day is it today? — It is Wednesday. Vaqtni söraş: What time is it? — It is five. (Soat beş.)",
-    "Ish vaqti yozuvlarida qisqartma ham uçraydi: Mon, Tue, Wed, Thu, Fri, Sat, Sun."
+    "Iş vaqti yozuvlarida qisqartma ham uçraydi: Mon, Tue, Wed, Thu, Fri, Sat, Sun."
    ],
    "formula": [
     {

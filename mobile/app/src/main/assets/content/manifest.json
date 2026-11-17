@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-16T14:38:44.748Z",
+  "generatedAt": "2026-11-17T05:02:48.762Z",
   "source": "web/src/content",
   "levels": [
     {
@@ -7,42 +7,42 @@
       "days": 7,
       "vocab": 84,
       "exercises": 217,
-      "bytes": 217621
+      "bytes": 217619
     },
     {
       "level": "A1",
       "days": 7,
       "vocab": 84,
       "exercises": 246,
-      "bytes": 314902
+      "bytes": 314887
     },
     {
       "level": "A2",
       "days": 7,
       "vocab": 84,
       "exercises": 238,
-      "bytes": 284335
+      "bytes": 284337
     },
     {
       "level": "B1",
       "days": 7,
       "vocab": 84,
       "exercises": 218,
-      "bytes": 284862
+      "bytes": 284863
     },
     {
       "level": "B2",
       "days": 7,
       "vocab": 84,
       "exercises": 217,
-      "bytes": 294034
+      "bytes": 294045
     },
     {
       "level": "C1",
       "days": 7,
       "vocab": 84,
       "exercises": 217,
-      "bytes": 301998
+      "bytes": 301996
     }
   ]
 }

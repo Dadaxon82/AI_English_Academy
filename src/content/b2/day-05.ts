@@ -22,11 +22,11 @@ export const vocab: VocabularyItem[] = [
   word('b2-v5-loan', 'loan', 'qarz, kredit', 'Money that you borrow from a bank and must pay back.', '/ləʊn/', 'noun', 'money', 'They took out a loan to buy a flat.', 'Ular kvartira olişga kredit olişdi.'),
   word('b2-v5-interest', 'interest', 'foiz (bank)', 'The extra money that you pay for a loan or get for your savings.', '/ˈɪntrəst/', 'noun', 'money', 'The bank charges 22 percent interest on this loan.', 'Bank bu kredit uçun 22 foiz undiradi.'),
   word('b2-v5-debt', 'debt', 'qarz', 'Money that you owe to someone.', '/det/', 'noun', 'money', 'He worked hard to get out of debt.', 'U qarzdan qutuliş uçun köp işladi.'),
-  word('b2-v5-income', 'income', 'daromad', 'Money that you earn from work or investments.', '/ˈɪnkʌm/', 'noun', 'money', 'Their monthly income is about eight million soums.', 'Ularning oylik daromadi taxminan sakkiz million söm.'),
+  word('b2-v5-income', 'income', 'daromad', 'Money that you earn from work or investments.', '/ˈɪnkʌm/', 'noun', 'money', 'Their monthly income is about eight million som.', 'Ularning oylik daromadi taxminan sakkiz million söm.'),
   word('b2-v5-expenses', 'expenses', 'xarajatlar', 'Money that you spend on something.', '/ɪkˈspensɪz/', 'noun', 'money', 'Our biggest expenses are rent and food.', 'Eng katta xarajatlarimiz — ijara va ovqat.'),
   word('b2-v5-impulse', 'impulse buy', 'öylamay qilingan xarid', 'Something you buy suddenly without planning.', '/ˈɪmpʌls baɪ/', 'noun', 'money', 'That expensive jacket was an impulse buy.', 'Öşa qimmat kurtka öylamay qilingan xarid edi.'),
   word('b2-v5-scam', 'scam', 'firibgarlik', 'A dishonest plan to get money from people.', '/skæm/', 'noun', 'money', 'Never share your card code — it might be a scam.', 'Karta kodingizni heç kimga aytmang — bu firibgarlik bölişi mumkin.'),
-  word('b2-v5-worth', 'worth (doing)', '(qilişga) arziydi', 'Useful or important enough to do.', '/wɜːrθ/', 'adjective', 'money', 'It’s worth comparing prices before you buy.', 'Xarid qilişdan oldin narxlarni solişturişga arziydi.'),
+  word('b2-v5-worth', 'worth (doing)', '(qilişga) arziydi', 'Useful or important enough to do.', '/wɜːrθ/', 'adjective', 'money', 'It’s worth comparing prices before you buy.', 'Xarid qilişdan oldin narxlarni soliştirişga arziydi.'),
   word('b2-v5-cut-down', 'cut down on', 'kamaytirmoq', 'To use or spend less of something.', '/kʌt ˈdaʊn ɒn/', 'verb', 'money', 'I’m trying to cut down on taxis.', 'Taksiga xarajatni kamaytirişga harakat qilyapman.'),
 ]
 
@@ -52,7 +52,7 @@ export const grammar: GrammarTopic = {
     { en: 'My father suggested opening a savings account for me.', uz: 'Otam menga jamğarma hisobi oçişni taklif qildi.' },
     { en: 'I stopped buying coffee on the way to work, and I saved a lot.', uz: 'Işga ketayotib kofe sotib olişni taşladim va köp pul tejadim.' },
     { en: 'Remember to check the interest rate before you sign.', uz: 'Imzolaşdan oldin foiz stavkasini tekşirişni unutmang.' },
-    { en: 'It’s worth comparing prices at different markets.', uz: 'Turli bozorlardagi narxlarni solişturişga arziydi.' },
+    { en: 'It’s worth comparing prices at different markets.', uz: 'Turli bozorlardagi narxlarni soliştirişga arziydi.' },
   ],
   forms: {
     affirmative: ['I enjoy saving money.', 'She decided to buy a cheaper phone.', 'They are good at planning.'],
@@ -435,10 +435,10 @@ export const speaking: SpeakingTask[] = [
     level: 'B2',
     topicUz: 'Naqd yoki karta?',
     questionEn: 'Do you prefer paying in cash or by card or phone? Why?',
-    hintUz: 'Ikkala usulning afzallik va kamçiligini solişturing, keyin öz tanlovingizni ayting.',
+    hintUz: 'Ikkala usulning afzallik va kamçiligini soliştiring, keyin öz tanlovingizni ayting.',
     minSeconds: 60,
     targetSeconds: 120,
-    textAlternative: 'Naqd va karta orqali tölovni solişturib, 7 gap yozing.',
+    textAlternative: 'Naqd va karta orqali tölovni soliştirib, 7 gap yozing.',
     followUpsEn: ['How do older people in your family pay?', 'How can people protect themselves from scams?'],
   },
   {

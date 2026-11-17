@@ -24,7 +24,7 @@ export const vocab: VocabularyItem[] = [
   word('a0-v5-orange', 'orange', 'apelsin', 'A round fruit; also a colour.', '/ˈɒrɪndʒ/', 'noun', 'food', 'I like oranges.', 'Men apelsinni yaxşi köraman.'),
   word('a0-v5-tomato', 'tomato', 'pomidor', 'A red vegetable for salads.', '/təˈmɑːtəʊ/', 'noun', 'food', 'Two kilos of tomatoes, please.', 'Ikki kilo pomidor, iltimos.'),
   word('a0-v5-potato', 'potato', 'kartoşka', 'A vegetable. We make chips from it.', '/pəˈteɪtəʊ/', 'noun', 'food', 'I like potatoes.', 'Men kartoşkani yaxşi köraman.'),
-  word('a0-v5-chicken', 'chicken', 'tovuq göşti', 'Meat from a bird.', '/ˈtʃɪkɪn/', 'noun', 'food', 'Chicken soup, please.', 'Tovuq şörva, iltimos.'),
+  word('a0-v5-chicken', 'chicken', 'tovuq göşti', 'Meat from a bird.', '/ˈtʃɪkɪn/', 'noun', 'food', 'Chicken soup, please.', 'Tovuq şörvasi, iltimos.'),
   word('a0-v5-fish', 'fish', 'baliq', 'An animal that lives in water; we eat it.', '/fɪʃ/', 'noun', 'food', 'I don’t like fish.', 'Men baliqni yoqtirmayman.'),
   word('a0-v5-sugar', 'sugar', 'şakar', 'It makes tea sweet.', '/ˈʃʊɡə/', 'noun', 'food', 'Tea with sugar, please.', 'Şakarli çoy, iltimos.'),
   word('a0-v5-like', 'like', 'yoqtirmoq, yaxşi körmoq', 'To think something is good.', '/laɪk/', 'verb', 'feelings', 'I like bananas.', 'Men bananni yaxşi köraman.'),

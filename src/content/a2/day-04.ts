@@ -183,7 +183,7 @@ export const reading: ReadingPassage = {
   provenance: 'original',
   paragraphs: [
     'Hi everyone! My name is Zarina and this is my travel blog. Next week my family is going to travel to Khiva for the first time. We are going to take the night train from Tashkent on Friday, and we are going to arrive in Urgench on Saturday morning. From there we will take a taxi to Khiva — it is only thirty kilometres.',
-    'We booked a small hotel inside the old city, Ichan Kala. My father wants to see the Kalta Minor minaret, and my mother is going to visit the craft workshops because she loves carpets. My little brother Timur is only six. I think he will be tired after the train, but he will love the camels near the city walls!',
+    'We booked a small hotel inside the old city, Itchan Kala. My father wants to see the Kalta Minor minaret, and my mother is going to visit the craft workshops because she loves carpets. My little brother Timur is only six. I think he will be tired after the train, but he will love the camels near the city walls!',
     'The forecast says it will be sunny and hot — about thirty-five degrees. So I am going to pack a hat, sunglasses and a big bottle of water. I won’t take my laptop, because I want to relax. But I promise I will write a new blog post every evening. See you in Khiva!',
   ],
   glossary: [
@@ -199,7 +199,7 @@ export const reading: ReadingPassage = {
       id: 'a2-ex-r4-01',
       kind: 'multiple-choice',
       instructionUz: 'Matn asosida savolga javob bering.',
-      explanationUz: 'Birinçi paragraf: ular juma kuni tungi poyezdda jönaşadi.',
+      explanationUz: 'Birinçi paragraf: ular juma kuni tungi poyezdda jönab ketişadi.',
       difficulty: 1,
       tags: ['reading detail'],
       passageId: 'a2-r4-text-01',
@@ -231,7 +231,7 @@ export const reading: ReadingPassage = {
       passageId: 'a2-r4-text-01',
       statement: 'The family’s hotel is inside the old city.',
       answer: 'true',
-      evidence: 'We booked a small hotel inside the old city, Ichan Kala.',
+      evidence: 'We booked a small hotel inside the old city, Itchan Kala.',
     },
     {
       ...R,
@@ -610,11 +610,11 @@ export const extraGrammar: Exercise[] = [
       'They are going to take the night train on Friday.',
       'They are going to arrive in Urgench on Saturday morning.',
       'They will take a taxi to Khiva.',
-      'They will stay at a hotel in Ichan Kala.',
+      'They will stay at a hotel in Itchan Kala.',
     ],
     itemsShuffled: [
       'They will take a taxi to Khiva.',
-      'They will stay at a hotel in Ichan Kala.',
+      'They will stay at a hotel in Itchan Kala.',
       'They are going to take the night train on Friday.',
       'They are going to arrive in Urgench on Saturday morning.',
     ],

@@ -51,7 +51,7 @@ export function PlayAudioButton({
   }
 
   if (!canPlay) {
-    return <p className="text-xs muted text-center">Bu qurilmada audio ösh (TTS yöq) — matn pastda ko'rinadi.</p>
+    return <p className="text-xs muted text-center">Bu qurilmada audio öçiq (TTS yöq) — matn pastda körinadi.</p>
   }
 
   return (

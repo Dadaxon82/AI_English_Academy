@@ -243,7 +243,7 @@ export const reading: ReadingPassage = {
       id: 'b1-ex-r3-05',
       kind: 'true-false-notgiven',
       instructionUz: 'Matnda ma’lumot bölmasa, notgiven ni tanlang.',
-      explanationUz: 'Bepul suv bor, lekin kirish çiptasining narxi haqida heç narsa aytilmagan.',
+      explanationUz: 'Bepul suv bor, lekin kiriş çiptasining narxi haqida heç narsa aytilmagan.',
       difficulty: 3,
       tags: ['true false notgiven'],
       passageId: 'b1-r3-text-01',

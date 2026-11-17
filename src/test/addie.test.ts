@@ -169,7 +169,7 @@ describe('mentor izohi', () => {
 })
 
 describe('server qatlami — sof qismlar', () => {
-  it('guruh mashğuloti tekşiruvi', () => {
+  it('guruh maşğuloti tekşiruvi', () => {
     const now = new Date(NOW)
     const ok = { title: 'Alifbo', topic: '', startsAt: new Date(NOW + DAY), capacity: 6, durationMin: 45 }
     expect(validateGroupInput(ok, now)).toBeNull()

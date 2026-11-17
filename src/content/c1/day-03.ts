@@ -448,7 +448,7 @@ export const speaking: SpeakingTask[] = [
     level: 'C1',
     topicUz: 'Globallaşuv: kim yutadi?',
     questionEn: 'Who benefits most from globalisation, and who loses?',
-    hintUz: 'Turli guruhlarni (iste’molçi, işçi, kiçik biznes) solişturing va misol keltiring.',
+    hintUz: 'Turli guruhlarni (iste’molçi, işçi, kiçik biznes) soliştiring va misol keltiring.',
     minSeconds: 90,
     targetSeconds: 150,
     textAlternative: 'Globallaşuvdan kim yutişi va kim yutqazişi haqida 8–10 gap yozing.',

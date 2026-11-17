@@ -547,7 +547,7 @@ export const extraGrammar: Exercise[] = [
       { text: 'Goodbye', category: 1 },
       { text: 'See you', category: 1 },
     ],
-    explanationUz: 'Hello / Hi / Nice to meet you — uçrashganda; Bye / Goodbye / See you — ketayotganda.',
+    explanationUz: 'Hello / Hi / Nice to meet you — uçraşganda; Bye / Goodbye / See you — ketayotganda.',
     difficulty: 1,
   },
 ]

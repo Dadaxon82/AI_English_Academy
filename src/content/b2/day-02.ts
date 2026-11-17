@@ -209,7 +209,7 @@ export const reading: ReadingPassage = {
       id: 'b2-ex-r2-01',
       kind: 'multiple-choice',
       instructionUz: 'Matn asosida savolga töğri javobni tanlang.',
-      explanationUz: 'Birinçi paragraf: ayollar sözanalarni savdogarlarga juda arzon sotişardi.',
+      explanationUz: 'Birinçi paragraf: ayollar suzanalarni savdogarlarga juda arzon sotişardi.',
       difficulty: 1,
       tags: ['reading detail'],
       passageId: 'b2-r2-text-01',

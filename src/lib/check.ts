@@ -323,7 +323,7 @@ function checkListeningChoice(exercise: Extract<Exercise, { kind: 'listening-cho
     correct,
     given: chosen,
     expected: exercise.options[exercise.answerIndex] ?? '',
-    whyUz: correct ? exercise.explanationUz : `Töğri variant eşitilgan gapqa mos keladi: “${exercise.options[exercise.answerIndex]}”. ${exercise.explanationUz}`,
+    whyUz: correct ? exercise.explanationUz : `Töğri variant eşitilgan gapga mos keladi: “${exercise.options[exercise.answerIndex]}”. ${exercise.explanationUz}`,
     partial: correct ? 1 : 0,
   }
 }
