@@ -411,7 +411,7 @@ export const writing: WritingTask = {
   level: 'C1',
   genre: 'report',
   promptEn: 'Your regional youth council has asked for proposals to reduce youth unemployment. Write a proposal describing the main causes of the problem in your area and recommending two practical measures.',
-  instructionUz: 'Hududiy yoşlar kengaşi yoşlar işsizligini kamaytiriş böyicha takliflar sörayapti. Taklifnoma yozing: hududingizdagi muammoning asosiy sabablari va ikkita amaliy çora. Kamida uçta cleft gap (What … is …, It is … that …, The reason why … is that …) işlating.',
+  instructionUz: 'Hududiy yoşlar kengaşi yoşlar işsizligini kamaytiriş böyiça takliflar sörayapti. Taklifnoma yozing: hududingizdagi muammoning asosiy sabablari va ikkita amaliy çora. Kamida uçta cleft gap (What … is …, It is … that …, The reason why … is that …) işlating.',
   minWords: 220,
   maxWords: 280,
   minutes: 35,

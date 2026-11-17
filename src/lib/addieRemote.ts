@@ -22,10 +22,10 @@ export type RemoteResult<T> = { ok: true; data: T } | { ok: false; reasonUz: str
 export function addieErrorUz(err: unknown): string {
   const e = (err ?? {}) as { code?: string; message?: string }
   const msg = (e.message ?? '').toLowerCase()
-  if (msg.includes('session_full')) return 'Bu mashğulotda böş joy qolmagan.'
-  if (msg.includes('session_started')) return 'Mashğulot allaqaçon boşlangan — qöşiliş yopiq.'
-  if (msg.includes('session_not_found')) return 'Mashğulot topilmadi yoki bekor qilingan.'
-  if (msg.includes('group_daily_limit')) return 'Bugun 5 ta mashğulot yaratildi — bu kunlik çegara.'
+  if (msg.includes('session_full')) return 'Bu maşğulotda böş joy qolmagan.'
+  if (msg.includes('session_started')) return 'Maşğulot allaqaçon boşlangan — qöşiliş yopiq.'
+  if (msg.includes('session_not_found')) return 'Maşğulot topilmadi yoki bekor qilingan.'
+  if (msg.includes('group_daily_limit')) return 'Bugun 5 ta maşğulot yaratildi — bu kunlik çegara.'
   if (msg.includes('account_blocked')) return 'Hisobingiz vaqtinça bloklangan.'
   if (e.code === 'PGRST205' || e.code === '42P01' || e.code === 'PGRST202' || msg.includes('schema cache'))
     return 'Serverda kerakli jadvallar hali yöq: `supabase/migrations/0010_addie.sql` migratsiyasini qöllang.'
@@ -179,7 +179,7 @@ export type GroupKind = 'study' | 'challenge' | 'mentor'
 export const GROUP_KIND_UZ: Record<GroupKind, string> = {
   study: 'Birgalikda öqiş',
   challenge: 'Guruh musobaqasi',
-  mentor: 'Ustoz bilan mashğulot',
+  mentor: 'Ustoz bilan maşğulot',
 }
 
 export interface GroupSession {

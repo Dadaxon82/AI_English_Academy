@@ -204,7 +204,7 @@ export const reading: ReadingPassage = {
     { word: 'planner', uz: 'rejalaştiruvçi (mutasaddi)' },
     { word: 'canal', uz: 'kanal, ariq' },
     { word: 'rust', uz: 'zanglamoq' },
-    { word: 'dam', uz: 'tögon' },
+    { word: 'dam', uz: 'töğon' },
     { word: 'seabed', uz: 'dengiz tubi' },
   ],
   exercises: [
@@ -291,7 +291,7 @@ export const reading: ReadingPassage = {
       id: 'b2-ex-r3-07',
       kind: 'matching',
       instructionUz: 'Joyni matndagi tafsilot bilan boğlang.',
-      explanationUz: 'Moynoq — sohildan 100 km uzoqda; Nukus — nafaqadagi öqituvçi; şimol — tögon; dengiz tubi — saksovul.',
+      explanationUz: 'Moynoq — sohildan 100 km uzoqda; Nukus — nafaqadagi öqituvçi; şimol — töğon; dengiz tubi — saksovul.',
       difficulty: 2,
       tags: ['reading detail'],
       pairs: [

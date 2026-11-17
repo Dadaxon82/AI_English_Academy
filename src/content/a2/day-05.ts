@@ -26,7 +26,7 @@ export const vocab: VocabularyItem[] = [
   word('a2-v5-souvenir', 'souvenir', 'esdalik sovğa', 'A thing you buy to remember a place.', '/ˌsuːvəˈnɪr/', 'noun', 'travel', 'I bought a small souvenir for my teacher.', 'Öqituvçimga kiçik esdalik sovğa oldim.'),
   word('a2-v5-taste', 'taste', 'tatib körmoq; ta’m', 'To try food to see what it is like.', '/teɪst/', 'verb', 'food', 'Have you ever tasted Korean food?', 'Heç koreys taomini tatib körganmisiz?'),
   word('a2-v5-already', 'already', 'allaqaçon, böldi', 'Before now, or earlier than expected.', '/ɔːlˈredi/', 'adverb', 'time', 'I have already packed my suitcase.', 'Çamadonimni allaqaçon yiğib böldim.'),
-  word('a2-v5-yet', 'yet', 'hali (inkor / söroqda)', 'Until now (used in negatives and questions).', '/jet/', 'adverb', 'time', 'Have you finished your homework yet?', 'Uy vazifangizni tugatdingizmi hali?'),
+  word('a2-v5-yet', 'yet', 'hali (inkor / söroqda)', 'Until now (used in negatives and questions).', '/jet/', 'adverb', 'time', 'Have you finished your homework yet?', 'Uy vazifangizni tugatib böldingizmi?'),
   word('a2-v5-suitcase', 'suitcase', 'çamadon', 'A large bag with a handle for carrying clothes on a trip.', '/ˈsuːtkeɪs/', 'noun', 'travel', 'My suitcase is too heavy.', 'Çamadonim juda oğir.'),
 ]
 

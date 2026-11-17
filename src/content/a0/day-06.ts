@@ -40,7 +40,7 @@ export const grammar: GrammarTopic = {
     'Hafta kunlari doim katta harf bilan yoziladi: Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday.',
     'Kunda bölgan voqea uçun “on” işlatiladi: on Monday (duşanba kuni), on Friday (juma kuni). “today” va “tomorrow” bilan “on” işlatilmaydi: today, tomorrow.',
     'Kunni söraş: What day is it today? — It is Wednesday. Vaqtni söraş: What time is it? — It is five. (Soat beş.)',
-    'Ish vaqti yozuvlarida qisqartma ham uçraydi: Mon, Tue, Wed, Thu, Fri, Sat, Sun.',
+    'Iş vaqti yozuvlarida qisqartma ham uçraydi: Mon, Tue, Wed, Thu, Fri, Sat, Sun.',
   ],
   formula: [
     { form: 'on + hafta kuni', noteUz: 'on Tuesday, on Sunday.' },

@@ -40,7 +40,7 @@ export const grammar: GrammarTopic = {
     'Hikoyaning asosiy voqealari ketma-ket Past Simple’da aytiladi: We arrived, left our bags and went out. Past Continuous (was / were + V-ing) esa fon, ya’ni voqea paytida davom etayotgan jarayonni beradi: It was raining and people were hurrying home when we arrived.',
     'Past Perfect (had + V3) — hikoyadagi ötgan nuqtadan HAM OLDIN bölgan voqea: When we got to the station, the train had already left (poyezd biz kelişimizdan oldin ketgan). Ikki voqea tartibi aniq bölsa (before, after), Past Simple ham yetarli: After we had eaten / After we ate, we walked to the square.',
     'Past Perfect Continuous (had been + V-ing) — ötgan nuqtagaça QANÇA VAQT davom etgan jarayon: We had been waiting for three hours when the bus finally came. Köpinça sabab yoki natija bilan keladi: She was tired because she had been travelling all day.',
-    'Hikoyada vaqt bağlovçilari muhim: when, while, as soon as, by the time, until. While odatda Past Continuous bilan: While I was taking photos, someone stole my bag. By the time + Past Simple, … had + V3: By the time we reached the hotel, the restaurant had closed.',
+    'Hikoyada vaqt boğlovçilari muhim: when, while, as soon as, by the time, until. While odatda Past Continuous bilan: While I was taking photos, someone stole my bag. By the time + Past Simple, … had + V3: By the time we reached the hotel, the restaurant had closed.',
   ],
   formula: [
     { form: 'Past Simple: asosiy voqealar', noteUz: 'We landed, collected our bags and took a taxi.' },
@@ -413,7 +413,7 @@ export const writing: WritingTask = {
     'Berilgan birinçi gap aynan şu holda.',
     'Hikoyada boşlaniş, muammo, yeçim va yakun bor.',
     'Törtala hikoya zamoni işlatilgan.',
-    'Vaqt bağlovçilari: when, while, by the time, eventually.',
+    'Vaqt boğlovçilari: when, while, by the time, eventually.',
     'Oxirida his-tuyğu yoki xulosa (I will never forget …).',
   ],
   mustInclude: [

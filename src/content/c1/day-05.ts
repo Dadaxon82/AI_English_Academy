@@ -581,7 +581,7 @@ export const extraGrammar: Exercise[] = [
     ...G,
     id: 'c1-d5-seq-01',
     kind: 'sequence',
-    instructionUz: 'Fe’llarni işonç darajasi böyiça — eng kuçlidan eng ehtiyotkorgaça tartiblang.',
+    instructionUz: 'Fe’llarni işonç darajasi böyiça — eng kuçlidan eng ehtiyotkorigaça tartiblang.',
     question: 'Eng kuçli → eng ehtiyotkor.',
     items: ['proves', 'shows', 'suggests', 'may indicate'],
     itemsShuffled: ['suggests', 'may indicate', 'proves', 'shows'],

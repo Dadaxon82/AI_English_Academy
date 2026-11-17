@@ -414,7 +414,7 @@ export function vocabListenFillExercise(v: VocabularyItem): ListeningFillExercis
   return {
     id: `${VOCAB_LISTEN_FILL_PREFIX}${v.id}`,
     kind: 'listening-fill',
-    instructionUz: 'Gapni tinglang va tüşgan sözni yozing',
+    instructionUz: 'Gapni tinglang va tuşgan sözni yozing',
     level: v.level,
     skill: 'vocabulary',
     explanationUz: `${v.exampleEn} — ${v.exampleUz}`,

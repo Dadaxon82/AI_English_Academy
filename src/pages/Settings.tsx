@@ -368,7 +368,7 @@ export default function Settings() {
                   variant="secondary"
                   onClick={() => {
                     const res = actions.buy(it.id)
-                    setShopMsg({ ok: res.ok, text: res.ok ? `${it.titleUz} olindi — ${it.price} gem sarflandi.` : (res.reasonUz ?? 'Xarid qilmab bölmadi.') })
+                    setShopMsg({ ok: res.ok, text: res.ok ? `${it.titleUz} olindi — ${it.price} gem sarflandi.` : (res.reasonUz ?? 'Xarid qilib bölmadi.') })
                   }}
                 >
                   Sotib oliş
@@ -428,7 +428,7 @@ export default function Settings() {
         <div className="grid grid-cols-2 gap-3">
           <StatTile label="Navbatdagi yozuvlar" value={queueLen === null ? '…' : queueLen} hint="Sinxronizatsiya yoki hisobdan çiqişda yuboriladi" tone={queueLen && queueLen > 0 ? 'warn' : 'ok'} />
           <StatTile
-            label="Offline kesh"
+            label="Offline keş"
             value={cache ? `${cache.vocabIds.length} söz · ${cache.dayIds.length} kun` : '—'}
             hint={cache ? `Saqlangan: ${new Date(cache.savedAt).toLocaleString('uz')} · ${cache.level}` : 'Offline uçun heç narsa keşlanmagan'}
           />
@@ -541,7 +541,7 @@ export default function Settings() {
           </p>
           <InfoBanner tone="warn">
             {hasServerCopy
-              ? 'Serverdagi barça şaxsiy yozuvlaringiz ham öçiriladi (hisobning özi qoladi), söng şu qurilmadagi kesh tozalanadi.'
+              ? 'Serverdagi barça şaxsiy yozuvlaringiz ham öçiriladi (hisobning özi qoladi), söng şu qurilmadagi keş tozalanadi.'
               : 'Ma’lumotlar faqat şu qurilmada saqlangan — mahalliy kesh töliq tozalanadi.'}
           </InfoBanner>
           {deleteError && <InfoBanner tone="warn">{deleteError} Qurilmadagi ma’lumotlar özgarmadi.</InfoBanner>}

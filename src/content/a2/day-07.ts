@@ -20,15 +20,15 @@ export const vocab: VocabularyItem[] = [
   word('a2-v7-recipe', 'recipe', 'retsept (taom tayyorlaş usuli)', 'Instructions that tell you how to cook something.', '/ˈresəpi/', 'noun', 'food', 'This is my grandmother’s recipe for plov.', 'Bu buvimning palov retsepti.'),
   word('a2-v7-ingredient', 'ingredient', 'masalliq', 'One of the foods you use to make a dish.', '/ɪnˈɡriːdiənt/', 'noun', 'food', 'Rice, carrots and meat are the main ingredients.', 'Guruç, sabzi va göşt — asosiy masalliqlar.'),
   word('a2-v7-flour', 'flour', 'un', 'A white powder made from wheat, used to make bread.', '/ˈflaʊər/', 'noun', 'food', 'We need some flour to make bread.', 'Non yopiş uçun bir oz un kerak.'),
-  word('a2-v7-oil', 'oil', 'yog‘ (ösimlik yoği)', 'A liquid from plants that you use for cooking.', '/ɔɪl/', 'noun', 'food', 'Don’t put too much oil in the salad.', 'Salatga juda köp yog‘ solmang.'),
+  word('a2-v7-oil', 'oil', 'yoğ (ösimlik yoği)', 'A liquid from plants that you use for cooking.', '/ɔɪl/', 'noun', 'food', 'Don’t put too much oil in the salad.', 'Salatga juda köp yoğ solmang.'),
   word('a2-v7-onion', 'onion', 'piyoz', 'A round vegetable with a strong smell and taste.', '/ˈʌnjən/', 'noun', 'food', 'Cut two onions into small pieces.', 'Ikkita piyozni mayda töğrang.'),
   word('a2-v7-kilo', 'kilo', 'kilogramm', 'A kilogram — a unit for measuring weight.', '/ˈkiːloʊ/', 'noun', 'shopping', 'Can I have a kilo of tomatoes, please?', 'Bir kilo pomidor bera olasizmi?'),
-  word('a2-v7-bottle', 'bottle', 'shisha, butilka', 'A container for liquids, usually made of glass or plastic.', '/ˈbɑːtəl/', 'noun', 'shopping', 'I bought two bottles of water.', 'Ikki shisha suv sotib oldim.'),
+  word('a2-v7-bottle', 'bottle', 'şişa, butilka', 'A container for liquids, usually made of glass or plastic.', '/ˈbɑːtəl/', 'noun', 'shopping', 'I bought two bottles of water.', 'Ikki şişa suv sotib oldim.'),
   word('a2-v7-price', 'price', 'narx', 'How much money you pay for something.', '/praɪs/', 'noun', 'shopping', 'The price of meat has gone up.', 'Göşt narxi oşdi.'),
   word('a2-v7-fry', 'fry', 'qovurmoq', 'To cook food in hot oil.', '/fraɪ/', 'verb', 'food', 'First, fry the meat and the onions.', 'Avval göşt va piyozni qovuring.'),
   word('a2-v7-boil', 'boil', 'qaynatmoq', 'To heat water until it bubbles; to cook food in very hot water.', '/bɔɪl/', 'verb', 'food', 'Boil the potatoes for twenty minutes.', 'Kartoşkani yigirma daqiqa qaynating.'),
   word('a2-v7-spicy', 'spicy', 'aççiq, ziravorli', 'With a strong, hot taste.', '/ˈspaɪsi/', 'adjective', 'food', 'Is this soup very spicy?', 'Bu şörva juda aççiqmi?'),
-  word('a2-v7-delicious', 'delicious', 'juda mazali', 'Tasting very good.', '/dɪˈlɪʃəs/', 'adjective', 'food', 'Your somsa is delicious!', 'Somsangiz juda mazali!', { synonym: ['tasty'] }),
+  word('a2-v7-delicious', 'delicious', 'juda mazali', 'Tasting very good.', '/dɪˈlɪʃəs/', 'adjective', 'food', 'Your samsa is delicious!', 'Somsangiz juda mazali!', { synonym: ['tasty'] }),
 ]
 
 export const grammar: GrammarTopic = {
@@ -51,7 +51,7 @@ export const grammar: GrammarTopic = {
   ],
   examples: [
     { en: 'We need some rice, two carrots and a kilo of meat.', uz: 'Bizga bir oz guruç, ikkita sabzi va bir kilo göşt kerak.' },
-    { en: 'There isn’t any milk in the fridge.', uz: 'Muzlatkiçda umuman sut yöq.' },
+    { en: 'There isn’t any milk in the fridge.', uz: 'Muzlatgiçda umuman sut yöq.' },
     { en: 'How many eggs do you need for the cake?', uz: 'Tort uçun neçta tuxum kerak?' },
     { en: 'Don’t put too much salt in the soup.', uz: 'Şörvaga juda köp tuz solmang.' },
     { en: 'How much are these apples? — Fifteen thousand som a kilo.', uz: 'Bu olmalar qança turadi? — Kilosi ön beş ming söm.' },
@@ -143,7 +143,7 @@ export const grammar: GrammarTopic = {
       explanationUz: 'Inkorda any: There isn’t any milk.',
       difficulty: 2,
       tags: ['some any'],
-      source: 'Muzlatkiçda sut yöq.',
+      source: 'Muzlatgiçda sut yöq.',
       sourceLang: 'uz',
       accepted: ['There isn’t any milk in the fridge', "There isn't any milk in the fridge", 'There is no milk in the fridge'],
     },
@@ -438,12 +438,12 @@ export const speaking: SpeakingTask[] = [
   {
     id: 'a2-s7-fridge',
     level: 'A2',
-    topicUz: 'Muzlatkiçingizda nima bor',
+    topicUz: 'Muzlatgiçingizda nima bor',
     questionEn: 'What is in your fridge now? What isn’t there?',
     hintUz: '“There are some … There is a lot of … There isn’t any …” deb gapiring.',
     minSeconds: 20,
     targetSeconds: 45,
-    textAlternative: 'Muzlatkiçingizda bor va yöq narsalar haqida 5 gap yozing (some / any / a lot of).',
+    textAlternative: 'Muzlatgiçingizda bor va yöq narsalar haqida 5 gap yozing (some / any / a lot of).',
     followUpsEn: ['What do you need to buy this week?', 'How much water do you drink a day?'],
   },
 ]
@@ -486,7 +486,7 @@ export const test: SectionTest = {
       explanationUz: 'flour — un.',
       difficulty: 1,
       question: 'What does “flour” mean?',
-      options: ['gul', 'un', 'yog‘', 'guruç'],
+      options: ['gul', 'un', 'yoğ', 'guruç'],
       answerIndex: 1,
     },
     {
@@ -634,7 +634,7 @@ export const day: DailyPlanDay = {
     { skill: 'reading', minutes: 15, itemIds: [reading.id], titleUz: 'Öqiş: “Buvimning oson palovi”' },
     { skill: 'listening', minutes: 15, itemIds: [listening.id], titleUz: 'Tinglaş: bozorda xarid' },
     { skill: 'writing', minutes: 20, itemIds: [writing.id], titleUz: 'Yoziş: taom retsepti' },
-    { skill: 'speaking', minutes: 15, itemIds: speaking.map((s) => s.id), titleUz: 'Gapiriş: taom, xarid, muzlatkiç' },
+    { skill: 'speaking', minutes: 15, itemIds: speaking.map((s) => s.id), titleUz: 'Gapiriş: taom, xarid, muzlatgiç' },
   ],
   sectionTest: test,
 }

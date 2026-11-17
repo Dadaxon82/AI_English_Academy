@@ -439,7 +439,7 @@ export const speaking: SpeakingTask[] = [
     level: 'B2',
     topicUz: 'Anglaşilmovçilik',
     questionEn: 'Describe a misunderstanding at work, school or in your family. How was it solved?',
-    hintUz: 'Kim nima deganini va nima tuşunilganini solişturing: “I thought he had said …, but he had actually said …”.',
+    hintUz: 'Kim nima deganini va nima tuşunilganini soliştiring: “I thought he had said …, but he had actually said …”.',
     minSeconds: 60,
     targetSeconds: 120,
     textAlternative: 'Bitta anglaşilmovçilik va uning yeçimi haqida 7 gap yozing.',

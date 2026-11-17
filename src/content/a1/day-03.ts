@@ -17,12 +17,12 @@ export const vocabDay3: VocabularyItem[] = [
   {
     id: 'a1-v3-wake-up',
     word: 'wake up',
-    translationUz: 'uyqudan öyanmoq',
+    translationUz: 'uyqudan uyğonmoq',
     explanationEn: 'To stop sleeping in the morning.',
     ipa: '/weɪk ʌp/',
     pronunciation: { kind: 'browser-tts', ttsText: 'wake up', lang: 'en-US' },
     exampleEn: 'I wake up at six thirty.',
-    exampleUz: 'Men soat olti yarimda uyanaman.',
+    exampleUz: 'Men soat olti yarimda uyğonaman.',
     pos: 'verb',
     topic: 'daily routine',
     level: 'A1',
@@ -147,7 +147,7 @@ export const vocabDay3: VocabularyItem[] = [
   {
     id: 'a1-v3-oclock',
     word: 'o’clock',
-    translationUz: 'soat … da (ravon soat)',
+    translationUz: 'soat … da (aniq soat)',
     explanationEn: 'We say it for a full hour: at six o’clock.',
     ipa: '/əˈklɑːk/',
     pronunciation: { kind: 'browser-tts', ttsText: 'o clock', lang: 'en-US' },
@@ -194,7 +194,7 @@ export const grammarDay3: GrammarTopic = {
     { form: 'How often / What time + do / does + ega + ...?', noteUz: 'What time do you get up?' },
   ],
   examples: [
-    { en: 'I wake up at half past six and I get up fast.', uz: 'Soat olti yarimda uyanaman va tez örnimdan turaman.' },
+    { en: 'I wake up at half past six and I get up fast.', uz: 'Soat olti yarimda uyğonaman va tez örnimdan turaman.' },
     { en: 'My sister goes to bed at nine o’clock.', uz: 'Singlim soat töqqizda uxlaşga boradi.' },
     { en: 'He doesn’t do his homework in the morning.', uz: 'U uy vazifasini ertalab qilmaydi.' },
     { en: 'What time does school start? — It starts at eight o’clock.', uz: 'Maktab soat neçida boşlanadi? — Soat sakkizda boşlanadi.' },
@@ -431,7 +431,7 @@ export const readingDay3: ReadingPassage = {
       instructionUz: 'Uçinçi fikrni matnning oxirgi qismiga qarab baholang.',
       level: 'A1',
       skill: 'reading',
-      explanationUz: '“We have dinner together at half past eight.” — demak oilasi bilan eydi.',
+      explanationUz: '“We have dinner together at half past eight.” — demak oilasi bilan yeydi.',
       difficulty: 2,
       tags: ['true false notgiven'],
       passageId: 'a1-r3-text-01',
@@ -615,13 +615,13 @@ export const writingDay3: WritingTask = {
   level: 'A1',
   genre: 'paragraph',
   promptEn: 'Write a paragraph about your day. Say what time you wake up, get up and go to school. Say what you do in the afternoon and what time you go to bed.',
-  instructionUz: 'Bir kuningiz haqida paragraf yozing: neçida uyanişingiz, örnidan turişingiz va maktabga borişingizni ayting. Kunduzdan keyin nima qilişingiz va neçida uxlaşga yotişingizni yozing. Present Simple işlatib, vaqtni at bilan körsating.',
+  instructionUz: 'Bir kuningiz haqida paragraf yozing: neçida uyğonişingiz, örnidan turişingiz va maktabga borişingizni ayting. Kunduzdan keyin nima qilişingiz va neçida uxlaşga yotişingizni yozing. Present Simple işlatib, vaqtni at bilan körsating.',
   minWords: 40,
   maxWords: 100,
   minutes: 20,
   criteria: ['task_achievement', 'coherence', 'lexical_resource', 'grammatical_range', 'accuracy'],
   checklistUz: [
-    'Kamida uçta vaqt körsatilgan (uyoniş, maktab, uxlaş).',
+    'Kamida uçta vaqt körsatilgan (uyğoniş, maktab, uxlaş).',
     'Present Simple fe’llari töğri işlatilgan (I go, I do, I have).',
     'at + soat qoidasi saqlangan.',
     'Kunduzdan keyingi bir faoliyat aytilgan.',
@@ -802,7 +802,7 @@ export const day3: DailyPlanDay = {
   level: 'A1',
   dayNumber: 3,
   titleUz: 'Kunlik tartib va soat',
-  goalUz: 'Present Simple yordamida öz kunduzini sözlab beriş: uyanişdan uxlagunça, hafta kunlari va soatni aytiş.',
+  goalUz: 'Present Simple yordamida öz kunini sözlab beriş: uyğonişdan uxlagunça, hafta kunlari va soatni aytiş.',
   // Kunlik reja talabnomaga mos: 10/15/15/15/20/15 = 90′.
   sections: [
     {

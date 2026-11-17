@@ -2564,7 +2564,7 @@
     "ttsText": "income",
     "lang": "en-US"
    },
-   "exampleEn": "Their monthly income is about eight million soums.",
+   "exampleEn": "Their monthly income is about eight million som.",
    "exampleUz": "Ularning oylik daromadi taxminan sakkiz million söm.",
    "pos": "noun",
    "topic": "money",
@@ -2633,7 +2633,7 @@
     "lang": "en-US"
    },
    "exampleEn": "It’s worth comparing prices before you buy.",
-   "exampleUz": "Xarid qilişdan oldin narxlarni solişturişga arziydi.",
+   "exampleUz": "Xarid qilişdan oldin narxlarni soliştirişga arziydi.",
    "pos": "adjective",
    "topic": "money",
    "level": "B2"
@@ -2718,7 +2718,7 @@
     "lang": "en-US"
    },
    "exampleEn": "Teenagers feel a lot of pressure to look perfect online.",
-   "exampleUz": "Ösmirlar internetda mukammal körinişga katta bosimni his qiladi.",
+   "exampleUz": "Ösmirlar internetda mukammal körinişlari kerakdek kuçli bosimni his qiladi.",
    "pos": "noun",
    "topic": "society",
    "level": "B2"
@@ -3995,7 +3995,7 @@
     "Hikoyaning asosiy voqealari ketma-ket Past Simple’da aytiladi: We arrived, left our bags and went out. Past Continuous (was / were + V-ing) esa fon, ya’ni voqea paytida davom etayotgan jarayonni beradi: It was raining and people were hurrying home when we arrived.",
     "Past Perfect (had + V3) — hikoyadagi ötgan nuqtadan HAM OLDIN bölgan voqea: When we got to the station, the train had already left (poyezd biz kelişimizdan oldin ketgan). Ikki voqea tartibi aniq bölsa (before, after), Past Simple ham yetarli: After we had eaten / After we ate, we walked to the square.",
     "Past Perfect Continuous (had been + V-ing) — ötgan nuqtagaça QANÇA VAQT davom etgan jarayon: We had been waiting for three hours when the bus finally came. Köpinça sabab yoki natija bilan keladi: She was tired because she had been travelling all day.",
-    "Hikoyada vaqt bağlovçilari muhim: when, while, as soon as, by the time, until. While odatda Past Continuous bilan: While I was taking photos, someone stole my bag. By the time + Past Simple, … had + V3: By the time we reached the hotel, the restaurant had closed."
+    "Hikoyada vaqt boğlovçilari muhim: when, while, as soon as, by the time, until. While odatda Past Continuous bilan: While I was taking photos, someone stole my bag. By the time + Past Simple, … had + V3: By the time we reached the hotel, the restaurant had closed."
    ],
    "formula": [
     {
@@ -4321,7 +4321,7 @@
     },
     {
      "en": "It’s worth comparing prices at different markets.",
-     "uz": "Turli bozorlardagi narxlarni solişturişga arziydi."
+     "uz": "Turli bozorlardagi narxlarni soliştirişga arziydi."
     }
    ],
    "forms": {
@@ -5387,7 +5387,7 @@
      "id": "b2-ex-r2-01",
      "kind": "multiple-choice",
      "instructionUz": "Matn asosida savolga töğri javobni tanlang.",
-     "explanationUz": "Birinçi paragraf: ayollar sözanalarni savdogarlarga juda arzon sotişardi.",
+     "explanationUz": "Birinçi paragraf: ayollar suzanalarni savdogarlarga juda arzon sotişardi.",
      "difficulty": 1,
      "tags": [
       "reading detail"
@@ -5569,7 +5569,7 @@
     },
     {
      "word": "dam",
-     "uz": "tögon"
+     "uz": "töğon"
     },
     {
      "word": "seabed",
@@ -5700,7 +5700,7 @@
      "id": "b2-ex-r3-07",
      "kind": "matching",
      "instructionUz": "Joyni matndagi tafsilot bilan boğlang.",
-     "explanationUz": "Moynoq — sohildan 100 km uzoqda; Nukus — nafaqadagi öqituvçi; şimol — tögon; dengiz tubi — saksovul.",
+     "explanationUz": "Moynoq — sohildan 100 km uzoqda; Nukus — nafaqadagi öqituvçi; şimol — töğon; dengiz tubi — saksovul.",
      "difficulty": 2,
      "tags": [
       "reading detail"
@@ -6146,7 +6146,7 @@
    "provenance": "original",
    "paragraphs": [
     "Two years ago, nineteen-year-old Jahongir spent up to eight hours a day on his phone. “I had hundreds of online friends,” he says, “but I didn’t know the name of the old man who lived next door.” When that neighbour, a retired doctor called Mirzaakbar aka, fell ill and nobody noticed for two days, Jahongir felt terrible. “I still wish I had knocked on his door earlier.”",
-    "With three friends, he started a small project called “Eshik oçiq” (“Open Door”). Young volunteers visit elderly people in their mahalla once a week. They help with shopping, fix small things around the house and, most importantly, sit and talk. Some of the volunteers teach the older people how to make video calls to their grandchildren abroad. In return, the older people share stories about their lives, recipes and even advice about exams.",
+    "With three friends, he started a small project called “Eshik ochiq” (“Open Door”). Young volunteers visit elderly people in their mahalla once a week. They help with shopping, fix small things around the house and, most importantly, sit and talk. Some of the volunteers teach the older people how to make video calls to their grandchildren abroad. In return, the older people share stories about their lives, recipes and even advice about exams.",
     "The project now has more than sixty volunteers in four districts of Tashkent. Not everyone was enthusiastic at first. Some parents wished their children would spend the time studying instead. But teachers say the volunteers have become more confident and responsible. Jahongir still uses social media, but differently. “If only I had understood earlier that the internet can bring people together in real life,” he says. “Now we use it to find out who needs help.”"
    ],
    "glossary": [
@@ -7999,7 +7999,7 @@
     "Berilgan birinçi gap aynan şu holda.",
     "Hikoyada boşlaniş, muammo, yeçim va yakun bor.",
     "Törtala hikoya zamoni işlatilgan.",
-    "Vaqt bağlovçilari: when, while, by the time, eventually.",
+    "Vaqt boğlovçilari: when, while, by the time, eventually.",
     "Oxirida his-tuyğu yoki xulosa (I will never forget …)."
    ],
    "mustInclude": [
@@ -8117,7 +8117,7 @@
     "Erişilgan maqsadlar Future Perfect bilan (By then you will have …).",
     "Oddiy kun Future Continuous bilan (You will probably be …).",
     "Bitta ögit yoki iltimos (Please don’t forget …).",
-    "Hozirgi holatingiz bilan solişturma."
+    "Hozirgi holatingiz bilan soliştirma."
    ],
    "mustInclude": [
     {
@@ -8156,7 +8156,7 @@
    "level": "B2",
    "topicUz": "Anglaşilmovçilik",
    "questionEn": "Describe a misunderstanding at work, school or in your family. How was it solved?",
-   "hintUz": "Kim nima deganini va nima tuşunilganini solişturing: “I thought he had said …, but he had actually said …”.",
+   "hintUz": "Kim nima deganini va nima tuşunilganini soliştiring: “I thought he had said …, but he had actually said …”.",
    "minSeconds": 60,
    "targetSeconds": 120,
    "textAlternative": "Bitta anglaşilmovçilik va uning yeçimi haqida 7 gap yozing.",
@@ -8324,10 +8324,10 @@
    "level": "B2",
    "topicUz": "Naqd yoki karta?",
    "questionEn": "Do you prefer paying in cash or by card or phone? Why?",
-   "hintUz": "Ikkala usulning afzallik va kamçiligini solişturing, keyin öz tanlovingizni ayting.",
+   "hintUz": "Ikkala usulning afzallik va kamçiligini soliştiring, keyin öz tanlovingizni ayting.",
    "minSeconds": 60,
    "targetSeconds": 120,
-   "textAlternative": "Naqd va karta orqali tölovni solişturib, 7 gap yozing.",
+   "textAlternative": "Naqd va karta orqali tölovni soliştirib, 7 gap yozing.",
    "followUpsEn": [
     "How do older people in your family pay?",
     "How can people protect themselves from scams?"

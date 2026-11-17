@@ -87,7 +87,7 @@ export const vocabDay2: VocabularyItem[] = [
     ipa: '/ˈɡrænfɑːðər/',
     pronunciation: { kind: 'browser-tts', ttsText: 'grandfather', lang: 'en-US' },
     exampleEn: 'My grandfather has a small garden.',
-    exampleUz: 'Bobojonning kiçik boği bor.',
+    exampleUz: 'Bobomning kiçik boği bor.',
     pos: 'noun',
     topic: 'family',
     level: 'A1',
@@ -108,7 +108,7 @@ export const vocabDay2: VocabularyItem[] = [
   {
     id: 'a1-v2-cousin',
     word: 'cousin',
-    translationUz: 'amakivaçça, tagseng',
+    translationUz: 'amakivaçça, xolavaçça',
     explanationEn: 'The son or daughter of your aunt or uncle.',
     ipa: '/ˈkʌzən/',
     pronunciation: { kind: 'browser-tts', ttsText: 'cousin', lang: 'en-US' },
@@ -181,9 +181,9 @@ export const grammarDay2: GrammarTopic = {
   titleEn: 'Possessives: ’s, my / your, and have got',
   level: 'A1',
   explanationUz: [
-    'Narsa kimniki ekanini aytiş uçun ingliz tilida ismga ’s qöşiladi: Bekzod’s book (Bekzodning kitobi), my sister’s bag (singilmning sumkasi). Agar egalardan bir neçta bölsa va ular bir narsaga tegişli bölsa, ’s oxirgi ismga qöyiladi: Aziz and Malika’s home. Egalik “of” bilan ham aytiladi, lekin A1 darajasida ’s eng tabiiy yöldir.',
+    'Narsa kimniki ekanini aytiş uçun ingliz tilida ismga ’s qöşiladi: Bekzod’s book (Bekzodning kitobi), my sister’s bag (singlimning sumkasi). Agar egalardan bir neçta bölsa va ular bir narsaga tegişli bölsa, ’s oxirgi ismga qöyiladi: Aziz and Malika’s home. Egalik “of” bilan ham aytiladi, lekin A1 darajasida ’s eng tabiiy yöldir.',
     'my, your, his, her, our, their sözlari “kimniki” degan savolga javob beradi va har doim ot oldida keladi: my book, your pen, his name, her hair, our class, their friends. Bu sözlar özi egalikni bildiradi, ularga ’s qöşilmaydi: “my book” (heç qaçon “my’s book” emas). Javobda otni takrorlamaslik ham mumkin: “Is this your pen?” — “Yes, it is my pen.”',
-    'Biror narsaga ega ekanlikni have got bilan aytkazamiz: I have got a bike. She has got two brothers. Uçinçi şaxs yagonada has işlatilişini unutmang. Inkor: I haven’t got a phone. She hasn’t got a bike. Söroq: Have you got a pen? Has he got a red bag? Qisqartmalar sözlaşuvda köp: I’ve got, she’s got, he hasn’t got.',
+    'Biror narsaga ega ekanlikni have got bilan ifodalaymiz: I have got a bike. She has got two brothers. Uçinçi şaxs birlikda has işlatilişini unutmang. Inkor: I haven’t got a phone. She hasn’t got a bike. Söroq: Have you got a pen? Has he got a red bag? Qisqartmalar sözlaşuvda köp: I’ve got, she’s got, he hasn’t got.',
     'Odamni tasvirlaşda ham have got işlatiladi: He has got short black hair. She has got blue eyes. Sifatlar ot oldida keladi va köplikda özgarmaydi: two tall boys (tall söziga -lar qöşilmaydi). Kasb, yoş va kayfiyat esa to be fe’li bilan aytiladi: She is a teacher. He is eight. Bu ikki tuzilmani aralaştirmang: egalik — have got, sifat, kasb va yoş — to be.',
   ],
   formula: [
@@ -191,7 +191,7 @@ export const grammarDay2: GrammarTopic = {
     { form: 'my / your / his / her / our / their + ot', noteUz: 'my book, their friends' },
     { form: 'I / you / we / they + have got (’ve got)', noteUz: 'I have got a bike. They’ve got two cats.' },
     { form: 'he / she / it + has got (’s got)', noteUz: 'She has got long hair.' },
-    { form: 'have / has + not got  va  Have / Has + ega + got ...?', noteUz: "He hasn't got a phone. Have you got a pen?" },
+    { form: 'have / has + not got va Have / Has + ega + got ...?', noteUz: "He hasn't got a phone. Have you got a pen?" },
     { form: "Ega + have / has got + sifat + ot", noteUz: 'He has got short black hair.' },
   ],
   examples: [
@@ -270,7 +270,7 @@ export const grammarDay2: GrammarTopic = {
     {
       id: 'a1-ex-g2-05',
       kind: 'multiple-choice',
-      instructionUz: '“Sizning singilingiz bormi?” degan savolning töğri şaklini belgilang.',
+      instructionUz: '“Sizning singlingiz bormi?” degan savolning töğri şaklini belgilang.',
       level: 'A1',
       skill: 'grammar',
       explanationUz: 'Have you got a sister? — Yes, I have. / No, I haven’t.',
@@ -288,7 +288,7 @@ export const grammarDay2: GrammarTopic = {
     {
       id: 'a1-ex-g2-06',
       kind: 'translation',
-      instructionUz: 'Inglizça gapni özbek tiliga ögiling.',
+      instructionUz: 'Inglizça gapni özbek tiliga ögiring.',
       level: 'A1',
       skill: 'grammar',
       explanationUz: "'My grandmother's garden' — bibimning boği, she has got — uning ... bor.",
@@ -322,7 +322,7 @@ export const grammarDay2: GrammarTopic = {
     {
       id: 'a1-ex-g2-08',
       kind: 'word-order',
-      instructionUz: 'Kimningdur ekanligini sörovçi savolni tuzing (“Bu kimning kitobi?”).',
+      instructionUz: 'Kimniki ekanligini sörovçi savolni tuzing (“Bu kimning kitobi?”).',
       level: 'A1',
       skill: 'grammar',
       explanationUz: 'Whose + ot + is + this?: Whose book is this?',
@@ -767,7 +767,7 @@ export const testDay2: SectionTest = {
       instructionUz: 'Test: özbekça egalik ifodasini ingliz tiliga aylantiring.',
       level: 'A1',
       skill: 'grammar',
-      explanationUz: "‘Otamning velosipedi’ = My father's bike.",
+      explanationUz: "“Otamning velosipedi” = My father's bike.",
       difficulty: 2,
       tags: ["'s"],
       source: 'Bu otamning velosipedi.',
@@ -828,7 +828,7 @@ export const day2: DailyPlanDay = {
       titleUz: 'Yangi sözlar: oila va tavsif',
     },
     { skill: 'grammar', minutes: 15, itemIds: [grammarDay2.id], titleUz: 'Grammatika: egalik va have got' },
-    { skill: 'reading', minutes: 15, itemIds: [readingDay2.id], titleUz: 'Öqiş: “Mening oilam va uymiz”' },
+    { skill: 'reading', minutes: 15, itemIds: [readingDay2.id], titleUz: 'Öqiş: “Mening oilam va uyimiz”' },
     { skill: 'listening', minutes: 15, itemIds: [listeningDay2.id], titleUz: 'Tinglaş: oilaviy surat suhbati' },
     { skill: 'writing', minutes: 20, itemIds: [writingDay2.id], titleUz: 'Yoziş: oila haqida xabar' },
     {

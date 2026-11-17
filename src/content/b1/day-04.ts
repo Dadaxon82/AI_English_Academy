@@ -25,7 +25,7 @@ export const vocab: VocabularyItem[] = [
   word('b1-v4-routine', 'routine', 'kun tartibi, odatiy tartib', 'The usual order in which you do things every day.', '/ruːˈtiːn/', 'noun', 'lifestyle', 'A morning routine helps me start the day well.', 'Ertalabki tartib kunni yaxşi boşlaşga yordam beradi.'),
   word('b1-v4-tradition', 'tradition', 'an’ana', 'A custom that people have followed for a long time.', '/trəˈdɪʃən/', 'noun', 'culture', 'Cooking sumalak in spring is an old tradition.', 'Bahorda sumalak pişiriş — eski an’ana.'),
   word('b1-v4-change', 'change', 'özgarmoq; özgariş', 'To become different.', '/tʃeɪndʒ/', 'verb', 'life', 'Our street has changed a lot since I was a child.', 'Bolaligimdan beri köçamiz juda özgardi.'),
-  word('b1-v4-healthy', 'healthy', 'soğlom', 'Good for your body, or not ill.', '/ˈhelθi/', 'adjective', 'lifestyle', 'I try to eat healthy food.', 'Soğlom ovqat yeşga harakat qilaman.', { antonym: ['unhealthy'] }),
+  word('b1-v4-healthy', 'healthy', 'soğlom', 'Good for your body, or not ill.', '/ˈhelθi/', 'adjective', 'lifestyle', 'I try to eat healthy food.', 'Soğlom ovqat yeyişga harakat qilaman.', { antonym: ['unhealthy'] }),
   word('b1-v4-spend-time', 'spend time', 'vaqt ötkazmoq', 'To use time doing something or being somewhere.', '/spend taɪm/', 'verb', 'lifestyle', 'We used to spend our summers at the lake.', 'Yozni köl böyida ötkazardik.'),
   word('b1-v4-anymore', 'any more', 'endi (inkor gapda)', 'Used in negative sentences to say that something has stopped.', '/ˌeni ˈmɔːr/', 'adverb', 'time', 'I don’t play computer games any more.', 'Endi kompyuter öyinlarini öynamayman.'),
 ]
@@ -457,7 +457,7 @@ export const speaking: SpeakingTask[] = [
     level: 'B1',
     topicUz: 'Şaharim özgardi',
     questionEn: 'How has your town or street changed in the last ten years?',
-    hintUz: '“There used to be …, but now there is …” deb bir neçta özgarişni solişturing.',
+    hintUz: '“There used to be …, but now there is …” deb bir neçta özgarişni soliştiring.',
     minSeconds: 45,
     targetSeconds: 90,
     textAlternative: 'Şahringiz yoki köçangiz ön yilda qanday özgargani haqida 6 gap yozing.',
@@ -605,7 +605,7 @@ export const day: DailyPlanDay = {
   level: 'B1',
   dayNumber: 4,
   titleUz: 'Odatlar: ilgari va hozir',
-  goalUz: 'Işlatiladi: used to / didn’t use to / would — ötmişdagi odatlar va holatlar; ilgari va hozirni solişturiş.',
+  goalUz: 'Işlatiladi: used to / didn’t use to / would — ötmişdagi odatlar va holatlar; ilgari va hozirni soliştiriş.',
   sections: [
     { skill: 'vocabulary', minutes: 10, itemIds: vocab.map((v) => v.id), titleUz: 'Yangi sözlar: odatlar va an’analar' },
     { skill: 'grammar', minutes: 15, itemIds: [grammar.id], titleUz: 'Grammatika: used to va would' },

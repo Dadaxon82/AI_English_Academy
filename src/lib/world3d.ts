@@ -109,7 +109,7 @@ export const COIN_GEMS = 20
 
 export const COIN_SHOP: { id: CoinItemId; titleUz: string; emoji: string; price: number; noteUz: string }[] = [
   { id: 'heart', titleUz: 'Bitta yurak', emoji: '❤️', price: 30, noteUz: 'Yana bitta xatoga imkon.' },
-  { id: 'gems', titleUz: `${COIN_GEMS} gem`, emoji: '💎', price: 60, noteUz: 'Gem döqonida işlatiladi.' },
+  { id: 'gems', titleUz: `${COIN_GEMS} gem`, emoji: '💎', price: 60, noteUz: 'Gem dökonida işlatiladi.' },
   { id: 'freeze', titleUz: 'Streak qalqoni', emoji: '🛡️', price: 150, noteUz: `1 kun uzilişni saqlaydi (gemda ${FREEZE_GEM_COST}).` },
 ]
 
@@ -181,7 +181,7 @@ const NPC: Record<Skill, NpcLine> = {
     name: 'Storyteller',
     emoji: '🧑‍🚀',
     en: 'Nice to meet you! Speak with me, please.',
-    uz: 'Taniştganimdan xursandman! Men bilan gaplaşing.',
+    uz: 'Tanişganimdan xursandman! Men bilan gaplaşing.',
     replyEn: 'Nice to meet you too.',
     replyUz: 'Men ham xursandman.',
   },

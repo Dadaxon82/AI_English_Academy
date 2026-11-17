@@ -289,7 +289,7 @@
      "itemIds": [
       "a1-r2-text-01"
      ],
-     "titleUz": "Öqiş: “Mening oilam va uymiz”"
+     "titleUz": "Öqiş: “Mening oilam va uyimiz”"
     },
     {
      "skill": "listening",
@@ -442,7 +442,7 @@
       "instructionUz": "Test: özbekça egalik ifodasini ingliz tiliga aylantiring.",
       "level": "A1",
       "skill": "grammar",
-      "explanationUz": "‘Otamning velosipedi’ = My father's bike.",
+      "explanationUz": "“Otamning velosipedi” = My father's bike.",
       "difficulty": 2,
       "tags": [
        "'s"
@@ -505,7 +505,7 @@
    "level": "A1",
    "dayNumber": 3,
    "titleUz": "Kunlik tartib va soat",
-   "goalUz": "Present Simple yordamida öz kunduzini sözlab beriş: uyanişdan uxlagunça, hafta kunlari va soatni aytiş.",
+   "goalUz": "Present Simple yordamida öz kunini sözlab beriş: uyğonişdan uxlagunça, hafta kunlari va soatni aytiş.",
    "sections": [
     {
      "skill": "vocabulary",
@@ -796,7 +796,7 @@
      "itemIds": [
       "a1-r-text-04"
      ],
-     "titleUz": "Öqiş: “Toşkentdagi uymiz”"
+     "titleUz": "Öqiş: “Toşkentdagi uyimiz”"
     },
     {
      "skill": "listening",
@@ -1926,7 +1926,7 @@
     "lang": "en-US"
    },
    "exampleEn": "Is this your pen or my pen?",
-   "exampleUz": "Bu sizning ruçkangizmi yoki meninimi?",
+   "exampleUz": "Bu sizning ruçkangizmi yoki mening ruçkammi?",
    "pos": "noun",
    "topic": "classroom",
    "level": "A1"
@@ -1976,8 +1976,8 @@
     "ttsText": "number",
     "lang": "en-US"
    },
-   "exampleEn": "My number is seven and my age is eleven.",
-   "exampleUz": "Mening raqamim yetti, yoşim ön bir.",
+   "exampleEn": "My lucky number is seven, and I am eleven.",
+   "exampleUz": "Mening omadli raqamim — yetti, yoşim — ön bir.",
    "pos": "noun",
    "topic": "numbers",
    "level": "A1"
@@ -2079,7 +2079,7 @@
     "lang": "en-US"
    },
    "exampleEn": "My grandfather has a small garden.",
-   "exampleUz": "Bobojonning kiçik boği bor.",
+   "exampleUz": "Bobomning kiçik boği bor.",
    "pos": "noun",
    "topic": "family",
    "level": "A1"
@@ -2104,7 +2104,7 @@
   {
    "id": "a1-v2-cousin",
    "word": "cousin",
-   "translationUz": "amakivaçça, tagseng",
+   "translationUz": "amakivaçça, xolavaçça",
    "explanationEn": "The son or daughter of your aunt or uncle.",
    "ipa": "/ˈkʌzən/",
    "pronunciation": {
@@ -2204,7 +2204,7 @@
   {
    "id": "a1-v3-wake-up",
    "word": "wake up",
-   "translationUz": "uyqudan öyanmoq",
+   "translationUz": "uyqudan uyğonmoq",
    "explanationEn": "To stop sleeping in the morning.",
    "ipa": "/weɪk ʌp/",
    "pronunciation": {
@@ -2213,7 +2213,7 @@
     "lang": "en-US"
    },
    "exampleEn": "I wake up at six thirty.",
-   "exampleUz": "Men soat olti yarimda uyanaman.",
+   "exampleUz": "Men soat olti yarimda uyğonaman.",
    "pos": "verb",
    "topic": "daily routine",
    "level": "A1"
@@ -2374,7 +2374,7 @@
   {
    "id": "a1-v3-oclock",
    "word": "o’clock",
-   "translationUz": "soat … da (ravon soat)",
+   "translationUz": "soat … da (aniq soat)",
    "explanationEn": "We say it for a full hour: at six o’clock.",
    "ipa": "/əˈklɑːk/",
    "pronunciation": {
@@ -2503,7 +2503,7 @@
   {
    "id": "a1-v4-living-room",
    "word": "living room",
-   "translationUz": "mehmonxona, sayr xonasi",
+   "translationUz": "mehmonxona, zal",
    "explanationEn": "A room where a family sits together in the evening.",
    "ipa": "/ˈlɪvɪŋ ruːm/",
    "pronunciation": {
@@ -2571,7 +2571,7 @@
   {
    "id": "a1-v4-bed",
    "word": "bed",
-   "translationUz": "karavot, joyatak",
+   "translationUz": "karavot",
    "explanationEn": "You sleep on it at night.",
    "ipa": "/bed/",
    "pronunciation": {
@@ -2597,7 +2597,7 @@
     "lang": "en-US"
    },
    "exampleEn": "The cat sleeps under the chair.",
-   "exampleUz": "Muşuk stul ostida uyquga ketadi.",
+   "exampleUz": "Muşuk stul ostida uxlaydi.",
    "pos": "preposition",
    "topic": "where things are",
    "level": "A1"
@@ -2648,7 +2648,7 @@
     "lang": "en-US"
    },
    "exampleEn": "We sometimes have rice and meat for lunch.",
-   "exampleUz": "Tuşlikda ba’zan guruç va göşt eymiz.",
+   "exampleUz": "Tuşlikda ba’zan guruç va göşt yeymiz.",
    "pos": "noun",
    "topic": "food and drinks",
    "level": "A1"
@@ -2724,7 +2724,7 @@
   {
    "id": "a1-v5-water",
    "word": "water",
-   "translationUz": "suv, suv içimligi",
+   "translationUz": "suv",
    "explanationEn": "You drink it every day. It is uncountable.",
    "ipa": "/ˈwɔːtər/",
    "pronunciation": {
@@ -2767,7 +2767,7 @@
     "lang": "en-US"
    },
    "exampleEn": "I eat soup for dinner.",
-   "exampleUz": "Keçki ovqatda şörva eyman.",
+   "exampleUz": "Keçki ovqatda şörva yeyman.",
    "pos": "verb",
    "topic": "food and drinks",
    "level": "A1",
@@ -2806,7 +2806,7 @@
     "lang": "en-US"
    },
    "exampleEn": "My sister likes cooking dinner on Sunday.",
-   "exampleUz": "Singilim yakşanba kuni keçki ovqat pişirişni yoqtiradi.",
+   "exampleUz": "Singlim yakşanba kuni keçki ovqat pişirişni yoqtiradi.",
    "pos": "verb",
    "topic": "food and drinks",
    "level": "A1"
@@ -2930,7 +2930,7 @@
     "lang": "en-US"
    },
    "exampleEn": "My sister can dance very well.",
-   "exampleUz": "Singilim juda yaxşi raqsga tuşadi.",
+   "exampleUz": "Singlim juda yaxşi raqsga tuşadi.",
    "pos": "verb",
    "topic": "free time and hobbies",
    "level": "A1"
@@ -2998,7 +2998,7 @@
     "lang": "en-US"
    },
    "exampleEn": "We are going to the cinema on Saturday.",
-   "exampleUz": "Biz Şanba kuni kinoteatrga bormoqçimiz.",
+   "exampleUz": "Biz şanba kuni kinoteatrga bormoqçimiz.",
    "pos": "noun",
    "topic": "free time and hobbies",
    "level": "A1"
@@ -3006,7 +3006,7 @@
   {
    "id": "a1-v6-park",
    "word": "park",
-   "translationUz": "bog‘, park",
+   "translationUz": "boğ, park",
    "explanationEn": "A public place with trees, grass and paths.",
    "ipa": "/pɑːrk/",
    "pronunciation": {
@@ -3125,7 +3125,7 @@
   {
    "id": "a1-v7-airport",
    "word": "airport",
-   "translationUz": "aeroport, samolyot bekati",
+   "translationUz": "aeroport",
    "explanationEn": "A place where planes start and stop.",
    "ipa": "/ˈɛrpɔːrt/",
    "pronunciation": {
@@ -3212,7 +3212,7 @@
     "lang": "en-US"
    },
    "exampleEn": "Turn right and the park is in front of you.",
-   "exampleUz": "Öngga buriling va oldingizda bog‘ turadi.",
+   "exampleUz": "Öngga buriling va oldingizda boğ turadi.",
    "pos": "adverb",
    "topic": "asking the way",
    "level": "A1"
@@ -3220,7 +3220,7 @@
   {
    "id": "a1-v7-crossing",
    "word": "crossing",
-   "translationUz": "çoroha, piyodalar ötiş joyi",
+   "translationUz": "çorraha, piyodalar ötiş joyi",
    "explanationEn": "A place where roads or paths meet.",
    "ipa": "/ˈkrɔːsɪŋ/",
    "pronunciation": {
@@ -3229,7 +3229,7 @@
     "lang": "en-US"
    },
    "exampleEn": "Wait for me at the crossing near the gate.",
-   "exampleUz": "Darvoza yonidagi çorohada meni kuting.",
+   "exampleUz": "Darvoza yonidagi çorrahada meni kuting.",
    "pos": "noun",
    "topic": "asking the way",
    "level": "A1"
@@ -3659,9 +3659,9 @@
    "titleEn": "Possessives: ’s, my / your, and have got",
    "level": "A1",
    "explanationUz": [
-    "Narsa kimniki ekanini aytiş uçun ingliz tilida ismga ’s qöşiladi: Bekzod’s book (Bekzodning kitobi), my sister’s bag (singilmning sumkasi). Agar egalardan bir neçta bölsa va ular bir narsaga tegişli bölsa, ’s oxirgi ismga qöyiladi: Aziz and Malika’s home. Egalik “of” bilan ham aytiladi, lekin A1 darajasida ’s eng tabiiy yöldir.",
+    "Narsa kimniki ekanini aytiş uçun ingliz tilida ismga ’s qöşiladi: Bekzod’s book (Bekzodning kitobi), my sister’s bag (singlimning sumkasi). Agar egalardan bir neçta bölsa va ular bir narsaga tegişli bölsa, ’s oxirgi ismga qöyiladi: Aziz and Malika’s home. Egalik “of” bilan ham aytiladi, lekin A1 darajasida ’s eng tabiiy yöldir.",
     "my, your, his, her, our, their sözlari “kimniki” degan savolga javob beradi va har doim ot oldida keladi: my book, your pen, his name, her hair, our class, their friends. Bu sözlar özi egalikni bildiradi, ularga ’s qöşilmaydi: “my book” (heç qaçon “my’s book” emas). Javobda otni takrorlamaslik ham mumkin: “Is this your pen?” — “Yes, it is my pen.”",
-    "Biror narsaga ega ekanlikni have got bilan aytkazamiz: I have got a bike. She has got two brothers. Uçinçi şaxs yagonada has işlatilişini unutmang. Inkor: I haven’t got a phone. She hasn’t got a bike. Söroq: Have you got a pen? Has he got a red bag? Qisqartmalar sözlaşuvda köp: I’ve got, she’s got, he hasn’t got.",
+    "Biror narsaga ega ekanlikni have got bilan ifodalaymiz: I have got a bike. She has got two brothers. Uçinçi şaxs birlikda has işlatilişini unutmang. Inkor: I haven’t got a phone. She hasn’t got a bike. Söroq: Have you got a pen? Has he got a red bag? Qisqartmalar sözlaşuvda köp: I’ve got, she’s got, he hasn’t got.",
     "Odamni tasvirlaşda ham have got işlatiladi: He has got short black hair. She has got blue eyes. Sifatlar ot oldida keladi va köplikda özgarmaydi: two tall boys (tall söziga -lar qöşilmaydi). Kasb, yoş va kayfiyat esa to be fe’li bilan aytiladi: She is a teacher. He is eight. Bu ikki tuzilmani aralaştirmang: egalik — have got, sifat, kasb va yoş — to be."
    ],
    "formula": [
@@ -3682,7 +3682,7 @@
      "noteUz": "She has got long hair."
     },
     {
-     "form": "have / has + not got  va  Have / Has + ega + got ...?",
+     "form": "have / has + not got va Have / Has + ega + got ...?",
      "noteUz": "He hasn't got a phone. Have you got a pen?"
     },
     {
@@ -3855,7 +3855,7 @@
     {
      "id": "a1-ex-g2-05",
      "kind": "multiple-choice",
-     "instructionUz": "“Sizning singilingiz bormi?” degan savolning töğri şaklini belgilang.",
+     "instructionUz": "“Sizning singlingiz bormi?” degan savolning töğri şaklini belgilang.",
      "level": "A1",
      "skill": "grammar",
      "explanationUz": "Have you got a sister? — Yes, I have. / No, I haven’t.",
@@ -3876,7 +3876,7 @@
     {
      "id": "a1-ex-g2-06",
      "kind": "translation",
-     "instructionUz": "Inglizça gapni özbek tiliga ögiling.",
+     "instructionUz": "Inglizça gapni özbek tiliga ögiring.",
      "level": "A1",
      "skill": "grammar",
      "explanationUz": "'My grandmother's garden' — bibimning boği, she has got — uning ... bor.",
@@ -3915,7 +3915,7 @@
     {
      "id": "a1-ex-g2-08",
      "kind": "word-order",
-     "instructionUz": "Kimningdur ekanligini sörovçi savolni tuzing (“Bu kimning kitobi?”).",
+     "instructionUz": "Kimniki ekanligini sörovçi savolni tuzing (“Bu kimning kitobi?”).",
      "level": "A1",
      "skill": "grammar",
      "explanationUz": "Whose + ot + is + this?: Whose book is this?",
@@ -4092,7 +4092,7 @@
    "examples": [
     {
      "en": "I wake up at half past six and I get up fast.",
-     "uz": "Soat olti yarimda uyanaman va tez örnimdan turaman."
+     "uz": "Soat olti yarimda uyğonaman va tez örnimdan turaman."
     },
     {
      "en": "My sister goes to bed at nine o’clock.",
@@ -5040,7 +5040,7 @@
     {
      "id": "a1-ex-g5-07",
      "kind": "matching",
-     "instructionUz": "Olumni töğri turkumga birlaştiring.",
+     "instructionUz": "Otlarni töğri turkumga birlaştiring.",
      "level": "A1",
      "skill": "grammar",
      "explanationUz": "bread, water, rice, cheese — sanalmaydigan; egg, apple — sanaladigan.",
@@ -5078,7 +5078,7 @@
      "instructionUz": "Böş joyga “a”, “an”, “some” yoki “any” qöying.",
      "level": "A1",
      "skill": "grammar",
-     "explanationUz": "banana undoş ovoz bilan boşlanadi — undan oldin a; söroqda any; inkorda any; tasdiqgapda some.",
+     "explanationUz": "banana undoş ovoz bilan boşlanadi — undan oldin a; söroqda any; inkorda any; tasdiq gapda some.",
      "difficulty": 3,
      "tags": [
       "some",
@@ -5250,7 +5250,7 @@
     },
     {
      "en": "My sister can dance very well.",
-     "uz": "Singilim juda yaxşi raqsga tuşadi."
+     "uz": "Singlim juda yaxşi raqsga tuşadi."
     },
     {
      "en": "Can you ride a bike?",
@@ -5262,7 +5262,7 @@
     },
     {
      "en": "We are going to the park on Saturday.",
-     "uz": "Biz Şanba kuni boğga bormoqçimiz."
+     "uz": "Biz şanba kuni boğga bormoqçimiz."
     },
     {
      "en": "My friend is going to play the guitar in the park.",
@@ -5270,7 +5270,7 @@
     },
     {
      "en": "I am not going to study on Sunday.",
-     "uz": "Men Yakşanba kuni dars qilmoqçi emasman."
+     "uz": "Men yakşanba kuni dars qilmoqçi emasman."
     }
    ],
    "forms": {
@@ -5694,7 +5694,7 @@
     },
     {
      "en": "My sister and I were very happy on Sunday.",
-     "uz": "Yakşanba kuni singlim ikimiz juda xursand edik."
+     "uz": "Yakşanba kuni singlim ikkimiz juda xursand edik."
     },
     {
      "en": "Was the museum far? — No, it wasn’t.",
@@ -6585,7 +6585,7 @@
      "instructionUz": "Uçinçi fikrni matnning oxirgi qismiga qarab baholang.",
      "level": "A1",
      "skill": "reading",
-     "explanationUz": "“We have dinner together at half past eight.” — demak oilasi bilan eydi.",
+     "explanationUz": "“We have dinner together at half past eight.” — demak oilasi bilan yeydi.",
      "difficulty": 2,
      "tags": [
       "true false notgiven"
@@ -7201,7 +7201,7 @@
      "instructionUz": "Matnga asoslanib töğri javobni tanlang.",
      "level": "A1",
      "skill": "reading",
-     "explanationUz": "Ikkinçi paragraf: ular Şanba kunlari uylari yonidagi boğga borişadi.",
+     "explanationUz": "Ikkinçi paragraf: ular şanba kunlari uylari yonidagi boğga borişadi.",
      "difficulty": 1,
      "tags": [
       "reading detail"
@@ -7238,7 +7238,7 @@
      "instructionUz": "Matnga qarab fikrga baho bering.",
      "level": "A1",
      "skill": "reading",
-     "explanationUz": "Matnda Farrukh “ba’zan” gitara olib keladi deyilgan, “har Şanba” deyilmagan.",
+     "explanationUz": "Matnda Farrukh “ba’zan” gitara olib keladi deyilgan, “har şanba” deyilmagan.",
      "difficulty": 3,
      "tags": [
       "notgiven"
@@ -7303,7 +7303,7 @@
      "pairs": [
       {
        "left": "park",
-       "right": "bog‘, park"
+       "right": "boğ, park"
       },
       {
        "left": "cinema",
@@ -8221,7 +8221,7 @@
      "instructionUz": "Audioyani tinglab savolga javob bering.",
      "level": "A1",
      "skill": "listening",
-     "explanationUz": "Boşida Aziza “Welcome to my home. Come in” deydi — suhbat undining uyida.",
+     "explanationUz": "Boşida Aziza “Welcome to my home. Come in” deydi — suhbat uning uyida.",
      "difficulty": 1,
      "tags": [
       "listening gist"
@@ -8632,7 +8632,7 @@
      "instructionUz": "Audioyani tinglab savolga javob bering.",
      "level": "A1",
      "skill": "listening",
-     "explanationUz": "Farrukh Şanba kuni akaukalari bilan boğda futbol öynaydi.",
+     "explanationUz": "Farrukh şanba kuni aka-ukalari bilan boğda futbol öynaydi.",
      "difficulty": 1,
      "tags": [
       "listening detail"
@@ -8690,7 +8690,7 @@
      "instructionUz": "Audioyani tinglab fikrga baho bering.",
      "level": "A1",
      "skill": "listening",
-     "explanationUz": "Sardor Şanba kuni velosipedda boradi; Yakşanba esa otasi bilan velosipedda yuradi.",
+     "explanationUz": "Sardor şanba kuni velosipedda boradi; yakşanba kuni esa otasi bilan velosipedda yuradi.",
      "difficulty": 2,
      "tags": [
       "listening detail"
@@ -8722,7 +8722,7 @@
      "instructionUz": "Audioyani qayta tinglab, xulosadagi böş joylarni töldiring.",
      "level": "A1",
      "skill": "listening",
-     "explanationUz": "Futbol — Şanba; Sardor suv va olma olib keladi; Farrukh gitara olib kelişini söraydi; Sardor Yakşanba velosipedda boradi.",
+     "explanationUz": "Futbol — şanba kuni; Sardor suv va olma olib keladi; Farrukh gitara olib kelişini söraydi; Sardor yakşanba kuni velosipedda boradi.",
      "difficulty": 3,
      "tags": [
       "listening note-taking"
@@ -8930,7 +8930,7 @@
      "instructionUz": "Audioyani qayta tinglab, xulosadagi böş joylarni töldiring.",
      "level": "A1",
      "skill": "listening",
-     "explanationUz": "Çorrahada çapga buriladi; metro soat ön birda (eleven) tugaydi; keça sayyoh avtobusda edi; bilet kiçkina deraçadan olinadi.",
+     "explanationUz": "Çorrahada çapga buriladi; metro soat ön birda (eleven) tugaydi; keça sayyoh avtobusda edi; bilet kiçkina darçadan olinadi.",
      "difficulty": 3,
      "tags": [
       "listening note-taking"
@@ -9037,7 +9037,7 @@
    "level": "A1",
    "genre": "paragraph",
    "promptEn": "Write a paragraph about your day. Say what time you wake up, get up and go to school. Say what you do in the afternoon and what time you go to bed.",
-   "instructionUz": "Bir kuningiz haqida paragraf yozing: neçida uyanişingiz, örnidan turişingiz va maktabga borişingizni ayting. Kunduzdan keyin nima qilişingiz va neçida uxlaşga yotişingizni yozing. Present Simple işlatib, vaqtni at bilan körsating.",
+   "instructionUz": "Bir kuningiz haqida paragraf yozing: neçida uyğonişingiz, örnidan turişingiz va maktabga borişingizni ayting. Kunduzdan keyin nima qilişingiz va neçida uxlaşga yotişingizni yozing. Present Simple işlatib, vaqtni at bilan körsating.",
    "minWords": 40,
    "maxWords": 100,
    "minutes": 20,
@@ -9049,7 +9049,7 @@
     "accuracy"
    ],
    "checklistUz": [
-    "Kamida uçta vaqt körsatilgan (uyoniş, maktab, uxlaş).",
+    "Kamida uçta vaqt körsatilgan (uyğoniş, maktab, uxlaş).",
     "Present Simple fe’llari töğri işlatilgan (I go, I do, I have).",
     "at + soat qoidasi saqlangan.",
     "Kunduzdan keyingi bir faoliyat aytilgan.",
@@ -9154,7 +9154,7 @@
    "level": "A1",
    "genre": "email",
    "promptEn": "Write an email to your friend about your weekend. What are you going to do on Saturday and Sunday, and what can you do well?",
-   "instructionUz": "Döstingizga inglizça elektron xat yozing. Şanba va Yakşanba kunlari nima qilmoqçi ekankingizni “I am going to ...” bilan ayting, yaxşi bilaadigan bir ikki işingizni “I can ...” bilan körsating va döstingizni biror işga taklif qiling.",
+   "instructionUz": "Döstingizga inglizça elektron xat yozing. Şanba va yakşanba kunlari nima qilmoqçi ekaningizni “I am going to ...” bilan ayting, yaxşi biladigan bir-ikki işingizni “I can ...” bilan körsating va döstingizni biror işga taklif qiling.",
    "minWords": 40,
    "maxWords": 100,
    "minutes": 20,
@@ -9169,7 +9169,7 @@
     "Xat salom bilan boşlanib, vidolaşuv va ism bilan tugatilgan.",
     "Kamida ikkita “am / is / are going to” bilan reja aytilgan.",
     "Kamida bitta “can” va bitta “can’t” işlatilgan.",
-    "Şanba va Yakşanba kunlari alohida körsatilgan.",
+    "Şanba va yakşanba kunlari alohida körsatilgan.",
     "Döstga biror taklif yozilgan (Do you want to ...?)."
    ],
    "mustInclude": [
@@ -9193,7 +9193,7 @@
    "level": "A1",
    "genre": "message",
    "promptEn": "Write a message to a friend about a trip. Where were you, how did you travel, and how do you get there?",
-   "instructionUz": "Döstingizga inglizça xabar yozing. Qayerda bölganingizni “I was ... / We were ...” bilan ayting, qanday transportda borganningizni körsating va öşa yerga qanday boriş yölini “Go straight ahead ... Turn left / right ...” bilan tuşuntiring. Kamida bitta rejangizni “I am going to ...” bilan qöşib yozing.",
+   "instructionUz": "Döstingizga inglizça xabar yozing. Qayerda bölganingizni “I was ... / We were ...” bilan ayting, qanday transportda borganingizni körsating va öşa yerga qanday boriş yölini “Go straight ahead ... Turn left / right ...” bilan tuşuntiring. Kamida bitta rejangizni “I am going to ...” bilan qöşib yozing.",
    "minWords": 40,
    "maxWords": 110,
    "minutes": 20,
@@ -9374,7 +9374,7 @@
    "level": "A1",
    "topicUz": "Uyidagi xonalar soni va ularning nomi",
    "questionEn": "How many rooms are there in your home? What can you do in each room?",
-   "hintUz": "“There are five rooms: a living room, ...” deb sanang, keyin harxonada nima qilişini ayting.",
+   "hintUz": "“There are five rooms: a living room, ...” deb sanang, keyin har xonada nima qilişini ayting.",
    "minSeconds": 30,
    "targetSeconds": 60,
    "textAlternative": "Uyingizdagi xonalarni sanab, har biriga bir gapdan yozing.",
@@ -9461,7 +9461,7 @@
    "hintUz": "“On Saturday I am going to ...” va “On Sunday we are going to ...” deb ayting.",
    "minSeconds": 30,
    "targetSeconds": 60,
-   "textAlternative": "Şanba va Yakşanba uçun 2-2 tadan rejangizni “going to” bilan yozing.",
+   "textAlternative": "Şanba va yakşanba uçun 2-2 tadan rejangizni “going to” bilan yozing.",
    "followUpsEn": [
     "What time are you going to start?",
     "Who are you going to play with?"
@@ -9827,7 +9827,7 @@
      "instructionUz": "Test: özbekça egalik ifodasini ingliz tiliga aylantiring.",
      "level": "A1",
      "skill": "grammar",
-     "explanationUz": "‘Otamning velosipedi’ = My father's bike.",
+     "explanationUz": "“Otamning velosipedi” = My father's bike.",
      "difficulty": 2,
      "tags": [
       "'s"
