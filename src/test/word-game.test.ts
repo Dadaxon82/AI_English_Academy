@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { allGlossaryVocab, findExercise, getBundle } from '../content'
 import type { VocabularyItem } from '../content/types'
-import { vocabEmoji } from '../content/vocabEmoji'
+import { VOCAB_EMOJI, vocabEmoji } from '../content/vocabEmoji'
 import { checkAnswer } from '../lib/check'
 import { initialSrsState, review } from '../lib/srs'
 import { WORDS_PER_GAME, buildWordGame, pickGameWords, seededRand } from '../lib/wordGame'
@@ -64,5 +64,19 @@ describe('Luğat öyini — sessiya tuzilişi', () => {
       const steps = buildWordGame([...bare, ...allGlossaryVocab()], {}, seededRand(seed))
       expect(steps.some((s) => s.exercise.kind === 'translation')).toBe(false)
     }
+  })
+})
+
+describe('so‘z rasmlari (vocabEmoji)', () => {
+  it('har emoji faqat bitta so‘zga tegishli — rasmli savolda ikki to‘g‘ri javob bo‘lmaydi', () => {
+    const seen = new Map<string, string>()
+    for (const [word, icon] of Object.entries(VOCAB_EMOJI)) {
+      expect(seen.get(icon), `${icon}: ${seen.get(icon)} va ${word}`).toBeUndefined()
+      seen.set(icon, word)
+    }
+  })
+  it('so‘zni boshqa narsa bilan ko‘rsatadigan rasmlar yo‘q (foydalanuvchi xabari: desk → 🪑 stul)', () => {
+    for (const w of ['desk', 'crossing', 'table', 'room', 'bedroom', 'fridge', 'tall', 'young', 'thirsty', 'board', 'classroom']) expect(vocabEmoji(w), w).toBeNull()
+    expect(vocabEmoji('chair')).toBe('🪑')
   })
 })

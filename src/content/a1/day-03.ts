@@ -56,7 +56,7 @@ export const vocabDay3: VocabularyItem[] = [
   {
     id: 'a1-v3-brush',
     word: 'brush',
-    translationUz: 'yuvmoq, firçalamoq (tiş)',
+    translationUz: 'firçalamoq (tişni), yuvmoq',
     explanationEn: 'You do this to your teeth every morning.',
     ipa: '/brʌʃ/',
     pronunciation: { kind: 'browser-tts', ttsText: 'brush your teeth', lang: 'en-US' },
